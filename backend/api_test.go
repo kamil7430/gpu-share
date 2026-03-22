@@ -38,3 +38,25 @@ func TestDeviceRegister(t *testing.T) {
 
 	require.JSONEq(t, string(expected), string(actual))
 }
+
+func TestDeviceStatus(t *testing.T) {
+	deviceID := "123"
+
+	resp, err := http.Get("https://localhost:8080/api/devices/" + deviceID + "/status")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	expected := `{
+		"deviceId": "123",
+		"state": "AVAILABLE",
+		"temperatureC": 68,
+		"utilizationPercent": 72,
+		"memoryUsedMb": 10240,
+		"lastHeartbeat": "2026-01-06T12:34:56Z"
+	}`
+
+	require.JSONEq(t, expected, string(body))
+}
