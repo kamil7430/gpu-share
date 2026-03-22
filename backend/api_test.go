@@ -60,3 +60,32 @@ func TestDeviceStatus(t *testing.T) {
 
 	require.JSONEq(t, expected, string(body))
 }
+
+func TestDeviceRent(t *testing.T) {
+	payload := `{
+		"device_id": "550e8400-e29b-41d4-a716-446655440000" ,
+		"docker_image": "pytorch/pytorch:2.0-cuda11.7" ,
+		"duration_hours": 2
+	}`
+
+	response, err := http.Post("https://localhost:8080/api/orders", "application/json", strings.NewReader(payload))
+	require.NoError(t, err)
+	defer response.Body.Close()
+
+	expected, _ := json.Marshal(`{
+		"order_id": "ord_123456789",
+		"status": "WAITING_FOR_START",
+		"connection_details": {
+		"host": "node-01.gpushare.net" ,
+		"port": 443 ,
+		"protocol": "wss"
+	} ,
+" total_reserved_cost ": 0.90
+								 }`)
+	bytes, err := io.ReadAll(response.Body)
+	require.NoError(t, err)
+	actual, err := json.Marshal(bytes)
+	require.NoError(t, err)
+
+	require.JSONEq(t, string(expected), string(actual))
+}
