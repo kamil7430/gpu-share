@@ -35,5 +35,6 @@ func main() {
 
 	mux := NewServer(db)
 
-	log.Fatal(http.ListenAndServe("localhost:2137", mux))
+	log.Println("Started server...")
+	log.Fatal(http.ListenAndServe(":2137", mux))
 }

@@ -30,8 +30,12 @@ func NewServer(db *gorm.DB) http.Handler {
 	//mux.HandleFunc("GET /teams/{id}", teamHandler.GetTeam)
 	//mux.HandleFunc("POST /teams", teamHandler.CreateTeam)
 
-	fs := http.FileServer(http.Dir("/app/frontend"))
-	mux.Handle("/", fs)
+	//fs := http.FileServer(http.Dir("/app/frontend"))
+	//mux.Handle("/", fs)
+
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("Halo Welt!"))
+	})
 
 	return mux
 }
