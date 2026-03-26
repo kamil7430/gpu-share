@@ -1,11 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
-func NewServer(db *sql.DB) http.Handler {
+func NewServer(db *gorm.DB) http.Handler {
 	mux := http.NewServeMux()
 
 	//eventRepo := repository.NewEventRepository(db)
@@ -14,13 +15,13 @@ func NewServer(db *sql.DB) http.Handler {
 	//eventHandler := handler.NewEventHandler(eventRepo)
 	//teamHandler := handler.NewTeamHandler(teamRepo)
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		if err := db.Ping(); err != nil {
-			http.Error(w, "DB not reachable", 500)
-			return
-		}
-		w.Write([]byte("OK"))
-	})
+	//mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+	//	if err := db.Ping(); err != nil {
+	//		http.Error(w, "DB not reachable", 500)
+	//		return
+	//	}
+	//	w.Write([]byte("OK"))
+	//})
 
 	//mux.HandleFunc("GET /events", eventHandler.GetEvents)
 	//mux.HandleFunc("GET /events/{id}", eventHandler.GetEvent)

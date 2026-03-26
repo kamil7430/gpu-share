@@ -28,3 +28,6 @@ go.work
 
 ### GoLand ###
 .idea
+
+### Environment ###
+.env
