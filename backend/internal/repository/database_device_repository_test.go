@@ -2,51 +2,37 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"strconv"
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/postgres"
-	gormpostgres "gorm.io/driver/postgres"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func TestDatabaseDeviceRepository(t *testing.T) {
-	ctx := context.Background()
-	dbName := "deviceRepositoryTests"
-	dbUser := "user"
-	dbPassword := "password"
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbDb := os.Getenv("POSTGRES_DB")
+	dbPort := os.Getenv("POSTGRES_DB_PORT")
 
-	ctr, err := postgres.Run(
-		ctx,
-		"postgres:16-alpine",
-		postgres.WithDatabase(dbName),
-		postgres.WithUsername(dbUser),
-		postgres.WithPassword(dbPassword),
-		postgres.BasicWaitStrategies(),
-		postgres.WithSQLDriver("pgx"),
-	)
-	testcontainers.CleanupContainer(t, ctr)
-	require.NoError(t, err)
-
-	err = ctr.Snapshot(ctx)
-	require.NoError(t, err)
-
-	dbURL, err := ctr.ConnectionString(ctx)
-	require.NoError(t, err)
-
-	db, err := gorm.Open(gormpostgres.Open(dbURL), &gorm.Config{})
+	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=%s sslmode=disable",
+		dbUser, dbPassword, dbDb, dbPort)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		TranslateError: true,
+	})
 	require.NoError(t, err)
 
 	err = db.AutoMigrate(&model.Device{})
 	require.NoError(t, err)
 
-	r := DatabaseDeviceRepository{
+	r := NewDatabaseDeviceRepository(
 		db,
 		context.Background(),
-	}
+	)
 	deviceId := 2137
 
 	resetDbContent := func() {
