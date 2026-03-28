@@ -1,14 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/kamil7430/gpu-share/backend/internal/model"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"github.com/kamil7430/gpu-share/backend/internal"
 )
 
 func fatalIfError(err error) {
@@ -18,22 +14,8 @@ func fatalIfError(err error) {
 }
 
 func main() {
-	log.Println("Starting server, loading environment variables...")
-	dbUser := os.Getenv("POSTGRES_USER")
-	dbPassword := os.Getenv("POSTGRES_PASSWORD")
-	dbDb := os.Getenv("POSTGRES_DB")
-	dbPort := os.Getenv("POSTGRES_DB_PORT")
-
-	log.Println("Connecting to database...")
-	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=%s sslmode=disable",
-		dbUser, dbPassword, dbDb, dbPort)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		TranslateError: true,
-	})
-	fatalIfError(err)
-
-	log.Println("Migrating models...")
-	err = db.AutoMigrate(&model.Device{})
+	log.Println("Starting server...")
+	db, err := internal.InitializeDatabaseConnection(true)
 	fatalIfError(err)
 
 	log.Println("Building server instance...")

@@ -2,31 +2,16 @@ package repository
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"strconv"
 	"testing"
 
+	"github.com/kamil7430/gpu-share/backend/internal"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/stretchr/testify/require"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func TestDatabaseDeviceRepository(t *testing.T) {
-	dbUser := os.Getenv("POSTGRES_USER")
-	dbPassword := os.Getenv("POSTGRES_PASSWORD")
-	dbDb := os.Getenv("POSTGRES_DB")
-	dbPort := os.Getenv("POSTGRES_DB_PORT")
-
-	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=%s sslmode=disable",
-		dbUser, dbPassword, dbDb, dbPort)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		TranslateError: true,
-	})
-	require.NoError(t, err)
-
-	err = db.AutoMigrate(&model.Device{})
+	db, err := internal.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
 	r := NewDatabaseDeviceRepository(
