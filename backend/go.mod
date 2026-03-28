@@ -1,4 +1,4 @@
-module github.com/kamil7430/gpu-share
+module github.com/kamil7430/gpu-share/backend
 
 go 1.26
 
