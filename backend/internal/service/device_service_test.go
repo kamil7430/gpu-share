@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"strconv"
 	"testing"
 	"time"
 
@@ -24,12 +23,12 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		repository.NewMockGpuRepository(),
 	)
 
-	deviceId := 2137
+	deviceId := "2137"
 
 	resetDbContent := func() {
 		tx.Exec("TRUNCATE TABLE devices;")
 		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + strconv.Itoa(deviceId) + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', '0');")
+			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'UNAVAILABLE');")
 	}
 
 	t.Run("get device status", func(t *testing.T) {
@@ -37,7 +36,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		device, err := s.GetDeviceStatusById(deviceId)
 		require.NoError(t, err)
 		require.NotNil(t, device)
-		require.Equal(t, uint(deviceId), device.DeviceId)
+		require.Equal(t, deviceId, device.DeviceId)
 		require.Equal(t, model.Unavailable, device.State)
 		require.Equal(t, 69, device.TemperatureC)
 		require.Equal(t, 69, device.UtilizationPercent)

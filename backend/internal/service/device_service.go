@@ -1,6 +1,8 @@
 package service
 
 import (
+	"strconv"
+
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/service/responses"
 )
@@ -14,7 +16,7 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 	return DeviceService{dr, gr}
 }
 
-func (s *DeviceService) GetDeviceStatusById(id int) (*responses.DeviceStatusResponse, error) {
+func (s *DeviceService) GetDeviceStatusById(id string) (*responses.DeviceStatusResponse, error) {
 	device, err := s.dr.GetDeviceById(id)
 	if err != nil {
 		return nil, err
@@ -26,7 +28,7 @@ func (s *DeviceService) GetDeviceStatusById(id int) (*responses.DeviceStatusResp
 	}
 
 	return &responses.DeviceStatusResponse{
-		DeviceId:           device.ID,
+		DeviceId:           strconv.Itoa(int(device.ID)),
 		State:              device.State,
 		TemperatureC:       status.TemperatureC,
 		UtilizationPercent: status.UtilizationPercent,

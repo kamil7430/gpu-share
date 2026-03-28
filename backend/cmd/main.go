@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/kamil7430/gpu-share/backend/cmd/server"
 	"github.com/kamil7430/gpu-share/backend/internal"
 )
 
@@ -20,7 +21,7 @@ func main() {
 	fatalIfError(err)
 
 	log.Println("Building server instance...")
-	server := NewServer(db)
+	server := server.NewServer(db)
 	defer fatalIfError(server.Close())
 
 	log.Println("Started server!")

@@ -3,7 +3,6 @@ package handler
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/kamil7430/gpu-share/backend/internal/service"
@@ -26,11 +25,7 @@ func (h *DeviceHandler) HandleDeviceStatusId(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	id, err := strconv.Atoi(parts[3])
-	if err != nil {
-		http.Error(w, "invalid device id", 400)
-		return
-	}
+	id := parts[3]
 
 	status, err := h.s.GetDeviceStatusById(id)
 	if err != nil {
@@ -39,6 +34,6 @@ func (h *DeviceHandler) HandleDeviceStatusId(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	writeJson(w, status)
 	w.WriteHeader(http.StatusOK)
+	writeJson(w, status)
 }

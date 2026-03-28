@@ -12,7 +12,7 @@ func NewMockGpuRepository() GpuRepository {
 	return &MockGpuRepository{}
 }
 
-func (m *MockGpuRepository) GetDeviceStatusById(id int) (*model.DeviceStatus, error) {
+func (m *MockGpuRepository) GetDeviceStatusById(id string) (*model.DeviceStatus, error) {
 	return &model.DeviceStatus{
 		TemperatureC:       69,
 		UtilizationPercent: 69,

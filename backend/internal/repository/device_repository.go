@@ -5,6 +5,6 @@ import (
 )
 
 type DeviceRepository interface {
-	GetDeviceById(id int) (*model.Device, error)
+	GetDeviceById(id string) (*model.Device, error)
 	Transaction(fn func(repository DeviceRepository) error) error
 }

@@ -16,7 +16,7 @@ func NewDatabaseDeviceRepository(db *gorm.DB, ctx context.Context) DeviceReposit
 	return &DatabaseDeviceRepository{db, ctx}
 }
 
-func (r *DatabaseDeviceRepository) GetDeviceById(id int) (*model.Device, error) {
+func (r *DatabaseDeviceRepository) GetDeviceById(id string) (*model.Device, error) {
 	device, err := gorm.G[model.Device](r.db).Where("ID = ?", id).First(r.ctx)
 	if err != nil {
 		return nil, err

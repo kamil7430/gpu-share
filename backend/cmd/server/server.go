@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -20,6 +20,10 @@ func NewServer(db *gorm.DB) *http.Server {
 
 	deviceHandler := handler.NewDeviceHandler(&deviceService)
 
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
 	mux.HandleFunc("GET /api/devices/{id}/status", deviceHandler.HandleDeviceStatusId)
 
 	loginHandler := handler.NewLoginHandler(&service.UserService{})

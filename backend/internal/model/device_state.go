@@ -1,10 +1,11 @@
 package model
 
-type DeviceState int
+type DeviceState string
 
 const (
-	Unavailable DeviceState = iota
-	Available
-	Rented
-	Reported
+	Unavailable DeviceState = "UNAVAILABLE"
+	Available   DeviceState = "AVAILABLE"
+	Rented      DeviceState = "RENTED"
+	Reported    DeviceState = "REPORTED"
 )
+

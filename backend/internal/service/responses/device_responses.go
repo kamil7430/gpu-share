@@ -7,7 +7,7 @@ import (
 )
 
 type DeviceStatusResponse struct {
-	DeviceId           uint              `json:"device_id"`
+	DeviceId           string            `json:"device_id"`
 	State              model.DeviceState `json:"state"`
 	TemperatureC       int               `json:"temperature_c"`
 	UtilizationPercent int               `json:"utilization_percent"`

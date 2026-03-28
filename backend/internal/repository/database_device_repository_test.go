@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"strconv"
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal"
@@ -22,12 +21,12 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		context.Background(),
 	)
 
-	deviceId := 2137
+	deviceId := "2137"
 
 	resetDbContent := func() {
 		tx.Exec("TRUNCATE TABLE devices;")
 		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + strconv.Itoa(deviceId) + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', '0');")
+			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'UNAVAILABLE');")
 	}
 
 	t.Run("get device", func(t *testing.T) {
