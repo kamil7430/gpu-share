@@ -18,16 +18,13 @@ func NewDeviceHandler(s *service.DeviceService) DeviceHandler {
 
 func (h *DeviceHandler) HandleDeviceStatusId(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
-	log.Println(parts)
 
 	if len(parts) != 5 {
 		http.Error(w, "invalid URL", 400)
 		return
 	}
 
-	id := parts[3]
-
-	status, err := h.s.GetDeviceStatusById(id)
+	status, err := h.s.GetDeviceStatusById(parts[3])
 	if err != nil {
 		http.Error(w, "internal server error", 500)
 		log.Println(err)
