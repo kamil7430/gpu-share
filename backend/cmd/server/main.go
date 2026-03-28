@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/kamil7430/gpu-share/model"
+	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/kamil7430/gpu-share/model"
+	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
