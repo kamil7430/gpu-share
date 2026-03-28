@@ -12,7 +12,7 @@ import (
 )
 
 var migratedMutex sync.Mutex
-var migrated bool
+var migrated bool = false
 
 func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 	if verbose {
@@ -38,7 +38,6 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 	migratedMutex.Lock()
 	if !migrated {
 		migrated = true
-		migratedMutex.Unlock()
 		if verbose {
 			log.Println("Migrating models...")
 		}
@@ -46,9 +45,8 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		migratedMutex.Unlock()
 	}
+	migratedMutex.Unlock()
 
 	return db, nil
 }
