@@ -4,7 +4,7 @@ services:
       context: ../..
       dockerfile: docker/test/Dockerfile
     env_file:
-      - ../../backend/.env
+      - ../../backend/.env.example
     ports:
       - "2137:2137"
     depends_on:
@@ -17,7 +17,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql
     env_file:
-      - ../../backend/.env
+      - ../../backend/.env.example
     expose:
       - 5432
     healthcheck:

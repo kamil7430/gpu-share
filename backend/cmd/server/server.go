@@ -20,18 +20,7 @@ func NewServer(db *gorm.DB) http.Handler {
 
 	deviceHandler := handler.NewDeviceHandler(&deviceService)
 
-	//mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-	//	if err := db.Ping(); err != nil {
-	//		http.Error(w, "DB not reachable", 500)
-	//		return
-	//	}
-	//	w.Write([]byte("OK"))
-	//})
-
 	mux.HandleFunc("GET /api/devices/{id}/status", deviceHandler.HandleDeviceStatusId)
-
-	//fs := http.FileServer(http.Dir("/app/frontend"))
-	//mux.Handle("/", fs)
 
 	loginHandler := handler.NewLoginHandler(&service.UserService{})
 

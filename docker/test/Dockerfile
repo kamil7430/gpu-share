@@ -12,7 +12,6 @@ COPY docker/test/run-tests.sh ./backend
 WORKDIR /app/backend
 
 RUN chmod +x run-tests.sh
-ADD .env.example .env
 
 ENTRYPOINT ["./run-tests.sh"]
 
