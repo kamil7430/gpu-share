@@ -33,10 +33,6 @@ func NewServer(db *gorm.DB) http.Handler {
 	//fs := http.FileServer(http.Dir("/app/frontend"))
 	//mux.Handle("/", fs)
 
-	//mux.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
-	//	w.Write([]byte("Halo Welt!"))
-	//})
-
 	loginHandler := handler.NewLoginHandler(&service.UserService{})
 
 	mux.HandleFunc("POST /login", loginHandler.Login)
