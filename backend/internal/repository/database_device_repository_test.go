@@ -14,16 +14,20 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	db, err := internal.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
+	tx := db.Begin()
+	defer tx.Rollback()
+
 	r := NewDatabaseDeviceRepository(
-		db,
+		tx,
 		context.Background(),
 	)
+
 	deviceId := 2137
 
 	resetDbContent := func() {
-		db.Exec("TRUNCATE TABLE devices")
-		db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + strconv.Itoa(deviceId) + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', '0')")
+		tx.Exec("TRUNCATE TABLE devices;")
+		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
+			"VALUES ('" + strconv.Itoa(deviceId) + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', '0');")
 	}
 
 	t.Run("get device", func(t *testing.T) {
