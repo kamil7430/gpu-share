@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source .env.example
+source .env
 
 go test ./... -v
 

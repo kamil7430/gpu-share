@@ -8,10 +8,11 @@ RUN go mod download
 COPY backend ./backend
 COPY frontend ./frontend
 COPY docker/test/run-tests.sh ./backend
-
-RUN chmod +x backend/run-tests.sh
+COPY backend/.env.example ./backend/.env
 
 WORKDIR /app/backend
+
+RUN chmod +x run-tests.sh
 
 ENTRYPOINT ["./run-tests.sh"]
 
