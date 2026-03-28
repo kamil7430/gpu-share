@@ -19,14 +19,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.26'
-          cache-dependency-path: backend/go.sum
-
-      - name: Build
-        run: go build -C backend -v ./...
-
       - name: Test
-        run: go test -C backend -v ./...
+        run: cd docker/test && docker compose up --build --abort-on-container-exit 

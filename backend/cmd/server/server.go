@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/kamil7430/gpu-share/backend/internal/handler"
+	"github.com/kamil7430/gpu-share/backend/internal/service"
 	"gorm.io/gorm"
 )
 
@@ -36,6 +38,10 @@ func NewServer(db *gorm.DB) http.Handler {
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte("Halo Welt!"))
 	})
+
+	loginHandler := handler.NewLoginHandler(&service.UserService{})
+
+	mux.HandleFunc("POST /login", loginHandler.Login)
 
 	return mux
 }
