@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+var migratedMutex sync.Mutex
+var migrated bool
 
 func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 	if verbose {
@@ -31,12 +35,19 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 		return nil, err
 	}
 
-    if verbose {
-	    log.Println("Migrating models...")
-    }
-	err = db.AutoMigrate(&model.Device{})
-	if err != nil {
-		return nil, err
+	migratedMutex.Lock()
+	if !migrated {
+		migrated = true
+		migratedMutex.Unlock()
+		if verbose {
+			log.Println("Migrating models...")
+		}
+		err = db.AutoMigrate(&model.Device{})
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		migratedMutex.Unlock()
 	}
 
 	return db, nil
