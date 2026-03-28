@@ -12,6 +12,10 @@ type DatabaseDeviceRepository struct {
 	ctx context.Context
 }
 
+func NewDatabaseDeviceRepository(db *gorm.DB, ctx context.Context) DeviceRepository {
+	return &DatabaseDeviceRepository{db, ctx}
+}
+
 func (r *DatabaseDeviceRepository) GetDeviceById(id int) (*model.Device, error) {
 	device, err := gorm.G[model.Device](r.db).Where("ID = ?", id).First(r.ctx)
 	if err != nil {

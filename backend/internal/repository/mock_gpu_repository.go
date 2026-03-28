@@ -8,6 +8,10 @@ import (
 
 type MockGpuRepository struct{}
 
+func NewMockGpuRepository() GpuRepository {
+	return &MockGpuRepository{}
+}
+
 func (m *MockGpuRepository) GetDeviceStatusById(id int) (*model.DeviceStatus, error) {
 	return &model.DeviceStatus{
 		TemperatureC:       69,

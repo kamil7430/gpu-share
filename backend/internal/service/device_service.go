@@ -1,8 +1,6 @@
 package service
 
 import (
-	"encoding/json"
-
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/service/responses"
 )
@@ -12,7 +10,11 @@ type DeviceService struct {
 	gr repository.GpuRepository
 }
 
-func (s *DeviceService) GetDeviceStatusById(id int) ([]byte, error) {
+func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepository) DeviceService {
+	return DeviceService{dr, gr}
+}
+
+func (s *DeviceService) GetDeviceStatusById(id int) (*responses.DeviceStatusResponse, error) {
 	device, err := s.dr.GetDeviceById(id)
 	if err != nil {
 		return nil, err
@@ -23,12 +25,12 @@ func (s *DeviceService) GetDeviceStatusById(id int) ([]byte, error) {
 		return nil, err
 	}
 
-	return json.Marshal(responses.DeviceStatusResponse{
+	return &responses.DeviceStatusResponse{
 		DeviceId:           device.ID,
 		State:              device.State,
 		TemperatureC:       status.TemperatureC,
 		UtilizationPercent: status.UtilizationPercent,
 		MemoryUsedMb:       status.MemoryUsedMb,
 		LastHeartbeat:      status.LastHeartbeat,
-	})
+	}, nil
 }
