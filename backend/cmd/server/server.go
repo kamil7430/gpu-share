@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewServer(db *gorm.DB) http.Handler {
+func NewServer(db *gorm.DB) *http.Server {
 	mux := http.NewServeMux()
 
 	deviceRepo := repository.NewDatabaseDeviceRepository(db, context.Background())
@@ -26,5 +26,5 @@ func NewServer(db *gorm.DB) http.Handler {
 
 	mux.HandleFunc("POST /login", loginHandler.Login)
 
-	return mux
+	return &http.Server{Addr: ":2137", Handler: mux}
 }

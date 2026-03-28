@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -19,8 +20,12 @@ func main() {
 	fatalIfError(err)
 
 	log.Println("Building server instance...")
-	mux := NewServer(db)
+	server := NewServer(db)
+	defer fatalIfError(server.Close())
 
 	log.Println("Started server!")
-	log.Fatal(http.ListenAndServe(":2137", mux))
+	err = server.ListenAndServe()
+	if !errors.Is(err, http.ErrServerClosed) {
+		log.Fatal(err)
+	}
 }
