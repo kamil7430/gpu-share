@@ -11,16 +11,16 @@ type DatabaseDeviceRepository struct {
 	db *gorm.DB
 }
 
-func (d *DatabaseDeviceRepository) GetDeviceById(ctx context.Context, id int) (*model.Device, error) {
-	device, err := gorm.G[model.Device](d.db).Where("ID = ?", id).First(ctx)
+func (r *DatabaseDeviceRepository) GetDeviceById(ctx context.Context, id int) (*model.Device, error) {
+	device, err := gorm.G[model.Device](r.db).Where("ID = ?", id).First(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &device, nil
 }
 
-func (d *DatabaseDeviceRepository) Transaction(fn func(repository DeviceRepository) error) error {
-	return d.db.Transaction(func(tx *gorm.DB) error {
+func (r *DatabaseDeviceRepository) Transaction(fn func(repository DeviceRepository) error) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
 		return fn(&DatabaseDeviceRepository{tx})
 	})
 }
