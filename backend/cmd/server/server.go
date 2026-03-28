@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"gorm.io/gorm"
+	"github.com/kamil7430/gpu-share/backend/internal/handler"
 )
 
 func NewServer(db *gorm.DB) http.Handler {
@@ -36,6 +37,8 @@ func NewServer(db *gorm.DB) http.Handler {
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte("Halo Welt!"))
 	})
+
+	mux.HandleFunc("POST /login", handler.LoginHandler)
 
 	return mux
 }
