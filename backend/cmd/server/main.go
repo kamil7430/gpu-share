@@ -18,11 +18,13 @@ func fatalIfError(err error) {
 }
 
 func main() {
+	log.Println("Starting server, loading environment variables...")
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbDb := os.Getenv("POSTGRES_DB")
 	dbPort := os.Getenv("POSTGRES_DB_PORT")
 
+	log.Println("Connecting to database...")
 	dsn := fmt.Sprintf("host=db user=%s password=%s dbname=%s port=%s sslmode=disable",
 		dbUser, dbPassword, dbDb, dbPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
@@ -30,11 +32,13 @@ func main() {
 	})
 	fatalIfError(err)
 
+	log.Println("Migrating models...")
 	err = db.AutoMigrate(&model.Device{})
 	fatalIfError(err)
 
+	log.Println("Building server instance...")
 	mux := NewServer(db)
 
-	log.Println("Started server...")
+	log.Println("Started server!")
 	log.Fatal(http.ListenAndServe(":2137", mux))
 }

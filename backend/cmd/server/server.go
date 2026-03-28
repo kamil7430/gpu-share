@@ -1,19 +1,24 @@
 package main
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/kamil7430/gpu-share/backend/internal/handler"
+	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"github.com/kamil7430/gpu-share/backend/internal/service"
 	"gorm.io/gorm"
 )
 
 func NewServer(db *gorm.DB) http.Handler {
 	mux := http.NewServeMux()
 
-	//eventRepo := repository.NewEventRepository(db)
-	//teamRepo := repository.NewTeamRepository(db)
-	//
-	//eventHandler := handler.NewEventHandler(eventRepo)
-	//teamHandler := handler.NewTeamHandler(teamRepo)
+	deviceRepo := repository.NewDatabaseDeviceRepository(db, context.Background())
+	gpuRepo := repository.NewMockGpuRepository()
+
+	deviceService := service.NewDeviceService(deviceRepo, gpuRepo)
+
+	deviceHandler := handler.NewDeviceHandler(&deviceService)
 
 	//mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 	//	if err := db.Ping(); err != nil {
@@ -23,19 +28,14 @@ func NewServer(db *gorm.DB) http.Handler {
 	//	w.Write([]byte("OK"))
 	//})
 
-	//mux.HandleFunc("GET /events", eventHandler.GetEvents)
-	//mux.HandleFunc("GET /events/{id}", eventHandler.GetEvent)
-	//mux.HandleFunc("POST /events", eventHandler.CreateEvent)
-	//mux.HandleFunc("GET /teams", teamHandler.GetTeams)
-	//mux.HandleFunc("GET /teams/{id}", teamHandler.GetTeam)
-	//mux.HandleFunc("POST /teams", teamHandler.CreateTeam)
+	mux.HandleFunc("GET /api/devices/{id}", deviceHandler.HandleDeviceId)
 
 	//fs := http.FileServer(http.Dir("/app/frontend"))
 	//mux.Handle("/", fs)
 
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte("Halo Welt!"))
-	})
+	//mux.HandleFunc("GET /", func(w http.ResponseWriter, req *http.Request) {
+	//	w.Write([]byte("Halo Welt!"))
+	//})
 
 	return mux
 }
