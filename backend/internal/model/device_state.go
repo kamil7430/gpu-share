@@ -8,4 +8,3 @@ const (
 	Rented      DeviceState = "RENTED"
 	Reported    DeviceState = "REPORTED"
 )
-

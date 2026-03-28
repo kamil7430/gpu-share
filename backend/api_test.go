@@ -13,47 +13,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const BASE_URL string = "http://localhost:2137"
+const baseUrl string = "http://localhost:2137"
 
-//	func TestDeviceRegister(t *testing.T) {
-//		payload := `{
-//	        "name": "Moja karta RTX 4090",
-//	        "gpu_model": "NVIDIA GeForce RTX 4090",
-//	        "vram_mb": 24576,
-//	        "cuda_cores": 16384,
-//	        "price_per_hour_usd": 0.45,
-//	        "driver_version": "535.104",
-//	        "supported_frameworks": ["pytorch", "tensorflow"]
-//	    }`
-//
-//		response, err := http.Post("https://localhost:8080/api/devices", "application/json", strings.NewReader(payload))
-//		require.NoError(t, err)
-//		defer response.Body.Close()
-//
-//		expected, _ := json.Marshal(`{
-//	        "device_id": "550e8400-e29b-41d4-a716-446655440000",
-//	        "owner_id": "user_12345",
-//	        "status": "AVAILABLE",
-//	        "created_at": "2026-01-06T12:34:56Z"
-//	    }`)
-//		bytes, err := io.ReadAll(response.Body)
-//		require.NoError(t, err)
-//		actual, err := json.Marshal(bytes)
-//		require.NoError(t, err)
-//
-//		require.JSONEq(t, string(expected), string(actual))
-//	}
-func TestDeviceStatus(t *testing.T) {
+func TestApi(t *testing.T) {
 	db, err := internal.InitializeDatabaseConnection(false)
+	require.NoError(t, err)
 
 	tx := db.Begin()
 	defer tx.Rollback()
-
-	deviceId := "123"
-
-	tx.Exec("TRUNCATE TABLE devices;")
-	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'AVAILABLE');")
 
 	srv := server.NewServer(tx)
 	defer srv.Shutdown(context.Background())
@@ -63,61 +30,96 @@ func TestDeviceStatus(t *testing.T) {
 			log.Fatal(err)
 		}
 	}()
+
 	retries := 5
 	i := 0
 	for ; i < retries; i += 1 {
-		resp, err := http.Get(BASE_URL + "/health")
+		resp, err := http.Get(baseUrl + "/health")
 		if err == nil && resp.StatusCode == 200 {
 			break
 		}
 	}
 	require.Less(t, i, retries)
 
-	resp, err := http.Get(BASE_URL + "/api/devices/" + deviceId + "/status")
-	require.NoError(t, err)
-	defer resp.Body.Close()
+	deviceId := "123"
 
-	body, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
+	tx.Exec("TRUNCATE TABLE devices;")
+	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
+		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'AVAILABLE');")
 
-	expected := `{
-		"device_id": "123",
-		"state": "AVAILABLE",
-		"temperature_c": 69,
-		"utilization_percent": 69,
-		"memory_used_mb": 6969,
-		"last_heartbeat": "2005-04-02T21:37:00Z"
-	}`
+	t.Run("device status by id", func(t *testing.T) {
+		resp, err := http.Get(baseUrl + "/api/devices/" + deviceId + "/status")
+		require.NoError(t, err)
+		defer resp.Body.Close()
 
-	require.JSONEq(t, expected, string(body))
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		expected := `{
+			"device_id": "123",
+			"state": "AVAILABLE",
+			"temperature_c": 69,
+			"utilization_percent": 69,
+			"memory_used_mb": 6969,
+			"last_heartbeat": "2005-04-02T21:37:00Z"
+		}`
+
+		require.JSONEq(t, expected, string(body))
+	})
+	/*
+		t.Run("device register", func(t *testing.T) {
+			payload := `{
+		        "name": "Moja karta RTX 4090",
+		        "gpu_model": "NVIDIA GeForce RTX 4090",
+		        "vram_mb": 24576,
+		        "cuda_cores": 16384,
+		        "price_per_hour_usd": 0.45,
+		        "driver_version": "535.104",
+		        "supported_frameworks": ["pytorch", "tensorflow"]
+		    }`
+
+			response, err := http.Post(baseUrl + "/api/devices", "application/json", strings.NewReader(payload))
+			require.NoError(t, err)
+			defer response.Body.Close()
+
+			body, err := io.ReadAll(response.Body)
+			require.NoError(t, err)
+
+			expected := `{
+				"device_id": "550e8400-e29b-41d4-a716-446655440000",
+				"owner_id": "user_12345",
+				"status": "AVAILABLE",
+				"created_at": "2026-01-06T12:34:56Z"
+			}`
+
+			require.JSONEq(t, expected, string(body))
+		})
+
+		t.Run("device rent", func(t *testing.T) {
+			payload := `{
+				"device_id": "550e8400-e29b-41d4-a716-446655440000",
+				"docker_image": "pytorch/pytorch:2.0-cuda11.7",
+				"duration_hours": 2
+			}`
+
+			response, err := http.Post(baseUrl + "/api/orders", "application/json", strings.NewReader(payload))
+			require.NoError(t, err)
+			defer response.Body.Close()
+
+			body, err := io.ReadAll(response.Body)
+			require.NoError(t, err)
+
+			expected := `{
+				"order_id": "ord_123456789",
+				"status": "WAITING_FOR_START",
+				"connection_details": {
+					"host": "node-01.gpushare.net",
+					"port": 443,
+					"protocol": "wss"
+				},
+				"total_reserved_cost": 0.90
+			}`
+
+			require.JSONEq(t, expected, string(body))
+		}) */
 }
-
-//
-// func TestDeviceRent(t *testing.T) {
-// 	payload := `{
-// 		"device_id": "550e8400-e29b-41d4-a716-446655440000",
-// 		"docker_image": "pytorch/pytorch:2.0-cuda11.7",
-// 		"duration_hours": 2
-// 	}`
-//
-// 	response, err := http.Post("https://localhost:8080/api/orders", "application/json", strings.NewReader(payload))
-// 	require.NoError(t, err)
-// 	defer response.Body.Close()
-//
-// 	expected, _ := json.Marshal(`{
-// 		"order_id": "ord_123456789",
-// 		"status": "WAITING_FOR_START",
-// 		"connection_details": {
-// 		    "host": "node-01.gpushare.net",
-// 		    "port": 443,
-// 		    "protocol": "wss"
-// 	    },
-//         "total_reserved_cost": 0.90
-// 	}`)
-// 	bytes, err := io.ReadAll(response.Body)
-// 	require.NoError(t, err)
-// 	actual, err := json.Marshal(bytes)
-// 	require.NoError(t, err)
-//
-// 	require.JSONEq(t, string(expected), string(actual))
-// }
