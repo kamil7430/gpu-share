@@ -2,5 +2,5 @@
 
 source .env.example
 
-go test ./... -v
+go test -p 1 ./... -v
 
