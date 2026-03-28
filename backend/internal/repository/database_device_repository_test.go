@@ -5,54 +5,29 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/kamil7430/gpu-share/backend/internal"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/postgres"
-	gormpostgres "gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func TestDatabaseDeviceRepository(t *testing.T) {
-	ctx := context.Background()
-	dbName := "deviceRepositoryTests"
-	dbUser := "user"
-	dbPassword := "password"
-
-	ctr, err := postgres.Run(
-		ctx,
-		"postgres:16-alpine",
-		postgres.WithDatabase(dbName),
-		postgres.WithUsername(dbUser),
-		postgres.WithPassword(dbPassword),
-		postgres.BasicWaitStrategies(),
-		postgres.WithSQLDriver("pgx"),
-	)
-	testcontainers.CleanupContainer(t, ctr)
+	db, err := internal.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
-	err = ctr.Snapshot(ctx)
-	require.NoError(t, err)
+	tx := db.Begin()
+	defer tx.Rollback()
 
-	dbURL, err := ctr.ConnectionString(ctx)
-	require.NoError(t, err)
-
-	db, err := gorm.Open(gormpostgres.Open(dbURL), &gorm.Config{})
-	require.NoError(t, err)
-
-	err = db.AutoMigrate(&model.Device{})
-	require.NoError(t, err)
-
-	r := DatabaseDeviceRepository{
-		db,
+	r := NewDatabaseDeviceRepository(
+		tx,
 		context.Background(),
-	}
+	)
+
 	deviceId := 2137
 
 	resetDbContent := func() {
-		db.Exec("TRUNCATE TABLE devices")
-		db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + strconv.Itoa(deviceId) + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', '0')")
+		tx.Exec("TRUNCATE TABLE devices;")
+		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
+			"VALUES ('" + strconv.Itoa(deviceId) + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', '0');")
 	}
 
 	t.Run("get device", func(t *testing.T) {
