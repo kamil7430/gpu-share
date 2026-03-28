@@ -10,15 +10,15 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/service"
 )
 
-type LoginHadler struct {
-	userService service.UserService
+type LoginHandler struct {
+	userService *service.UserService
 }
 
-func NewLoginHandler(userService service.UserService) *LoginHadler {
-	return &LoginHadler{userService}
+func NewLoginHandler(userService *service.UserService) *LoginHandler {
+	return &LoginHandler{userService}
 }
 
-func (l *LoginHadler) Login(w http.ResponseWriter, r *http.Request) {
+func (l *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var u struct {
@@ -26,7 +26,6 @@ func (l *LoginHadler) Login(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}
 	json.NewDecoder(r.Body).Decode(&u)
-	fmt.Printf("The user request value %v", u)
 
 	log.Print(u)
 	if err := l.userService.ValidatePassword(u.Username, u.Password); err != nil {

@@ -39,7 +39,7 @@ func NewServer(db *gorm.DB) http.Handler {
 		w.Write([]byte("Halo Welt!"))
 	})
 
-	loginHandler := handler.NewLoginHandler(service.UserService{})
+	loginHandler := handler.NewLoginHandler(&service.UserService{})
 
 	mux.HandleFunc("POST /login", loginHandler.Login)
 
