@@ -3,35 +3,45 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kamil7430/gpu-share/backend/internal/auth"
+	"log"
 	"net/http"
+
+	"github.com/kamil7430/gpu-share/backend/internal/auth"
+	"github.com/kamil7430/gpu-share/backend/internal/service"
 )
 
-// temporary
-type User struct {
-	Username string
-	Password string
+type LoginHadler struct {
+	userService service.UserService
 }
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func NewLoginHandler(userService service.UserService) *LoginHadler {
+	return &LoginHadler{userService}
+}
+
+func (l *LoginHadler) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var u User
+	var u struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 	json.NewDecoder(r.Body).Decode(&u)
 	fmt.Printf("The user request value %v", u)
 
-	if u.Username == "Maklowicz" && u.Password == "żwir" {
-		tokenString, err := auth.CreateToken(u.Username)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "No username found")
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, tokenString)
-		return
-	} else {
+	log.Print(u)
+	if err := l.userService.ValidatePassword(u.Username, u.Password); err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprint(w, "Invalid credentials")
+		fmt.Fprint(w, err.Error())
+		return
 	}
+
+	tokenString, err := auth.CreateToken(u.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "couldn't create token")
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, tokenString)
 }
