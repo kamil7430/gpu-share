@@ -45,6 +45,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 
 	r := DatabaseDeviceRepository{
 		db,
+		context.Background(),
 	}
 	deviceId := 2137
 
@@ -56,7 +57,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 
 	t.Run("get device", func(t *testing.T) {
 		resetDbContent()
-		device, err := r.GetDeviceById(ctx, deviceId)
+		device, err := r.GetDeviceById(deviceId)
 		require.NoError(t, err)
 		require.NotNil(t, device)
 		require.Equal(t, "TestCard", device.Name)
