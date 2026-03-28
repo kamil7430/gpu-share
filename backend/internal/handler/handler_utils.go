@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func writeJSON(w http.ResponseWriter, v any) {
+func writeJson(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(v)
 	if err != nil {

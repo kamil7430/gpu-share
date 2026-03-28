@@ -28,7 +28,7 @@ func NewServer(db *gorm.DB) http.Handler {
 	//	w.Write([]byte("OK"))
 	//})
 
-	mux.HandleFunc("GET /api/devices/{id}", deviceHandler.HandleDeviceId)
+	mux.HandleFunc("GET /api/devices/{id}/status", deviceHandler.HandleDeviceStatusId)
 
 	//fs := http.FileServer(http.Dir("/app/frontend"))
 	//mux.Handle("/", fs)
