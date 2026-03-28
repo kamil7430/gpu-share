@@ -25,6 +25,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "No username found")
+			return
 		}
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, tokenString)
