@@ -27,7 +27,6 @@ func (l *LoginHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewDecoder(r.Body).Decode(&u)
 
-	log.Print(u)
 	if err := l.userService.ValidatePassword(u.Username, u.Password); err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(w, err.Error())
