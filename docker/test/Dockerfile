@@ -13,5 +13,4 @@ WORKDIR /app/backend
 
 RUN chmod +x run-tests.sh
 
-ENTRYPOINT ["./run-tests.sh"]
-
+CMD ["./run-tests.sh"]
