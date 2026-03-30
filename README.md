@@ -59,15 +59,13 @@ docker compose up --build --abort-on-container-exit
 
 ```text
 backend/
-  cmd/          command-line-functional libs
-  internal/     internal libraries
+  cmd/                       command-line-functional libs
+  internal/                  internal libraries
 docs/
-  use-cases/       scenariusze funkcjonalne
-  architecture/    opis struktury systemu
-  domain/          model domenowy
-  decisions/       ADR-y
-frontend/
-  # TODO
+  decisions/                 ADRs
+  project_documentation.pdf  specification
+  # user stories in Issues
+frontend/                    future project structure for Blazor
 ```
 
 ## Recommended workflow
