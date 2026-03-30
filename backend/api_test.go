@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
 	"github.com/kamil7430/gpu-share/backend/internal"
@@ -31,13 +32,16 @@ func TestApi(t *testing.T) {
 		}
 	}()
 
-	retries := 5
+	log.Println("Checking whether server is up...")
+	retries := 10
 	i := 0
 	for ; i < retries; i += 1 {
 		resp, err := http.Get(baseUrl + "/health")
 		if err == nil && resp.StatusCode == 200 {
 			break
 		}
+		log.Printf("Failed, retrying in one second... (try no.: %v/%v)\n", i + 1, retries)
+		time.Sleep(time.Second)
 	}
 	require.Less(t, i, retries)
 
