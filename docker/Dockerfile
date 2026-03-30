@@ -9,8 +9,6 @@ COPY backend ./backend
 COPY frontend ./frontend
 
 WORKDIR /app/backend
-RUN go build -o server ./cmd/server
-
-EXPOSE 8080
+RUN go build -o server ./cmd
 
 CMD ["./server"]
