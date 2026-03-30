@@ -59,8 +59,8 @@ docker compose up --build --abort-on-container-exit
 
 ```text
 backend/
-  cmd/
-  internal/
+  cmd/          command-line-functional libs
+  internal/     internal libraries
 docs/
   use-cases/       scenariusze funkcjonalne
   architecture/    opis struktury systemu
