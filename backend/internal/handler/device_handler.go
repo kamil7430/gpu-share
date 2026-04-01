@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -24,13 +23,13 @@ func (h *DeviceHandler) HandleDeviceStatusId(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	status, err := h.s.GetDeviceStatusById(parts[3])
-	if err != nil {
-		http.Error(w, "internal server error", 500)
-		log.Println(err)
-		return
-	}
+	// status, err := h.s.GetDeviceStatusById(parts[3])
+	// if err != nil {
+	// 	http.Error(w, "internal server error", 500)
+	// 	log.Println(err)
+	// 	return
+	// }
 
-	w.WriteHeader(http.StatusOK)
-	writeJson(w, status)
+	// w.WriteHeader(http.StatusOK)
+	// writeJson(w, status)
 }

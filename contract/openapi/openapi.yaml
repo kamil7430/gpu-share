@@ -1,0 +1,39 @@
+openapi: 3.0.0
+
+info:
+  title: GPU Share API
+  version: 0.0.1
+
+paths:
+  /api/device/{id}:
+    get:
+      summary: Get device by ID
+      operationId: getDevice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Device found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Device"
+        "404":
+          description: Device not found
+
+components:
+  schemas:
+    Device:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
