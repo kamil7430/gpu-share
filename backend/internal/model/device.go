@@ -1,14 +1,17 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/kamil7430/gpu-share/backend/internal/api"
+	"gorm.io/gorm"
+)
 
 type Device struct {
 	gorm.Model
-	Name            string      `json:"name"`
-	GpuModel        string      `json:"gpu_model"`
-	VramMb          int         `json:"vram_mb"`
-	CudaCores       int         `json:"cuda_cores"`
-	PricePerHourUsd float32     `json:"price_per_hour_usd"`
-	DriverVersion   string      `json:"driver_version"`
-	State           DeviceState `json:"state"`
+	Name            string
+	GpuModel        string
+	VramMb          int
+	CudaCores       int
+	PricePerHourUsd float32
+	DriverVersion   string
+	State           api.DeviceStatusState
 }

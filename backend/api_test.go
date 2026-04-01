@@ -60,12 +60,12 @@ func TestApi(t *testing.T) {
 		require.NoError(t, err)
 
 		expected := `{
-			"device_id": "123",
+			"deviceId": "123",
 			"state": "AVAILABLE",
-			"temperature_c": 69,
-			"utilization_percent": 69,
-			"memory_used_mb": 6969,
-			"last_heartbeat": "2005-04-02T21:37:00Z"
+			"temperatureC": 69,
+			"utilizationPercent": 69,
+			"memoryUsedMb": 6969,
+			"lastHeartbeat": "2005-04-02T21:37:00Z"
 		}`
 
 		require.JSONEq(t, expected, string(body))

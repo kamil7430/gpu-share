@@ -5,10 +5,10 @@ info:
   version: 0.0.1
 
 paths:
-  /api/device/{id}:
+  /api/devices/{id}/status:
     get:
-      summary: Get device by ID
-      operationId: getDevice
+      summary: Get device status by ID
+      operationId: getDeviceStatus
       parameters:
         - name: id
           in: path
@@ -21,19 +21,39 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Device"
+                $ref: "#/components/schemas/DeviceStatus"
         "404":
           description: Device not found
 
 components:
   schemas:
-    Device:
+    DeviceStatus:
       type: object
       required:
-        - id
-        - name
+        - deviceId
+        - state
+        - temperatureC
+        - utilizationPercent
+        - memoryUsedMb
+        - lastHeartbeat
       properties:
-        id:
+        deviceId:
           type: string
-        name:
+        state:
           type: string
+          enum:
+            - AVAILABLE
+            - UNAVAILABLE
+            - RENTED
+            - REPORTED
+        temperatureC:
+          type: integer
+        utilizationPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        memoryUsedMb:
+          type: integer
+        lastHeartbeat:
+          type: string
+          format: date-time

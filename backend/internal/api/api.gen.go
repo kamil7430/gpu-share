@@ -16,23 +16,55 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/oapi-codegen/runtime"
 	strictnethttp "github.com/oapi-codegen/runtime/strictmiddleware/nethttp"
 )
 
-// Device defines model for Device.
-type Device struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+// Defines values for DeviceStatusState.
+const (
+	AVAILABLE   DeviceStatusState = "AVAILABLE"
+	RENTED      DeviceStatusState = "RENTED"
+	REPORTED    DeviceStatusState = "REPORTED"
+	UNAVAILABLE DeviceStatusState = "UNAVAILABLE"
+)
+
+// Valid indicates whether the value is a known member of the DeviceStatusState enum.
+func (e DeviceStatusState) Valid() bool {
+	switch e {
+	case AVAILABLE:
+		return true
+	case RENTED:
+		return true
+	case REPORTED:
+		return true
+	case UNAVAILABLE:
+		return true
+	default:
+		return false
+	}
 }
+
+// DeviceStatus defines model for DeviceStatus.
+type DeviceStatus struct {
+	DeviceId           string            `json:"deviceId"`
+	LastHeartbeat      time.Time         `json:"lastHeartbeat"`
+	MemoryUsedMb       int               `json:"memoryUsedMb"`
+	State              DeviceStatusState `json:"state"`
+	TemperatureC       int               `json:"temperatureC"`
+	UtilizationPercent int               `json:"utilizationPercent"`
+}
+
+// DeviceStatusState defines model for DeviceStatus.State.
+type DeviceStatusState string
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Get device by ID
-	// (GET /api/device/{id})
-	GetDevice(w http.ResponseWriter, r *http.Request, id string)
+	// Get device status by ID
+	// (GET /api/devices/{id}/status)
+	GetDeviceStatus(w http.ResponseWriter, r *http.Request, id string)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -44,8 +76,8 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(http.Handler) http.Handler
 
-// GetDevice operation middleware
-func (siw *ServerInterfaceWrapper) GetDevice(w http.ResponseWriter, r *http.Request) {
+// GetDeviceStatus operation middleware
+func (siw *ServerInterfaceWrapper) GetDeviceStatus(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 
@@ -59,7 +91,7 @@ func (siw *ServerInterfaceWrapper) GetDevice(w http.ResponseWriter, r *http.Requ
 	}
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetDevice(w, r, id)
+		siw.Handler.GetDeviceStatus(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -189,41 +221,41 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
-	m.HandleFunc("GET "+options.BaseURL+"/api/device/{id}", wrapper.GetDevice)
+	m.HandleFunc("GET "+options.BaseURL+"/api/devices/{id}/status", wrapper.GetDeviceStatus)
 
 	return m
 }
 
-type GetDeviceRequestObject struct {
+type GetDeviceStatusRequestObject struct {
 	Id string `json:"id"`
 }
 
-type GetDeviceResponseObject interface {
-	VisitGetDeviceResponse(w http.ResponseWriter) error
+type GetDeviceStatusResponseObject interface {
+	VisitGetDeviceStatusResponse(w http.ResponseWriter) error
 }
 
-type GetDevice200JSONResponse Device
+type GetDeviceStatus200JSONResponse DeviceStatus
 
-func (response GetDevice200JSONResponse) VisitGetDeviceResponse(w http.ResponseWriter) error {
+func (response GetDeviceStatus200JSONResponse) VisitGetDeviceStatusResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetDevice404Response struct {
+type GetDeviceStatus404Response struct {
 }
 
-func (response GetDevice404Response) VisitGetDeviceResponse(w http.ResponseWriter) error {
+func (response GetDeviceStatus404Response) VisitGetDeviceStatusResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Get device by ID
-	// (GET /api/device/{id})
-	GetDevice(ctx context.Context, request GetDeviceRequestObject) (GetDeviceResponseObject, error)
+	// Get device status by ID
+	// (GET /api/devices/{id}/status)
+	GetDeviceStatus(ctx context.Context, request GetDeviceStatusRequestObject) (GetDeviceStatusResponseObject, error)
 }
 
 type StrictHandlerFunc = strictnethttp.StrictHTTPHandlerFunc
@@ -255,25 +287,25 @@ type strictHandler struct {
 	options     StrictHTTPServerOptions
 }
 
-// GetDevice operation middleware
-func (sh *strictHandler) GetDevice(w http.ResponseWriter, r *http.Request, id string) {
-	var request GetDeviceRequestObject
+// GetDeviceStatus operation middleware
+func (sh *strictHandler) GetDeviceStatus(w http.ResponseWriter, r *http.Request, id string) {
+	var request GetDeviceStatusRequestObject
 
 	request.Id = id
 
 	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
-		return sh.ssi.GetDevice(ctx, request.(GetDeviceRequestObject))
+		return sh.ssi.GetDeviceStatus(ctx, request.(GetDeviceStatusRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetDevice")
+		handler = middleware(handler, "GetDeviceStatus")
 	}
 
 	response, err := handler(r.Context(), w, r, request)
 
 	if err != nil {
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
-	} else if validResponse, ok := response.(GetDeviceResponseObject); ok {
-		if err := validResponse.VisitGetDeviceResponse(w); err != nil {
+	} else if validResponse, ok := response.(GetDeviceStatusResponseObject); ok {
+		if err := validResponse.VisitGetDeviceStatusResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -284,12 +316,14 @@ func (sh *strictHandler) GetDevice(w http.ResponseWriter, r *http.Request, id st
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/2yRQYsjIRCF/0pTu8emdXdy8jYQGHILDHMKORitJBXS6mh1IDT934eyO2QOuahYz6r3",
-	"PkdwsU8xYOACZoTiztjbelzjjRzKKeWYMDNhvScvK98TgoHCmcIJphaC7fFFYWoh4/dAGT2YnTxepPv2",
-	"IY2HCzqGSbQUjrF2Ib5K7WP71XyebcbmfbuBFm6YC8UABnSnu38yOCYMNhEYeOt0p6GFZPlcrSqbSPma",
-	"Q43kJ7k7IcsmiSxTDBsvY5CXuPI62x4ZcwGzG4FkmHR8GDdziGcqzgO2C7lXBPYiLimGMgP8r7VsLgbG",
-	"UM3YlK7kqh11KRJv/NXvb8YjGPijnl+lln9Si+vKzmNxmRLPfOZKc4xD8IJppVfS7KUoRH4IpxbK0Pc2",
-	"32cszYyvOdybzVrmTD8BAAD///Vzr2ozAgAA",
+	"H4sIAAAAAAAC/2yTz24aQQzGX2Xl9rhlJ21Oe6MNSpHSFCWllyiHYdeAI+ZPPd6oFO27V54lgRBO2LKx",
+	"/f32mx00wcXg0UuCegepWaOzObzCZ2rwXqx0OY8cIrIQ5qzN1WmrsWwjQg1JmPwK+hI2Nsl3tCwLtKId",
+	"y8BOI2it4Cchh1C+/5tDF3g7T9j+WBzNJS+4QtaOJFZQS+g7B/UDjH+PpzfjrzcTKGF+e5zdTW5/Ta5y",
+	"MPt5p+HjmZWCLiJb6Ri/nV/ZCW3onxUKfobcoM+CnP1LTk+4MKYER37ITPluQl8C45+OGFs9+JXbi5iT",
+	"G84uPEFzCvggLCyesBHodSv5ZciSSDZau57Ni/u1ZSzGsymU8IycKHiowYzM6EK1hojeRoIavozMyEAJ",
+	"0co6f+/KRqqG41O1o7av0qszVpiZhKyCgldXwDXKGwfpLLYOBTlB/bAD0tU6H0rw1mVoiuVAS7jDcm/J",
+	"Mz7rH7U5xeDT4MnPxuhPE7zsP5ONcUNNPqp6Sip2dzTvI+MSavhQHd5AtX8A1ZvbM88WU8MUZWA21Itl",
+	"6Hyr6C7N5fAszjT5IC+N6uHOOcvbAVExIC0GmMViW0yvdF3/PwAA//8qQ/L1mQMAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"gorm.io/gorm"
 )
 
 type DeviceService struct {
@@ -19,33 +21,26 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 	return DeviceService{dr, gr}
 }
 
-func (s *DeviceService) GetDevice(ctx context.Context, ro api.GetDeviceRequestObject) (api.GetDeviceResponseObject, error) {
-	return api.GetDevice200JSONResponse(api.Device{
-		Id:   "aa",
-		Name: "bb",
-	}), nil
+func (s *DeviceService) GetDeviceStatus(ctx context.Context, ro api.GetDeviceStatusRequestObject) (api.GetDeviceStatusResponseObject, error) {
 	device, err := s.dr.GetDeviceById(ro.Id)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return api.GetDeviceStatus404Response{}, nil
+		}
 		return nil, err
 	}
 
 	status, err := s.gr.GetDeviceStatusById(ro.Id)
-	_ = status // <3 go
 	if err != nil {
 		return nil, err
 	}
 
-	return api.GetDevice200JSONResponse(api.Device{
-		Id:   strconv.Itoa(int(device.ID)),
-		Name: device.Name,
+	return api.GetDeviceStatus200JSONResponse(api.DeviceStatus{
+		DeviceId:           strconv.Itoa(int(device.ID)),
+		State:              device.State,
+		TemperatureC:       status.TemperatureC,
+		UtilizationPercent: status.UtilizationPercent,
+		MemoryUsedMb:       status.MemoryUsedMb,
+		LastHeartbeat:      status.LastHeartbeat,
 	}), nil
-
-	// return &responses.DeviceStatusResponse{
-	// 	DeviceId:           strconv.Itoa(int(device.ID)),
-	// 	State:              device.State,
-	// 	TemperatureC:       status.TemperatureC,
-	// 	UtilizationPercent: status.UtilizationPercent,
-	// 	MemoryUsedMb:       status.MemoryUsedMb,
-	// 	LastHeartbeat:      status.LastHeartbeat,
-	// }, nil
 }

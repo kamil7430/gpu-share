@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal"
-	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,6 +40,6 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, 2560, device.CudaCores)
 		require.Equal(t, float32(15.99), device.PricePerHourUsd)
 		require.Equal(t, "595.97", device.DriverVersion)
-		require.Equal(t, model.Unavailable, device.State)
+		require.Equal(t, api.UNAVAILABLE, device.State)
 	})
 }
