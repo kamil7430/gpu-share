@@ -45,7 +45,7 @@ docker compose up --build --abort-on-container-exit
 - `REST API`
 - `JWT`
 - `PostgreSQL`
-- `JSON Schema`
+- `OpenAPI`
 
 ### Frontend
 
@@ -63,6 +63,9 @@ docker compose up --build --abort-on-container-exit
 backend/
   cmd/                       command-line-functional libs
   internal/                  internal libraries
+  tools/                     codegen tools
+contract/
+  openapi/                   openapi contracts
 docs/
   decisions/                 ADRs
   project_documentation.pdf  specification
@@ -75,9 +78,11 @@ frontend/                    future project structure for Blazor
 1. Describe the use case and add an Issue.
 2. Describe important decisions in the ADR directory.
 3. Create a new feature branch.
-4. Add unit and integration tests.
-5. Develop production code.
-6. When the feature is ready, create a pull request.
+4. If changing the API, first change the openapi yaml specification and run
+codegen using `cd backend && go generate ./...`
+5. Add unit and integration tests.
+6. Develop production code.
+7. When the feature is ready, create a pull request.
 
 ## Authors
 

@@ -1,12 +1,11 @@
 package service
 
 import (
-	"context"
 	"testing"
 	"time"
 
 	"github.com/kamil7430/gpu-share/backend/internal"
-	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/stretchr/testify/require"
 )
@@ -19,7 +18,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	defer tx.Rollback()
 
 	s := NewDeviceService(
-		repository.NewDatabaseDeviceRepository(tx, context.Background()),
+		repository.NewDatabaseDeviceRepository(tx, t.Context()),
 		repository.NewMockGpuRepository(),
 	)
 
@@ -33,14 +32,19 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 
 	t.Run("get device status", func(t *testing.T) {
 		resetDbContent()
-		device, err := s.GetDeviceStatusById(deviceId)
+		req := api.GetDeviceStatusRequestObject{ Id: deviceId }
+		device, err := s.GetDeviceStatus(t.Context(), req)
 		require.NoError(t, err)
 		require.NotNil(t, device)
-		require.Equal(t, deviceId, device.DeviceId)
-		require.Equal(t, model.Unavailable, device.State)
-		require.Equal(t, 69, device.TemperatureC)
-		require.Equal(t, 69, device.UtilizationPercent)
-		require.Equal(t, 6969, device.MemoryUsedMb)
-		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), device.LastHeartbeat)
+
+		resp, ok := device.(api.GetDeviceStatus200JSONResponse)
+		require.True(t, ok)
+
+		require.Equal(t, deviceId, resp.DeviceId)
+		require.Equal(t, api.UNAVAILABLE, resp.State)
+		require.Equal(t, 69, resp.TemperatureC)
+		require.Equal(t, 69, resp.UtilizationPercent)
+		require.Equal(t, 6969, resp.MemoryUsedMb)
+		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), resp.LastHeartbeat)
 	})
 }
