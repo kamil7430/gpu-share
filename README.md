@@ -1,6 +1,8 @@
 # Gpu Share
 
-**Gpu Share** is a platform to rent gpu compute. It allows gpu owners to offer their gpu compute to others. Users can borrow gpu compute without need to buy gpu themselves.
+**Gpu Share** is a platform for renting gpu compute. It allows gpu owners to
+offer their resources to others. Users can borrow gpu compute without the need
+to buy a gpu themselves.
 
 ## Requirements
 
@@ -16,7 +18,7 @@ git clone https://github.com/kamil7430/gpu-share.git
 Make sure that Docker daemon is up.
 
 ```bash
-sudo systemctl start dockerd
+sudo systemctl start docker
 ```
 
 ### Server
