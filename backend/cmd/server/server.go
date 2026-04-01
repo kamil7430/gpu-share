@@ -19,8 +19,6 @@ func NewServer(db *gorm.DB) *http.Server {
 
 	deviceService := service.NewDeviceService(deviceRepo, gpuRepo)
 
-	// deviceHandler := handler.NewDeviceHandler(&deviceService)
-	// deviceHandler := api.HandlerFromMux()
 	deviceHandler := api.NewStrictHandler(&deviceService, nil)
 	api.HandlerFromMux(deviceHandler, mux)
 
@@ -28,9 +26,6 @@ func NewServer(db *gorm.DB) *http.Server {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
-	// mux.HandleFunc("GET /api/devices/{id}/status", deviceHandler.HandleDeviceStatusId)
-	//
-	// mux.HandleFunc("GET /api/devices/{id}", deviceService.GetDevice)
 
 	loginHandler := handler.NewLoginHandler(&service.UserService{})
 
