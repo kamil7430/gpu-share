@@ -1,8 +1,12 @@
 package repository
 
-import "github.com/kamil7430/gpu-share/backend/internal/model"
+import (
+	"context"
+
+	"github.com/kamil7430/gpu-share/backend/internal/model"
+)
 
 type DeviceRepository interface {
-	GetDeviceById(id string) (*model.Device, error)
+	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
 	Transaction(fn func(repository DeviceRepository) error) error
 }

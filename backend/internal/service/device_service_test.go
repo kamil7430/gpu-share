@@ -18,7 +18,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	defer tx.Rollback()
 
 	s := NewDeviceService(
-		repository.NewDatabaseDeviceRepository(tx, t.Context()),
+		repository.NewDatabaseDeviceRepository(tx),
 		repository.NewMockGpuRepository(),
 	)
 
