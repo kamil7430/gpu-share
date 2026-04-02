@@ -22,9 +22,15 @@ func main() {
 
 	log.Println("Building server instance...")
 	srv := server.NewServer(db)
+	defer func() {
+		err := srv.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 
 	log.Println("Started server!")
-	err = http.ListenAndServe(":2137", srv)
+	err = srv.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}

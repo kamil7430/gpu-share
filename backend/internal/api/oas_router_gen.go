@@ -49,30 +49,71 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/devices/"
+		case '/': // Prefix: "/"
 
-			if l := len("/api/devices/"); len(elem) >= l && elem[0:l] == "/api/devices/" {
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
-			// Param: "deviceId"
-			// Match until "/"
-			idx := strings.IndexByte(elem, '/')
-			if idx < 0 {
-				idx = len(elem)
-			}
-			args[0] = elem[:idx]
-			elem = elem[idx:]
-
 			if len(elem) == 0 {
 				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/status"
+			case 'a': // Prefix: "api/devices/"
 
-				if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+				if l := len("api/devices/"); len(elem) >= l && elem[0:l] == "api/devices/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				// Param: "deviceId"
+				// Match until "/"
+				idx := strings.IndexByte(elem, '/')
+				if idx < 0 {
+					idx = len(elem)
+				}
+				args[0] = elem[:idx]
+				elem = elem[idx:]
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/status"
+
+					if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleGetDeviceStatusRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, notAllowedParams{
+								allowedMethods: "GET",
+								allowedHeaders: nil,
+								acceptPost:     "",
+								acceptPatch:    "",
+							})
+						}
+
+						return
+					}
+
+				}
+
+			case 'h': // Prefix: "health"
+
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
 					elem = elem[l:]
 				} else {
 					break
@@ -82,9 +123,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleGetDeviceStatusRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
+						s.handleGetHealthRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, notAllowedParams{
 							allowedMethods: "GET",
@@ -185,30 +224,69 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/api/devices/"
+		case '/': // Prefix: "/"
 
-			if l := len("/api/devices/"); len(elem) >= l && elem[0:l] == "/api/devices/" {
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
-			// Param: "deviceId"
-			// Match until "/"
-			idx := strings.IndexByte(elem, '/')
-			if idx < 0 {
-				idx = len(elem)
-			}
-			args[0] = elem[:idx]
-			elem = elem[idx:]
-
 			if len(elem) == 0 {
 				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/status"
+			case 'a': // Prefix: "api/devices/"
 
-				if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+				if l := len("api/devices/"); len(elem) >= l && elem[0:l] == "api/devices/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				// Param: "deviceId"
+				// Match until "/"
+				idx := strings.IndexByte(elem, '/')
+				if idx < 0 {
+					idx = len(elem)
+				}
+				args[0] = elem[:idx]
+				elem = elem[idx:]
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/status"
+
+					if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "GET":
+							r.name = GetDeviceStatusOperation
+							r.summary = "Get device status by ID"
+							r.operationID = "getDeviceStatus"
+							r.operationGroup = ""
+							r.pathPattern = "/api/devices/{deviceId}/status"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+
+				}
+
+			case 'h': // Prefix: "health"
+
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
 					elem = elem[l:]
 				} else {
 					break
@@ -218,13 +296,13 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "GET":
-						r.name = GetDeviceStatusOperation
-						r.summary = "Get device status by ID"
-						r.operationID = "getDeviceStatus"
+						r.name = GetHealthOperation
+						r.summary = "Check if server is up"
+						r.operationID = "getHealth"
 						r.operationGroup = ""
-						r.pathPattern = "/api/devices/{deviceId}/status"
+						r.pathPattern = "/health"
 						r.args = args
-						r.count = 1
+						r.count = 0
 						return r, true
 					default:
 						return

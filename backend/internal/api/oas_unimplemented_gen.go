@@ -21,3 +21,12 @@ var _ Handler = UnimplementedHandler{}
 func (UnimplementedHandler) GetDeviceStatus(ctx context.Context, params GetDeviceStatusParams) (r GetDeviceStatusRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// GetHealth implements getHealth operation.
+//
+// Check if server is up.
+//
+// GET /health
+func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOKHeaders, _ error) {
+	return r, ht.ErrNotImplemented
+}

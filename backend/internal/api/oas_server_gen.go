@@ -14,6 +14,12 @@ type Handler interface {
 	//
 	// GET /api/devices/{deviceId}/status
 	GetDeviceStatus(ctx context.Context, params GetDeviceStatusParams) (GetDeviceStatusRes, error)
+	// GetHealth implements getHealth operation.
+	//
+	// Check if server is up.
+	//
+	// GET /health
+	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

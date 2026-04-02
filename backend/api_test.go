@@ -22,7 +22,7 @@ func TestApi(t *testing.T) {
 	tx := db.Begin()
 	defer tx.Rollback()
 
-	srv := http.Server{Handler: server.NewServer(tx)}
+	srv := server.NewServer(tx)
 	defer srv.Shutdown(t.Context())
 	go func() {
 		err := srv.ListenAndServe()

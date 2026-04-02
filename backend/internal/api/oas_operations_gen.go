@@ -7,4 +7,5 @@ type OperationName = string
 
 const (
 	GetDeviceStatusOperation OperationName = "GetDeviceStatus"
+	GetHealthOperation       OperationName = "GetHealth"
 )
