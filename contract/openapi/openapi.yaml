@@ -1,59 +1,21 @@
 openapi: 3.0.0
 
 info:
-  title: GPU Share API
   version: 0.0.1
+  title: GPU Share API
+  # description: ???
 
 paths:
-  /api/devices/{id}/status:
-    get:
-      summary: Get device status by ID
-      operationId: getDeviceStatus
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Device found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/DeviceStatus"
-        "404":
-          description: Device not found
+  /api/devices/{deviceId}/status:
+    $ref: "./paths/deviceStatus.yaml"
 
 components:
+  parameters:
+    deviceId:
+      $ref: "./parameters/path/deviceId.yaml"
   schemas:
     DeviceStatus:
-      type: object
-      required:
-        - deviceId
-        - state
-        - temperatureC
-        - utilizationPercent
-        - memoryUsedMb
-        - lastHeartbeat
-      properties:
-        deviceId:
-          type: string
-        state:
-          type: string
-          enum:
-            - AVAILABLE
-            - UNAVAILABLE
-            - RENTED
-            - REPORTED
-        temperatureC:
-          type: integer
-        utilizationPercent:
-          type: integer
-          minimum: 0
-          maximum: 100
-        memoryUsedMb:
-          type: integer
-        lastHeartbeat:
-          type: string
-          format: date-time
+      $ref: "./schemas/DeviceStatus.yaml"
+  # responses:
+  #   someResponse:
+  #     $ref: "..."

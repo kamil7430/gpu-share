@@ -1,0 +1,6 @@
+name: deviceId
+in: path
+required: true
+description: The id of device to retrieve
+schema:
+  type: string
