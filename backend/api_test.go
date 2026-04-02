@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"io"
 	"log"
@@ -23,8 +22,8 @@ func TestApi(t *testing.T) {
 	tx := db.Begin()
 	defer tx.Rollback()
 
-	srv := server.NewServer(tx)
-	defer srv.Shutdown(context.Background())
+	srv := http.Server{Handler: server.NewServer(tx)}
+	defer srv.Shutdown(t.Context())
 	go func() {
 		err := srv.ListenAndServe()
 		if !errors.Is(err, http.ErrServerClosed) {
@@ -40,7 +39,7 @@ func TestApi(t *testing.T) {
 		if err == nil && resp.StatusCode == 200 {
 			break
 		}
-		log.Printf("Failed, retrying in one second... (try no.: %v/%v)\n", i + 1, retries)
+		log.Printf("Failed, retrying in one second... (try no.: %v/%v)\n", i+1, retries)
 		time.Sleep(time.Second)
 	}
 	require.Less(t, i, retries)

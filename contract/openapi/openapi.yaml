@@ -8,14 +8,3 @@ info:
 paths:
   /api/devices/{deviceId}/status:
     $ref: "./paths/deviceStatus.yaml"
-
-components:
-  parameters:
-    deviceId:
-      $ref: "./parameters/path/deviceId.yaml"
-  schemas:
-    DeviceStatus:
-      $ref: "./schemas/DeviceStatus.yaml"
-  # responses:
-  #   someResponse:
-  #     $ref: "..."

@@ -32,19 +32,19 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 
 	t.Run("get device status", func(t *testing.T) {
 		resetDbContent()
-		req := api.GetDeviceStatusRequestObject{ Id: deviceId }
+		req := api.GetDeviceStatusParams{DeviceId: deviceId}
 		device, err := s.GetDeviceStatus(t.Context(), req)
 		require.NoError(t, err)
 		require.NotNil(t, device)
 
-		resp, ok := device.(api.GetDeviceStatus200JSONResponse)
+		res, ok := device.(*api.DeviceStatus)
 		require.True(t, ok)
 
-		require.Equal(t, deviceId, resp.DeviceId)
-		require.Equal(t, api.UNAVAILABLE, resp.State)
-		require.Equal(t, 69, resp.TemperatureC)
-		require.Equal(t, 69, resp.UtilizationPercent)
-		require.Equal(t, 6969, resp.MemoryUsedMb)
-		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), resp.LastHeartbeat)
+		require.Equal(t, deviceId, res.DeviceId)
+		require.Equal(t, api.DeviceStatusStateUNAVAILABLE, res.State)
+		require.Equal(t, 69, res.TemperatureC)
+		require.Equal(t, 69, res.UtilizationPercent)
+		require.Equal(t, 6969, res.MemoryUsedMb)
+		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), res.LastHeartbeat)
 	})
 }
