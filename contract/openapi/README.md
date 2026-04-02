@@ -1,3 +1,12 @@
+After changing contracts, regenerate Go boilerplate:
+
+```bash
+# Run from project root
+cd backend && go generate ./...
+```
+
+This will generate `backend/internal/api/api.gen.go`. After generation run the tests to see whether anything has been screwed up.
+
 Some useful links:
 
 - [OpenAPI Introduction](https://learn.openapis.org/introduction.html)
