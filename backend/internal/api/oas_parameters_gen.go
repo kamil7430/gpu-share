@@ -79,3 +79,835 @@ func decodeGetDeviceStatusParams(args [1]string, argsEscaped bool, r *http.Reque
 	}
 	return params, nil
 }
+
+// GetDevicesParams is parameters of getDevices operation.
+type GetDevicesParams struct {
+	// Maximum number of elements to retrieve.
+	Limit OptInt `json:",omitempty,omitzero"`
+	// Name of devices to retrieve.
+	Name OptString `json:",omitempty,omitzero"`
+	// Model of device to retrieve.
+	GpuModel OptString `json:",omitempty,omitzero"`
+	// Minimal amount of Video RAM in megabytes.
+	MinVramMb OptInt `json:",omitempty,omitzero"`
+	// Maximal amount of Video RAM in megabytes.
+	MaxVramMb OptInt `json:",omitempty,omitzero"`
+	// Minimal amount of CUDA cores.
+	MinCudaCores OptInt `json:",omitempty,omitzero"`
+	// Maximal amount of CUDA cores.
+	MaxCudaCores OptInt `json:",omitempty,omitzero"`
+	// Minimal price per hour of device usage in USD.
+	MinPricePerHourUsd OptFloat64 `json:",omitempty,omitzero"`
+	// Maximal price per hour of device usage in USD.
+	MaxPricePerHourUsd OptFloat64 `json:",omitempty,omitzero"`
+	// Minimal driver version.
+	MinDriverVersion OptString `json:",omitempty,omitzero"`
+	// Maximal driver version.
+	MaxDriverVersion OptString `json:",omitempty,omitzero"`
+	// Device state.
+	State OptState `json:",omitempty,omitzero"`
+}
+
+func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "limit",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Limit = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "name",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Name = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "gpuModel",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.GpuModel = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "minVramMb",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MinVramMb = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "maxVramMb",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MaxVramMb = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "minCudaCores",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MinCudaCores = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "maxCudaCores",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MaxCudaCores = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "minPricePerHourUsd",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MinPricePerHourUsd = v.(OptFloat64)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "maxPricePerHourUsd",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MaxPricePerHourUsd = v.(OptFloat64)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "minDriverVersion",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MinDriverVersion = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "maxDriverVersion",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.MaxDriverVersion = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "state",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.State = v.(OptState)
+		}
+	}
+	return params
+}
+
+func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (params GetDevicesParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Set default value for query: limit.
+	{
+		val := int(25)
+		params.Limit.SetTo(val)
+	}
+	// Decode query: limit.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "limit",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotLimitVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotLimitVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Limit.SetTo(paramsDotLimitVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Limit.Get(); ok {
+					if err := func() error {
+						if err := (validate.Int{
+							MinSet:        true,
+							Min:           1,
+							MaxSet:        true,
+							Max:           200,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    0,
+							Pattern:       nil,
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "limit",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: name.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotNameVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotNameVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Name.SetTo(paramsDotNameVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "name",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: gpuModel.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "gpuModel",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotGpuModelVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotGpuModelVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.GpuModel.SetTo(paramsDotGpuModelVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "gpuModel",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: minVramMb.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "minVramMb",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMinVramMbVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMinVramMbVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MinVramMb.SetTo(paramsDotMinVramMbVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.MinVramMb.Get(); ok {
+					if err := func() error {
+						if err := (validate.Int{
+							MinSet:        true,
+							Min:           0,
+							MaxSet:        false,
+							Max:           0,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    0,
+							Pattern:       nil,
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "minVramMb",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: maxVramMb.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "maxVramMb",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMaxVramMbVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMaxVramMbVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MaxVramMb.SetTo(paramsDotMaxVramMbVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.MaxVramMb.Get(); ok {
+					if err := func() error {
+						if err := (validate.Int{
+							MinSet:        true,
+							Min:           0,
+							MaxSet:        false,
+							Max:           0,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    0,
+							Pattern:       nil,
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "maxVramMb",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: minCudaCores.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "minCudaCores",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMinCudaCoresVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMinCudaCoresVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MinCudaCores.SetTo(paramsDotMinCudaCoresVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.MinCudaCores.Get(); ok {
+					if err := func() error {
+						if err := (validate.Int{
+							MinSet:        true,
+							Min:           0,
+							MaxSet:        false,
+							Max:           0,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    0,
+							Pattern:       nil,
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "minCudaCores",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: maxCudaCores.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "maxCudaCores",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMaxCudaCoresVal int
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToInt(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMaxCudaCoresVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MaxCudaCores.SetTo(paramsDotMaxCudaCoresVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.MaxCudaCores.Get(); ok {
+					if err := func() error {
+						if err := (validate.Int{
+							MinSet:        true,
+							Min:           0,
+							MaxSet:        false,
+							Max:           0,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    0,
+							Pattern:       nil,
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "maxCudaCores",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: minPricePerHourUsd.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "minPricePerHourUsd",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMinPricePerHourUsdVal float64
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToFloat64(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMinPricePerHourUsdVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MinPricePerHourUsd.SetTo(paramsDotMinPricePerHourUsdVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.MinPricePerHourUsd.Get(); ok {
+					if err := func() error {
+						if err := (validate.Float{
+							MinSet:        true,
+							Min:           0,
+							MaxSet:        false,
+							Max:           0,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    nil,
+							Pattern:       nil,
+						}).Validate(float64(value)); err != nil {
+							return errors.Wrap(err, "float")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "minPricePerHourUsd",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: maxPricePerHourUsd.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "maxPricePerHourUsd",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMaxPricePerHourUsdVal float64
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToFloat64(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMaxPricePerHourUsdVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MaxPricePerHourUsd.SetTo(paramsDotMaxPricePerHourUsdVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.MaxPricePerHourUsd.Get(); ok {
+					if err := func() error {
+						if err := (validate.Float{
+							MinSet:        true,
+							Min:           0,
+							MaxSet:        false,
+							Max:           0,
+							MinExclusive:  false,
+							MaxExclusive:  false,
+							MultipleOfSet: false,
+							MultipleOf:    nil,
+							Pattern:       nil,
+						}).Validate(float64(value)); err != nil {
+							return errors.Wrap(err, "float")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "maxPricePerHourUsd",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: minDriverVersion.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "minDriverVersion",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMinDriverVersionVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMinDriverVersionVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MinDriverVersion.SetTo(paramsDotMinDriverVersionVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "minDriverVersion",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: maxDriverVersion.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "maxDriverVersion",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotMaxDriverVersionVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotMaxDriverVersionVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.MaxDriverVersion.SetTo(paramsDotMaxDriverVersionVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "maxDriverVersion",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: state.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "state",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotStateVal State
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotStateVal = State(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.State.SetTo(paramsDotStateVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.State.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "state",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}

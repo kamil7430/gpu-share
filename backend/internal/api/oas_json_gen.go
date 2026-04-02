@@ -191,46 +191,96 @@ func (s *DeviceStatus) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes DeviceStatusState as json.
-func (s DeviceStatusState) Encode(e *jx.Encoder) {
-	e.Str(string(s))
+// Encode encodes GetDevicesOKApplicationJSON as json.
+func (s GetDevicesOKApplicationJSON) Encode(e *jx.Encoder) {
+	unwrapped := []DeviceStatus(s)
+
+	e.ArrStart()
+	for _, elem := range unwrapped {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
 }
 
-// Decode decodes DeviceStatusState from json.
-func (s *DeviceStatusState) Decode(d *jx.Decoder) error {
+// Decode decodes GetDevicesOKApplicationJSON from json.
+func (s *GetDevicesOKApplicationJSON) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode DeviceStatusState to nil")
+		return errors.New("invalid: unable to decode GetDevicesOKApplicationJSON to nil")
 	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
+	var unwrapped []DeviceStatus
+	if err := func() error {
+		unwrapped = make([]DeviceStatus, 0)
+		if err := d.Arr(func(d *jx.Decoder) error {
+			var elem DeviceStatus
+			if err := elem.Decode(d); err != nil {
+				return err
+			}
+			unwrapped = append(unwrapped, elem)
+			return nil
+		}); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
 	}
-	// Try to use constant string.
-	switch DeviceStatusState(v) {
-	case DeviceStatusStateAVAILABLE:
-		*s = DeviceStatusStateAVAILABLE
-	case DeviceStatusStateUNAVAILABLE:
-		*s = DeviceStatusStateUNAVAILABLE
-	case DeviceStatusStateRENTED:
-		*s = DeviceStatusStateRENTED
-	case DeviceStatusStateREPORTED:
-		*s = DeviceStatusStateREPORTED
-	default:
-		*s = DeviceStatusState(v)
-	}
-
+	*s = GetDevicesOKApplicationJSON(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s DeviceStatusState) MarshalJSON() ([]byte, error) {
+func (s GetDevicesOKApplicationJSON) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *DeviceStatusState) UnmarshalJSON(data []byte) error {
+func (s *GetDevicesOKApplicationJSON) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes State as json.
+func (s State) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes State from json.
+func (s *State) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode State to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch State(v) {
+	case StateAVAILABLE:
+		*s = StateAVAILABLE
+	case StateUNAVAILABLE:
+		*s = StateUNAVAILABLE
+	case StateRENTED:
+		*s = StateRENTED
+	case StateREPORTED:
+		*s = StateREPORTED
+	default:
+		*s = State(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s State) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *State) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -11,12 +11,12 @@ import (
 
 // Ref: #
 type DeviceStatus struct {
-	DeviceId           string            `json:"deviceId"`
-	State              DeviceStatusState `json:"state"`
-	TemperatureC       int               `json:"temperatureC"`
-	UtilizationPercent int               `json:"utilizationPercent"`
-	MemoryUsedMb       int               `json:"memoryUsedMb"`
-	LastHeartbeat      time.Time         `json:"lastHeartbeat"`
+	DeviceId           string    `json:"deviceId"`
+	State              State     `json:"state"`
+	TemperatureC       int       `json:"temperatureC"`
+	UtilizationPercent int       `json:"utilizationPercent"`
+	MemoryUsedMb       int       `json:"memoryUsedMb"`
+	LastHeartbeat      time.Time `json:"lastHeartbeat"`
 }
 
 // GetDeviceId returns the value of DeviceId.
@@ -25,7 +25,7 @@ func (s *DeviceStatus) GetDeviceId() string {
 }
 
 // GetState returns the value of State.
-func (s *DeviceStatus) GetState() DeviceStatusState {
+func (s *DeviceStatus) GetState() State {
 	return s.State
 }
 
@@ -55,7 +55,7 @@ func (s *DeviceStatus) SetDeviceId(val string) {
 }
 
 // SetState sets the value of State.
-func (s *DeviceStatus) SetState(val DeviceStatusState) {
+func (s *DeviceStatus) SetState(val State) {
 	s.State = val
 }
 
@@ -81,65 +81,24 @@ func (s *DeviceStatus) SetLastHeartbeat(val time.Time) {
 
 func (*DeviceStatus) getDeviceStatusRes() {}
 
-type DeviceStatusState string
-
-const (
-	DeviceStatusStateAVAILABLE   DeviceStatusState = "AVAILABLE"
-	DeviceStatusStateUNAVAILABLE DeviceStatusState = "UNAVAILABLE"
-	DeviceStatusStateRENTED      DeviceStatusState = "RENTED"
-	DeviceStatusStateREPORTED    DeviceStatusState = "REPORTED"
-)
-
-// AllValues returns all DeviceStatusState values.
-func (DeviceStatusState) AllValues() []DeviceStatusState {
-	return []DeviceStatusState{
-		DeviceStatusStateAVAILABLE,
-		DeviceStatusStateUNAVAILABLE,
-		DeviceStatusStateRENTED,
-		DeviceStatusStateREPORTED,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s DeviceStatusState) MarshalText() ([]byte, error) {
-	switch s {
-	case DeviceStatusStateAVAILABLE:
-		return []byte(s), nil
-	case DeviceStatusStateUNAVAILABLE:
-		return []byte(s), nil
-	case DeviceStatusStateRENTED:
-		return []byte(s), nil
-	case DeviceStatusStateREPORTED:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *DeviceStatusState) UnmarshalText(data []byte) error {
-	switch DeviceStatusState(data) {
-	case DeviceStatusStateAVAILABLE:
-		*s = DeviceStatusStateAVAILABLE
-		return nil
-	case DeviceStatusStateUNAVAILABLE:
-		*s = DeviceStatusStateUNAVAILABLE
-		return nil
-	case DeviceStatusStateRENTED:
-		*s = DeviceStatusStateRENTED
-		return nil
-	case DeviceStatusStateREPORTED:
-		*s = DeviceStatusStateREPORTED
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
 // GetDeviceStatusNotFound is response for GetDeviceStatus operation.
 type GetDeviceStatusNotFound struct{}
 
 func (*GetDeviceStatusNotFound) getDeviceStatusRes() {}
+
+// GetDevicesBadRequest is response for GetDevices operation.
+type GetDevicesBadRequest struct{}
+
+func (*GetDevicesBadRequest) getDevicesRes() {}
+
+// GetDevicesNotFound is response for GetDevices operation.
+type GetDevicesNotFound struct{}
+
+func (*GetDevicesNotFound) getDevicesRes() {}
+
+type GetDevicesOKApplicationJSON []DeviceStatus
+
+func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 
 type GetHealthOK struct {
 	Data io.Reader
@@ -179,4 +138,244 @@ func (s *GetHealthOKHeaders) SetContentType(val string) {
 // SetResponse sets the value of Response.
 func (s *GetHealthOKHeaders) SetResponse(val GetHealthOK) {
 	s.Response = val
+}
+
+// NewOptFloat64 returns new OptFloat64 with value set to v.
+func NewOptFloat64(v float64) OptFloat64 {
+	return OptFloat64{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptFloat64 is optional float64.
+type OptFloat64 struct {
+	Value float64
+	Set   bool
+}
+
+// IsSet returns true if OptFloat64 was set.
+func (o OptFloat64) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptFloat64) Reset() {
+	var v float64
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptFloat64) SetTo(v float64) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptFloat64) Get() (v float64, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptFloat64) Or(d float64) float64 {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt is optional int.
+type OptInt struct {
+	Value int
+	Set   bool
+}
+
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt) SetTo(v int) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt) Get() (v int, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptState returns new OptState with value set to v.
+func NewOptState(v State) OptState {
+	return OptState{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptState is optional State.
+type OptState struct {
+	Value State
+	Set   bool
+}
+
+// IsSet returns true if OptState was set.
+func (o OptState) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptState) Reset() {
+	var v State
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptState) SetTo(v State) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptState) Get() (v State, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptState) Or(d State) State {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// Ref: #
+type State string
+
+const (
+	StateAVAILABLE   State = "AVAILABLE"
+	StateUNAVAILABLE State = "UNAVAILABLE"
+	StateRENTED      State = "RENTED"
+	StateREPORTED    State = "REPORTED"
+)
+
+// AllValues returns all State values.
+func (State) AllValues() []State {
+	return []State{
+		StateAVAILABLE,
+		StateUNAVAILABLE,
+		StateRENTED,
+		StateREPORTED,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s State) MarshalText() ([]byte, error) {
+	switch s {
+	case StateAVAILABLE:
+		return []byte(s), nil
+	case StateUNAVAILABLE:
+		return []byte(s), nil
+	case StateRENTED:
+		return []byte(s), nil
+	case StateREPORTED:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *State) UnmarshalText(data []byte) error {
+	switch State(data) {
+	case StateAVAILABLE:
+		*s = StateAVAILABLE
+		return nil
+	case StateUNAVAILABLE:
+		*s = StateUNAVAILABLE
+		return nil
+	case StateRENTED:
+		*s = StateRENTED
+		return nil
+	case StateREPORTED:
+		*s = StateREPORTED
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
