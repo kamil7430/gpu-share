@@ -2,6 +2,7 @@ get:
   summary: Get list of devices that match the provided filters
   operationId: getDevices
   parameters:
+    - $ref: "../../../parameters/query/limit.yaml"
     - name: name
       in: query
       required: false
@@ -73,7 +74,7 @@ get:
       required: false
       description: Device state
       schema:
-        $ref: "../../../schemas/state.yaml"
+        $ref: "../../../schemas/State.yaml"
   responses:
     "200":
       description: Any device found

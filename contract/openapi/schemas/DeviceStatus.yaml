@@ -10,7 +10,7 @@ properties:
   deviceId:
     type: string
   state:
-    $ref: "./state.yaml"
+    $ref: "./State.yaml"
   temperatureC:
     type: integer
   utilizationPercent:
