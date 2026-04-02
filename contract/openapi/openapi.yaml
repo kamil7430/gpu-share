@@ -9,4 +9,4 @@ paths:
   /health:
     $ref: "./paths/health.yaml"
   /api/devices/{deviceId}/status:
-    $ref: "./paths/deviceStatus.yaml"
+    $ref: "./paths/api/devices/status.yaml"
