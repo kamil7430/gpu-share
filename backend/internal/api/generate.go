@@ -1,3 +1,3 @@
 package api
 
-//go:generate go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest -config oapi-codegen.yaml ../../../contract/openapi/openapi.yaml
+//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --config ogen.yaml --target . --clean ../../../contract/openapi/openapi.yaml
