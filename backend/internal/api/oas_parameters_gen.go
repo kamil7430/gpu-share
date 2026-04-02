@@ -3,6 +3,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 
@@ -104,8 +105,8 @@ type GetDevicesParams struct {
 	MinDriverVersion OptString `json:",omitempty,omitzero"`
 	// Maximal driver version.
 	MaxDriverVersion OptString `json:",omitempty,omitzero"`
-	// Device state.
-	State OptState `json:",omitempty,omitzero"`
+	// Device states.
+	States []State `json:",omitempty"`
 }
 
 func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesParams) {
@@ -210,11 +211,11 @@ func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesPara
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "state",
+			Name: "states",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.State = v.(OptState)
+			params.States = v.([]State)
 		}
 	}
 	return params
@@ -853,48 +854,68 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
-	// Decode query: state.
+	// Decode query: states.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "state",
+			Name:    "states",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotStateVal State
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotStateVal = State(c)
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.State.SetTo(paramsDotStateVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.State.Get(); ok {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotStatesVal State
 					if err := func() error {
-						if err := value.Validate(); err != nil {
+						val, err := d.DecodeValue()
+						if err != nil {
 							return err
 						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotStatesVal = State(c)
 						return nil
 					}(); err != nil {
 						return err
 					}
+					params.States = append(params.States, paramsDotStatesVal)
+					return nil
+				})
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if params.States == nil {
+					return nil // optional
+				}
+				if err := (validate.Array{
+					MinLength:    1,
+					MinLengthSet: true,
+					MaxLength:    0,
+					MaxLengthSet: false,
+				}).ValidateLength(len(params.States)); err != nil {
+					return errors.Wrap(err, "array")
+				}
+				var failures []validate.FieldError
+				for i, elem := range params.States {
+					if err := func() error {
+						if err := elem.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						failures = append(failures, validate.FieldError{
+							Name:  fmt.Sprintf("[%d]", i),
+							Error: err,
+						})
+					}
+				}
+				if len(failures) > 0 {
+					return &validate.Error{Fields: failures}
 				}
 				return nil
 			}(); err != nil {
@@ -904,7 +925,7 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "state",
+			Name: "states",
 			In:   "query",
 			Err:  err,
 		}

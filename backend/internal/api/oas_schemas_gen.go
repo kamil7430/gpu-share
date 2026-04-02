@@ -232,52 +232,6 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
-// NewOptState returns new OptState with value set to v.
-func NewOptState(v State) OptState {
-	return OptState{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptState is optional State.
-type OptState struct {
-	Value State
-	Set   bool
-}
-
-// IsSet returns true if OptState was set.
-func (o OptState) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptState) Reset() {
-	var v State
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptState) SetTo(v State) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptState) Get() (v State, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptState) Or(d State) State {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{

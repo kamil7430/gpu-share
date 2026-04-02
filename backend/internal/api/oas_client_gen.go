@@ -420,16 +420,25 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 		}
 	}
 	{
-		// Encode "state" parameter.
+		// Encode "states" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "state",
+			Name:    "states",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.State.Get(); ok {
-				return e.EncodeValue(conv.StringToString(string(val)))
+			if params.States != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.States {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(string(item)))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
 			}
 			return nil
 		}); err != nil {

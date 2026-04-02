@@ -320,9 +320,9 @@ func (s *Server) handleGetDevicesRequest(args [0]string, argsEscaped bool, w htt
 					In:   "query",
 				}: params.MaxDriverVersion,
 				{
-					Name: "state",
+					Name: "states",
 					In:   "query",
-				}: params.State,
+				}: params.States,
 			},
 			Raw: r,
 		}

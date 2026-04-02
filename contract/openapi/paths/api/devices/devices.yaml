@@ -69,12 +69,15 @@ get:
       description: Maximal driver version
       schema:
         type: string
-    - name: state
+    - name: states
       in: query
       required: false
-      description: Device state
+      description: Device states
       schema:
-        $ref: "../../../schemas/State.yaml"
+        type: array
+        items:
+          $ref: "../../../schemas/State.yaml"
+        minItems: 1
   responses:
     "200":
       description: Any device found
