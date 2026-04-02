@@ -10,7 +10,8 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/service"
 	"gorm.io/gorm"
 )
-
+// Jeden, by wszystkie zgromadzić i w ciemności związać
+// W Krainie Mordor, gdzie zaległy cienie.
 type Sauron struct {
 	service.HealthService
 	service.DeviceService
