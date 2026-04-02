@@ -19,7 +19,11 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 	return DeviceService{dr, gr}
 }
 
-func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDeviceStatusParams) (r api.GetDeviceStatusRes, _ error) {
+func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
+	panic("todo")
+}
+
+func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDeviceStatusParams) (api.GetDeviceStatusRes, error) {
 	device, err := s.dr.GetDeviceById(ctx, params.DeviceId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
