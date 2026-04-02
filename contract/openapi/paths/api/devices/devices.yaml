@@ -1,0 +1,89 @@
+get:
+  summary: Get list of devices that match the provided filters
+  operationId: getDevices
+  parameters:
+    - name: name
+      in: query
+      required: false
+      description: Name of devices to retrieve
+      schema:
+        type: string
+    - name: gpuModel
+      in: query
+      required: false
+      description: Model of device to retrieve
+      schema:
+        type: string
+    - name: minVramMb
+      in: query
+      required: false
+      description: Minimal amount of Video RAM in megabytes
+      schema:
+        type: integer
+        minimum: 0
+    - name: maxVramMb
+      in: query
+      required: false
+      description: Maximal amount of Video RAM in megabytes
+      schema:
+        type: integer
+        minimum: 0
+    - name: minCudaCores
+      in: query
+      required: false
+      description: Minimal amount of CUDA cores
+      schema:
+        type: integer
+        minimum: 0
+    - name: maxCudaCores
+      in: query
+      required: false
+      description: Maximal amount of CUDA cores
+      schema:
+        type: integer
+        minimum: 0
+    - name: minPricePerHourUsd
+      in: query
+      required: false
+      description: Minimal price per hour of device usage in USD
+      schema:
+        type: number
+        minimum: 0
+    - name: maxPricePerHourUsd
+      in: query
+      required: false
+      description: Maximal price per hour of device usage in USD
+      schema:
+        type: number
+        minimum: 0
+    - name: minDriverVersion
+      in: query
+      required: false
+      description: Minimal driver version
+      schema:
+        type: string
+    - name: maxDriverVersion
+      in: query
+      required: false
+      description: Maximal driver version
+      schema:
+        type: string
+    - name: state
+      in: query
+      required: false
+      description: Device state
+      schema:
+        $ref: "../../../schemas/state.yaml"
+  responses:
+    "200":
+      description: Any device found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../../schemas/DeviceStatus.yaml"
+    "404":
+      description: No devices found
+    "400":
+      description: Invalid filter parameters
