@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"context"
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal"
@@ -16,10 +15,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	tx := db.Begin()
 	defer tx.Rollback()
 
-	r := NewDatabaseDeviceRepository(
-		tx,
-		context.Background(),
-	)
+	r := NewDatabaseDeviceRepository(tx)
 
 	deviceId := "2137"
 
@@ -31,7 +27,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 
 	t.Run("get device", func(t *testing.T) {
 		resetDbContent()
-		device, err := r.GetDeviceById(deviceId)
+		device, err := r.GetDeviceById(t.Context(), deviceId)
 		require.NoError(t, err)
 		require.NotNil(t, device)
 		require.Equal(t, "TestCard", device.Name)

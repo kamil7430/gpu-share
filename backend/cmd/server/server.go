@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"log"
 	"net/http"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/service"
 	"gorm.io/gorm"
 )
+
 // Jeden, by wszystkie zgromadzić i w ciemności związać
 // W Krainie Mordor, gdzie zaległy cienie.
 type Sauron struct {
@@ -18,7 +18,7 @@ type Sauron struct {
 }
 
 func NewServer(db *gorm.DB) *http.Server {
-	deviceRepo := repository.NewDatabaseDeviceRepository(db, context.Background())
+	deviceRepo := repository.NewDatabaseDeviceRepository(db)
 	gpuRepo := repository.NewMockGpuRepository()
 
 	sauron := Sauron{

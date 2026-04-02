@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"time"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
@@ -12,7 +13,7 @@ func NewMockGpuRepository() GpuRepository {
 	return &MockGpuRepository{}
 }
 
-func (m *MockGpuRepository) GetDeviceStatusById(id string) (*model.DeviceStatus, error) {
+func (m *MockGpuRepository) GetDeviceStatusById(ctx context.Context, id string) (*model.DeviceStatus, error) {
 	return &model.DeviceStatus{
 		TemperatureC:       69,
 		UtilizationPercent: 69,
