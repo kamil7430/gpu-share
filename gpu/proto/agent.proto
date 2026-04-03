@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package agent;
+
+option go_package = "./proto";
+
+service AgentService {
+  rpc Connect(stream AgentMessage) returns (stream CoordinatorMessage);
+}
+
+message AgentMessage {
+  string agent_id = 1;
+
+  oneof payload {
+    Heartbeat heartbeat = 2;
+    TaskUpdate task_update = 3;
+  }
+}
+
+message CoordinatorMessage {
+  oneof payload {
+    Task task = 1;
+    Cancel cancel = 2;
+  }
+}
+
+message Heartbeat {
+  float gpu_util = 1;
+}
+
+message Task {
+  string task_id = 1;
+  string type = 2;
+  int32 memory_mb = 3;
+}
+
+message TaskUpdate {
+  string task_id = 1;
+  float progress = 2;
+  string status = 3;
+}
+
+message Cancel {
+  string task_id = 1;
+}

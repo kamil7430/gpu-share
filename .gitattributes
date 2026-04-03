@@ -1,3 +1,6 @@
 backend/* text eol=lf
+gpu/* text eol=lf
 docker/* text eol=lf
 frontend/* text eol=lf
+backend/internal/api/*_gen.go linguist-generated=true
+gpu/proto/*.pb.go linguist-generated=true
