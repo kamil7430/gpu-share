@@ -41,7 +41,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.True(t, ok)
 
 		require.Equal(t, deviceId, res.DeviceId)
-		require.Equal(t, api.DeviceStatusStateUNAVAILABLE, res.State)
+		require.Equal(t, api.StateUNAVAILABLE, res.State)
 		require.Equal(t, 69, res.TemperatureC)
 		require.Equal(t, 69, res.UtilizationPercent)
 		require.Equal(t, 6969, res.MemoryUsedMb)

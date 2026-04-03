@@ -36,6 +36,6 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, 2560, device.CudaCores)
 		require.Equal(t, float32(15.99), device.PricePerHourUsd)
 		require.Equal(t, "595.97", device.DriverVersion)
-		require.Equal(t, api.DeviceStatusStateUNAVAILABLE, device.State)
+		require.Equal(t, api.StateUNAVAILABLE, device.State)
 	})
 }
