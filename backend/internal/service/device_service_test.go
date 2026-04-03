@@ -47,4 +47,15 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, 6969, res.MemoryUsedMb)
 		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), res.LastHeartbeat)
 	})
+
+	t.Run("get nonexistent device status", func(t *testing.T) {
+		resetDbContent()
+		req := api.GetDeviceStatusParams{DeviceId: "6969"}
+		device, err := s.GetDeviceStatus(t.Context(), req)
+		require.NoError(t, err)
+		require.NotNil(t, device)
+
+		_, ok := device.(*api.GetDeviceStatusNotFound)
+		require.True(t, ok)
+	})
 }

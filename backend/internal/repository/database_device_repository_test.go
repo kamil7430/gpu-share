@@ -6,6 +6,7 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal"
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
 
 func TestDatabaseDeviceRepository(t *testing.T) {
@@ -37,5 +38,12 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, float32(15.99), device.PricePerHourUsd)
 		require.Equal(t, "595.97", device.DriverVersion)
 		require.Equal(t, api.StateUNAVAILABLE, device.State)
+	})
+
+	t.Run("get nonexistent device", func(t *testing.T) {
+		resetDbContent()
+		device, err := r.GetDeviceById(t.Context(), "6969")
+		require.Nil(t, device)
+		require.ErrorIs(t, err, gorm.ErrRecordNotFound)
 	})
 }
