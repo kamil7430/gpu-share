@@ -10,13 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// Jeden, by wszystkie zgromadzić i w ciemności związać
-// W Krainie Mordor, gdzie zaległy cienie.
-type Sauron struct {
-	service.HealthService
-	service.DeviceService
-}
-
 func NewServer(db *gorm.DB) *http.Server {
 	deviceRepo := repository.NewDatabaseDeviceRepository(db)
 	gpuRepo := repository.NewMockGpuRepository()
@@ -26,12 +19,18 @@ func NewServer(db *gorm.DB) *http.Server {
 		service.NewDeviceService(deviceRepo, gpuRepo),
 	}
 
-	apiServer, err := api.NewServer(&sauron)
+	srv, err := api.NewServer(&struct{
+		service.DeviceService
+		service.HealthService
+	}{
+		service.NewDeviceService(),
+		service.NewHealthService()
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &http.Server{Addr: ":2137", Handler: apiServer}
+	return &http.Server{Addr: ":2137", Handler: srv}
 
 	//loginHandler := handler.NewLoginHandler(&service.UserService{})
 	//

@@ -1,0 +1,6 @@
+type: object
+properties:
+  vRamMb:
+    type: integer
+    minimum: 0
+    example: 4096

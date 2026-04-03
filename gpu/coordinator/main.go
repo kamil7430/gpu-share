@@ -3,8 +3,11 @@ package main
 import (
 	"log"
 	"net"
+	"net/http"
 	"sync"
 
+	"github.com/kamil7430/gpu-share/gpu/coordinator/api"
+	"github.com/kamil7430/gpu-share/gpu/coordinator/handler"
 	pb "github.com/kamil7430/gpu-share/gpu/proto"
 	"google.golang.org/grpc"
 )
@@ -102,8 +105,26 @@ func (s *Server) unregister(id string) {
 	delete(s.agents, id)
 }
 
+func startRestServer(port string) {
+	srv, err := api.NewServer(handler.NewRestHandler())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	s := http.Server{Addr: port, Handler: srv}
+
+	go func() {
+        log.Printf("Coordinator REST listening on %v\n", port)
+        if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatal(err)
+        }
+    }()
+}
+
 func main() {
-	port := ":12345"
+	startRestServer(":2138")
+
+	port := ":2139"
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatal(err)

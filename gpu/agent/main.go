@@ -14,7 +14,7 @@ import (
 func main() {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.NewClient("localhost:12345", opts...)
+	conn, err := grpc.NewClient("localhost:2139", opts...)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +55,6 @@ func main() {
 		}
 
 		switch payload := msg.Payload.(type) {
-
 		case *pb.CoordinatorMessage_Task:
 			go executeTask(stream, agentID, payload.Task)
 		}

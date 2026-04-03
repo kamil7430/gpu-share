@@ -1,0 +1,12 @@
+openapi: 3.0.0
+
+info:
+  version: 0.0.1
+  title: GPU coordinator API
+  description: Allows for requesting tasks and querying for GPU metrics
+
+paths:
+  /health:
+    $ref: "./paths/health.yaml"
+  /api/jobs:
+    $ref: "./paths/api/jobs/job.yaml"

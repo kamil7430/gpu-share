@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   version: 0.0.1
   title: GPU Share API
-  # description: ???
+  description: TODO
 
 paths:
   /health:

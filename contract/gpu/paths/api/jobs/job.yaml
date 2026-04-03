@@ -1,0 +1,42 @@
+post:
+  summary: Schedule a task on a given device
+  operationId: addTask
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - type
+            - resources
+          properties:
+            resources:
+              $ref: "../../../schemas/Resources.yaml"
+            maxTimeSec:
+              type: integer
+              description: Optional time in seconds after which the job will be terminated
+              example: 3600
+  responses:
+    "201":
+      description: Task created
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - jobId
+            properties:
+              jobId:
+                type: string
+                example: job-123
+    "400":
+      description: Invalid request
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/Error.yaml"
+
+

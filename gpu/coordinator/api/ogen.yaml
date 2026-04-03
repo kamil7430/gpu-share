@@ -1,0 +1,4 @@
+generator:
+  convenient_errors: "on"
+parser:
+  allow_remote: true
