@@ -36,6 +36,43 @@ cd docker/test
 docker compose up --build --abort-on-container-exit
 ```
 
+## Architecture
+
+```mermaid
+flowchart LR
+    User[User / CLI / Frontend]
+
+    Backend["Backend API<br/>(REST)<br/>Devices<br/>UI-facing"]
+
+    Coordinator["Coordinator API<br/>(REST)<br/>Jobs<br/>Scheduling"]
+
+    Scheduler["Scheduler<br/>(internal)"]
+
+    Agent1["Agent<br/>(gRPC client)"]
+    Agent2["Agent<br/>(gRPC client)"]
+
+    Executor1["Executor<br/>(Mock / Real GPU)"]
+    Executor2["Executor<br/>(Mock / Real GPU)"]
+
+    User -->|REST<br/>register GPU, query GPUs| Backend
+    Backend -->|REST<br/>GPUs list, usage stats| User
+
+    Backend -->|REST<br/>job submission, status| Coordinator
+
+    Coordinator --> Scheduler
+
+    Scheduler -->|gRPC stream<br/>task assignment| Agent1
+    Scheduler -->|gRPC stream| Agent2
+
+    Agent1 --> Executor1
+    Agent2 --> Executor2
+
+    Agent1 -->|gRPC stream<br/>progress, metrics| Coordinator
+    Agent2 -->|gRPC stream| Coordinator
+
+    Coordinator -->|REST<br/>job status, metrics| Backend
+```
+
 ## Tech stack
 
 ### Backend
