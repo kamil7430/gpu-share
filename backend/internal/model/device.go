@@ -13,5 +13,5 @@ type Device struct {
 	CudaCores       int
 	PricePerHourUsd float32
 	DriverVersion   string
-	State           api.DeviceStatusState
+	State           api.State
 }
