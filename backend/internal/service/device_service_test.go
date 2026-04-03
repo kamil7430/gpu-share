@@ -27,8 +27,33 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	resetDbContent := func() {
 		tx.Exec("TRUNCATE TABLE devices;")
 		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'UNAVAILABLE');")
+			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'UNAVAILABLE'), " +
+			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '25.99', '595.97', 'AVAILABLE'), " +
+			"('2139', 'TestCard3', 'NVIDIA GeForce GTX 1050 Ti', '4096', '768', '6.99', '582.28', 'AVAILABLE');")
 	}
+
+	t.Run("fetch by name", func(t *testing.T) {
+		resetDbContent()
+		req := api.GetDevicesParams{Name: api.OptString{
+			Value: "TestCard2",
+			Set:   true,
+		}}
+		devices, err := s.GetDevices(t.Context(), req)
+		require.NoError(t, err)
+		require.NotNil(t, devices)
+
+		res, ok := devices.(*api.GetDevicesOKApplicationJSON)
+		require.True(t, ok)
+		require.Len(t, *res, 1)
+
+		device := (*res)[0]
+		require.Equal(t, "2138", device.DeviceId)
+		require.Equal(t, api.StateAVAILABLE, device.State)
+		require.Equal(t, 69, device.TemperatureC)
+		require.Equal(t, 69, device.UtilizationPercent)
+		require.Equal(t, 6969, device.MemoryUsedMb)
+		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), device.LastHeartbeat)
+	})
 
 	t.Run("get device status", func(t *testing.T) {
 		resetDbContent()
