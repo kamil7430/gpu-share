@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDatabaseDeviceRepository(t *testing.T) {
+func TestDeviceService(t *testing.T) {
 	db, err := internal.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
