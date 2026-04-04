@@ -10,6 +10,87 @@ import (
 )
 
 // Ref: #
+type Device struct {
+	Name            string  `json:"name"`
+	GpuModel        string  `json:"gpuModel"`
+	VramMb          int     `json:"vramMb"`
+	CudaCores       int     `json:"cudaCores"`
+	PricePerHourUsd float64 `json:"pricePerHourUsd"`
+	DriverVersion   string  `json:"driverVersion"`
+	State           State   `json:"state"`
+}
+
+// GetName returns the value of Name.
+func (s *Device) GetName() string {
+	return s.Name
+}
+
+// GetGpuModel returns the value of GpuModel.
+func (s *Device) GetGpuModel() string {
+	return s.GpuModel
+}
+
+// GetVramMb returns the value of VramMb.
+func (s *Device) GetVramMb() int {
+	return s.VramMb
+}
+
+// GetCudaCores returns the value of CudaCores.
+func (s *Device) GetCudaCores() int {
+	return s.CudaCores
+}
+
+// GetPricePerHourUsd returns the value of PricePerHourUsd.
+func (s *Device) GetPricePerHourUsd() float64 {
+	return s.PricePerHourUsd
+}
+
+// GetDriverVersion returns the value of DriverVersion.
+func (s *Device) GetDriverVersion() string {
+	return s.DriverVersion
+}
+
+// GetState returns the value of State.
+func (s *Device) GetState() State {
+	return s.State
+}
+
+// SetName sets the value of Name.
+func (s *Device) SetName(val string) {
+	s.Name = val
+}
+
+// SetGpuModel sets the value of GpuModel.
+func (s *Device) SetGpuModel(val string) {
+	s.GpuModel = val
+}
+
+// SetVramMb sets the value of VramMb.
+func (s *Device) SetVramMb(val int) {
+	s.VramMb = val
+}
+
+// SetCudaCores sets the value of CudaCores.
+func (s *Device) SetCudaCores(val int) {
+	s.CudaCores = val
+}
+
+// SetPricePerHourUsd sets the value of PricePerHourUsd.
+func (s *Device) SetPricePerHourUsd(val float64) {
+	s.PricePerHourUsd = val
+}
+
+// SetDriverVersion sets the value of DriverVersion.
+func (s *Device) SetDriverVersion(val string) {
+	s.DriverVersion = val
+}
+
+// SetState sets the value of State.
+func (s *Device) SetState(val State) {
+	s.State = val
+}
+
+// Ref: #
 type DeviceStatus struct {
 	DeviceId           string    `json:"deviceId"`
 	State              State     `json:"state"`
@@ -96,7 +177,7 @@ type GetDevicesNotFound struct{}
 
 func (*GetDevicesNotFound) getDevicesRes() {}
 
-type GetDevicesOKApplicationJSON []DeviceStatus
+type GetDevicesOKApplicationJSON []Device
 
 func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 
