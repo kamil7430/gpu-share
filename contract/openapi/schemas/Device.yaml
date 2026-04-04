@@ -1,5 +1,6 @@
 type: object
 required:
+  - deviceId
   - name
   - gpuModel
   - vramMb
@@ -8,6 +9,8 @@ required:
   - driverVersion
   - state
 properties:
+  deviceId:
+    type: string
   name:
     type: string
   gpuModel:

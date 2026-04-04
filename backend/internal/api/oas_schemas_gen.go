@@ -11,6 +11,7 @@ import (
 
 // Ref: #
 type Device struct {
+	DeviceId        string  `json:"deviceId"`
 	Name            string  `json:"name"`
 	GpuModel        string  `json:"gpuModel"`
 	VramMb          int     `json:"vramMb"`
@@ -18,6 +19,11 @@ type Device struct {
 	PricePerHourUsd float64 `json:"pricePerHourUsd"`
 	DriverVersion   string  `json:"driverVersion"`
 	State           State   `json:"state"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *Device) GetDeviceId() string {
+	return s.DeviceId
 }
 
 // GetName returns the value of Name.
@@ -53,6 +59,11 @@ func (s *Device) GetDriverVersion() string {
 // GetState returns the value of State.
 func (s *Device) GetState() State {
 	return s.State
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *Device) SetDeviceId(val string) {
+	s.DeviceId = val
 }
 
 // SetName sets the value of Name.

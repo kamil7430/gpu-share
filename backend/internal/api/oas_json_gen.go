@@ -22,6 +22,10 @@ func (s *Device) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *Device) encodeFields(e *jx.Encoder) {
 	{
+		e.FieldStart("deviceId")
+		e.Str(s.DeviceId)
+	}
+	{
 		e.FieldStart("name")
 		e.Str(s.Name)
 	}
@@ -51,14 +55,15 @@ func (s *Device) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfDevice = [7]string{
-	0: "name",
-	1: "gpuModel",
-	2: "vramMb",
-	3: "cudaCores",
-	4: "pricePerHourUsd",
-	5: "driverVersion",
-	6: "state",
+var jsonFieldsNameOfDevice = [8]string{
+	0: "deviceId",
+	1: "name",
+	2: "gpuModel",
+	3: "vramMb",
+	4: "cudaCores",
+	5: "pricePerHourUsd",
+	6: "driverVersion",
+	7: "state",
 }
 
 // Decode decodes Device from json.
@@ -70,8 +75,20 @@ func (s *Device) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "name":
+		case "deviceId":
 			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.DeviceId = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"deviceId\"")
+			}
+		case "name":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := d.Str()
 				s.Name = string(v)
@@ -83,7 +100,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "gpuModel":
-			requiredBitSet[0] |= 1 << 1
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				v, err := d.Str()
 				s.GpuModel = string(v)
@@ -95,7 +112,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"gpuModel\"")
 			}
 		case "vramMb":
-			requiredBitSet[0] |= 1 << 2
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				v, err := d.Int()
 				s.VramMb = int(v)
@@ -107,7 +124,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"vramMb\"")
 			}
 		case "cudaCores":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := d.Int()
 				s.CudaCores = int(v)
@@ -119,7 +136,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"cudaCores\"")
 			}
 		case "pricePerHourUsd":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := d.Float64()
 				s.PricePerHourUsd = float64(v)
@@ -131,7 +148,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"pricePerHourUsd\"")
 			}
 		case "driverVersion":
-			requiredBitSet[0] |= 1 << 5
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
 				v, err := d.Str()
 				s.DriverVersion = string(v)
@@ -143,7 +160,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"driverVersion\"")
 			}
 		case "state":
-			requiredBitSet[0] |= 1 << 6
+			requiredBitSet[0] |= 1 << 7
 			if err := func() error {
 				if err := s.State.Decode(d); err != nil {
 					return err
@@ -162,7 +179,7 @@ func (s *Device) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b01111111,
+		0b11111111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

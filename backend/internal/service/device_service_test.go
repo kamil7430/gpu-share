@@ -46,13 +46,15 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.True(t, ok)
 		require.Len(t, *res, 1)
 
-		device := (*res)[0]
-		require.Equal(t, "2138", device.DeviceId)
-		require.Equal(t, api.StateAVAILABLE, device.State)
-		require.Equal(t, 69, device.TemperatureC)
-		require.Equal(t, 69, device.UtilizationPercent)
-		require.Equal(t, 6969, device.MemoryUsedMb)
-		require.Equal(t, time.Date(2005, 4, 2, 21, 37, 0, 0, time.UTC), device.LastHeartbeat)
+		dev := (*res)[0]
+		require.Equal(t, "2138", dev.DeviceId)
+		require.Equal(t, "TestCard2", dev.Name)
+		require.Equal(t, "NVIDIA GeForce RTX 3050", dev.GpuModel)
+		require.Equal(t, 8192, dev.VramMb)
+		require.Equal(t, 2560, dev.CudaCores)
+		require.Equal(t, float32(25.99), dev.PricePerHourUsd)
+		require.Equal(t, "595.97", dev.DriverVersion)
+		require.Equal(t, api.StateAVAILABLE, dev.State)
 	})
 
 	t.Run("get device status", func(t *testing.T) {
