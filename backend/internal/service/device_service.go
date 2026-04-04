@@ -22,6 +22,45 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 }
 
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
+	if v, ok := params.Limit.Get(); ok && (v < 1 || v > 200) {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+
+	minVram := params.MinVramMb.Or(0)
+	if minVram < 0 {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+	if v, ok := params.MaxVramMb.Get(); ok && v < minVram {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+
+	minCudaCores := params.MinCudaCores.Or(0)
+	if minCudaCores < 0 {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+	if v, ok := params.MaxCudaCores.Get(); ok && v < minCudaCores {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+
+	minPricePerHour := params.MinPricePerHourUsd.Or(0)
+	if minPricePerHour < 0 {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+	if v, ok := params.MaxPricePerHourUsd.Get(); ok && v < minPricePerHour {
+		return &api.GetDevicesBadRequest{}, nil
+	}
+
+	minDriverVersion, err := utils.DriverVersionFromString(params.MinDriverVersion.Or("0.0"))
+	if err != nil {
+		return &api.GetDevicesBadRequest{}, err
+	}
+	if v, ok := params.MaxDriverVersion.Get(); ok {
+		maxDriverVersion, err := utils.DriverVersionFromString(v)
+		if err != nil || minDriverVersion.Compare(maxDriverVersion) > 0 {
+			return &api.GetDevicesBadRequest{}, err
+		}
+	}
+
 	devices, err := s.dr.GetDevices(ctx, params)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

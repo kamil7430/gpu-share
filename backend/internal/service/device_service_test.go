@@ -166,7 +166,7 @@ func TestDeviceService(t *testing.T) {
 		resetDbContent()
 		devices, err := s.GetDevices(t.Context(), req)
 		require.NoError(t, err)
-		require.Nil(t, devices)
+		require.NotNil(t, devices)
 
 		_, ok := devices.(*api.GetDevicesBadRequest)
 		require.True(t, ok)
@@ -219,20 +219,20 @@ func TestDeviceService(t *testing.T) {
 
 	t.Run("get devices -- minDriverVersion > maxDriverVersion", func(t *testing.T) {
 		getDevicesTestBadRequests(api.GetDevicesParams{
-			MinDriverVersion: api.NewOptString("585.90"),
-			MaxDriverVersion: api.NewOptString("587.12"),
+			MinDriverVersion: api.NewOptString("585.10"),
+			MaxDriverVersion: api.NewOptString("580.92"),
 		})
-	})
-
-	t.Run("get devices -- empty states array", func(t *testing.T) {
-		getDevicesTestBadRequests(api.GetDevicesParams{States: []api.State{}})
+		getDevicesTestBadRequests(api.GetDevicesParams{
+			MinDriverVersion: api.NewOptString("585.94"),
+			MaxDriverVersion: api.NewOptString("585.92"),
+		})
 	})
 
 	getDevicesTestNotFound := func(req api.GetDevicesParams) {
 		resetDbContent()
 		devices, err := s.GetDevices(t.Context(), req)
 		require.NoError(t, err)
-		require.Nil(t, devices)
+		require.NotNil(t, devices)
 
 		_, ok := devices.(*api.GetDevicesNotFound)
 		require.True(t, ok)

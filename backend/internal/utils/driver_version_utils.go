@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"strings"
@@ -33,4 +34,14 @@ func DriverVersionFromString(driverVersion string) (*DriverVersion, error) {
 
 func (dv *DriverVersion) String() string {
 	return fmt.Sprintf("%d.%d", dv.Major, dv.Minor)
+}
+
+func (dv *DriverVersion) Compare(dv2 *DriverVersion) int {
+	if dv.Major > dv2.Major {
+		return 1
+	}
+	if dv.Major == dv2.Major {
+		return cmp.Compare(dv.Minor, dv2.Minor)
+	}
+	return -1
 }
