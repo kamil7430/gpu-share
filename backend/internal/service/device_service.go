@@ -68,13 +68,16 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 		}
 		return nil, err
 	}
+	if len(*devices) <= 0 {
+		return &api.GetDevicesNotFound{}, nil
+	}
 
 	var result api.GetDevicesOKApplicationJSON
 
 	for _, dev := range *devices {
 		dv, err := utils.NewDriverVersion(dev.DriverVersionMajor, dev.DriverVersionMinor)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(err) // should be unreachable
 		}
 		result = append(result, api.Device{
 			DeviceId:        strconv.Itoa(int(dev.ID)),
