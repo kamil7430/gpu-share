@@ -8,7 +8,7 @@ import (
 )
 
 type DeviceRepository interface {
-	GetDevices(ctx context.Context, params api.GetDevicesParams) ([]*model.Device, error)
+	GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error)
 	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
 	Transaction(fn func(repository DeviceRepository) error) error
 }

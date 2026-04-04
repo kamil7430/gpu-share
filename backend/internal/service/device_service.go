@@ -29,7 +29,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 	}
 
 	var result api.GetDevicesOKApplicationJSON
-	for _, dev := range devices {
+	for _, dev := range *devices {
 		result = append(result, api.Device{
 			DeviceId:        strconv.Itoa(int(dev.ID)),
 			Name:            dev.Name,
