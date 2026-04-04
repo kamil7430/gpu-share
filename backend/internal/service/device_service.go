@@ -20,7 +20,29 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 }
 
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
-	panic("todo")
+	devices, err := s.dr.GetDevices(ctx, params)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &api.GetDevicesNotFound{}, nil
+		}
+		return nil, err
+	}
+
+	var result api.GetDevicesOKApplicationJSON
+	for _, dev := range devices {
+		result = append(result, api.Device{
+			DeviceId:        strconv.Itoa(int(dev.ID)),
+			Name:            dev.Name,
+			GpuModel:        dev.GpuModel,
+			VramMb:          dev.VramMb,
+			CudaCores:       dev.CudaCores,
+			PricePerHourUsd: float64(dev.PricePerHourUsd),
+			DriverVersion:   dev.DriverVersion,
+			State:           dev.State,
+		})
+	}
+
+	return &result, nil
 }
 
 func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDeviceStatusParams) (api.GetDeviceStatusRes, error) {

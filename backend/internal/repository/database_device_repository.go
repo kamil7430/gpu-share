@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"gorm.io/gorm"
 )
@@ -13,6 +14,11 @@ type DatabaseDeviceRepository struct {
 
 func NewDatabaseDeviceRepository(db *gorm.DB) DeviceRepository {
 	return &DatabaseDeviceRepository{db}
+}
+
+func (r *DatabaseDeviceRepository) GetDevices(ctx context.Context, params api.GetDevicesParams) ([]*model.Device, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (r *DatabaseDeviceRepository) GetDeviceById(ctx context.Context, id string) (*model.Device, error) {
