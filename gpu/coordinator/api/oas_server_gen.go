@@ -8,18 +8,18 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// AddTask implements addTask operation.
-	//
-	// Schedule a task on a given device.
-	//
-	// POST /api/jobs
-	AddTask(ctx context.Context, req *AddTaskReq) (AddTaskRes, error)
 	// GetHealth implements getHealth operation.
 	//
 	// Check if server is up.
 	//
 	// GET /health
 	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
+	// ScheduleTask implements scheduleTask operation.
+	//
+	// Schedule a task on a given device.
+	//
+	// POST /api/jobs
+	ScheduleTask(ctx context.Context, req *ScheduleTaskReq) (ScheduleTaskRes, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

@@ -26,18 +26,18 @@ func trimTrailingSlashes(u *url.URL) {
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
-	// AddTask invokes addTask operation.
-	//
-	// Schedule a task on a given device.
-	//
-	// POST /api/jobs
-	AddTask(ctx context.Context, request *AddTaskReq) (AddTaskRes, error)
 	// GetHealth invokes getHealth operation.
 	//
 	// Check if server is up.
 	//
 	// GET /health
 	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
+	// ScheduleTask invokes scheduleTask operation.
+	//
+	// Schedule a task on a given device.
+	//
+	// POST /api/jobs
+	ScheduleTask(ctx context.Context, request *ScheduleTaskReq) (ScheduleTaskRes, error)
 }
 
 // Client implements OAS client.
@@ -77,83 +77,6 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 		return c.serverURL
 	}
 	return u
-}
-
-// AddTask invokes addTask operation.
-//
-// Schedule a task on a given device.
-//
-// POST /api/jobs
-func (c *Client) AddTask(ctx context.Context, request *AddTaskReq) (AddTaskRes, error) {
-	res, err := c.sendAddTask(ctx, request)
-	return res, err
-}
-
-func (c *Client) sendAddTask(ctx context.Context, request *AddTaskReq) (res AddTaskRes, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("addTask"),
-		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.URLTemplateKey.String("/api/jobs"),
-	}
-	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, AddTaskOperation,
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	stage = "BuildURL"
-	u := uri.Clone(c.requestURL(ctx))
-	var pathParts [1]string
-	pathParts[0] = "/api/jobs"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeAddTaskRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	stage = "SendRequest"
-	resp, err := c.cfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	body := resp.Body
-	defer body.Close()
-
-	stage = "DecodeResponse"
-	result, err := decodeAddTaskResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
 }
 
 // GetHealth invokes getHealth operation.
@@ -223,6 +146,83 @@ func (c *Client) sendGetHealth(ctx context.Context) (res *GetHealthOKHeaders, er
 
 	stage = "DecodeResponse"
 	result, err := decodeGetHealthResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ScheduleTask invokes scheduleTask operation.
+//
+// Schedule a task on a given device.
+//
+// POST /api/jobs
+func (c *Client) ScheduleTask(ctx context.Context, request *ScheduleTaskReq) (ScheduleTaskRes, error) {
+	res, err := c.sendScheduleTask(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendScheduleTask(ctx context.Context, request *ScheduleTaskReq) (res ScheduleTaskRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("scheduleTask"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/api/jobs"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, ScheduleTaskOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/api/jobs"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeScheduleTaskRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeScheduleTaskResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

@@ -11,52 +11,7 @@ func (s *ErrorStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
-// AddTaskBadRequest is response for AddTask operation.
-type AddTaskBadRequest struct{}
-
-func (*AddTaskBadRequest) addTaskRes() {}
-
-type AddTaskCreated struct {
-	JobId string `json:"jobId"`
-}
-
-// GetJobId returns the value of JobId.
-func (s *AddTaskCreated) GetJobId() string {
-	return s.JobId
-}
-
-// SetJobId sets the value of JobId.
-func (s *AddTaskCreated) SetJobId(val string) {
-	s.JobId = val
-}
-
-func (*AddTaskCreated) addTaskRes() {}
-
-type AddTaskReq struct {
-	Resources Resources `json:"resources"`
-	// Optional time in seconds after which the job will be terminated.
-	MaxTimeSec OptInt `json:"maxTimeSec"`
-}
-
-// GetResources returns the value of Resources.
-func (s *AddTaskReq) GetResources() Resources {
-	return s.Resources
-}
-
-// GetMaxTimeSec returns the value of MaxTimeSec.
-func (s *AddTaskReq) GetMaxTimeSec() OptInt {
-	return s.MaxTimeSec
-}
-
-// SetResources sets the value of Resources.
-func (s *AddTaskReq) SetResources(val Resources) {
-	s.Resources = val
-}
-
-// SetMaxTimeSec sets the value of MaxTimeSec.
-func (s *AddTaskReq) SetMaxTimeSec(val OptInt) {
-	s.MaxTimeSec = val
-}
+type DeviceId string
 
 type Error string
 
@@ -174,15 +129,73 @@ func (o OptInt) Or(d int) int {
 
 // Ref: #
 type Resources struct {
-	VRamMb OptInt `json:"vRamMb"`
+	VRamMb int `json:"vRamMb"`
 }
 
 // GetVRamMb returns the value of VRamMb.
-func (s *Resources) GetVRamMb() OptInt {
+func (s *Resources) GetVRamMb() int {
 	return s.VRamMb
 }
 
 // SetVRamMb sets the value of VRamMb.
-func (s *Resources) SetVRamMb(val OptInt) {
+func (s *Resources) SetVRamMb(val int) {
 	s.VRamMb = val
+}
+
+// ScheduleTaskBadRequest is response for ScheduleTask operation.
+type ScheduleTaskBadRequest struct{}
+
+func (*ScheduleTaskBadRequest) scheduleTaskRes() {}
+
+type ScheduleTaskCreated struct {
+	JobId string `json:"jobId"`
+}
+
+// GetJobId returns the value of JobId.
+func (s *ScheduleTaskCreated) GetJobId() string {
+	return s.JobId
+}
+
+// SetJobId sets the value of JobId.
+func (s *ScheduleTaskCreated) SetJobId(val string) {
+	s.JobId = val
+}
+
+func (*ScheduleTaskCreated) scheduleTaskRes() {}
+
+type ScheduleTaskReq struct {
+	DeviceId  DeviceId  `json:"deviceId"`
+	Resources Resources `json:"resources"`
+	// Optional time in seconds after which the job will be terminated.
+	MaxTimeSec OptInt `json:"maxTimeSec"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *ScheduleTaskReq) GetDeviceId() DeviceId {
+	return s.DeviceId
+}
+
+// GetResources returns the value of Resources.
+func (s *ScheduleTaskReq) GetResources() Resources {
+	return s.Resources
+}
+
+// GetMaxTimeSec returns the value of MaxTimeSec.
+func (s *ScheduleTaskReq) GetMaxTimeSec() OptInt {
+	return s.MaxTimeSec
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *ScheduleTaskReq) SetDeviceId(val DeviceId) {
+	s.DeviceId = val
+}
+
+// SetResources sets the value of Resources.
+func (s *ScheduleTaskReq) SetResources(val Resources) {
+	s.Resources = val
+}
+
+// SetMaxTimeSec sets the value of MaxTimeSec.
+func (s *ScheduleTaskReq) SetMaxTimeSec(val OptInt) {
+	s.MaxTimeSec = val
 }

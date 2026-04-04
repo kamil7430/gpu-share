@@ -8,15 +8,13 @@ import (
 )
 
 type RestHandler struct {
-	service.JobsService
+	*service.JobsService
 }
 
 var _ api.Handler = &RestHandler{}
 
-func NewRestHandler() *RestHandler {
-	return &RestHandler{
-		service.NewJobsService(),
-	}
+func NewRestHandler(js *service.JobsService) *RestHandler {
+	return &RestHandler{js}
 }
 
 func (s *RestHandler) GetHealth(ctx context.Context) (r *api.GetHealthOKHeaders, _ error) {

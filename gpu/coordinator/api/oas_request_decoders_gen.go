@@ -14,8 +14,8 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s *Server) decodeAddTaskRequest(r *http.Request) (
-	req *AddTaskReq,
+func (s *Server) decodeScheduleTaskRequest(r *http.Request) (
+	req *ScheduleTaskReq,
 	rawBody []byte,
 	close func() error,
 	rerr error,
@@ -62,7 +62,7 @@ func (s *Server) decodeAddTaskRequest(r *http.Request) (
 		rawBody = append(rawBody, buf...)
 		d := jx.DecodeBytes(buf)
 
-		var request AddTaskReq
+		var request ScheduleTaskReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err

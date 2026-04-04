@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	rn1AllowedHeaders = map[string]string{
+	rn3AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
 )
@@ -78,11 +78,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "POST":
-						s.handleAddTaskRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleScheduleTaskRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, notAllowedParams{
 							allowedMethods: "POST",
-							allowedHeaders: rn1AllowedHeaders,
+							allowedHeaders: rn3AllowedHeaders,
 							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
@@ -228,9 +228,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					// Leaf node.
 					switch method {
 					case "POST":
-						r.name = AddTaskOperation
+						r.name = ScheduleTaskOperation
 						r.summary = "Schedule a task on a given device"
-						r.operationID = "addTask"
+						r.operationID = "scheduleTask"
 						r.operationGroup = ""
 						r.pathPattern = "/api/jobs"
 						r.args = args

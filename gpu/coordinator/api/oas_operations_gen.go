@@ -6,6 +6,6 @@ package api
 type OperationName = string
 
 const (
-	AddTaskOperation   OperationName = "AddTask"
-	GetHealthOperation OperationName = "GetHealth"
+	GetHealthOperation    OperationName = "GetHealth"
+	ScheduleTaskOperation OperationName = "ScheduleTask"
 )

@@ -15,32 +15,6 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func encodeAddTaskResponse(response AddTaskRes, w http.ResponseWriter, span trace.Span) error {
-	switch response := response.(type) {
-	case *AddTaskCreated:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(201)
-		span.SetStatus(codes.Ok, http.StatusText(201))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-
-		return nil
-
-	case *AddTaskBadRequest:
-		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
-
-		return nil
-
-	default:
-		return errors.Errorf("unexpected response type: %T", response)
-	}
-}
-
 func encodeGetHealthResponse(response *GetHealthOKHeaders, w http.ResponseWriter, span trace.Span) error {
 	// Encoding response headers.
 	{
@@ -70,6 +44,32 @@ func encodeGetHealthResponse(response *GetHealthOKHeaders, w http.ResponseWriter
 	}
 
 	return nil
+}
+
+func encodeScheduleTaskResponse(response ScheduleTaskRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *ScheduleTaskCreated:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(201)
+		span.SetStatus(codes.Ok, http.StatusText(201))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *ScheduleTaskBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
 }
 
 func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span trace.Span) error {

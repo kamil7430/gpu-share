@@ -10,8 +10,8 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
-func encodeAddTaskRequest(
-	req *AddTaskReq,
+func encodeScheduleTaskRequest(
+	req *ScheduleTaskReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

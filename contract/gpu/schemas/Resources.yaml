@@ -1,4 +1,6 @@
 type: object
+required:
+  - vRamMb
 properties:
   vRamMb:
     type: integer

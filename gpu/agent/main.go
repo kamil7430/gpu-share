@@ -27,6 +27,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// TODO: who should assign this id???
 	agentID := "agent-1"
 
 	stream.Send(&pb.AgentMessage{

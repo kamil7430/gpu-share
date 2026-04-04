@@ -13,21 +13,21 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// AddTask implements addTask operation.
-//
-// Schedule a task on a given device.
-//
-// POST /api/jobs
-func (UnimplementedHandler) AddTask(ctx context.Context, req *AddTaskReq) (r AddTaskRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetHealth implements getHealth operation.
 //
 // Check if server is up.
 //
 // GET /health
 func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOKHeaders, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ScheduleTask implements scheduleTask operation.
+//
+// Schedule a task on a given device.
+//
+// POST /api/jobs
+func (UnimplementedHandler) ScheduleTask(ctx context.Context, req *ScheduleTaskReq) (r ScheduleTaskRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

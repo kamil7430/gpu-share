@@ -1,6 +1,6 @@
 post:
   summary: Schedule a task on a given device
-  operationId: addTask
+  operationId: scheduleTask
   requestBody:
     required: true
     content:
@@ -8,9 +8,11 @@ post:
         schema:
           type: object
           required:
-            - type
+            - deviceId
             - resources
           properties:
+            deviceId:
+              $ref: "../../../schemas/DeviceId.yaml"
             resources:
               $ref: "../../../schemas/Resources.yaml"
             maxTimeSec:
