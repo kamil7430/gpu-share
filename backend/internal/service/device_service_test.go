@@ -38,7 +38,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, "NVIDIA GeForce RTX 3050", dev.GpuModel)
 		require.Equal(t, 8192, dev.VramMb)
 		require.Equal(t, 2560, dev.CudaCores)
-		require.Equal(t, float32(15.99), dev.PricePerHourUsd)
+		require.Equal(t, 15.99, dev.PricePerHourUsd)
 		require.Equal(t, "595.97", dev.DriverVersion)
 		require.Equal(t, api.StateUNAVAILABLE, dev.State)
 	}
@@ -49,7 +49,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, "NVIDIA GeForce RTX 3050", dev.GpuModel)
 		require.Equal(t, 8192, dev.VramMb)
 		require.Equal(t, 2560, dev.CudaCores)
-		require.Equal(t, float32(25.99), dev.PricePerHourUsd)
+		require.Equal(t, 25.99, dev.PricePerHourUsd)
 		require.Equal(t, "595.97", dev.DriverVersion)
 		require.Equal(t, api.StateAVAILABLE, dev.State)
 	}
@@ -60,7 +60,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, "NVIDIA GeForce GTX 1050 Ti", dev.GpuModel)
 		require.Equal(t, 4096, dev.VramMb)
 		require.Equal(t, 768, dev.CudaCores)
-		require.Equal(t, float32(6.99), dev.PricePerHourUsd)
+		require.Equal(t, 6.99, dev.PricePerHourUsd)
 		require.Equal(t, "582.28", dev.DriverVersion)
 		require.Equal(t, api.StateAVAILABLE, dev.State)
 	}
