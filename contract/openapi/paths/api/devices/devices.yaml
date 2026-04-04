@@ -86,7 +86,7 @@ get:
           schema:
             type: array
             items:
-              $ref: "../../../schemas/DeviceStatus.yaml"
+              $ref: "../../../schemas/Device.yaml"
     "404":
       description: No devices found
     "400":

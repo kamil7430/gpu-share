@@ -1,0 +1,27 @@
+type: object
+required:
+  - name
+  - gpuModel
+  - vramMb
+  - cudaCores
+  - pricePerHourUsd
+  - driverVersion
+  - state
+properties:
+  name:
+    type: string
+  gpuModel:
+    type: string
+  vramMb:
+    type: integer
+    minimum: 0
+  cudaCores:
+    type: integer
+    minimum: 0
+  pricePerHourUsd:
+    type: number
+    minimum: 0
+  driverVersion:
+    type: string
+  state:
+    $ref: "./State.yaml"
