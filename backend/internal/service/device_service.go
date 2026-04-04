@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -37,7 +38,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 			VramMb:          dev.VramMb,
 			CudaCores:       dev.CudaCores,
 			PricePerHourUsd: float64(dev.PricePerHourUsd),
-			DriverVersion:   dev.DriverVersion,
+			DriverVersion:   fmt.Sprintf("%v.%v", dev.DriverVersionMajor, dev.DriverVersionMinor),
 			State:           dev.State,
 		})
 	}

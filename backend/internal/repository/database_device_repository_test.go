@@ -23,8 +23,8 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 
 	resetDbContent := func() {
 		tx.Exec("TRUNCATE TABLE devices;")
-		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'UNAVAILABLE');")
+		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version_major, driver_version_minor, state) " +
+			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595', '97', 'UNAVAILABLE');")
 	}
 
 	t.Run("get device", func(t *testing.T) {
@@ -37,7 +37,8 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, 8192, device.VramMb)
 		require.Equal(t, 2560, device.CudaCores)
 		require.LessOrEqual(t, math.Abs(float64(15.99-device.PricePerHourUsd)), 0.01)
-		require.Equal(t, "595.97", device.DriverVersion)
+		require.Equal(t, 595, device.DriverVersionMajor)
+		require.Equal(t, 97, device.DriverVersionMinor)
 		require.Equal(t, api.StateUNAVAILABLE, device.State)
 	})
 

@@ -27,10 +27,10 @@ func TestDeviceService(t *testing.T) {
 
 	resetDbContent := func() {
 		tx.Exec("TRUNCATE TABLE devices;")
-		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'UNAVAILABLE'), " +
-			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '25.99', '595.97', 'AVAILABLE'), " +
-			"('2139', 'TestCard3', 'NVIDIA GeForce GTX 1050 Ti', '4096', '768', '6.99', '582.28', 'AVAILABLE');")
+		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version_major, driver_version_minor, state) " +
+			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595', '97', 'UNAVAILABLE'), " +
+			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '25.99', '595', '97', 'AVAILABLE'), " +
+			"('2139', 'TestCard3', 'NVIDIA GeForce GTX 1050 Ti', '4096', '768', '6.99', '582', '28', 'AVAILABLE');")
 	}
 
 	checkTestCardInfo := func(dev api.Device) {

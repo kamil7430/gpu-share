@@ -7,11 +7,12 @@ import (
 
 type Device struct {
 	gorm.Model
-	Name            string
-	GpuModel        string
-	VramMb          int
-	CudaCores       int
-	PricePerHourUsd float32
-	DriverVersion   string
-	State           api.State
+	Name               string
+	GpuModel           string
+	VramMb             int
+	CudaCores          int
+	PricePerHourUsd    float32
+	DriverVersionMajor int
+	DriverVersionMinor int
+	State              api.State
 }
