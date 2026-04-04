@@ -47,8 +47,8 @@ func TestApi(t *testing.T) {
 	deviceId := "123"
 
 	tx.Exec("TRUNCATE TABLE devices;")
-	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'AVAILABLE');")
+	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version_major, driver_version_minor, state) " +
+		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595', '97', 'AVAILABLE');")
 
 	t.Run("device status by id", func(t *testing.T) {
 		resp, err := http.Get(baseUrl + "/api/devices/" + deviceId + "/status")
