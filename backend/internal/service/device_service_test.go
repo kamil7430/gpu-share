@@ -80,6 +80,14 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		}
 	}
 
+	t.Run("get devices -- no filter", func(t *testing.T) {
+		getDevicesTestCase(api.GetDevicesParams{},
+			checkTestCardInfo,
+			checkTestCard2Info,
+			checkTestCard3Info,
+		)
+	})
+
 	t.Run("get devices by name", func(t *testing.T) {
 		getDevicesTestCase(api.GetDevicesParams{Name: api.NewOptString("TestCard2")},
 			checkTestCard2Info,
