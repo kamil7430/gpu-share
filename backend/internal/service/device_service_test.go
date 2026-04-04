@@ -5,14 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kamil7430/gpu-share/backend/internal"
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDeviceService(t *testing.T) {
-	db, err := internal.InitializeDatabaseConnection(false)
+	db, err := utils.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
 	tx := db.Begin()
