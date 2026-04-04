@@ -5,6 +5,7 @@ import (
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -48,10 +49,22 @@ func (r *DatabaseDeviceRepository) GetDevices(ctx context.Context, params api.Ge
 		query = query.Where("price_per_hour_usd <= ?", v)
 	}
 	if v, ok := params.MinDriverVersion.Get(); ok {
-		_ = v // TODO
+		dv, err := utils.DriverVersionFromString(v)
+		if err != nil {
+			return nil, err
+		}
+		query = query.Where("driver_version_major > ?", dv.Major).Or(
+			r.db.Where("driver_version_major = ?", dv.Major).Where("driver_version_minor > ?", dv.Minor),
+		)
 	}
 	if v, ok := params.MaxDriverVersion.Get(); ok {
-		_ = v // TODO
+		dv, err := utils.DriverVersionFromString(v)
+		if err != nil {
+			return nil, err
+		}
+		query = query.Where("driver_version_major < ?", dv.Major).Or(
+			r.db.Where("driver_version_major = ?", dv.Major).Where("driver_version_minor < ?", dv.Minor),
+		)
 	}
 	if len(params.States) > 0 {
 		query = query.Where("state IN ?", params.States)

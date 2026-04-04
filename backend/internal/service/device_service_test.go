@@ -142,14 +142,14 @@ func TestDeviceService(t *testing.T) {
 	})
 
 	t.Run("get devices by minDriverVersion", func(t *testing.T) {
-		getDevicesTestCase(api.GetDevicesParams{MinDriverVersion: api.NewOptString("585")},
+		getDevicesTestCase(api.GetDevicesParams{MinDriverVersion: api.NewOptString("585.0")},
 			checkTestCardInfo,
 			checkTestCard2Info,
 		)
 	})
 
 	t.Run("get devices by maxDriverVersion", func(t *testing.T) {
-		getDevicesTestCase(api.GetDevicesParams{MaxDriverVersion: api.NewOptString("585")},
+		getDevicesTestCase(api.GetDevicesParams{MaxDriverVersion: api.NewOptString("585.0")},
 			checkTestCard3Info,
 		)
 	})

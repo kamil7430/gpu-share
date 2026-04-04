@@ -3,11 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -30,7 +31,12 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 	}
 
 	var result api.GetDevicesOKApplicationJSON
+
 	for _, dev := range *devices {
+		dv, err := utils.NewDriverVersion(dev.DriverVersionMajor, dev.DriverVersionMinor)
+		if err != nil {
+			log.Fatal(err)
+		}
 		result = append(result, api.Device{
 			DeviceId:        strconv.Itoa(int(dev.ID)),
 			Name:            dev.Name,
@@ -38,7 +44,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 			VramMb:          dev.VramMb,
 			CudaCores:       dev.CudaCores,
 			PricePerHourUsd: float64(dev.PricePerHourUsd),
-			DriverVersion:   fmt.Sprintf("%v.%v", dev.DriverVersionMajor, dev.DriverVersionMinor),
+			DriverVersion:   dv.String(),
 			State:           dev.State,
 		})
 	}
