@@ -71,10 +71,7 @@ func (r *DatabaseDeviceRepository) GetDevices(ctx context.Context, params api.Ge
 	}
 
 	devices, err := query.Order("ID").Find(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return &devices, nil
+    return &devices, err
 }
 
 func (r *DatabaseDeviceRepository) GetDeviceById(ctx context.Context, id string) (*model.Device, error) {
