@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"math"
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -36,7 +35,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 		require.Equal(t, "NVIDIA GeForce RTX 3050", device.GpuModel)
 		require.Equal(t, 8192, device.VramMb)
 		require.Equal(t, 2560, device.CudaCores)
-		require.LessOrEqual(t, math.Abs(float64(15.99-device.PricePerHourUsd)), 0.01)
+		require.InDelta(t, 15.99, device.PricePerHourUsd, 0.01)
 		require.Equal(t, 595, device.DriverVersionMajor)
 		require.Equal(t, 97, device.DriverVersionMinor)
 		require.Equal(t, api.StateUNAVAILABLE, device.State)
