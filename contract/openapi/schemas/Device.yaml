@@ -22,8 +22,7 @@ properties:
     type: integer
     minimum: 0
   pricePerHourUsd:
-    type: number
-    minimum: 0
+    type: string
   driverVersion:
     type: string
   state:

@@ -22,6 +22,8 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 }
 
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
+	// See `/contract/openapi/paths/api/devices/devices.yaml` for more information.
+	// In particular regarding filters values constraints.
 	if v, ok := params.Limit.Get(); ok && (v < 1 || v > 200) {
 		return &api.GetDevicesBadRequest{}, nil
 	}
@@ -85,7 +87,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 			GpuModel:        dev.GpuModel,
 			VramMb:          dev.VramMb,
 			CudaCores:       dev.CudaCores,
-			PricePerHourUsd: float64(dev.PricePerHourUsd),
+			PricePerHourUsd: strconv.FormatFloat(float64(dev.PricePerHourUsd), 'f', 2, 32),
 			DriverVersion:   dv.String(),
 			State:           dev.State,
 		})

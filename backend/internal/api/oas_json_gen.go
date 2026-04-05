@@ -43,7 +43,7 @@ func (s *Device) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("pricePerHourUsd")
-		e.Float64(s.PricePerHourUsd)
+		e.Str(s.PricePerHourUsd)
 	}
 	{
 		e.FieldStart("driverVersion")
@@ -138,8 +138,8 @@ func (s *Device) Decode(d *jx.Decoder) error {
 		case "pricePerHourUsd":
 			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := d.Float64()
-				s.PricePerHourUsd = float64(v)
+				v, err := d.Str()
+				s.PricePerHourUsd = string(v)
 				if err != nil {
 					return err
 				}

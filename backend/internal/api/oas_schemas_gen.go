@@ -11,14 +11,14 @@ import (
 
 // Ref: #
 type Device struct {
-	DeviceId        string  `json:"deviceId"`
-	Name            string  `json:"name"`
-	GpuModel        string  `json:"gpuModel"`
-	VramMb          int     `json:"vramMb"`
-	CudaCores       int     `json:"cudaCores"`
-	PricePerHourUsd float64 `json:"pricePerHourUsd"`
-	DriverVersion   string  `json:"driverVersion"`
-	State           State   `json:"state"`
+	DeviceId        string `json:"deviceId"`
+	Name            string `json:"name"`
+	GpuModel        string `json:"gpuModel"`
+	VramMb          int    `json:"vramMb"`
+	CudaCores       int    `json:"cudaCores"`
+	PricePerHourUsd string `json:"pricePerHourUsd"`
+	DriverVersion   string `json:"driverVersion"`
+	State           State  `json:"state"`
 }
 
 // GetDeviceId returns the value of DeviceId.
@@ -47,7 +47,7 @@ func (s *Device) GetCudaCores() int {
 }
 
 // GetPricePerHourUsd returns the value of PricePerHourUsd.
-func (s *Device) GetPricePerHourUsd() float64 {
+func (s *Device) GetPricePerHourUsd() string {
 	return s.PricePerHourUsd
 }
 
@@ -87,7 +87,7 @@ func (s *Device) SetCudaCores(val int) {
 }
 
 // SetPricePerHourUsd sets the value of PricePerHourUsd.
-func (s *Device) SetPricePerHourUsd(val float64) {
+func (s *Device) SetPricePerHourUsd(val string) {
 	s.PricePerHourUsd = val
 }
 

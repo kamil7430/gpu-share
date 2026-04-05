@@ -1,4 +1,4 @@
-package main
+package api_tests
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const baseUrl string = "http://localhost:2137"
+const baseUrl = "http://localhost:2137"
 
 func TestApi(t *testing.T) {
 	db, err := utils.InitializeDatabaseConnection(false)
@@ -43,6 +43,7 @@ func TestApi(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 	require.Less(t, i, retries)
+	log.Println("Server is up! Running the tests...")
 
 	deviceId := "123"
 
@@ -69,6 +70,9 @@ func TestApi(t *testing.T) {
 
 		require.JSONEq(t, expected, string(body))
 	})
+
+	testGetDevices(t, tx, baseUrl)
+
 	/*
 		t.Run("device register", func(t *testing.T) {
 			payload := `{

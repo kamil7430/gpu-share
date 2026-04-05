@@ -58,27 +58,6 @@ func (s *Device) Validate() error {
 		})
 	}
 	if err := func() error {
-		if err := (validate.Float{
-			MinSet:        true,
-			Min:           0,
-			MaxSet:        false,
-			Max:           0,
-			MinExclusive:  false,
-			MaxExclusive:  false,
-			MultipleOfSet: false,
-			MultipleOf:    nil,
-			Pattern:       nil,
-		}).Validate(float64(s.PricePerHourUsd)); err != nil {
-			return errors.Wrap(err, "float")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "pricePerHourUsd",
-			Error: err,
-		})
-	}
-	if err := func() error {
 		if err := s.State.Validate(); err != nil {
 			return err
 		}
