@@ -24,32 +24,22 @@ func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepositor
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
 	// See `/contract/openapi/paths/api/devices/devices.yaml` for more information.
 	// In particular regarding filters values constraints.
-	if v, ok := params.Limit.Get(); ok && (v < 1 || v > 200) {
-		return &api.GetDevicesBadRequest{}, nil
+	if minVramMb, ok := params.MinVramMb.Get(); ok {
+		if maxVramMb, ok := params.MaxVramMb.Get(); ok && minVramMb > maxVramMb {
+			return &api.GetDevicesBadRequest{}, nil
+		}
 	}
 
-	minVram := params.MinVramMb.Or(0)
-	if minVram < 0 {
-		return &api.GetDevicesBadRequest{}, nil
-	}
-	if v, ok := params.MaxVramMb.Get(); ok && v < minVram {
-		return &api.GetDevicesBadRequest{}, nil
+	if minCudaCores, ok := params.MinCudaCores.Get(); ok {
+		if maxCudaCores, ok := params.MaxCudaCores.Get(); ok && minCudaCores > maxCudaCores {
+			return &api.GetDevicesBadRequest{}, nil
+		}
 	}
 
-	minCudaCores := params.MinCudaCores.Or(0)
-	if minCudaCores < 0 {
-		return &api.GetDevicesBadRequest{}, nil
-	}
-	if v, ok := params.MaxCudaCores.Get(); ok && v < minCudaCores {
-		return &api.GetDevicesBadRequest{}, nil
-	}
-
-	minPricePerHour := params.MinPricePerHourUsd.Or(0)
-	if minPricePerHour < 0 {
-		return &api.GetDevicesBadRequest{}, nil
-	}
-	if v, ok := params.MaxPricePerHourUsd.Get(); ok && v < minPricePerHour {
-		return &api.GetDevicesBadRequest{}, nil
+	if minPricePerHour, ok := params.MinPricePerHourUsd.Get(); ok {
+		if maxPricePerHour, ok := params.MaxPricePerHourUsd.Get(); ok && minPricePerHour > maxPricePerHour {
+			return &api.GetDevicesBadRequest{}, nil
+		}
 	}
 
 	minDriverVersion, err := utils.DriverVersionFromString(params.MinDriverVersion.Or("0.0"))
