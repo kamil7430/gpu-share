@@ -41,7 +41,7 @@ func (as *AgentService) Connect(stream proto.AgentService_ConnectServer) error {
 		}
 	}()
 
-	log.Println("Agent connected: ", agentID)
+	log.Printf("Agent '%v' connected\n", agentID)
 
 	for {
 		msg, err := stream.Recv()

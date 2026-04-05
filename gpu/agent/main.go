@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -27,8 +28,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// TODO: who should assign this id???
-	agentID := "agent-1"
+	// TODO: this should be assigned by the `backend`, but it requires the
+	// `POST /api/devices` endpoint to be implemented
+	agentID := fmt.Sprintf("%v", rand.Int() % 1000)
 
 	stream.Send(&pb.AgentMessage{
 		AgentId: agentID,
