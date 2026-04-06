@@ -10,3 +10,5 @@ paths:
     $ref: "./paths/health.yaml"
   /api/jobs:
     $ref: "./paths/api/jobs/job.yaml"
+  /api/agents/{agentId}/status:
+    $ref: "./paths/api/agents/status.yaml"

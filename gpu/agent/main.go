@@ -5,93 +5,23 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"time"
 
-	pb "github.com/kamil7430/gpu-share/gpu/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/kamil7430/gpu-share/gpu/agent/agent"
 )
 
 func main() {
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	conn, err := grpc.NewClient("localhost:2139", opts...)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	client := pb.NewAgentServiceClient(conn)
-
-	stream, err := client.Connect(context.Background())
+	stream, err := agent.StartGrpcClient(context.Background(), "localhost:2139")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// TODO: this should be assigned by the `backend`, but it requires the
 	// `POST /api/devices` endpoint to be implemented
-	agentID := fmt.Sprintf("%v", rand.Int() % 1000)
+	agentId := fmt.Sprintf("%v", rand.Int()%1000)
+	agent.SendHelloMessage(stream, agentId)
 
-	stream.Send(&pb.AgentMessage{
-		AgentId: agentID,
-	})
+	go agent.SendHeartbeats(stream, agentId)
 
-	go func() {
-		for {
-			time.Sleep(2 * time.Second)
-
-			stream.Send(&pb.AgentMessage{
-				AgentId: agentID,
-				Payload: &pb.AgentMessage_Heartbeat{
-					Heartbeat: &pb.Heartbeat{
-						GpuUtil: rand.Float32(),
-					},
-				},
-			})
-		}
-	}()
-
-	for {
-		msg, err := stream.Recv()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		switch payload := msg.Payload.(type) {
-		case *pb.CoordinatorMessage_Task:
-			go executeTask(stream, agentID, payload.Task)
-		}
-	}
+	agent.ReceiveLoop(stream, agentId)
 }
 
-func executeTask(stream pb.AgentService_ConnectClient, agentID string, task *pb.Task) {
-	log.Println("Executing task:", task.TaskId)
-
-	steps := 10
-	for i := 1; i <= steps; i++ {
-		dur := time.Duration(float32(task.MemoryMb)*0.01) * time.Second
-		time.Sleep(dur / time.Duration(steps))
-
-		stream.Send(&pb.AgentMessage{
-			AgentId: agentID,
-			Payload: &pb.AgentMessage_TaskUpdate{
-				TaskUpdate: &pb.TaskUpdate{
-					TaskId:   task.TaskId,
-					Progress: float32(i) / float32(steps),
-					Status:   "running",
-				},
-			},
-		})
-	}
-
-	stream.Send(&pb.AgentMessage{
-		AgentId: agentID,
-		Payload: &pb.AgentMessage_TaskUpdate{
-			TaskUpdate: &pb.TaskUpdate{
-				TaskId:   task.TaskId,
-				Progress: 1.0,
-				Status:   "done",
-			},
-		},
-	})
-}

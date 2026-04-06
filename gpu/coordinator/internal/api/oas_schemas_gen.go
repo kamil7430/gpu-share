@@ -41,6 +41,16 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+// GetAgentStatusNotFound is response for GetAgentStatus operation.
+type GetAgentStatusNotFound struct{}
+
+func (*GetAgentStatusNotFound) getAgentStatusRes() {}
+
+// GetAgentStatusOK is response for GetAgentStatus operation.
+type GetAgentStatusOK struct{}
+
+func (*GetAgentStatusOK) getAgentStatusRes() {}
+
 type GetHealthOK struct {
 	Data io.Reader
 }

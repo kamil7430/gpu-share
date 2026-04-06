@@ -38,7 +38,16 @@ func (ar *AgentRepository) Unregister(id string) {
 	delete(ar.agents, id)
 }
 
+func (ar *AgentRepository) IsConnected(agentId string) bool {
+	ar.mu.Lock()
+	defer ar.mu.Unlock()
+	_, ok := ar.agents[agentId]
+	return ok
+}
+
 func (ar *AgentRepository) SendTo(agentId string, message *proto.CoordinatorMessage) error {
+	ar.mu.Lock()
+	defer ar.mu.Unlock()
 	agent, ok := ar.agents[agentId]
 	if !ok {
 		return fmt.Errorf("No agent found with id %v", agentId)

@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// GetAgentStatus implements getAgentStatus operation.
+	//
+	// Get agent's status.
+	//
+	// GET /api/agents/{agentId}/status
+	GetAgentStatus(ctx context.Context, params GetAgentStatusParams) (GetAgentStatusRes, error)
 	// GetHealth implements getHealth operation.
 	//
 	// Check if server is up.

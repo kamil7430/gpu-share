@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	rn3AllowedHeaders = map[string]string{
+	rn7AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
 )
@@ -46,6 +46,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.notFound(w, r)
 		return
 	}
+	args := [1]string{}
 
 	// Static code generated router with unwrapped path search.
 	switch {
@@ -66,29 +67,93 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "api/jobs"
+			case 'a': // Prefix: "api/"
 
-				if l := len("api/jobs"); len(elem) >= l && elem[0:l] == "api/jobs" {
+				if l := len("api/"); len(elem) >= l && elem[0:l] == "api/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "POST":
-						s.handleScheduleTaskRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, notAllowedParams{
-							allowedMethods: "POST",
-							allowedHeaders: rn3AllowedHeaders,
-							acceptPost:     "application/json",
-							acceptPatch:    "",
-						})
+					break
+				}
+				switch elem[0] {
+				case 'a': // Prefix: "agents/"
+
+					if l := len("agents/"); len(elem) >= l && elem[0:l] == "agents/" {
+						elem = elem[l:]
+					} else {
+						break
 					}
 
-					return
+					// Param: "agentId"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/status"
+
+						if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleGetAgentStatusRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, notAllowedParams{
+									allowedMethods: "GET",
+									allowedHeaders: nil,
+									acceptPost:     "",
+									acceptPatch:    "",
+								})
+							}
+
+							return
+						}
+
+					}
+
+				case 'j': // Prefix: "jobs"
+
+					if l := len("jobs"); len(elem) >= l && elem[0:l] == "jobs" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleScheduleTaskRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, notAllowedParams{
+								allowedMethods: "POST",
+								allowedHeaders: rn7AllowedHeaders,
+								acceptPost:     "application/json",
+								acceptPatch:    "",
+							})
+						}
+
+						return
+					}
+
 				}
 
 			case 'h': // Prefix: "health"
@@ -131,7 +196,7 @@ type Route struct {
 	operationGroup string
 	pathPattern    string
 	count          int
-	args           [0]string
+	args           [1]string
 }
 
 // Name returns ogen operation name.
@@ -216,29 +281,91 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "api/jobs"
+			case 'a': // Prefix: "api/"
 
-				if l := len("api/jobs"); len(elem) >= l && elem[0:l] == "api/jobs" {
+				if l := len("api/"); len(elem) >= l && elem[0:l] == "api/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
-					switch method {
-					case "POST":
-						r.name = ScheduleTaskOperation
-						r.summary = "Schedule a task on a given device"
-						r.operationID = "scheduleTask"
-						r.operationGroup = ""
-						r.pathPattern = "/api/jobs"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
+					break
+				}
+				switch elem[0] {
+				case 'a': // Prefix: "agents/"
+
+					if l := len("agents/"); len(elem) >= l && elem[0:l] == "agents/" {
+						elem = elem[l:]
+					} else {
+						break
 					}
+
+					// Param: "agentId"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/status"
+
+						if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "GET":
+								r.name = GetAgentStatusOperation
+								r.summary = "Get agent's status"
+								r.operationID = "getAgentStatus"
+								r.operationGroup = ""
+								r.pathPattern = "/api/agents/{agentId}/status"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+					}
+
+				case 'j': // Prefix: "jobs"
+
+					if l := len("jobs"); len(elem) >= l && elem[0:l] == "jobs" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "POST":
+							r.name = ScheduleTaskOperation
+							r.summary = "Schedule a task on a given device"
+							r.operationID = "scheduleTask"
+							r.operationGroup = ""
+							r.pathPattern = "/api/jobs"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
 				}
 
 			case 'h': // Prefix: "health"

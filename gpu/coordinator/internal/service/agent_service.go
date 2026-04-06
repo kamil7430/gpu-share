@@ -1,10 +1,12 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 
-	"github.com/kamil7430/gpu-share/gpu/coordinator/repository"
+	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/api"
+	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/repository"
 	"github.com/kamil7430/gpu-share/gpu/proto"
 )
 
@@ -54,7 +56,7 @@ func (as *AgentService) Connect(stream proto.AgentService_ConnectServer) error {
 	}
 }
 
-func (s *AgentService) handleMessage(agentID string, msg *proto.AgentMessage) {
+func (as *AgentService) handleMessage(agentID string, msg *proto.AgentMessage) {
 	switch payload := msg.Payload.(type) {
 
 	case *proto.AgentMessage_Heartbeat:
@@ -90,4 +92,26 @@ func (as *AgentService) SendTask(agentID string, memoryMb int) (taskId string, e
 	as.lastTaskId += 1
 
 	return taskId, nil
+}
+
+func (as *AgentService) ScheduleTask(ctx context.Context, r *api.ScheduleTaskReq) (api.ScheduleTaskRes, error) {
+	jobId, err := as.SendTask(string(r.DeviceId), r.Resources.VRamMb)
+	if err != nil {
+		// TODO: probably should return sf else
+		return nil, err
+	}
+
+	return &api.ScheduleTaskCreated{
+		JobId: jobId,
+	}, nil
+}
+
+func (as *AgentService) GetAgentStatus(ctx context.Context, params api.GetAgentStatusParams) (api.GetAgentStatusRes, error) {
+	agentId := params.AgentId
+	connected := as.ar.IsConnected(agentId)
+	if connected {
+		return &api.GetAgentStatusOK{}, nil
+	} else {
+		return &api.GetAgentStatusNotFound{}, nil
+	}
 }
