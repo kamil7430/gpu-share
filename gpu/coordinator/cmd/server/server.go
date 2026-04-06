@@ -26,14 +26,18 @@ func StartRestServer(addr string, as *service.AgentService) {
 		log.Fatal(err)
 	}
 
+	if addr[:7] == "http://" {
+		addr = addr[7:]
+	}
 	s := http.Server{
-		Addr:    addr[7:], // "http://"
+		Addr:    addr,
 		Handler: srv,
 	}
 
 	go func() {
 		log.Printf("Coordinator REST listening on %v\n", addr)
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Println(addr)
 			log.Fatal(err)
 		}
 	}()

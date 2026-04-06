@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -14,12 +15,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const baseUrl = "localhost"
+var ip = func() string {
+	ip := os.Getenv("BACKEND_IP")
+	if ip == "" {
+		log.Fatal("invalid value of `BACKEND_IP` env variable")
+	}
+	return ip
+}()
 const restPort = "22138"
 const grpcPort = "22139"
 
-var restUrl string = fmt.Sprintf("http://%v:%v", baseUrl, restPort)
-var grpcUrl string = fmt.Sprintf("%v:%v", baseUrl, grpcPort)
+var restUrl string = fmt.Sprintf("http://%v:%v", ip, restPort)
+var grpcUrl string = fmt.Sprintf("%v:%v", ip, grpcPort)
 
 func startAgent(t *testing.T, agentId string) {
 	stream, err := agent.StartGrpcClient(t.Context(), grpcUrl)

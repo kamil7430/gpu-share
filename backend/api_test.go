@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -13,7 +14,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const baseUrl string = "http://localhost:2137"
+var ip = func() string {
+	ip := os.Getenv("BACKEND_IP")
+	if ip == "" {
+		log.Fatal("invalid value of `BACKEND_IP` env variable")
+	}
+	return ip
+}()
+var baseUrl = ip + ":2137"
 
 func TestApi(t *testing.T) {
 	db, err := internal.InitializeDatabaseConnection(false)

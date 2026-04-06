@@ -5,12 +5,17 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 
 	"github.com/kamil7430/gpu-share/gpu/agent/agent"
 )
 
 func main() {
-	stream, err := agent.StartGrpcClient(context.Background(), "localhost:2139")
+	ip := os.Getenv("GPU_IP")
+	if ip == "" {
+		log.Fatal("invalid value of `GPU_IP` env variable")
+	}
+	stream, err := agent.StartGrpcClient(context.Background(), ip+":2139")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,4 +29,3 @@ func main() {
 
 	agent.ReceiveLoop(stream, agentId)
 }
-
