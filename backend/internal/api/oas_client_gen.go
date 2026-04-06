@@ -361,7 +361,7 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.MinPricePerHourUsdCents.Get(); ok {
-				return e.EncodeValue(conv.Float64ToString(val))
+				return e.EncodeValue(conv.IntToString(val))
 			}
 			return nil
 		}); err != nil {
@@ -378,7 +378,7 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.MaxPricePerHourUsdCents.Get(); ok {
-				return e.EncodeValue(conv.Float64ToString(val))
+				return e.EncodeValue(conv.IntToString(val))
 			}
 			return nil
 		}); err != nil {

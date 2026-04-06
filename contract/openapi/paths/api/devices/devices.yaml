@@ -47,26 +47,36 @@ get:
       in: query
       required: false
       description: Minimum price per hour of device usage in USD cents
+      examples:
+        fifteen:
+          summary: 15.99 USD/h
+          value: 1599
       schema:
-        type: number
+        type: integer
         minimum: 0
     - name: maxPricePerHourUsdCents
       in: query
       required: false
       description: Maximum price per hour of device usage in USD cents
+      examples:
+        fifteen:
+          summary: 15.99 USD/h
+          value: 1599
       schema:
-        type: number
+        type: integer
         minimum: 0
     - name: minDriverVersion
       in: query
       required: false
       description: Minimum driver version
+      example: "595.97"
       schema:
         type: string
     - name: maxDriverVersion
       in: query
       required: false
       description: Maximum driver version
+      example: "595.97"
       schema:
         type: string
     - name: states

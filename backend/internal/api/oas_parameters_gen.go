@@ -98,9 +98,9 @@ type GetDevicesParams struct {
 	// Maximum amount of CUDA cores.
 	MaxCudaCores OptInt `json:",omitempty,omitzero"`
 	// Minimum price per hour of device usage in USD cents.
-	MinPricePerHourUsdCents OptFloat64 `json:",omitempty,omitzero"`
+	MinPricePerHourUsdCents OptInt `json:",omitempty,omitzero"`
 	// Maximum price per hour of device usage in USD cents.
-	MaxPricePerHourUsdCents OptFloat64 `json:",omitempty,omitzero"`
+	MaxPricePerHourUsdCents OptInt `json:",omitempty,omitzero"`
 	// Minimum driver version.
 	MinDriverVersion OptString `json:",omitempty,omitzero"`
 	// Maximum driver version.
@@ -179,7 +179,7 @@ func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesPara
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.MinPricePerHourUsdCents = v.(OptFloat64)
+			params.MinPricePerHourUsdCents = v.(OptInt)
 		}
 	}
 	{
@@ -188,7 +188,7 @@ func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesPara
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.MaxPricePerHourUsdCents = v.(OptFloat64)
+			params.MaxPricePerHourUsdCents = v.(OptInt)
 		}
 	}
 	{
@@ -650,14 +650,14 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotMinPricePerHourUsdCentsVal float64
+				var paramsDotMinPricePerHourUsdCentsVal int
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToFloat64(val)
+					c, err := conv.ToInt(val)
 					if err != nil {
 						return err
 					}
@@ -675,7 +675,7 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 			if err := func() error {
 				if value, ok := params.MinPricePerHourUsdCents.Get(); ok {
 					if err := func() error {
-						if err := (validate.Float{
+						if err := (validate.Int{
 							MinSet:        true,
 							Min:           0,
 							MaxSet:        false,
@@ -683,10 +683,10 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
-							MultipleOf:    nil,
+							MultipleOf:    0,
 							Pattern:       nil,
-						}).Validate(float64(value)); err != nil {
-							return errors.Wrap(err, "float")
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
 						}
 						return nil
 					}(); err != nil {
@@ -716,14 +716,14 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotMaxPricePerHourUsdCentsVal float64
+				var paramsDotMaxPricePerHourUsdCentsVal int
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
 						return err
 					}
 
-					c, err := conv.ToFloat64(val)
+					c, err := conv.ToInt(val)
 					if err != nil {
 						return err
 					}
@@ -741,7 +741,7 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 			if err := func() error {
 				if value, ok := params.MaxPricePerHourUsdCents.Get(); ok {
 					if err := func() error {
-						if err := (validate.Float{
+						if err := (validate.Int{
 							MinSet:        true,
 							Min:           0,
 							MaxSet:        false,
@@ -749,10 +749,10 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
-							MultipleOf:    nil,
+							MultipleOf:    0,
 							Pattern:       nil,
-						}).Validate(float64(value)); err != nil {
-							return errors.Wrap(err, "float")
+						}).Validate(int64(value)); err != nil {
+							return errors.Wrap(err, "int")
 						}
 						return nil
 					}(); err != nil {
