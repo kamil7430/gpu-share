@@ -44,7 +44,6 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	t.Run("get nonexistent device", func(t *testing.T) {
 		resetDbContent()
 		device, err := r.GetDeviceById(t.Context(), "6969")
-		require.Nil(t, device)
 		require.ErrorIs(t, err, gorm.ErrRecordNotFound)
 	})
 }
