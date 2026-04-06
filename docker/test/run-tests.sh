@@ -1,5 +1,9 @@
 #!/bin/bash
 
-source .env.example
+source ./backend/.env.example
 
-go test -p 1 ./... -v
+cd backend
+go test -p 1 ./... -v -count=1
+
+cd ../gpu
+go test -p 1 ./... -v -count=1
