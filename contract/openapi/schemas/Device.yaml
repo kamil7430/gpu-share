@@ -23,6 +23,7 @@ properties:
     minimum: 0
   pricePerHourUsd:
     type: string
+    example: "0.45"
   driverVersion:
     type: string
     description: Driver version expressed as the major version followed by a period and a minor version
