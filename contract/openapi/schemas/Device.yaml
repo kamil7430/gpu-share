@@ -25,5 +25,7 @@ properties:
     type: string
   driverVersion:
     type: string
+    description: Driver version expressed as the major version followed by a period and a minor version
+    example: "535.104"
   state:
     $ref: "./State.yaml"
