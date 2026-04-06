@@ -18,10 +18,8 @@ func NewDatabaseDeviceRepository(db *gorm.DB) DeviceRepository {
 }
 
 func (r *DatabaseDeviceRepository) GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error) {
-	limit := 25
-	if v, ok := params.Limit.Get(); ok {
-		limit = v
-	}
+    // codegen handles defaults
+    limit := params.Limit.Value
 	query := gorm.G[model.Device](r.db).Limit(limit)
 
 	if v, ok := params.Name.Get(); ok {
