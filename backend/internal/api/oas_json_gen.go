@@ -13,6 +13,219 @@ import (
 )
 
 // Encode implements json.Marshaler.
+func (s *Device) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *Device) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("deviceId")
+		e.Str(s.DeviceId)
+	}
+	{
+		e.FieldStart("name")
+		e.Str(s.Name)
+	}
+	{
+		e.FieldStart("gpuModel")
+		e.Str(s.GpuModel)
+	}
+	{
+		e.FieldStart("vramMb")
+		e.Int(s.VramMb)
+	}
+	{
+		e.FieldStart("cudaCores")
+		e.Int(s.CudaCores)
+	}
+	{
+		e.FieldStart("pricePerHourUsdCents")
+		e.Int(s.PricePerHourUsdCents)
+	}
+	{
+		e.FieldStart("driverVersion")
+		e.Str(s.DriverVersion)
+	}
+	{
+		e.FieldStart("state")
+		s.State.Encode(e)
+	}
+}
+
+var jsonFieldsNameOfDevice = [8]string{
+	0: "deviceId",
+	1: "name",
+	2: "gpuModel",
+	3: "vramMb",
+	4: "cudaCores",
+	5: "pricePerHourUsdCents",
+	6: "driverVersion",
+	7: "state",
+}
+
+// Decode decodes Device from json.
+func (s *Device) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode Device to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "deviceId":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.DeviceId = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"deviceId\"")
+			}
+		case "name":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "gpuModel":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.GpuModel = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"gpuModel\"")
+			}
+		case "vramMb":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Int()
+				s.VramMb = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"vramMb\"")
+			}
+		case "cudaCores":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Int()
+				s.CudaCores = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cudaCores\"")
+			}
+		case "pricePerHourUsdCents":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := d.Int()
+				s.PricePerHourUsdCents = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"pricePerHourUsdCents\"")
+			}
+		case "driverVersion":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				v, err := d.Str()
+				s.DriverVersion = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"driverVersion\"")
+			}
+		case "state":
+			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				if err := s.State.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"state\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode Device")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b11111111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfDevice) {
+					name = jsonFieldsNameOfDevice[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *Device) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *Device) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *DeviceStatus) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -191,46 +404,136 @@ func (s *DeviceStatus) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes DeviceStatusState as json.
-func (s DeviceStatusState) Encode(e *jx.Encoder) {
-	e.Str(string(s))
+// Encode encodes Error as json.
+func (s Error) Encode(e *jx.Encoder) {
+	unwrapped := string(s)
+
+	e.Str(unwrapped)
 }
 
-// Decode decodes DeviceStatusState from json.
-func (s *DeviceStatusState) Decode(d *jx.Decoder) error {
+// Decode decodes Error from json.
+func (s *Error) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode DeviceStatusState to nil")
+		return errors.New("invalid: unable to decode Error to nil")
 	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
+	var unwrapped string
+	if err := func() error {
+		v, err := d.Str()
+		unwrapped = string(v)
+		if err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
 	}
-	// Try to use constant string.
-	switch DeviceStatusState(v) {
-	case DeviceStatusStateAVAILABLE:
-		*s = DeviceStatusStateAVAILABLE
-	case DeviceStatusStateUNAVAILABLE:
-		*s = DeviceStatusStateUNAVAILABLE
-	case DeviceStatusStateRENTED:
-		*s = DeviceStatusStateRENTED
-	case DeviceStatusStateREPORTED:
-		*s = DeviceStatusStateREPORTED
-	default:
-		*s = DeviceStatusState(v)
-	}
-
+	*s = Error(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s DeviceStatusState) MarshalJSON() ([]byte, error) {
+func (s Error) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *DeviceStatusState) UnmarshalJSON(data []byte) error {
+func (s *Error) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes GetDevicesOKApplicationJSON as json.
+func (s GetDevicesOKApplicationJSON) Encode(e *jx.Encoder) {
+	unwrapped := []Device(s)
+
+	e.ArrStart()
+	for _, elem := range unwrapped {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+}
+
+// Decode decodes GetDevicesOKApplicationJSON from json.
+func (s *GetDevicesOKApplicationJSON) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode GetDevicesOKApplicationJSON to nil")
+	}
+	var unwrapped []Device
+	if err := func() error {
+		unwrapped = make([]Device, 0)
+		if err := d.Arr(func(d *jx.Decoder) error {
+			var elem Device
+			if err := elem.Decode(d); err != nil {
+				return err
+			}
+			unwrapped = append(unwrapped, elem)
+			return nil
+		}); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = GetDevicesOKApplicationJSON(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s GetDevicesOKApplicationJSON) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *GetDevicesOKApplicationJSON) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes State as json.
+func (s State) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes State from json.
+func (s *State) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode State to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch State(v) {
+	case StateAVAILABLE:
+		*s = StateAVAILABLE
+	case StateUNAVAILABLE:
+		*s = StateUNAVAILABLE
+	case StateRENTED:
+		*s = StateRENTED
+	case StateREPORTED:
+		*s = StateREPORTED
+	default:
+		*s = State(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s State) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *State) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

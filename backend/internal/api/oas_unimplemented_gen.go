@@ -22,6 +22,15 @@ func (UnimplementedHandler) GetDeviceStatus(ctx context.Context, params GetDevic
 	return r, ht.ErrNotImplemented
 }
 
+// GetDevices implements getDevices operation.
+//
+// Get list of devices that match the provided filters.
+//
+// GET /api/devices
+func (UnimplementedHandler) GetDevices(ctx context.Context, params GetDevicesParams) (r GetDevicesRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetHealth implements getHealth operation.
 //
 // Check if server is up.
@@ -29,4 +38,12 @@ func (UnimplementedHandler) GetDeviceStatus(ctx context.Context, params GetDevic
 // GET /health
 func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOKHeaders, _ error) {
 	return r, ht.ErrNotImplemented
+}
+
+// NewError creates *ErrorStatusCode from error returned by handler.
+//
+// Used for common default response.
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorStatusCode) {
+	r = new(ErrorStatusCode)
+	return r
 }

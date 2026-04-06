@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 )
@@ -12,6 +13,14 @@ func NewHealthService() HealthService {
 	return HealthService{}
 }
 
-func (s *HealthService) GetHealth(ctx context.Context) (r *api.GetHealthOKHeaders, _ error) {
+func (*HealthService) GetHealth(ctx context.Context) (r *api.GetHealthOKHeaders, _ error) {
 	return &api.GetHealthOKHeaders{}, nil
+}
+
+func (*HealthService) NewError(ctx context.Context, err error) *api.ErrorStatusCode {
+	log.Println(err)
+	return &api.ErrorStatusCode{
+		StatusCode: 500,
+		Response:   api.Error(err.Error()),
+	}
 }

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
-	"github.com/kamil7430/gpu-share/backend/internal"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 )
 
 func fatalIfError(err error) {
@@ -17,7 +17,7 @@ func fatalIfError(err error) {
 
 func main() {
 	log.Println("Starting server...")
-	db, err := internal.InitializeDatabaseConnection(true)
+	db, err := utils.InitializeDatabaseConnection(true)
 	fatalIfError(err)
 
 	log.Println("Building server instance...")
