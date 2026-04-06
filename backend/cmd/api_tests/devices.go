@@ -17,7 +17,7 @@ func testGetDeviceStatus(t *testing.T, db *gorm.DB, baseUrl string) {
 	db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
 		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE');")
 
-	t.Run("device status by id", func(t *testing.T) {
+	t.Run("get device status by id -- existent", func(t *testing.T) {
 		resp, err := http.Get(baseUrl + "/api/devices/" + deviceId + "/status")
 		require.NoError(t, err)
 		defer resp.Body.Close()
@@ -35,6 +35,14 @@ func testGetDeviceStatus(t *testing.T, db *gorm.DB, baseUrl string) {
 		}`
 
 		require.JSONEq(t, expected, string(body))
+	})
+
+	t.Run("get device status by id -- nonexistent", func(t *testing.T) {
+		resp, err := http.Get(baseUrl + "/api/devices/6969/status")
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
+		require.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 }
 
