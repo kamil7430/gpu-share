@@ -1,0 +1,9 @@
+name: limit
+in: query
+required: false
+description: Maximum number of elements to retrieve
+schema:
+  type: integer
+  minimum: 1
+  maximum: 200
+  default: 25

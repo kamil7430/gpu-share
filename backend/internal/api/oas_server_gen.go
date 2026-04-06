@@ -14,6 +14,12 @@ type Handler interface {
 	//
 	// GET /api/devices/{deviceId}/status
 	GetDeviceStatus(ctx context.Context, params GetDeviceStatusParams) (GetDeviceStatusRes, error)
+	// GetDevices implements getDevices operation.
+	//
+	// Get list of devices that match the provided filters.
+	//
+	// GET /api/devices
+	GetDevices(ctx context.Context, params GetDevicesParams) (GetDevicesRes, error)
 	// GetHealth implements getHealth operation.
 	//
 	// Check if server is up.

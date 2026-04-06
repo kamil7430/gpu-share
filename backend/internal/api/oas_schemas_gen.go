@@ -10,13 +10,107 @@ import (
 )
 
 // Ref: #
+type Device struct {
+	DeviceId  string `json:"deviceId"`
+	Name      string `json:"name"`
+	GpuModel  string `json:"gpuModel"`
+	VramMb    int    `json:"vramMb"`
+	CudaCores int    `json:"cudaCores"`
+	// Price per active usage hour in USD cents, for example a value of `45` means `0.45 USD/h`.
+	PricePerHourUsdCents int `json:"pricePerHourUsdCents"`
+	// Driver version expressed as the major version followed by a period and a minor version.
+	DriverVersion string `json:"driverVersion"`
+	State         State  `json:"state"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *Device) GetDeviceId() string {
+	return s.DeviceId
+}
+
+// GetName returns the value of Name.
+func (s *Device) GetName() string {
+	return s.Name
+}
+
+// GetGpuModel returns the value of GpuModel.
+func (s *Device) GetGpuModel() string {
+	return s.GpuModel
+}
+
+// GetVramMb returns the value of VramMb.
+func (s *Device) GetVramMb() int {
+	return s.VramMb
+}
+
+// GetCudaCores returns the value of CudaCores.
+func (s *Device) GetCudaCores() int {
+	return s.CudaCores
+}
+
+// GetPricePerHourUsdCents returns the value of PricePerHourUsdCents.
+func (s *Device) GetPricePerHourUsdCents() int {
+	return s.PricePerHourUsdCents
+}
+
+// GetDriverVersion returns the value of DriverVersion.
+func (s *Device) GetDriverVersion() string {
+	return s.DriverVersion
+}
+
+// GetState returns the value of State.
+func (s *Device) GetState() State {
+	return s.State
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *Device) SetDeviceId(val string) {
+	s.DeviceId = val
+}
+
+// SetName sets the value of Name.
+func (s *Device) SetName(val string) {
+	s.Name = val
+}
+
+// SetGpuModel sets the value of GpuModel.
+func (s *Device) SetGpuModel(val string) {
+	s.GpuModel = val
+}
+
+// SetVramMb sets the value of VramMb.
+func (s *Device) SetVramMb(val int) {
+	s.VramMb = val
+}
+
+// SetCudaCores sets the value of CudaCores.
+func (s *Device) SetCudaCores(val int) {
+	s.CudaCores = val
+}
+
+// SetPricePerHourUsdCents sets the value of PricePerHourUsdCents.
+func (s *Device) SetPricePerHourUsdCents(val int) {
+	s.PricePerHourUsdCents = val
+}
+
+// SetDriverVersion sets the value of DriverVersion.
+func (s *Device) SetDriverVersion(val string) {
+	s.DriverVersion = val
+}
+
+// SetState sets the value of State.
+func (s *Device) SetState(val State) {
+	s.State = val
+}
+
+// Ref: #
 type DeviceStatus struct {
-	DeviceId           string            `json:"deviceId"`
-	State              DeviceStatusState `json:"state"`
-	TemperatureC       int               `json:"temperatureC"`
-	UtilizationPercent int               `json:"utilizationPercent"`
-	MemoryUsedMb       int               `json:"memoryUsedMb"`
-	LastHeartbeat      time.Time         `json:"lastHeartbeat"`
+	DeviceId           string    `json:"deviceId"`
+	State              State     `json:"state"`
+	TemperatureC       int       `json:"temperatureC"`
+	UtilizationPercent int       `json:"utilizationPercent"`
+	MemoryUsedMb       int       `json:"memoryUsedMb"`
+	LastHeartbeat      time.Time `json:"lastHeartbeat"`
 }
 
 // GetDeviceId returns the value of DeviceId.
@@ -25,7 +119,7 @@ func (s *DeviceStatus) GetDeviceId() string {
 }
 
 // GetState returns the value of State.
-func (s *DeviceStatus) GetState() DeviceStatusState {
+func (s *DeviceStatus) GetState() State {
 	return s.State
 }
 
@@ -55,7 +149,7 @@ func (s *DeviceStatus) SetDeviceId(val string) {
 }
 
 // SetState sets the value of State.
-func (s *DeviceStatus) SetState(val DeviceStatusState) {
+func (s *DeviceStatus) SetState(val State) {
 	s.State = val
 }
 
@@ -81,65 +175,24 @@ func (s *DeviceStatus) SetLastHeartbeat(val time.Time) {
 
 func (*DeviceStatus) getDeviceStatusRes() {}
 
-type DeviceStatusState string
-
-const (
-	DeviceStatusStateAVAILABLE   DeviceStatusState = "AVAILABLE"
-	DeviceStatusStateUNAVAILABLE DeviceStatusState = "UNAVAILABLE"
-	DeviceStatusStateRENTED      DeviceStatusState = "RENTED"
-	DeviceStatusStateREPORTED    DeviceStatusState = "REPORTED"
-)
-
-// AllValues returns all DeviceStatusState values.
-func (DeviceStatusState) AllValues() []DeviceStatusState {
-	return []DeviceStatusState{
-		DeviceStatusStateAVAILABLE,
-		DeviceStatusStateUNAVAILABLE,
-		DeviceStatusStateRENTED,
-		DeviceStatusStateREPORTED,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s DeviceStatusState) MarshalText() ([]byte, error) {
-	switch s {
-	case DeviceStatusStateAVAILABLE:
-		return []byte(s), nil
-	case DeviceStatusStateUNAVAILABLE:
-		return []byte(s), nil
-	case DeviceStatusStateRENTED:
-		return []byte(s), nil
-	case DeviceStatusStateREPORTED:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *DeviceStatusState) UnmarshalText(data []byte) error {
-	switch DeviceStatusState(data) {
-	case DeviceStatusStateAVAILABLE:
-		*s = DeviceStatusStateAVAILABLE
-		return nil
-	case DeviceStatusStateUNAVAILABLE:
-		*s = DeviceStatusStateUNAVAILABLE
-		return nil
-	case DeviceStatusStateRENTED:
-		*s = DeviceStatusStateRENTED
-		return nil
-	case DeviceStatusStateREPORTED:
-		*s = DeviceStatusStateREPORTED
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
 // GetDeviceStatusNotFound is response for GetDeviceStatus operation.
 type GetDeviceStatusNotFound struct{}
 
 func (*GetDeviceStatusNotFound) getDeviceStatusRes() {}
+
+// GetDevicesBadRequest is response for GetDevices operation.
+type GetDevicesBadRequest struct{}
+
+func (*GetDevicesBadRequest) getDevicesRes() {}
+
+// GetDevicesNotFound is response for GetDevices operation.
+type GetDevicesNotFound struct{}
+
+func (*GetDevicesNotFound) getDevicesRes() {}
+
+type GetDevicesOKApplicationJSON []Device
+
+func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 
 type GetHealthOK struct {
 	Data io.Reader
@@ -179,4 +232,152 @@ func (s *GetHealthOKHeaders) SetContentType(val string) {
 // SetResponse sets the value of Response.
 func (s *GetHealthOKHeaders) SetResponse(val GetHealthOK) {
 	s.Response = val
+}
+
+// NewOptInt returns new OptInt with value set to v.
+func NewOptInt(v int) OptInt {
+	return OptInt{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt is optional int.
+type OptInt struct {
+	Value int
+	Set   bool
+}
+
+// IsSet returns true if OptInt was set.
+func (o OptInt) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt) Reset() {
+	var v int
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt) SetTo(v int) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt) Get() (v int, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// Ref: #
+type State string
+
+const (
+	StateAVAILABLE   State = "AVAILABLE"
+	StateUNAVAILABLE State = "UNAVAILABLE"
+	StateRENTED      State = "RENTED"
+	StateREPORTED    State = "REPORTED"
+)
+
+// AllValues returns all State values.
+func (State) AllValues() []State {
+	return []State{
+		StateAVAILABLE,
+		StateUNAVAILABLE,
+		StateRENTED,
+		StateREPORTED,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s State) MarshalText() ([]byte, error) {
+	switch s {
+	case StateAVAILABLE:
+		return []byte(s), nil
+	case StateUNAVAILABLE:
+		return []byte(s), nil
+	case StateRENTED:
+		return []byte(s), nil
+	case StateREPORTED:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *State) UnmarshalText(data []byte) error {
+	switch State(data) {
+	case StateAVAILABLE:
+		*s = StateAVAILABLE
+		return nil
+	case StateUNAVAILABLE:
+		*s = StateUNAVAILABLE
+		return nil
+	case StateRENTED:
+		*s = StateRENTED
+		return nil
+	case StateREPORTED:
+		*s = StateREPORTED
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }

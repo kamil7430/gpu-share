@@ -1,4 +1,4 @@
-package main
+package api_tests
 
 import (
 	"errors"
@@ -9,14 +9,14 @@ import (
 	"time"
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
-	"github.com/kamil7430/gpu-share/backend/internal"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 	"github.com/stretchr/testify/require"
 )
 
-const baseUrl string = "http://localhost:2137"
+const baseUrl = "http://localhost:2137"
 
 func TestApi(t *testing.T) {
-	db, err := internal.InitializeDatabaseConnection(false)
+	db, err := utils.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
 	tx := db.Begin()
@@ -43,12 +43,13 @@ func TestApi(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 	require.Less(t, i, retries)
+	log.Println("Server is up! Running the tests...")
 
 	deviceId := "123"
 
 	tx.Exec("TRUNCATE TABLE devices;")
-	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version, state) " +
-		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595.97', 'AVAILABLE');")
+	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
+		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE');")
 
 	t.Run("device status by id", func(t *testing.T) {
 		resp, err := http.Get(baseUrl + "/api/devices/" + deviceId + "/status")
@@ -69,6 +70,9 @@ func TestApi(t *testing.T) {
 
 		require.JSONEq(t, expected, string(body))
 	})
+
+	testGetDevices(t, tx, baseUrl)
+
 	/*
 		t.Run("device register", func(t *testing.T) {
 			payload := `{
@@ -76,7 +80,7 @@ func TestApi(t *testing.T) {
 		        "gpu_model": "NVIDIA GeForce RTX 4090",
 		        "vram_mb": 24576,
 		        "cuda_cores": 16384,
-		        "price_per_hour_usd": 0.45,
+		        "price_per_hour_usdCents": 45,
 		        "driver_version": "535.104",
 		        "supported_frameworks": ["pytorch", "tensorflow"]
 		    }`

@@ -4,3 +4,7 @@ package api
 type GetDeviceStatusRes interface {
 	getDeviceStatusRes()
 }
+
+type GetDevicesRes interface {
+	getDevicesRes()
+}
