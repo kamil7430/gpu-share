@@ -5,7 +5,7 @@ required:
   - gpuModel
   - vramMb
   - cudaCores
-  - pricePerHourUsd
+  - pricePerHourUsdCents
   - driverVersion
   - state
 properties:
@@ -21,9 +21,11 @@ properties:
   cudaCores:
     type: integer
     minimum: 0
-  pricePerHourUsd:
-    type: string
-    example: "0.45"
+  pricePerHourUsdCents:
+    type: integer
+    minimum: 0
+    description: Price per active usage hour in USD cents, for example a value of `45` means `0.45 USD/h`
+    example: 45
   driverVersion:
     type: string
     description: Driver version expressed as the major version followed by a period and a minor version

@@ -17,10 +17,10 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	resetDbContent := func() {
 		tx.Exec("TRUNCATE TABLE devices;")
-		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version_major, driver_version_minor, state) " +
-			"VALUES ('2137', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595', '97', 'UNAVAILABLE'), " +
-			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '25.99', '595', '97', 'AVAILABLE'), " +
-			"('2139', 'TestCard3', 'NVIDIA GeForce GTX 1050 Ti', '4096', '768', '6.99', '582', '28', 'AVAILABLE');")
+		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
+			"VALUES ('2137', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'UNAVAILABLE'), " +
+			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '2599', '595', '97', 'AVAILABLE'), " +
+			"('2139', 'TestCard3', 'NVIDIA GeForce GTX 1050 Ti', '4096', '768', '699', '582', '28', 'AVAILABLE');")
 	}
 
 	testCardInfo := `{
@@ -29,7 +29,7 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		"gpuModel": "NVIDIA GeForce RTX 3050",
 		"vramMb": 8192,
 		"cudaCores": 2560,
-		"pricePerHourUsd": "15.99",
+		"pricePerHourUsdCents": 1599,
 		"driverVersion": "595.97",
 		"state": "UNAVAILABLE"
 	}`
@@ -40,7 +40,7 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		"gpuModel": "NVIDIA GeForce RTX 3050",
 		"vramMb": 8192,
 		"cudaCores": 2560,
-		"pricePerHourUsd": "25.99",
+		"pricePerHourUsdCents": 2599,
 		"driverVersion": "595.97",
 		"state": "AVAILABLE"
 	}`
@@ -51,7 +51,7 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		"gpuModel": "NVIDIA GeForce GTX 1050 Ti",
 		"vramMb": 4096,
 		"cudaCores": 768,
-		"pricePerHourUsd": "6.99",
+		"pricePerHourUsdCents": 699,
 		"driverVersion": "582.28",
 		"state": "AVAILABLE"
 	}`
@@ -121,14 +121,14 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		)
 	})
 
-	t.Run("get devices by minPricePerHourUsd", func(t *testing.T) {
-		getDevicesTestCase("minPricePerHourUsd=20",
+	t.Run("get devices by minPricePerHourUsdCents", func(t *testing.T) {
+		getDevicesTestCase("minPricePerHourUsdCents=2000",
 			testCard2Info,
 		)
 	})
 
-	t.Run("get devices by maxPricePerHourUsd", func(t *testing.T) {
-		getDevicesTestCase("maxPricePerHourUsd=20",
+	t.Run("get devices by maxPricePerHourUsdCents", func(t *testing.T) {
+		getDevicesTestCase("maxPricePerHourUsdCents=2000",
 			testCardInfo,
 			testCard3Info,
 		)
@@ -187,16 +187,16 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		getDevicesTestBadRequests("minCudaCores=5&maxCudaCores=3")
 	})
 
-	t.Run("get devices -- invalid minPricePerHourUsd", func(t *testing.T) {
-		getDevicesTestBadRequests("minPricePerHourUsd=-5")
+	t.Run("get devices -- invalid minPricePerHourUsdCents", func(t *testing.T) {
+		getDevicesTestBadRequests("minPricePerHourUsdCents=-5")
 	})
 
-	t.Run("get devices -- invalid maxPricePerHourUsd", func(t *testing.T) {
-		getDevicesTestBadRequests("maxPricePerHourUsd=-5")
+	t.Run("get devices -- invalid maxPricePerHourUsdCents", func(t *testing.T) {
+		getDevicesTestBadRequests("maxPricePerHourUsdCents=-5")
 	})
 
-	t.Run("get devices -- minPricePerHourUsd > maxPricePerHourUsd", func(t *testing.T) {
-		getDevicesTestBadRequests("minPricePerHourUsd=6.99&maxPricePerHourUsd=3.99")
+	t.Run("get devices -- minPricePerHourUsdCents > maxPricePerHourUsdCents", func(t *testing.T) {
+		getDevicesTestBadRequests("minPricePerHourUsdCents=699&maxPricePerHourUsdCents=399")
 	})
 
 	t.Run("get devices -- minDriverVersion > maxDriverVersion", func(t *testing.T) {
@@ -239,11 +239,11 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	t.Run("get devices by minPricePerHour -- not found", func(t *testing.T) {
-		getDevicesTestNotFound("minPricePerHourUsd=2000")
+		getDevicesTestNotFound("minPricePerHourUsdCents=3000")
 	})
 
 	t.Run("get devices by maxPricePerHour -- not found", func(t *testing.T) {
-		getDevicesTestNotFound("maxPricePerHourUsd=0.50")
+		getDevicesTestNotFound("maxPricePerHourUsdCents=50")
 	})
 
 	t.Run("get devices by minDriverVersion -- not found", func(t *testing.T) {

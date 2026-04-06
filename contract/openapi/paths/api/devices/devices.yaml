@@ -18,55 +18,55 @@ get:
     - name: minVramMb
       in: query
       required: false
-      description: Minimal amount of Video RAM in megabytes
+      description: Minimum amount of Video RAM in megabytes
       schema:
         type: integer
         minimum: 0
     - name: maxVramMb
       in: query
       required: false
-      description: Maximal amount of Video RAM in megabytes
+      description: Maximum amount of Video RAM in megabytes
       schema:
         type: integer
         minimum: 0
     - name: minCudaCores
       in: query
       required: false
-      description: Minimal amount of CUDA cores
+      description: Minimum amount of CUDA cores
       schema:
         type: integer
         minimum: 0
     - name: maxCudaCores
       in: query
       required: false
-      description: Maximal amount of CUDA cores
+      description: Maximum amount of CUDA cores
       schema:
         type: integer
         minimum: 0
-    - name: minPricePerHourUsd
+    - name: minPricePerHourUsdCents
       in: query
       required: false
-      description: Minimal price per hour of device usage in USD
+      description: Minimum price per hour of device usage in USD cents
       schema:
         type: number
         minimum: 0
-    - name: maxPricePerHourUsd
+    - name: maxPricePerHourUsdCents
       in: query
       required: false
-      description: Maximal price per hour of device usage in USD
+      description: Maximum price per hour of device usage in USD cents
       schema:
         type: number
         minimum: 0
     - name: minDriverVersion
       in: query
       required: false
-      description: Minimal driver version
+      description: Minimum driver version
       schema:
         type: string
     - name: maxDriverVersion
       in: query
       required: false
-      description: Maximal driver version
+      description: Maximum driver version
       schema:
         type: string
     - name: states

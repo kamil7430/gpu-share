@@ -42,8 +42,8 @@ func (s *Device) encodeFields(e *jx.Encoder) {
 		e.Int(s.CudaCores)
 	}
 	{
-		e.FieldStart("pricePerHourUsd")
-		e.Str(s.PricePerHourUsd)
+		e.FieldStart("pricePerHourUsdCents")
+		e.Int(s.PricePerHourUsdCents)
 	}
 	{
 		e.FieldStart("driverVersion")
@@ -61,7 +61,7 @@ var jsonFieldsNameOfDevice = [8]string{
 	2: "gpuModel",
 	3: "vramMb",
 	4: "cudaCores",
-	5: "pricePerHourUsd",
+	5: "pricePerHourUsdCents",
 	6: "driverVersion",
 	7: "state",
 }
@@ -135,17 +135,17 @@ func (s *Device) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"cudaCores\"")
 			}
-		case "pricePerHourUsd":
+		case "pricePerHourUsdCents":
 			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := d.Str()
-				s.PricePerHourUsd = string(v)
+				v, err := d.Int()
+				s.PricePerHourUsdCents = int(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"pricePerHourUsd\"")
+				return errors.Wrap(err, "decode field \"pricePerHourUsdCents\"")
 			}
 		case "driverVersion":
 			requiredBitSet[0] |= 1 << 6

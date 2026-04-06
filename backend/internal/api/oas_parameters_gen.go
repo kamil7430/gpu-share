@@ -89,21 +89,21 @@ type GetDevicesParams struct {
 	Name OptString `json:",omitempty,omitzero"`
 	// Model of device to retrieve.
 	GpuModel OptString `json:",omitempty,omitzero"`
-	// Minimal amount of Video RAM in megabytes.
+	// Minimum amount of Video RAM in megabytes.
 	MinVramMb OptInt `json:",omitempty,omitzero"`
-	// Maximal amount of Video RAM in megabytes.
+	// Maximum amount of Video RAM in megabytes.
 	MaxVramMb OptInt `json:",omitempty,omitzero"`
-	// Minimal amount of CUDA cores.
+	// Minimum amount of CUDA cores.
 	MinCudaCores OptInt `json:",omitempty,omitzero"`
-	// Maximal amount of CUDA cores.
+	// Maximum amount of CUDA cores.
 	MaxCudaCores OptInt `json:",omitempty,omitzero"`
-	// Minimal price per hour of device usage in USD.
-	MinPricePerHourUsd OptFloat64 `json:",omitempty,omitzero"`
-	// Maximal price per hour of device usage in USD.
-	MaxPricePerHourUsd OptFloat64 `json:",omitempty,omitzero"`
-	// Minimal driver version.
+	// Minimum price per hour of device usage in USD cents.
+	MinPricePerHourUsdCents OptFloat64 `json:",omitempty,omitzero"`
+	// Maximum price per hour of device usage in USD cents.
+	MaxPricePerHourUsdCents OptFloat64 `json:",omitempty,omitzero"`
+	// Minimum driver version.
 	MinDriverVersion OptString `json:",omitempty,omitzero"`
-	// Maximal driver version.
+	// Maximum driver version.
 	MaxDriverVersion OptString `json:",omitempty,omitzero"`
 	// Device states.
 	States []State `json:",omitempty"`
@@ -175,20 +175,20 @@ func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesPara
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "minPricePerHourUsd",
+			Name: "minPricePerHourUsdCents",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.MinPricePerHourUsd = v.(OptFloat64)
+			params.MinPricePerHourUsdCents = v.(OptFloat64)
 		}
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "maxPricePerHourUsd",
+			Name: "maxPricePerHourUsdCents",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.MaxPricePerHourUsd = v.(OptFloat64)
+			params.MaxPricePerHourUsdCents = v.(OptFloat64)
 		}
 	}
 	{
@@ -640,17 +640,17 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 			Err:  err,
 		}
 	}
-	// Decode query: minPricePerHourUsd.
+	// Decode query: minPricePerHourUsdCents.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "minPricePerHourUsd",
+			Name:    "minPricePerHourUsdCents",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotMinPricePerHourUsdVal float64
+				var paramsDotMinPricePerHourUsdCentsVal float64
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
@@ -662,18 +662,18 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 						return err
 					}
 
-					paramsDotMinPricePerHourUsdVal = c
+					paramsDotMinPricePerHourUsdCentsVal = c
 					return nil
 				}(); err != nil {
 					return err
 				}
-				params.MinPricePerHourUsd.SetTo(paramsDotMinPricePerHourUsdVal)
+				params.MinPricePerHourUsdCents.SetTo(paramsDotMinPricePerHourUsdCentsVal)
 				return nil
 			}); err != nil {
 				return err
 			}
 			if err := func() error {
-				if value, ok := params.MinPricePerHourUsd.Get(); ok {
+				if value, ok := params.MinPricePerHourUsdCents.Get(); ok {
 					if err := func() error {
 						if err := (validate.Float{
 							MinSet:        true,
@@ -701,22 +701,22 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "minPricePerHourUsd",
+			Name: "minPricePerHourUsdCents",
 			In:   "query",
 			Err:  err,
 		}
 	}
-	// Decode query: maxPricePerHourUsd.
+	// Decode query: maxPricePerHourUsdCents.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "maxPricePerHourUsd",
+			Name:    "maxPricePerHourUsdCents",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotMaxPricePerHourUsdVal float64
+				var paramsDotMaxPricePerHourUsdCentsVal float64
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
@@ -728,18 +728,18 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 						return err
 					}
 
-					paramsDotMaxPricePerHourUsdVal = c
+					paramsDotMaxPricePerHourUsdCentsVal = c
 					return nil
 				}(); err != nil {
 					return err
 				}
-				params.MaxPricePerHourUsd.SetTo(paramsDotMaxPricePerHourUsdVal)
+				params.MaxPricePerHourUsdCents.SetTo(paramsDotMaxPricePerHourUsdCentsVal)
 				return nil
 			}); err != nil {
 				return err
 			}
 			if err := func() error {
-				if value, ok := params.MaxPricePerHourUsd.Get(); ok {
+				if value, ok := params.MaxPricePerHourUsdCents.Get(); ok {
 					if err := func() error {
 						if err := (validate.Float{
 							MinSet:        true,
@@ -767,7 +767,7 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "maxPricePerHourUsd",
+			Name: "maxPricePerHourUsdCents",
 			In:   "query",
 			Err:  err,
 		}

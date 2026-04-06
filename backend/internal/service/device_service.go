@@ -36,8 +36,8 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 		}
 	}
 
-	if minPricePerHour, ok := params.MinPricePerHourUsd.Get(); ok {
-		if maxPricePerHour, ok := params.MaxPricePerHourUsd.Get(); ok && minPricePerHour > maxPricePerHour {
+	if minPricePerHour, ok := params.MinPricePerHourUsdCents.Get(); ok {
+		if maxPricePerHour, ok := params.MaxPricePerHourUsdCents.Get(); ok && minPricePerHour > maxPricePerHour {
 			return &api.GetDevicesBadRequest{}, nil
 		}
 	}
@@ -72,14 +72,14 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 			log.Fatal(err) // should be unreachable
 		}
 		result = append(result, api.Device{
-			DeviceId:        strconv.Itoa(int(dev.ID)),
-			Name:            dev.Name,
-			GpuModel:        dev.GpuModel,
-			VramMb:          dev.VramMb,
-			CudaCores:       dev.CudaCores,
-			PricePerHourUsd: strconv.FormatFloat(float64(dev.PricePerHourUsd), 'f', 2, 32),
-			DriverVersion:   dv.String(),
-			State:           dev.State,
+			DeviceId:             strconv.Itoa(int(dev.ID)),
+			Name:                 dev.Name,
+			GpuModel:             dev.GpuModel,
+			VramMb:               dev.VramMb,
+			CudaCores:            dev.CudaCores,
+			PricePerHourUsdCents: dev.PricePerHourUsdCents,
+			DriverVersion:        dv.String(),
+			State:                dev.State,
 		})
 	}
 

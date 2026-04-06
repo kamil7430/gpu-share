@@ -352,15 +352,15 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 		}
 	}
 	{
-		// Encode "minPricePerHourUsd" parameter.
+		// Encode "minPricePerHourUsdCents" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "minPricePerHourUsd",
+			Name:    "minPricePerHourUsdCents",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.MinPricePerHourUsd.Get(); ok {
+			if val, ok := params.MinPricePerHourUsdCents.Get(); ok {
 				return e.EncodeValue(conv.Float64ToString(val))
 			}
 			return nil
@@ -369,15 +369,15 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 		}
 	}
 	{
-		// Encode "maxPricePerHourUsd" parameter.
+		// Encode "maxPricePerHourUsdCents" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "maxPricePerHourUsd",
+			Name:    "maxPricePerHourUsdCents",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.MaxPricePerHourUsd.Get(); ok {
+			if val, ok := params.MaxPricePerHourUsdCents.Get(); ok {
 				return e.EncodeValue(conv.Float64ToString(val))
 			}
 			return nil

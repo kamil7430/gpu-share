@@ -48,8 +48,8 @@ func TestApi(t *testing.T) {
 	deviceId := "123"
 
 	tx.Exec("TRUNCATE TABLE devices;")
-	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd, driver_version_major, driver_version_minor, state) " +
-		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '15.99', '595', '97', 'AVAILABLE');")
+	tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
+		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE');")
 
 	t.Run("device status by id", func(t *testing.T) {
 		resp, err := http.Get(baseUrl + "/api/devices/" + deviceId + "/status")
@@ -80,7 +80,7 @@ func TestApi(t *testing.T) {
 		        "gpu_model": "NVIDIA GeForce RTX 4090",
 		        "vram_mb": 24576,
 		        "cuda_cores": 16384,
-		        "price_per_hour_usd": 0.45,
+		        "price_per_hour_usdCents": 45,
 		        "driver_version": "535.104",
 		        "supported_frameworks": ["pytorch", "tensorflow"]
 		    }`

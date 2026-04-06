@@ -304,13 +304,13 @@ func (s *Server) handleGetDevicesRequest(args [0]string, argsEscaped bool, w htt
 					In:   "query",
 				}: params.MaxCudaCores,
 				{
-					Name: "minPricePerHourUsd",
+					Name: "minPricePerHourUsdCents",
 					In:   "query",
-				}: params.MinPricePerHourUsd,
+				}: params.MinPricePerHourUsdCents,
 				{
-					Name: "maxPricePerHourUsd",
+					Name: "maxPricePerHourUsdCents",
 					In:   "query",
-				}: params.MaxPricePerHourUsd,
+				}: params.MaxPricePerHourUsdCents,
 				{
 					Name: "minDriverVersion",
 					In:   "query",

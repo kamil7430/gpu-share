@@ -40,11 +40,11 @@ func (r *DatabaseDeviceRepository) GetDevices(ctx context.Context, params api.Ge
 	if v, ok := params.MaxCudaCores.Get(); ok {
 		query = query.Where("cuda_cores <= ?", v)
 	}
-	if v, ok := params.MinPricePerHourUsd.Get(); ok {
-		query = query.Where("price_per_hour_usd >= ?", v)
+	if v, ok := params.MinPricePerHourUsdCents.Get(); ok {
+		query = query.Where("price_per_hour_usd_cents >= ?", v)
 	}
-	if v, ok := params.MaxPricePerHourUsd.Get(); ok {
-		query = query.Where("price_per_hour_usd <= ?", v)
+	if v, ok := params.MaxPricePerHourUsdCents.Get(); ok {
+		query = query.Where("price_per_hour_usd_cents <= ?", v)
 	}
 	if v, ok := params.MinDriverVersion.Get(); ok {
 		dv, err := utils.DriverVersionFromString(v)

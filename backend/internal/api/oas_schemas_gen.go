@@ -11,14 +11,16 @@ import (
 
 // Ref: #
 type Device struct {
-	DeviceId        string `json:"deviceId"`
-	Name            string `json:"name"`
-	GpuModel        string `json:"gpuModel"`
-	VramMb          int    `json:"vramMb"`
-	CudaCores       int    `json:"cudaCores"`
-	PricePerHourUsd string `json:"pricePerHourUsd"`
-	DriverVersion   string `json:"driverVersion"`
-	State           State  `json:"state"`
+	DeviceId  string `json:"deviceId"`
+	Name      string `json:"name"`
+	GpuModel  string `json:"gpuModel"`
+	VramMb    int    `json:"vramMb"`
+	CudaCores int    `json:"cudaCores"`
+	// Price per active usage hour in USD cents, for example a value of `45` means `0.45 USD/h`.
+	PricePerHourUsdCents int `json:"pricePerHourUsdCents"`
+	// Driver version expressed as the major version followed by a period and a minor version.
+	DriverVersion string `json:"driverVersion"`
+	State         State  `json:"state"`
 }
 
 // GetDeviceId returns the value of DeviceId.
@@ -46,9 +48,9 @@ func (s *Device) GetCudaCores() int {
 	return s.CudaCores
 }
 
-// GetPricePerHourUsd returns the value of PricePerHourUsd.
-func (s *Device) GetPricePerHourUsd() string {
-	return s.PricePerHourUsd
+// GetPricePerHourUsdCents returns the value of PricePerHourUsdCents.
+func (s *Device) GetPricePerHourUsdCents() int {
+	return s.PricePerHourUsdCents
 }
 
 // GetDriverVersion returns the value of DriverVersion.
@@ -86,9 +88,9 @@ func (s *Device) SetCudaCores(val int) {
 	s.CudaCores = val
 }
 
-// SetPricePerHourUsd sets the value of PricePerHourUsd.
-func (s *Device) SetPricePerHourUsd(val string) {
-	s.PricePerHourUsd = val
+// SetPricePerHourUsdCents sets the value of PricePerHourUsdCents.
+func (s *Device) SetPricePerHourUsdCents(val int) {
+	s.PricePerHourUsdCents = val
 }
 
 // SetDriverVersion sets the value of DriverVersion.
