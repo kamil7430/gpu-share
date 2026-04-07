@@ -38,7 +38,7 @@ type Invoker interface {
 	// Check if server is up.
 	//
 	// GET /health
-	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
+	GetHealth(ctx context.Context) error
 	// ScheduleTask invokes scheduleTask operation.
 	//
 	// Schedule a task on a given device.
@@ -184,12 +184,12 @@ func (c *Client) sendGetAgentStatus(ctx context.Context, params GetAgentStatusPa
 // Check if server is up.
 //
 // GET /health
-func (c *Client) GetHealth(ctx context.Context) (*GetHealthOKHeaders, error) {
-	res, err := c.sendGetHealth(ctx)
-	return res, err
+func (c *Client) GetHealth(ctx context.Context) error {
+	_, err := c.sendGetHealth(ctx)
+	return err
 }
 
-func (c *Client) sendGetHealth(ctx context.Context) (res *GetHealthOKHeaders, err error) {
+func (c *Client) sendGetHealth(ctx context.Context) (res *GetHealthOK, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getHealth"),
 		semconv.HTTPRequestMethodKey.String("GET"),

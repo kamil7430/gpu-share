@@ -3,17 +3,13 @@
 package api
 
 import (
-	"bytes"
 	"io"
 	"mime"
 	"net/http"
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
-	"github.com/ogen-go/ogen/conv"
-	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
-	"github.com/ogen-go/ogen/uri"
 	"github.com/ogen-go/ogen/validate"
 )
 
@@ -210,62 +206,11 @@ func decodeGetDevicesResponse(resp *http.Response) (res GetDevicesRes, _ error) 
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodeGetHealthResponse(resp *http.Response) (res *GetHealthOKHeaders, _ error) {
+func decodeGetHealthResponse(resp *http.Response) (res *GetHealthOK, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
-		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-		if err != nil {
-			return res, errors.Wrap(err, "parse media type")
-		}
-		switch {
-		case ht.MatchContentType("text/*", ct):
-			reader := resp.Body
-			b, err := io.ReadAll(reader)
-			if err != nil {
-				return res, err
-			}
-
-			response := GetHealthOK{Data: bytes.NewReader(b)}
-			var wrapper GetHealthOKHeaders
-			wrapper.Response = response
-			h := uri.NewHeaderDecoder(resp.Header)
-			// Parse "Content-Type" header.
-			{
-				cfg := uri.HeaderParameterDecodingConfig{
-					Name:    "Content-Type",
-					Explode: false,
-				}
-				if err := func() error {
-					if err := h.HasParam(cfg); err == nil {
-						if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-							val, err := d.DecodeValue()
-							if err != nil {
-								return err
-							}
-
-							c, err := conv.ToString(val)
-							if err != nil {
-								return err
-							}
-
-							wrapper.ContentType = c
-							return nil
-						}); err != nil {
-							return err
-						}
-					} else {
-						return err
-					}
-					return nil
-				}(); err != nil {
-					return res, errors.Wrap(err, "parse Content-Type header")
-				}
-			}
-			return &wrapper, nil
-		default:
-			return res, validate.InvalidContentType(ct)
-		}
+		return &GetHealthOK{}, nil
 	}
 	// Convenient error response.
 	defRes, err := func() (res *ErrorStatusCode, err error) {

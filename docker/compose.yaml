@@ -3,7 +3,7 @@ services:
     build:
       context: ..
       dockerfile: docker/backend.Dockerfile
-    env_file: "../.env"
+    env_file: ../.env
     ports:
       - "2137:2137"
     depends_on:
@@ -16,8 +16,7 @@ services:
     build:
       context: ..
       dockerfile: docker/gpu.Dockerfile
-    env_file:
-      - ../.env
+    env_file: ../.env
     ports:
       - "2138:2138"
       - "2139:2139"
@@ -27,8 +26,7 @@ services:
   db:
     image: postgres
     restart: always
-    env_file:
-      - ../.env
+    env_file: ../.env
     volumes:
       - db-data:/var/lib/postgresql
     expose:

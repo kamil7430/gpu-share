@@ -18,8 +18,8 @@ func NewRestHandler(as *service.AgentService) *RestHandler {
 	return &RestHandler{as}
 }
 
-func (*RestHandler) GetHealth(ctx context.Context) (r *api.GetHealthOKHeaders, _ error) {
-	return &api.GetHealthOKHeaders{}, nil
+func (*RestHandler) GetHealth(ctx context.Context) error {
+	return nil
 }
 
 func (*RestHandler) NewError(ctx context.Context, err error) *api.ErrorStatusCode {

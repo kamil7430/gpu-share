@@ -3,14 +3,11 @@
 package api
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
-	"github.com/ogen-go/ogen/conv"
 	ht "github.com/ogen-go/ogen/http"
-	"github.com/ogen-go/ogen/uri"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -73,33 +70,9 @@ func encodeGetDevicesResponse(response GetDevicesRes, w http.ResponseWriter, spa
 	}
 }
 
-func encodeGetHealthResponse(response *GetHealthOKHeaders, w http.ResponseWriter, span trace.Span) error {
-	// Encoding response headers.
-	{
-		h := uri.NewHeaderEncoder(w.Header())
-		// Encode "Content-Type" header.
-		{
-			cfg := uri.HeaderParameterEncodingConfig{
-				Name:    "Content-Type",
-				Explode: false,
-			}
-			if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-				return e.EncodeValue(conv.StringToString(response.ContentType))
-			}); err != nil {
-				return errors.Wrap(err, "encode Content-Type header")
-			}
-		}
-	}
+func encodeGetHealthResponse(response *GetHealthOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))
-
-	writer := w
-	if closer, ok := response.Response.Data.(io.Closer); ok {
-		defer closer.Close()
-	}
-	if _, err := io.Copy(writer, response.Response); err != nil {
-		return errors.Wrap(err, "write")
-	}
 
 	return nil
 }

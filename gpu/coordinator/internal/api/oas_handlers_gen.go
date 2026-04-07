@@ -262,7 +262,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 
 	var rawBody []byte
 
-	var response *GetHealthOKHeaders
+	var response *GetHealthOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -278,7 +278,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		type (
 			Request  = struct{}
 			Params   = struct{}
-			Response = *GetHealthOKHeaders
+			Response = *GetHealthOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -289,12 +289,12 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetHealth(ctx)
+				err = s.h.GetHealth(ctx)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetHealth(ctx)
+		err = s.h.GetHealth(ctx)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {

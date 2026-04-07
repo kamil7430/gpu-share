@@ -25,7 +25,7 @@ type Handler interface {
 	// Check if server is up.
 	//
 	// GET /health
-	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
+	GetHealth(ctx context.Context) error
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.

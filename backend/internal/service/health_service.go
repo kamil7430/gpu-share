@@ -13,8 +13,8 @@ func NewHealthService() HealthService {
 	return HealthService{}
 }
 
-func (*HealthService) GetHealth(ctx context.Context) (r *api.GetHealthOKHeaders, _ error) {
-	return &api.GetHealthOKHeaders{}, nil
+func (*HealthService) GetHealth(ctx context.Context) error {
+	return nil
 }
 
 func (*HealthService) NewError(ctx context.Context, err error) *api.ErrorStatusCode {

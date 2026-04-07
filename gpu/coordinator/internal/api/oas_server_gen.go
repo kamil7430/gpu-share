@@ -19,7 +19,7 @@ type Handler interface {
 	// Check if server is up.
 	//
 	// GET /health
-	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
+	GetHealth(ctx context.Context) error
 	// ScheduleTask implements scheduleTask operation.
 	//
 	// Schedule a task on a given device.

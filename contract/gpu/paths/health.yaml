@@ -4,11 +4,6 @@ get:
   responses:
     "200":
       description: Server is up
-      content:
-        text/*:
-          schema:
-            type: string
-            example: OK
     default:
       description: Server is not feeling well
       content:

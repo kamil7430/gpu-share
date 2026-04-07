@@ -44,7 +44,7 @@ type Invoker interface {
 	// Check if server is up.
 	//
 	// GET /health
-	GetHealth(ctx context.Context) (*GetHealthOKHeaders, error)
+	GetHealth(ctx context.Context) error
 }
 
 // Client implements OAS client.
@@ -475,12 +475,12 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 // Check if server is up.
 //
 // GET /health
-func (c *Client) GetHealth(ctx context.Context) (*GetHealthOKHeaders, error) {
-	res, err := c.sendGetHealth(ctx)
-	return res, err
+func (c *Client) GetHealth(ctx context.Context) error {
+	_, err := c.sendGetHealth(ctx)
+	return err
 }
 
-func (c *Client) sendGetHealth(ctx context.Context) (res *GetHealthOKHeaders, err error) {
+func (c *Client) sendGetHealth(ctx context.Context) (res *GetHealthOK, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getHealth"),
 		semconv.HTTPRequestMethodKey.String("GET"),

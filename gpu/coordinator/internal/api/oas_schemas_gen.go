@@ -4,7 +4,6 @@ package api
 
 import (
 	"fmt"
-	"io"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -51,45 +50,8 @@ type GetAgentStatusOK struct{}
 
 func (*GetAgentStatusOK) getAgentStatusRes() {}
 
-type GetHealthOK struct {
-	Data io.Reader
-}
-
-// Read reads data from the Data reader.
-//
-// Kept to satisfy the io.Reader interface.
-func (s GetHealthOK) Read(p []byte) (n int, err error) {
-	if s.Data == nil {
-		return 0, io.EOF
-	}
-	return s.Data.Read(p)
-}
-
-// GetHealthOKHeaders wraps GetHealthOK with response headers.
-type GetHealthOKHeaders struct {
-	ContentType string
-	Response    GetHealthOK
-}
-
-// GetContentType returns the value of ContentType.
-func (s *GetHealthOKHeaders) GetContentType() string {
-	return s.ContentType
-}
-
-// GetResponse returns the value of Response.
-func (s *GetHealthOKHeaders) GetResponse() GetHealthOK {
-	return s.Response
-}
-
-// SetContentType sets the value of ContentType.
-func (s *GetHealthOKHeaders) SetContentType(val string) {
-	s.ContentType = val
-}
-
-// SetResponse sets the value of Response.
-func (s *GetHealthOKHeaders) SetResponse(val GetHealthOK) {
-	s.Response = val
-}
+// GetHealthOK is response for GetHealth operation.
+type GetHealthOK struct{}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {

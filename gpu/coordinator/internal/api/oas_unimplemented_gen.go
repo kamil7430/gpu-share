@@ -27,8 +27,8 @@ func (UnimplementedHandler) GetAgentStatus(ctx context.Context, params GetAgentS
 // Check if server is up.
 //
 // GET /health
-func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOKHeaders, _ error) {
-	return r, ht.ErrNotImplemented
+func (UnimplementedHandler) GetHealth(ctx context.Context) error {
+	return ht.ErrNotImplemented
 }
 
 // ScheduleTask implements scheduleTask operation.
