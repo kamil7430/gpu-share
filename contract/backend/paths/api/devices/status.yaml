@@ -1,0 +1,20 @@
+get:
+  summary: Get device status by ID
+  operationId: getDeviceStatus
+  parameters:
+    - $ref: "../../../parameters/path/deviceId.yaml"
+  responses:
+    "200":
+      description: Device found
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/DeviceStatus.yaml"
+    "404":
+      description: Device not found
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/Error.yaml"

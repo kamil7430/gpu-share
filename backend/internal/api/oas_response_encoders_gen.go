@@ -3,13 +3,11 @@
 package api
 
 import (
-	"io"
 	"net/http"
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
-	"github.com/ogen-go/ogen/conv"
-	"github.com/ogen-go/ogen/uri"
+	ht "github.com/ogen-go/ogen/http"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -72,33 +70,36 @@ func encodeGetDevicesResponse(response GetDevicesRes, w http.ResponseWriter, spa
 	}
 }
 
-func encodeGetHealthResponse(response *GetHealthOKHeaders, w http.ResponseWriter, span trace.Span) error {
-	// Encoding response headers.
-	{
-		h := uri.NewHeaderEncoder(w.Header())
-		// Encode "Content-Type" header.
-		{
-			cfg := uri.HeaderParameterEncodingConfig{
-				Name:    "Content-Type",
-				Explode: false,
-			}
-			if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-				return e.EncodeValue(conv.StringToString(response.ContentType))
-			}); err != nil {
-				return errors.Wrap(err, "encode Content-Type header")
-			}
-		}
-	}
+func encodeGetHealthResponse(response *GetHealthOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))
 
-	writer := w
-	if closer, ok := response.Response.Data.(io.Closer); ok {
-		defer closer.Close()
+	return nil
+}
+
+func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span trace.Span) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	code := response.StatusCode
+	if code == 0 {
+		// Set default status code.
+		code = http.StatusOK
 	}
-	if _, err := io.Copy(writer, response.Response); err != nil {
+	w.WriteHeader(code)
+	if st := http.StatusText(code); code >= http.StatusBadRequest {
+		span.SetStatus(codes.Error, st)
+	} else {
+		span.SetStatus(codes.Ok, st)
+	}
+
+	e := new(jx.Encoder)
+	response.Response.Encode(e)
+	if _, err := e.WriteTo(w); err != nil {
 		return errors.Wrap(err, "write")
 	}
 
+	if code >= http.StatusInternalServerError {
+		return errors.Wrapf(ht.ErrInternalServerErrorResponse, "code: %d, message: %s", code, http.StatusText(code))
+	}
 	return nil
+
 }

@@ -36,6 +36,14 @@ func (UnimplementedHandler) GetDevices(ctx context.Context, params GetDevicesPar
 // Check if server is up.
 //
 // GET /health
-func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOKHeaders, _ error) {
-	return r, ht.ErrNotImplemented
+func (UnimplementedHandler) GetHealth(ctx context.Context) error {
+	return ht.ErrNotImplemented
+}
+
+// NewError creates *ErrorStatusCode from error returned by handler.
+//
+// Used for common default response.
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorStatusCode) {
+	r = new(ErrorStatusCode)
+	return r
 }

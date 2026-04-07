@@ -3,11 +3,15 @@
 package api
 
 import (
-	"io"
+	"fmt"
 	"time"
 
 	"github.com/go-faster/errors"
 )
+
+func (s *ErrorStatusCode) Error() string {
+	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
 
 // Ref: #
 type Device struct {
@@ -175,6 +179,34 @@ func (s *DeviceStatus) SetLastHeartbeat(val time.Time) {
 
 func (*DeviceStatus) getDeviceStatusRes() {}
 
+type Error string
+
+// ErrorStatusCode wraps Error with StatusCode.
+type ErrorStatusCode struct {
+	StatusCode int
+	Response   Error
+}
+
+// GetStatusCode returns the value of StatusCode.
+func (s *ErrorStatusCode) GetStatusCode() int {
+	return s.StatusCode
+}
+
+// GetResponse returns the value of Response.
+func (s *ErrorStatusCode) GetResponse() Error {
+	return s.Response
+}
+
+// SetStatusCode sets the value of StatusCode.
+func (s *ErrorStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
+}
+
+// SetResponse sets the value of Response.
+func (s *ErrorStatusCode) SetResponse(val Error) {
+	s.Response = val
+}
+
 // GetDeviceStatusNotFound is response for GetDeviceStatus operation.
 type GetDeviceStatusNotFound struct{}
 
@@ -194,45 +226,8 @@ type GetDevicesOKApplicationJSON []Device
 
 func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 
-type GetHealthOK struct {
-	Data io.Reader
-}
-
-// Read reads data from the Data reader.
-//
-// Kept to satisfy the io.Reader interface.
-func (s GetHealthOK) Read(p []byte) (n int, err error) {
-	if s.Data == nil {
-		return 0, io.EOF
-	}
-	return s.Data.Read(p)
-}
-
-// GetHealthOKHeaders wraps GetHealthOK with response headers.
-type GetHealthOKHeaders struct {
-	ContentType string
-	Response    GetHealthOK
-}
-
-// GetContentType returns the value of ContentType.
-func (s *GetHealthOKHeaders) GetContentType() string {
-	return s.ContentType
-}
-
-// GetResponse returns the value of Response.
-func (s *GetHealthOKHeaders) GetResponse() GetHealthOK {
-	return s.Response
-}
-
-// SetContentType sets the value of ContentType.
-func (s *GetHealthOKHeaders) SetContentType(val string) {
-	s.ContentType = val
-}
-
-// SetResponse sets the value of Response.
-func (s *GetHealthOKHeaders) SetResponse(val GetHealthOK) {
-	s.Response = val
-}
+// GetHealthOK is response for GetHealth operation.
+type GetHealthOK struct{}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {

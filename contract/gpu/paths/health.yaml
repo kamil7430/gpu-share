@@ -1,0 +1,12 @@
+get:
+  summary: Check if server is up
+  operationId: getHealth
+  responses:
+    "200":
+      description: Server is up
+    default:
+      description: Server is not feeling well
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Error.yaml"

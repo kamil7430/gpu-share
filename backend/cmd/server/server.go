@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
@@ -25,13 +26,16 @@ func NewServer(db *gorm.DB) *http.Server {
 		service.NewHealthService(),
 		service.NewDeviceService(deviceRepo, gpuRepo),
 	}
-
-	apiServer, err := api.NewServer(&sauron)
+	srv, err := api.NewServer(&sauron)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &http.Server{Addr: ":2137", Handler: apiServer}
+	ip := os.Getenv("BACKEND_IP")
+	if ip == "" {
+		log.Fatal("invalid value of `BACKEND_IP` env variable")
+	}
+	return &http.Server{Addr: ip + ":2137", Handler: srv}
 
 	//loginHandler := handler.NewLoginHandler(&service.UserService{})
 	//

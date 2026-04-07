@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -13,7 +14,13 @@ import (
 	"gorm.io/gorm"
 )
 
-const baseUrl = "http://localhost:2137"
+var baseUrl = func() string {
+	ip := os.Getenv("BACKEND_IP")
+	if ip == "" {
+		log.Fatal("invalid value of `BACKEND_IP` env variable")
+	}
+	return "http://" + ip + ":2137"
+}()
 
 var testsToRun = []func(*testing.T, *gorm.DB, string){
 	testGetDeviceStatus,

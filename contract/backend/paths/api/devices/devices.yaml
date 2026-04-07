@@ -1,0 +1,109 @@
+get:
+  summary: Get list of devices that match the provided filters
+  operationId: getDevices
+  parameters:
+    - $ref: "../../../parameters/query/limit.yaml"
+    - name: name
+      in: query
+      required: false
+      description: Name of devices to retrieve
+      schema:
+        type: string
+    - name: gpuModel
+      in: query
+      required: false
+      description: Model of device to retrieve
+      schema:
+        type: string
+    - name: minVramMb
+      in: query
+      required: false
+      description: Minimum amount of Video RAM in megabytes
+      schema:
+        type: integer
+        minimum: 0
+    - name: maxVramMb
+      in: query
+      required: false
+      description: Maximum amount of Video RAM in megabytes
+      schema:
+        type: integer
+        minimum: 0
+    - name: minCudaCores
+      in: query
+      required: false
+      description: Minimum amount of CUDA cores
+      schema:
+        type: integer
+        minimum: 0
+    - name: maxCudaCores
+      in: query
+      required: false
+      description: Maximum amount of CUDA cores
+      schema:
+        type: integer
+        minimum: 0
+    - name: minPricePerHourUsdCents
+      in: query
+      required: false
+      description: Minimum price per hour of device usage in USD cents
+      examples:
+        fifteen:
+          summary: 15.99 USD/h
+          value: 1599
+      schema:
+        type: integer
+        minimum: 0
+    - name: maxPricePerHourUsdCents
+      in: query
+      required: false
+      description: Maximum price per hour of device usage in USD cents
+      examples:
+        fifteen:
+          summary: 15.99 USD/h
+          value: 1599
+      schema:
+        type: integer
+        minimum: 0
+    - name: minDriverVersion
+      in: query
+      required: false
+      description: Minimum driver version
+      example: "595.97"
+      schema:
+        type: string
+    - name: maxDriverVersion
+      in: query
+      required: false
+      description: Maximum driver version
+      example: "595.97"
+      schema:
+        type: string
+    - name: states
+      in: query
+      required: false
+      description: Device states
+      schema:
+        type: array
+        items:
+          $ref: "../../../schemas/State.yaml"
+        minItems: 1
+  responses:
+    "200":
+      description: Any device found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../../schemas/Device.yaml"
+    "404":
+      description: No devices found
+    "400":
+      description: Invalid filter parameters
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/Error.yaml"

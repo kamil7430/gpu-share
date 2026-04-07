@@ -1,0 +1,21 @@
+get:
+  summary: Get agent's status
+  operationId: getAgentStatus
+  parameters:
+    - name: agentId
+      in: path
+      required: true
+      description: The id of agent to retrieve
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Agent found
+    "404":
+      description: Agent not found
+    default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/Error.yaml"
