@@ -24,7 +24,6 @@ sudo systemctl start docker
 ### Server
 
 ```bash
-cp backend/.env.example backend/.env # Change .env if you wish
 cd docker
 docker compose up --build
 ```
@@ -77,12 +76,13 @@ flowchart LR
 
 ### Backend
 
-- `Golang`
+- `Go`
+- `PostgreSQL`
 - `GORM`
 - `REST API`
-- `JWT`
-- `PostgreSQL`
+- `GRPC`
 - `OpenAPI`
+- `JWT`
 
 ### Frontend
 
@@ -98,11 +98,13 @@ flowchart LR
 
 ```text
 backend/
-  cmd/                       # command-line-functional libs
-  internal/                  # internal libraries
-  tools/                     # codegen tools
+gpu/
+  agent/
+  coordinator/
+  proto/                     # protobuf for gRPC in coordinator <-> agent
 contract/
-  openapi/                   # openapi contracts
+  backend/                   # openapi contracts for backend
+  gpu/                       # openapi contracts for gpu
 docker/                      # production docker config
   test/                      # tests docker config
 docs/
