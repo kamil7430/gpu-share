@@ -23,9 +23,11 @@ func main() {
 	// TODO: this should be assigned by the `backend`, but it requires the
 	// `POST /api/devices` endpoint to be implemented
 	agentId := fmt.Sprintf("%v", rand.Int()%1000)
-	agent.SendHelloMessage(stream, agentId)
+	if err := agent.SendHelloMessage(stream, agentId); err != nil {
+		log.Fatalf("couldn't connect to coordinator (%v)", err)
+	}
 
-	go agent.SendHeartbeats(stream, agentId)
+	go agent.SendHeartbeats(context.Background(), stream, agentId)
 
-	agent.ReceiveLoop(stream, agentId)
+	agent.ReceiveLoop(context.Background(), stream, agentId)
 }

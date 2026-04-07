@@ -18,7 +18,7 @@ func StartGrpcClient(ctx context.Context, url string) (Stream, error) {
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	conn, err := grpc.NewClient(url, opts...)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	client := proto.NewAgentServiceClient(conn)
@@ -26,45 +26,57 @@ func StartGrpcClient(ctx context.Context, url string) (Stream, error) {
 	return client.Connect(ctx)
 }
 
-func SendHelloMessage(stream Stream, agentId string) {
-	err := stream.Send(&proto.AgentMessage{
+func SendHelloMessage(stream Stream, agentId string) error {
+	return stream.Send(&proto.AgentMessage{
 		AgentId: agentId,
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
-func SendHeartbeats(stream Stream, agentId string) {
-	for {
-		time.Sleep(2 * time.Second)
+func SendHeartbeats(ctx context.Context, stream Stream, agentId string) error {
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
 
-		stream.Send(&proto.AgentMessage{
-			AgentId: agentId,
-			Payload: &proto.AgentMessage_Heartbeat{
-				Heartbeat: &proto.Heartbeat{
-					GpuUtil: rand.Float32(),
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+
+		case <-ticker.C:
+			err := stream.Send(&proto.AgentMessage{
+				AgentId: agentId,
+				Payload: &proto.AgentMessage_Heartbeat{
+					Heartbeat: &proto.Heartbeat{
+						GpuUtil: rand.Float32(),
+					},
 				},
-			},
-		})
+			})
+			if err != nil {
+				log.Printf("couldn't send heartbeat (%v)\n", err)
+			}
+		}
 	}
 }
 
-func ReceiveLoop(stream Stream, agentId string) {
+func ReceiveLoop(ctx context.Context, stream Stream, agentId string) error {
 	for {
-		msg, err := stream.Recv()
-		if err != nil {
-			log.Fatal(err)
-		}
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			msg, err := stream.Recv()
+			if err != nil {
+				return err
+			}
 
-		switch payload := msg.Payload.(type) {
-		case *proto.CoordinatorMessage_Task:
-			go ExecuteTask(stream, agentId, payload.Task)
+			switch payload := msg.Payload.(type) {
+			case *proto.CoordinatorMessage_Task:
+				go ExecuteTask(ctx, stream, agentId, payload.Task)
+			}
 		}
 	}
 }
 
-func ExecuteTask(stream proto.AgentService_ConnectClient, agentID string, task *proto.Task) {
+func ExecuteTask(ctx context.Context, stream proto.AgentService_ConnectClient, agentID string, task *proto.Task) {
 	log.Println("Executing task:", task.TaskId)
 
 	steps := 10
@@ -72,7 +84,7 @@ func ExecuteTask(stream proto.AgentService_ConnectClient, agentID string, task *
 		dur := time.Duration(float32(task.MemoryMb)*0.01) * time.Second
 		time.Sleep(dur / time.Duration(steps))
 
-		stream.Send(&proto.AgentMessage{
+		msg := proto.AgentMessage{
 			AgentId: agentID,
 			Payload: &proto.AgentMessage_TaskUpdate{
 				TaskUpdate: &proto.TaskUpdate{
@@ -81,10 +93,13 @@ func ExecuteTask(stream proto.AgentService_ConnectClient, agentID string, task *
 					Status:   "running",
 				},
 			},
-		})
+		}
+		if err := stream.Send(&msg); err != nil {
+			log.Printf("couldn't send status message (%v)\n", err)
+		}
 	}
 
-	stream.Send(&proto.AgentMessage{
+	msg := proto.AgentMessage{
 		AgentId: agentID,
 		Payload: &proto.AgentMessage_TaskUpdate{
 			TaskUpdate: &proto.TaskUpdate{
@@ -93,5 +108,9 @@ func ExecuteTask(stream proto.AgentService_ConnectClient, agentID string, task *
 				Status:   "done",
 			},
 		},
-	})
+	}
+	if err := stream.Send(&msg); err != nil {
+		// TODO: we'll need some retry and result caching logic later
+		log.Printf("couldn't send status message (%v)\n", err)
+	}
 }

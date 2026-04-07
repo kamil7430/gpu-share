@@ -39,7 +39,9 @@ func (as *AgentService) Connect(stream proto.AgentService_ConnectServer) error {
 
 	go func() {
 		for msg := range agent.SendCh {
-			_ = stream.Send(msg)
+			if err := stream.Send(msg); err != nil {
+				log.Printf("couldn't send message (%v)\n", err)
+			}
 		}
 	}()
 

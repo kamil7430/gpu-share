@@ -35,8 +35,8 @@ func startAgent(t *testing.T, agentId string) {
 	}
 
 	agent.SendHelloMessage(stream, agentId)
-	go agent.SendHeartbeats(stream, agentId)
-	agent.ReceiveLoop(stream, agentId)
+	go agent.SendHeartbeats(t.Context(), stream, agentId)
+	agent.ReceiveLoop(t.Context(), stream, agentId)
 }
 
 func TestApi(t *testing.T) {
