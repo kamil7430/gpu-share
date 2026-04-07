@@ -3,9 +3,11 @@ After changing contracts, regenerate Go boilerplate:
 ```bash
 # Run from project root
 cd backend && go generate ./...
+cd ../gpu && go generate ./...
 ```
 
-This will generate `backend/internal/api/oas_*.go`. After generation run the tests to see whether anything has been screwed up.
+This will generate `backend/internal/api/oas_*.go` and `gpu/internal/coordinator/internal/api/oas_*.go`.
+After generation run the tests.
 
 Some useful links:
 
