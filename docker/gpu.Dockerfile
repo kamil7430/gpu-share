@@ -2,8 +2,8 @@ FROM golang:1.26.1
 
 WORKDIR /app
 
-COPY gpu/go.mod gpu/go.sum ./
-RUN go mod download
+COPY gpu/go.mod gpu/go.sum .
+RUN go mod download -x
 
 COPY gpu ./gpu
 
