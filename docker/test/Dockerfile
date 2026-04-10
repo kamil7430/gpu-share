@@ -9,7 +9,7 @@ COPY gpu/go.mod gpu/go.sum .
 RUN go mod download -x
 
 WORKDIR /app
-COPY .env.example .
+COPY .env .
 COPY backend ./backend
 COPY gpu ./gpu
 COPY frontend ./frontend

@@ -12,13 +12,25 @@ to buy a gpu themselves.
 ## Usage
 
 ```bash
+# Clone the repository.
 git clone https://github.com/kamil7430/gpu-share.git
+# Make sure that Docker daemon is up.
+sudo systemctl start docker
 ```
 
-Make sure that Docker daemon is up.
+Since Docker can handle only one composition of containers within one subnet,
+you can encounter an error like this: 
+
+```
+failed to create network docker_network: Error response from daemon: invalid pool request: 
+Pool overlaps with other one on this address space
+```
+
+In that case you need to _decompose_ the server/test you were using, before composing
+the other.
 
 ```bash
-sudo systemctl start docker
+docker compose down -v
 ```
 
 ### Server

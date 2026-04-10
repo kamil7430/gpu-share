@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./.env.example
+source ./.env
 
 cd backend
 go test -p 1 ./... -v -count=1

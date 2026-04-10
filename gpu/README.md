@@ -1,3 +1,15 @@
+## Usage
+
+```bash
+# run the backend and coordinator through docker
+cd docker && docker compose up --build
+
+# run an agent
+GPU_IP=10.5.0.3 go run agent/main.go
+```
+
+## Building protobuf
+
 ```bash
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
