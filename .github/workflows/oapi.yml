@@ -1,0 +1,60 @@
+name: OpenAPI Docs
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'contract/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'contract/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install Redoc CLI
+        run: npm install -g redoc-cli
+
+      - name: Generate docs
+        run: |
+          mkdir -p public
+
+          redoc-cli bundle contract/backend/openapi.yaml \
+            -o public/backend.html
+
+          redoc-cli bundle contract/gpu/openapi.yaml \
+            -o public/gpu.html
+
+          cp contract/docs/index.html public/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build-docs
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
