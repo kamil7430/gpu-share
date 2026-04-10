@@ -6,7 +6,6 @@ COPY backend/go.mod backend/go.sum .
 RUN go mod download -x
 
 COPY backend ./backend
-COPY frontend ./frontend
 
 WORKDIR /app/backend
 RUN go build -o server ./cmd
