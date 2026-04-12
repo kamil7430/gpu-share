@@ -18,8 +18,52 @@ type AddDeviceBadRequest struct{}
 
 func (*AddDeviceBadRequest) addDeviceRes() {}
 
-// AddDeviceCreated is response for AddDevice operation.
-type AddDeviceCreated struct{}
+type AddDeviceCreated struct {
+	DeviceId  string    `json:"deviceId"`
+	OwnerId   string    `json:"ownerId"`
+	State     State     `json:"state"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *AddDeviceCreated) GetDeviceId() string {
+	return s.DeviceId
+}
+
+// GetOwnerId returns the value of OwnerId.
+func (s *AddDeviceCreated) GetOwnerId() string {
+	return s.OwnerId
+}
+
+// GetState returns the value of State.
+func (s *AddDeviceCreated) GetState() State {
+	return s.State
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *AddDeviceCreated) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *AddDeviceCreated) SetDeviceId(val string) {
+	s.DeviceId = val
+}
+
+// SetOwnerId sets the value of OwnerId.
+func (s *AddDeviceCreated) SetOwnerId(val string) {
+	s.OwnerId = val
+}
+
+// SetState sets the value of State.
+func (s *AddDeviceCreated) SetState(val State) {
+	s.State = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *AddDeviceCreated) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
 
 func (*AddDeviceCreated) addDeviceRes() {}
 

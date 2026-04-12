@@ -111,6 +111,6 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 	}, nil
 }
 
-func (s *DeviceService) AddDevice(ctx context.Context, req *api.Device) (api.AddDeviceRes, error) {
+func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (api.AddDeviceRes, error) {
 	return nil, ht.ErrNotImplemented
 }
