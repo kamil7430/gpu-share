@@ -1,6 +1,7 @@
 package server
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -26,9 +27,12 @@ func NewServer(repos *Repos) *http.Server {
 		log.Fatal(err)
 	}
 
-	ip := os.Getenv("BACKEND_IP")
-	if ip == "" {
-		log.Fatal("invalid value of `BACKEND_IP` env variable")
+	env_ip := os.Getenv("BACKEND_IP")
+	if env_ip == "" {
+		env_ip = "10.5.0.2"
 	}
-	return &http.Server{Addr: ip + ":2137", Handler: srv}
+	ip := flag.String("ip", env_ip, "IP of the backend service")
+	port := flag.String("port", "2137", "port of the backend service")
+	flag.Parse()
+	return &http.Server{Addr: *ip + ":" + *port, Handler: srv}
 }
