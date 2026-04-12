@@ -21,13 +21,11 @@ func main() {
 	db, err := utils.InitializeDatabaseConnection(true)
 	fatalIfError(err)
 
-	log.Println("Creating repositories...")
 	repos := server.Repos{
-		DeviceRepo: repository.NewDatabaseDeviceRepository(db),
+		DeviceRepo: repository.NewDeviceRepository(db),
 		GpuRepo:    repository.NewMockGpuRepository(),
 	}
 
-	log.Println("Building server instance...")
 	srv := server.NewServer(&repos)
 	defer func() {
 		err := srv.Close()

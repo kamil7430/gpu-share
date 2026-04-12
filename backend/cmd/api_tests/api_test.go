@@ -36,7 +36,7 @@ func TestApi(t *testing.T) {
 	defer tx.Rollback()
 
 	repos := server.Repos{
-		DeviceRepo: repository.NewDatabaseDeviceRepository(tx),
+		DeviceRepo: repository.NewDeviceRepository(tx),
 		GpuRepo:    repository.NewMockGpuRepository(),
 	}
 

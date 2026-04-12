@@ -17,11 +17,11 @@ type sauron struct {
 }
 
 func NewServer(repos *Repos) *http.Server {
-	ourSauron := sauron{
+	sauron := sauron{
 		service.NewHealthService(),
 		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo),
 	}
-	srv, err := api.NewServer(&ourSauron)
+	srv, err := api.NewServer(&sauron)
 	if err != nil {
 		log.Fatal(err)
 	}
