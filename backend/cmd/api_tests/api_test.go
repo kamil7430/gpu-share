@@ -25,6 +25,7 @@ var baseUrl = func() string {
 var testsToRun = []func(*testing.T, *gorm.DB, string){
 	testGetDeviceStatus,
 	testGetDevices,
+	testAddDevice,
 }
 
 func TestApi(t *testing.T) {
@@ -68,34 +69,6 @@ func TestApi(t *testing.T) {
 }
 
 /*
-	t.Run("device register", func(t *testing.T) {
-		payload := `{
-	        "name": "Moja karta RTX 4090",
-	        "gpu_model": "NVIDIA GeForce RTX 4090",
-	        "vram_mb": 24576,
-	        "cuda_cores": 16384,
-	        "price_per_hour_usdCents": 45,
-	        "driver_version": "535.104",
-	        "supported_frameworks": ["pytorch", "tensorflow"]
-	    }`
-
-		response, err := http.Post(baseUrl + "/api/devices", "application/json", strings.NewReader(payload))
-		require.NoError(t, err)
-		defer response.Body.Close()
-
-		body, err := io.ReadAll(response.Body)
-		require.NoError(t, err)
-
-		expected := `{
-			"device_id": "550e8400-e29b-41d4-a716-446655440000",
-			"owner_id": "user_12345",
-			"status": "AVAILABLE",
-			"created_at": "2026-01-06T12:34:56Z"
-		}`
-
-		require.JSONEq(t, expected, string(body))
-	})
-
 	t.Run("device rent", func(t *testing.T) {
 		payload := `{
 			"device_id": "550e8400-e29b-41d4-a716-446655440000",
