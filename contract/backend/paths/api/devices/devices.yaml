@@ -105,14 +105,41 @@ get:
       $ref: "../../../responses/default.yaml"
 
 post:
-  summary: Add a device. Please note that the new device is assigned to the owner currently logged in. States other than AVAILABLE and UNAVAILABLE are ignored
+  summary: Add a device. Please note that the new device is assigned to the owner currently logged in
   operationId: addDevice
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: "../../../schemas/Device.yaml"
+          type: object
+          required:
+            - name
+            - gpuModel
+            - vramMb
+            - cudaCores
+            - pricePerHourUsdCents
+            - driverVersion
+          properties:
+            name:
+              type: string
+            gpuModel:
+              type: string
+            vramMb:
+              type: integer
+              minimum: 0
+            cudaCores:
+              type: integer
+              minimum: 0
+            pricePerHourUsdCents:
+              type: integer
+              minimum: 0
+              description: Price per active usage hour in USD cents, for example a value of `45` means `0.45 USD/h`
+              example: 45
+            driverVersion:
+              type: string
+              description: Driver version expressed as the major version followed by a period and a minor version
+              example: "535.104"
   responses:
     "201":
       description: The device created

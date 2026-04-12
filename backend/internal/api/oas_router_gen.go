@@ -291,7 +291,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						return r, true
 					case "POST":
 						r.name = AddDeviceOperation
-						r.summary = "Add a device. Please note that the new device is assigned to the owner currently logged in. States other than AVAILABLE and UNAVAILABLE are ignored"
+						r.summary = "Add a device. Please note that the new device is assigned to the owner currently logged in"
 						r.operationID = "addDevice"
 						r.operationGroup = ""
 						r.pathPattern = "/api/devices"

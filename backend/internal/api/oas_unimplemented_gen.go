@@ -15,11 +15,10 @@ var _ Handler = UnimplementedHandler{}
 
 // AddDevice implements addDevice operation.
 //
-// Add a device. Please note that the new device is assigned to the owner currently logged in. States
-// other than AVAILABLE and UNAVAILABLE are ignored.
+// Add a device. Please note that the new device is assigned to the owner currently logged in.
 //
 // POST /api/devices
-func (UnimplementedHandler) AddDevice(ctx context.Context, req *Device) (r AddDeviceRes, _ error) {
+func (UnimplementedHandler) AddDevice(ctx context.Context, req *AddDeviceReq) (r AddDeviceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

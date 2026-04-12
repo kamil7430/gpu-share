@@ -11,7 +11,7 @@ import (
 )
 
 func encodeAddDeviceRequest(
-	req *Device,
+	req *AddDeviceReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

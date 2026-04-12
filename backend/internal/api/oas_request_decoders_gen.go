@@ -15,7 +15,7 @@ import (
 )
 
 func (s *Server) decodeAddDeviceRequest(r *http.Request) (
-	req *Device,
+	req *AddDeviceReq,
 	rawBody []byte,
 	close func() error,
 	rerr error,
@@ -62,7 +62,7 @@ func (s *Server) decodeAddDeviceRequest(r *http.Request) (
 		rawBody = append(rawBody, buf...)
 		d := jx.DecodeBytes(buf)
 
-		var request Device
+		var request AddDeviceReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err

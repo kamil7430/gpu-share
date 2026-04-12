@@ -29,11 +29,10 @@ func trimTrailingSlashes(u *url.URL) {
 type Invoker interface {
 	// AddDevice invokes addDevice operation.
 	//
-	// Add a device. Please note that the new device is assigned to the owner currently logged in. States
-	// other than AVAILABLE and UNAVAILABLE are ignored.
+	// Add a device. Please note that the new device is assigned to the owner currently logged in.
 	//
 	// POST /api/devices
-	AddDevice(ctx context.Context, request *Device) (AddDeviceRes, error)
+	AddDevice(ctx context.Context, request *AddDeviceReq) (AddDeviceRes, error)
 	// GetDeviceStatus invokes getDeviceStatus operation.
 	//
 	// Get device status by ID.
@@ -95,16 +94,15 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 
 // AddDevice invokes addDevice operation.
 //
-// Add a device. Please note that the new device is assigned to the owner currently logged in. States
-// other than AVAILABLE and UNAVAILABLE are ignored.
+// Add a device. Please note that the new device is assigned to the owner currently logged in.
 //
 // POST /api/devices
-func (c *Client) AddDevice(ctx context.Context, request *Device) (AddDeviceRes, error) {
+func (c *Client) AddDevice(ctx context.Context, request *AddDeviceReq) (AddDeviceRes, error) {
 	res, err := c.sendAddDevice(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendAddDevice(ctx context.Context, request *Device) (res AddDeviceRes, err error) {
+func (c *Client) sendAddDevice(ctx context.Context, request *AddDeviceReq) (res AddDeviceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("addDevice"),
 		semconv.HTTPRequestMethodKey.String("POST"),

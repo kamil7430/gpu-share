@@ -35,8 +35,7 @@ func (c *codeRecorder) Unwrap() http.ResponseWriter {
 
 // handleAddDeviceRequest handles addDevice operation.
 //
-// Add a device. Please note that the new device is assigned to the owner currently logged in. States
-// other than AVAILABLE and UNAVAILABLE are ignored.
+// Add a device. Please note that the new device is assigned to the owner currently logged in.
 //
 // POST /api/devices
 func (s *Server) handleAddDeviceRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -133,7 +132,7 @@ func (s *Server) handleAddDeviceRequest(args [0]string, argsEscaped bool, w http
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    AddDeviceOperation,
-			OperationSummary: "Add a device. Please note that the new device is assigned to the owner currently logged in. States other than AVAILABLE and UNAVAILABLE are ignored",
+			OperationSummary: "Add a device. Please note that the new device is assigned to the owner currently logged in",
 			OperationID:      "addDevice",
 			Body:             request,
 			RawBody:          rawBody,
@@ -142,7 +141,7 @@ func (s *Server) handleAddDeviceRequest(args [0]string, argsEscaped bool, w http
 		}
 
 		type (
-			Request  = *Device
+			Request  = *AddDeviceReq
 			Params   = struct{}
 			Response = AddDeviceRes
 		)

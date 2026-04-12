@@ -10,11 +10,10 @@ import (
 type Handler interface {
 	// AddDevice implements addDevice operation.
 	//
-	// Add a device. Please note that the new device is assigned to the owner currently logged in. States
-	// other than AVAILABLE and UNAVAILABLE are ignored.
+	// Add a device. Please note that the new device is assigned to the owner currently logged in.
 	//
 	// POST /api/devices
-	AddDevice(ctx context.Context, req *Device) (AddDeviceRes, error)
+	AddDevice(ctx context.Context, req *AddDeviceReq) (AddDeviceRes, error)
 	// GetDeviceStatus implements getDeviceStatus operation.
 	//
 	// Get device status by ID.

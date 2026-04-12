@@ -23,6 +23,77 @@ type AddDeviceCreated struct{}
 
 func (*AddDeviceCreated) addDeviceRes() {}
 
+type AddDeviceReq struct {
+	Name      string `json:"name"`
+	GpuModel  string `json:"gpuModel"`
+	VramMb    int    `json:"vramMb"`
+	CudaCores int    `json:"cudaCores"`
+	// Price per active usage hour in USD cents, for example a value of `45` means `0.45 USD/h`.
+	PricePerHourUsdCents int `json:"pricePerHourUsdCents"`
+	// Driver version expressed as the major version followed by a period and a minor version.
+	DriverVersion string `json:"driverVersion"`
+}
+
+// GetName returns the value of Name.
+func (s *AddDeviceReq) GetName() string {
+	return s.Name
+}
+
+// GetGpuModel returns the value of GpuModel.
+func (s *AddDeviceReq) GetGpuModel() string {
+	return s.GpuModel
+}
+
+// GetVramMb returns the value of VramMb.
+func (s *AddDeviceReq) GetVramMb() int {
+	return s.VramMb
+}
+
+// GetCudaCores returns the value of CudaCores.
+func (s *AddDeviceReq) GetCudaCores() int {
+	return s.CudaCores
+}
+
+// GetPricePerHourUsdCents returns the value of PricePerHourUsdCents.
+func (s *AddDeviceReq) GetPricePerHourUsdCents() int {
+	return s.PricePerHourUsdCents
+}
+
+// GetDriverVersion returns the value of DriverVersion.
+func (s *AddDeviceReq) GetDriverVersion() string {
+	return s.DriverVersion
+}
+
+// SetName sets the value of Name.
+func (s *AddDeviceReq) SetName(val string) {
+	s.Name = val
+}
+
+// SetGpuModel sets the value of GpuModel.
+func (s *AddDeviceReq) SetGpuModel(val string) {
+	s.GpuModel = val
+}
+
+// SetVramMb sets the value of VramMb.
+func (s *AddDeviceReq) SetVramMb(val int) {
+	s.VramMb = val
+}
+
+// SetCudaCores sets the value of CudaCores.
+func (s *AddDeviceReq) SetCudaCores(val int) {
+	s.CudaCores = val
+}
+
+// SetPricePerHourUsdCents sets the value of PricePerHourUsdCents.
+func (s *AddDeviceReq) SetPricePerHourUsdCents(val int) {
+	s.PricePerHourUsdCents = val
+}
+
+// SetDriverVersion sets the value of DriverVersion.
+func (s *AddDeviceReq) SetDriverVersion(val string) {
+	s.DriverVersion = val
+}
+
 // AddDeviceUnauthorized is response for AddDevice operation.
 type AddDeviceUnauthorized struct{}
 
