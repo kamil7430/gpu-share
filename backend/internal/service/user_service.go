@@ -1,19 +1,21 @@
 package service
 
 import (
-	"fmt"
+	"context"
+
+	"github.com/kamil7430/gpu-share/backend/internal/api"
+	"github.com/kamil7430/gpu-share/backend/internal/repository"
 )
 
-type UserService struct {}
+type UserService struct {
+	ur repository.UserRepository
+}
 
-func (u *UserService) ValidatePassword(username string, password string) error {
-	if username != "Maklowicz" {
-		return fmt.Errorf("username not found")
-	}
+func NewUserService(ur repository.UserRepository) UserService {
+	return UserService{ur}
+}
 
-	if password != "żwir" {
-		return fmt.Errorf("invalid password")
-	}
-
-	return nil
+func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.OperationName, t api.BearerAuth) (context.Context, error) {
+	//TODO implement me
+	panic("implement me")
 }

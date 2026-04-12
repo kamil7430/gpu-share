@@ -21,7 +21,9 @@ func NewServer(repos *Repos) *http.Server {
 		service.NewHealthService(),
 		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo),
 	}
-	srv, err := api.NewServer(&sauron)
+	userService := service.NewUserService(repos.UserRepo)
+
+	srv, err := api.NewServer(&sauron, &userService)
 	if err != nil {
 		log.Fatal(err)
 	}
