@@ -13,6 +13,16 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AddDevice implements addDevice operation.
+//
+// Add a device. Please note that the new device is assigned to the owner currently logged in. States
+// other than AVAILABLE and UNAVAILABLE are ignored.
+//
+// POST /api/devices
+func (UnimplementedHandler) AddDevice(ctx context.Context, req *Device) (r AddDeviceRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetDeviceStatus implements getDeviceStatus operation.
 //
 // Get device status by ID.
@@ -40,10 +50,10 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 	return ht.ErrNotImplemented
 }
 
-// NewError creates *ErrorStatusCode from error returned by handler.
+// NewError creates *DefaultStatusCode from error returned by handler.
 //
 // Used for common default response.
-func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorStatusCode) {
-	r = new(ErrorStatusCode)
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *DefaultStatusCode) {
+	r = new(DefaultStatusCode)
 	return r
 }

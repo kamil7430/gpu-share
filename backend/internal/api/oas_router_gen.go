@@ -10,6 +10,12 @@ import (
 	"github.com/ogen-go/ogen/uri"
 )
 
+var (
+	rn1AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
+)
+
 func (s *Server) cutPrefix(path string) (string, bool) {
 	prefix := s.cfg.Prefix
 	if prefix == "" {
@@ -73,11 +79,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					switch r.Method {
 					case "GET":
 						s.handleGetDevicesRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleAddDeviceRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, notAllowedParams{
-							allowedMethods: "GET",
-							allowedHeaders: nil,
-							acceptPost:     "",
+							allowedMethods: "GET,POST",
+							allowedHeaders: rn1AllowedHeaders,
+							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
 					}
@@ -276,6 +284,15 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = GetDevicesOperation
 						r.summary = "Get list of devices that match the provided filters"
 						r.operationID = "getDevices"
+						r.operationGroup = ""
+						r.pathPattern = "/api/devices"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = AddDeviceOperation
+						r.summary = "Add a device. Please note that the new device is assigned to the owner currently logged in. States other than AVAILABLE and UNAVAILABLE are ignored"
+						r.operationID = "addDevice"
 						r.operationGroup = ""
 						r.pathPattern = "/api/devices"
 						r.args = args

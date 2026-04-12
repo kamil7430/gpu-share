@@ -9,8 +9,49 @@ import (
 	"github.com/go-faster/errors"
 )
 
-func (s *ErrorStatusCode) Error() string {
+func (s *DefaultStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
+
+// AddDeviceBadRequest is response for AddDevice operation.
+type AddDeviceBadRequest struct{}
+
+func (*AddDeviceBadRequest) addDeviceRes() {}
+
+// AddDeviceCreated is response for AddDevice operation.
+type AddDeviceCreated struct{}
+
+func (*AddDeviceCreated) addDeviceRes() {}
+
+// AddDeviceUnauthorized is response for AddDevice operation.
+type AddDeviceUnauthorized struct{}
+
+func (*AddDeviceUnauthorized) addDeviceRes() {}
+
+// DefaultStatusCode wraps Error with StatusCode.
+type DefaultStatusCode struct {
+	StatusCode int
+	Response   Error
+}
+
+// GetStatusCode returns the value of StatusCode.
+func (s *DefaultStatusCode) GetStatusCode() int {
+	return s.StatusCode
+}
+
+// GetResponse returns the value of Response.
+func (s *DefaultStatusCode) GetResponse() Error {
+	return s.Response
+}
+
+// SetStatusCode sets the value of StatusCode.
+func (s *DefaultStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
+}
+
+// SetResponse sets the value of Response.
+func (s *DefaultStatusCode) SetResponse(val Error) {
+	s.Response = val
 }
 
 // Ref: #
@@ -180,32 +221,6 @@ func (s *DeviceStatus) SetLastHeartbeat(val time.Time) {
 func (*DeviceStatus) getDeviceStatusRes() {}
 
 type Error string
-
-// ErrorStatusCode wraps Error with StatusCode.
-type ErrorStatusCode struct {
-	StatusCode int
-	Response   Error
-}
-
-// GetStatusCode returns the value of StatusCode.
-func (s *ErrorStatusCode) GetStatusCode() int {
-	return s.StatusCode
-}
-
-// GetResponse returns the value of Response.
-func (s *ErrorStatusCode) GetResponse() Error {
-	return s.Response
-}
-
-// SetStatusCode sets the value of StatusCode.
-func (s *ErrorStatusCode) SetStatusCode(val int) {
-	s.StatusCode = val
-}
-
-// SetResponse sets the value of Response.
-func (s *ErrorStatusCode) SetResponse(val Error) {
-	s.Response = val
-}
 
 // GetDeviceStatusNotFound is response for GetDeviceStatus operation.
 type GetDeviceStatusNotFound struct{}

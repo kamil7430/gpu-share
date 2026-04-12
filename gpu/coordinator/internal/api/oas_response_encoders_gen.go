@@ -64,7 +64,7 @@ func encodeScheduleTaskResponse(response ScheduleTaskRes, w http.ResponseWriter,
 	}
 }
 
-func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span trace.Span) error {
+func encodeErrorResponse(response *DefaultStatusCode, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	code := response.StatusCode
 	if code == 0 {

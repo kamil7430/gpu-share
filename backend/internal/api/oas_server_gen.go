@@ -8,6 +8,13 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// AddDevice implements addDevice operation.
+	//
+	// Add a device. Please note that the new device is assigned to the owner currently logged in. States
+	// other than AVAILABLE and UNAVAILABLE are ignored.
+	//
+	// POST /api/devices
+	AddDevice(ctx context.Context, req *Device) (AddDeviceRes, error)
 	// GetDeviceStatus implements getDeviceStatus operation.
 	//
 	// Get device status by ID.
@@ -26,10 +33,10 @@ type Handler interface {
 	//
 	// GET /health
 	GetHealth(ctx context.Context) error
-	// NewError creates *ErrorStatusCode from error returned by handler.
+	// NewError creates *DefaultStatusCode from error returned by handler.
 	//
 	// Used for common default response.
-	NewError(ctx context.Context, err error) *ErrorStatusCode
+	NewError(ctx context.Context, err error) *DefaultStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

@@ -13,6 +13,63 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+func decodeAddDeviceResponse(resp *http.Response) (res AddDeviceRes, _ error) {
+	switch resp.StatusCode {
+	case 201:
+		// Code 201.
+		return &AddDeviceCreated{}, nil
+	case 400:
+		// Code 400.
+		return &AddDeviceBadRequest{}, nil
+	case 401:
+		// Code 401.
+		return &AddDeviceUnauthorized{}, nil
+	}
+	// Convenient error response.
+	defRes, err := func() (res *DefaultStatusCode, err error) {
+		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return res, errors.Wrap(err, "parse media type")
+		}
+		switch {
+		case ct == "application/json":
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return res, err
+			}
+			d := jx.DecodeBytes(buf)
+
+			var response Error
+			if err := func() error {
+				if err := response.Decode(d); err != nil {
+					return err
+				}
+				if err := d.Skip(); err != io.EOF {
+					return errors.New("unexpected trailing data")
+				}
+				return nil
+			}(); err != nil {
+				err = &ogenerrors.DecodeBodyError{
+					ContentType: ct,
+					Body:        buf,
+					Err:         err,
+				}
+				return res, err
+			}
+			return &DefaultStatusCode{
+				StatusCode: resp.StatusCode,
+				Response:   response,
+			}, nil
+		default:
+			return res, validate.InvalidContentType(ct)
+		}
+	}()
+	if err != nil {
+		return res, errors.Wrapf(err, "default (code %d)", resp.StatusCode)
+	}
+	return res, errors.Wrap(defRes, "error")
+}
+
 func decodeGetDeviceStatusResponse(resp *http.Response) (res GetDeviceStatusRes, _ error) {
 	switch resp.StatusCode {
 	case 200:
@@ -64,7 +121,7 @@ func decodeGetDeviceStatusResponse(resp *http.Response) (res GetDeviceStatusRes,
 		return &GetDeviceStatusNotFound{}, nil
 	}
 	// Convenient error response.
-	defRes, err := func() (res *ErrorStatusCode, err error) {
+	defRes, err := func() (res *DefaultStatusCode, err error) {
 		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 		if err != nil {
 			return res, errors.Wrap(err, "parse media type")
@@ -94,7 +151,7 @@ func decodeGetDeviceStatusResponse(resp *http.Response) (res GetDeviceStatusRes,
 				}
 				return res, err
 			}
-			return &ErrorStatusCode{
+			return &DefaultStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
 			}, nil
@@ -162,7 +219,7 @@ func decodeGetDevicesResponse(resp *http.Response) (res GetDevicesRes, _ error) 
 		return &GetDevicesNotFound{}, nil
 	}
 	// Convenient error response.
-	defRes, err := func() (res *ErrorStatusCode, err error) {
+	defRes, err := func() (res *DefaultStatusCode, err error) {
 		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 		if err != nil {
 			return res, errors.Wrap(err, "parse media type")
@@ -192,7 +249,7 @@ func decodeGetDevicesResponse(resp *http.Response) (res GetDevicesRes, _ error) 
 				}
 				return res, err
 			}
-			return &ErrorStatusCode{
+			return &DefaultStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
 			}, nil
@@ -213,7 +270,7 @@ func decodeGetHealthResponse(resp *http.Response) (res *GetHealthOK, _ error) {
 		return &GetHealthOK{}, nil
 	}
 	// Convenient error response.
-	defRes, err := func() (res *ErrorStatusCode, err error) {
+	defRes, err := func() (res *DefaultStatusCode, err error) {
 		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 		if err != nil {
 			return res, errors.Wrap(err, "parse media type")
@@ -243,7 +300,7 @@ func decodeGetHealthResponse(resp *http.Response) (res *GetHealthOK, _ error) {
 				}
 				return res, err
 			}
-			return &ErrorStatusCode{
+			return &DefaultStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
 			}, nil

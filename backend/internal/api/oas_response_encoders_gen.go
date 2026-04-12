@@ -12,6 +12,31 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+func encodeAddDeviceResponse(response AddDeviceRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *AddDeviceCreated:
+		w.WriteHeader(201)
+		span.SetStatus(codes.Ok, http.StatusText(201))
+
+		return nil
+
+	case *AddDeviceBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	case *AddDeviceUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeGetDeviceStatusResponse(response GetDeviceStatusRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DeviceStatus:
@@ -77,7 +102,7 @@ func encodeGetHealthResponse(response *GetHealthOK, w http.ResponseWriter, span 
 	return nil
 }
 
-func encodeErrorResponse(response *ErrorStatusCode, w http.ResponseWriter, span trace.Span) error {
+func encodeErrorResponse(response *DefaultStatusCode, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	code := response.StatusCode
 	if code == 0 {

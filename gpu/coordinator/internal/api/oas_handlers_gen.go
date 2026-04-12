@@ -162,7 +162,7 @@ func (s *Server) handleGetAgentStatusRequest(args [1]string, argsEscaped bool, w
 		response, err = s.h.GetAgentStatus(ctx, params)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+		if errRes, ok := errors.Into[*DefaultStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
 				defer recordError("Internal", err)
 			}
@@ -297,7 +297,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		err = s.h.GetHealth(ctx)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+		if errRes, ok := errors.Into[*DefaultStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
 				defer recordError("Internal", err)
 			}
@@ -451,7 +451,7 @@ func (s *Server) handleScheduleTaskRequest(args [0]string, argsEscaped bool, w h
 		response, err = s.h.ScheduleTask(ctx, request)
 	}
 	if err != nil {
-		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+		if errRes, ok := errors.Into[*DefaultStatusCode](err); ok {
 			if err := encodeErrorResponse(errRes, w, span); err != nil {
 				defer recordError("Internal", err)
 			}
