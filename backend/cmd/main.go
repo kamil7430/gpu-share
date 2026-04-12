@@ -28,7 +28,7 @@ func main() {
 	}
 
 	log.Println("Building server instance...")
-	srv := server.NewServer(db, &repos)
+	srv := server.NewServer(&repos)
 	defer func() {
 		err := srv.Close()
 		if err != nil {

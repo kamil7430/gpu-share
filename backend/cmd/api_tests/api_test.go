@@ -40,7 +40,7 @@ func TestApi(t *testing.T) {
 		GpuRepo:    repository.NewMockGpuRepository(),
 	}
 
-	srv := server.NewServer(tx, &repos)
+	srv := server.NewServer(&repos)
 	defer func() {
 		err := srv.Shutdown(t.Context())
 		if err != nil {

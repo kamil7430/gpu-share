@@ -7,7 +7,6 @@ import (
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/service"
-	"gorm.io/gorm"
 )
 
 // Jeden, by wszystkie zgromadzić i w ciemności związać
@@ -17,7 +16,7 @@ type sauron struct {
 	service.DeviceService
 }
 
-func NewServer(db *gorm.DB, repos *Repos) *http.Server {
+func NewServer(repos *Repos) *http.Server {
 	ourSauron := sauron{
 		service.NewHealthService(),
 		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo),
