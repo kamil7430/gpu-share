@@ -102,8 +102,22 @@ get:
     "400":
       description: Invalid filter parameters
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../../schemas/Error.yaml"
+      $ref: "../../../responses/default.yaml"
+
+post:
+  summary: Add a device. Please note that the new device is assigned to the owner currently logged in. States other than AVAILABLE and UNAVAILABLE are ignored
+  operationId: addDevice
+  parameters:
+    - name: device
+      in: path
+      required: true
+      description: Added device details
+      schema:
+        $ref: "../../../schemas/Device.yaml"
+  responses:
+    "201":
+      description: The device created
+    "400":
+      description: Invalid device parameters
+    default:
+      $ref: "../../../responses/default.yaml"
