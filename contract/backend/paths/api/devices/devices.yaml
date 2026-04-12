@@ -119,5 +119,7 @@ post:
       description: The device created
     "400":
       description: Invalid device parameters
+    "401":
+      description: The client is not logged in
     default:
       $ref: "../../../responses/default.yaml"
