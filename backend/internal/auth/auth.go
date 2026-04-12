@@ -8,6 +8,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+const TOKEN_VALIDITY = 15 * time.Minute
+
 var secretKey = func() []byte {
 	token := os.Getenv("JWT_SECRET_KEY")
 	if token == "" {
@@ -20,7 +22,7 @@ func CreateToken(username string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
-			"exp":      time.Now().Add(time.Hour * 24).Unix(),
+			"exp":      time.Now().Add(TOKEN_VALIDITY).Unix(),
 		})
 
 	tokenString, err := token.SignedString(secretKey)
@@ -46,4 +48,3 @@ func VerifyToken(tokenString string) error {
 
 	return nil
 }
-
