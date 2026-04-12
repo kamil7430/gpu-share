@@ -6,25 +6,20 @@ import (
 	"os"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
-	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/service"
-	"gorm.io/gorm"
 )
 
 // Jeden, by wszystkie zgromadzić i w ciemności związać
 // W Krainie Mordor, gdzie zaległy cienie.
-type Sauron struct {
+type sauron struct {
 	service.HealthService
 	service.DeviceService
 }
 
-func NewServer(db *gorm.DB) *http.Server {
-	deviceRepo := repository.NewDatabaseDeviceRepository(db)
-	gpuRepo := repository.NewMockGpuRepository()
-
-	sauron := Sauron{
+func NewServer(repos *Repos) *http.Server {
+	sauron := sauron{
 		service.NewHealthService(),
-		service.NewDeviceService(deviceRepo, gpuRepo),
+		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo),
 	}
 	srv, err := api.NewServer(&sauron)
 	if err != nil {
@@ -36,10 +31,4 @@ func NewServer(db *gorm.DB) *http.Server {
 		log.Fatal("invalid value of `BACKEND_IP` env variable")
 	}
 	return &http.Server{Addr: ip + ":2137", Handler: srv}
-
-	//loginHandler := handler.NewLoginHandler(&service.UserService{})
-	//
-	//mux.HandleFunc("POST /login", loginHandler.Login)
-	//
-	//return &http.Server{Addr: ":2137", Handler: mux}
 }

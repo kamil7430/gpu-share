@@ -19,13 +19,13 @@ type deviceRepository struct {
 	db *gorm.DB
 }
 
-func NewDatabaseDeviceRepository(db *gorm.DB) DeviceRepository {
+func NewDeviceRepository(db *gorm.DB) DeviceRepository {
 	return &deviceRepository{db}
 }
 
 func (r *deviceRepository) GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error) {
-    // codegen handles defaults
-    limit := params.Limit.Value
+	// codegen handles defaults
+	limit := params.Limit.Value
 	query := gorm.G[model.Device](r.db).Limit(limit)
 
 	if v, ok := params.Name.Get(); ok {
@@ -75,7 +75,7 @@ func (r *deviceRepository) GetDevices(ctx context.Context, params api.GetDevices
 	}
 
 	devices, err := query.Order("ID").Find(ctx)
-    return &devices, err
+	return &devices, err
 }
 
 func (r *deviceRepository) GetDeviceById(ctx context.Context, id string) (*model.Device, error) {

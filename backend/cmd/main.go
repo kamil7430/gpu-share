@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
+	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
 )
 
@@ -20,8 +21,12 @@ func main() {
 	db, err := utils.InitializeDatabaseConnection(true)
 	fatalIfError(err)
 
-	log.Println("Building server instance...")
-	srv := server.NewServer(db)
+	repos := server.Repos{
+		DeviceRepo: repository.NewDeviceRepository(db),
+		GpuRepo:    repository.NewMockGpuRepository(),
+	}
+
+	srv := server.NewServer(&repos)
 	defer func() {
 		err := srv.Close()
 		if err != nil {

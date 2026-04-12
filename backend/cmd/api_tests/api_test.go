@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
+	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
@@ -35,7 +36,12 @@ func TestApi(t *testing.T) {
 	tx := db.Begin()
 	defer tx.Rollback()
 
-	srv := server.NewServer(tx)
+	repos := server.Repos{
+		DeviceRepo: repository.NewDeviceRepository(tx),
+		GpuRepo:    repository.NewMockGpuRepository(),
+	}
+
+	srv := server.NewServer(&repos)
 	defer func() {
 		err := srv.Shutdown(t.Context())
 		if err != nil {
