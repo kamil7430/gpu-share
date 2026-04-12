@@ -107,6 +107,9 @@ get:
 post:
   summary: Add a device. Please note that the new device is assigned to the owner currently logged in
   operationId: addDevice
+  security:
+    - bearerAuth:
+        - user
   requestBody:
     required: true
     content:
