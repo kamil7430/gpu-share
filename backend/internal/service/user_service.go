@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
+	"slices"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
+	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 )
 
@@ -16,6 +19,19 @@ func NewUserService(ur repository.UserRepository) UserService {
 }
 
 func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.OperationName, t api.BearerAuth) (context.Context, error) {
-	//TODO implement me
-	panic("implement me")
+	token, err := auth.ParseToken(t.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	if slices.Contains(t.Roles, "user") {
+		return ctx, nil
+	} else if slices.Contains(t.Roles, "admin") {
+		if token.Admin {
+			return ctx, nil
+		}
+		return nil, errors.New("forbidden")
+	}
+
+	panic("unreachable")
 }

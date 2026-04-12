@@ -9,7 +9,7 @@ import (
 
 type UserRepository interface {
 	AddUser(ctx context.Context, user *model.User) error
-	GetUserByLogin(ctx context.Context, login string) (*model.User, error)
+	GetUserByName(ctx context.Context, name string) (*model.User, error)
 	UpdateUser(ctx context.Context, user *model.User) error
 }
 
@@ -30,8 +30,8 @@ func (r *mockUserRepository) AddUser(ctx context.Context, user *model.User) erro
 	return nil
 }
 
-func (r *mockUserRepository) GetUserByLogin(ctx context.Context, login string) (*model.User, error) {
-	user, ok := r.users[login]
+func (r *mockUserRepository) GetUserByName(ctx context.Context, name string) (*model.User, error) {
+	user, ok := r.users[name]
 	if !ok {
 		return nil, errors.New("this user does not exist")
 	}
