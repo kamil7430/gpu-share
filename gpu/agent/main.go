@@ -20,7 +20,7 @@ func main() {
 	port := flag.String("port", "2139", "port of the coordinator service")
 	flag.Parse()
 
-	log.Printf("Connecting to %v%v...", *ip, *port)
+	log.Printf("Connecting to %v:%v...", *ip, *port)
 	stream, err := agent.StartGrpcClient(context.Background(), *ip+":"+*port)
 	if err != nil {
 		log.Fatal(err)
