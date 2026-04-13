@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository interface {
@@ -18,7 +19,29 @@ type mockUserRepository struct {
 }
 
 func NewMockUserRepository() UserRepository {
-	return &mockUserRepository{}
+	users := make(map[string]*model.User)
+
+	normalPassword, err := bcrypt.GenerateFromPassword([]byte("NormalPassword"), bcrypt.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
+	users["NormalUser"] = &model.User{
+		Name:     "NormalUser",
+		Password: string(normalPassword),
+		Admin:    false,
+	}
+
+	adminPassword, err := bcrypt.GenerateFromPassword([]byte("AdminPassword"), bcrypt.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
+	users["AdminUser"] = &model.User{
+		Name:     "AdminUser",
+		Password: string(adminPassword),
+		Admin:    true,
+	}
+
+	return &mockUserRepository{users}
 }
 
 func (r *mockUserRepository) AddUser(ctx context.Context, user *model.User) error {
