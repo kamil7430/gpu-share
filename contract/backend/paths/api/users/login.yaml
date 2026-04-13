@@ -1,0 +1,26 @@
+post:
+  summary: Log into an account. This endpoint sets a cookie with Bearer Header for authentication
+  operationId: login
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+  responses:
+    "200":
+      description: User logged in and cookie set
+    "400":
+      description: Bad password
+    "404":
+      description: User not found
+    default:
+      $ref: "../../../responses/default.yaml"

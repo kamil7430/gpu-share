@@ -1,0 +1,26 @@
+post:
+  summary: Register a user
+  operationId: register
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+  responses:
+    "201":
+      description: The user created
+    "400":
+      description: Invalid username or password
+    "409":
+      description: Username exists
+    default:
+      $ref: "../../../responses/default.yaml"
