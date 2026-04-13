@@ -21,13 +21,7 @@ post:
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - token
-            properties:
-              token:
-                type: string
-                format: byte
+            $ref: "../../../schemas/AuthToken.yaml"
     "401":
       description: Bad password
     "404":

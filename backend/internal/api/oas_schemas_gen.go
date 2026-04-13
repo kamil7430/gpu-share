@@ -143,6 +143,24 @@ type AddDeviceUnauthorized struct{}
 
 func (*AddDeviceUnauthorized) addDeviceRes() {}
 
+// Ref: #
+type AuthToken struct {
+	Token []byte `json:"token"`
+}
+
+// GetToken returns the value of Token.
+func (s *AuthToken) GetToken() []byte {
+	return s.Token
+}
+
+// SetToken sets the value of Token.
+func (s *AuthToken) SetToken(val []byte) {
+	s.Token = val
+}
+
+func (*AuthToken) loginRes()    {}
+func (*AuthToken) registerRes() {}
+
 type BearerAuth struct {
 	Token string
 	Roles []string
@@ -389,22 +407,6 @@ type LoginNotFound struct{}
 
 func (*LoginNotFound) loginRes() {}
 
-type LoginOK struct {
-	Token []byte `json:"token"`
-}
-
-// GetToken returns the value of Token.
-func (s *LoginOK) GetToken() []byte {
-	return s.Token
-}
-
-// SetToken sets the value of Token.
-func (s *LoginOK) SetToken(val []byte) {
-	s.Token = val
-}
-
-func (*LoginOK) loginRes() {}
-
 type LoginReq struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -527,20 +529,14 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// RegisterBadRequest is response for Register operation.
-type RegisterBadRequest struct{}
+type RegisterBadRequestApplicationJSON string
 
-func (*RegisterBadRequest) registerRes() {}
+func (*RegisterBadRequestApplicationJSON) registerRes() {}
 
 // RegisterConflict is response for Register operation.
 type RegisterConflict struct{}
 
 func (*RegisterConflict) registerRes() {}
-
-// RegisterCreated is response for Register operation.
-type RegisterCreated struct{}
-
-func (*RegisterCreated) registerRes() {}
 
 type RegisterReq struct {
 	Username string `json:"username"`
