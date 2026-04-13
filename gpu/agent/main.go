@@ -12,11 +12,11 @@ import (
 )
 
 func main() {
-	env_ip := os.Getenv("GPU_IP")
-	if env_ip == "" {
-		env_ip = "10.5.0.3"
+	envIp := os.Getenv("GPU_IP")
+	if envIp == "" {
+		envIp = "10.5.0.3"
 	}
-	ip := flag.String("ip", env_ip, "IP of the coordinator service")
+	ip := flag.String("ip", envIp, "IP of the coordinator service")
 	port := flag.String("port", "2139", "port of the coordinator service")
 	flag.Parse()
 
