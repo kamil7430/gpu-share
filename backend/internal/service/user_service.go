@@ -8,6 +8,8 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -37,7 +39,27 @@ func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.Op
 }
 
 func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRes, error) {
-	panic("todo")
+	user, err := s.ur.GetUserByName(ctx, req.Username)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &api.LoginNotFound{}, nil
+		}
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		return &api.LoginUnauthorized{}, nil
+	}
+
+	token, err := auth.CreateToken(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.LoginOK{
+		Token: []byte(token),
+	}, nil
 }
 
 func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.RegisterRes, error) {

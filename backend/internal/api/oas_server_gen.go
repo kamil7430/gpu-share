@@ -34,7 +34,7 @@ type Handler interface {
 	GetHealth(ctx context.Context) error
 	// Login implements login operation.
 	//
-	// Log into an account. This endpoint sets a cookie with Bearer Header for authentication.
+	// Log into an account. This endpoint return a token to use in header bearer for authentication.
 	//
 	// POST /api/users/login
 	Login(ctx context.Context, req *LoginReq) (LoginRes, error)

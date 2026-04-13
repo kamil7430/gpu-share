@@ -112,14 +112,21 @@ func encodeGetHealthResponse(response *GetHealthOK, w http.ResponseWriter, span 
 func encodeLoginResponse(response LoginRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *LoginOK:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
 
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
 		return nil
 
-	case *LoginBadRequest:
-		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
+	case *LoginUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 

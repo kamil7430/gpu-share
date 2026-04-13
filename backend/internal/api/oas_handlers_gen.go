@@ -722,7 +722,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 
 // handleLoginRequest handles login operation.
 //
-// Log into an account. This endpoint sets a cookie with Bearer Header for authentication.
+// Log into an account. This endpoint return a token to use in header bearer for authentication.
 //
 // POST /api/users/login
 func (s *Server) handleLoginRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -819,7 +819,7 @@ func (s *Server) handleLoginRequest(args [0]string, argsEscaped bool, w http.Res
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    LoginOperation,
-			OperationSummary: "Log into an account. This endpoint sets a cookie with Bearer Header for authentication",
+			OperationSummary: "Log into an account. This endpoint return a token to use in header bearer for authentication",
 			OperationID:      "login",
 			Body:             request,
 			RawBody:          rawBody,

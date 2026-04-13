@@ -384,18 +384,24 @@ func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 // GetHealthOK is response for GetHealth operation.
 type GetHealthOK struct{}
 
-// LoginBadRequest is response for Login operation.
-type LoginBadRequest struct{}
-
-func (*LoginBadRequest) loginRes() {}
-
 // LoginNotFound is response for Login operation.
 type LoginNotFound struct{}
 
 func (*LoginNotFound) loginRes() {}
 
-// LoginOK is response for Login operation.
-type LoginOK struct{}
+type LoginOK struct {
+	Token []byte `json:"token"`
+}
+
+// GetToken returns the value of Token.
+func (s *LoginOK) GetToken() []byte {
+	return s.Token
+}
+
+// SetToken sets the value of Token.
+func (s *LoginOK) SetToken(val []byte) {
+	s.Token = val
+}
 
 func (*LoginOK) loginRes() {}
 
@@ -423,6 +429,11 @@ func (s *LoginReq) SetUsername(val string) {
 func (s *LoginReq) SetPassword(val string) {
 	s.Password = val
 }
+
+// LoginUnauthorized is response for Login operation.
+type LoginUnauthorized struct{}
+
+func (*LoginUnauthorized) loginRes() {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {

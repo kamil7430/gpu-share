@@ -474,7 +474,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							switch method {
 							case "POST":
 								r.name = LoginOperation
-								r.summary = "Log into an account. This endpoint sets a cookie with Bearer Header for authentication"
+								r.summary = "Log into an account. This endpoint return a token to use in header bearer for authentication"
 								r.operationID = "login"
 								r.operationGroup = ""
 								r.pathPattern = "/api/users/login"
