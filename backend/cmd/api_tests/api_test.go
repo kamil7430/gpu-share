@@ -39,6 +39,7 @@ func TestApi(t *testing.T) {
 	repos := server.Repos{
 		DeviceRepo: repository.NewDeviceRepository(tx),
 		GpuRepo:    repository.NewMockGpuRepository(),
+		UserRepo:   repository.NewMockUserRepository(),
 	}
 
 	srv := server.NewServer(&repos)
