@@ -3,9 +3,12 @@
 ```bash
 # run the backend and coordinator through docker
 cd docker && docker compose up --build
+```
 
-# run an agent
-GPU_IP=10.5.0.3 go run agent/main.go
+Run the agent. If you don't provide an ip and have a valid `.env` file, it will
+use the value of the `GPU_IP` variable.
+```bash
+go run agent/main.go [--ip] [--port]
 ```
 
 ## Building protobuf
