@@ -14,6 +14,12 @@ var (
 	rn1AllowedHeaders = map[string]string{
 		"POST": "Authorization,Content-Type",
 	}
+	rn8AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
+	rn10AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
 )
 
 func (s *Server) cutPrefix(path string) (string, bool) {
@@ -67,56 +73,111 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "api/devices"
+			case 'a': // Prefix: "api/"
 
-				if l := len("api/devices"); len(elem) >= l && elem[0:l] == "api/devices" {
+				if l := len("api/"); len(elem) >= l && elem[0:l] == "api/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					switch r.Method {
-					case "GET":
-						s.handleGetDevicesRequest([0]string{}, elemIsEscaped, w, r)
-					case "POST":
-						s.handleAddDeviceRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, notAllowedParams{
-							allowedMethods: "GET,POST",
-							allowedHeaders: rn1AllowedHeaders,
-							acceptPost:     "application/json",
-							acceptPatch:    "",
-						})
-					}
-
-					return
+					break
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/"
+				case 'd': // Prefix: "devices"
 
-					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+					if l := len("devices"); len(elem) >= l && elem[0:l] == "devices" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
-					// Param: "deviceId"
-					// Match until "/"
-					idx := strings.IndexByte(elem, '/')
-					if idx < 0 {
-						idx = len(elem)
+					if len(elem) == 0 {
+						switch r.Method {
+						case "GET":
+							s.handleGetDevicesRequest([0]string{}, elemIsEscaped, w, r)
+						case "POST":
+							s.handleAddDeviceRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, notAllowedParams{
+								allowedMethods: "GET,POST",
+								allowedHeaders: rn1AllowedHeaders,
+								acceptPost:     "application/json",
+								acceptPatch:    "",
+							})
+						}
+
+						return
 					}
-					args[0] = elem[:idx]
-					elem = elem[idx:]
+					switch elem[0] {
+					case '/': // Prefix: "/"
+
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "deviceId"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
+						if len(elem) == 0 {
+							break
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/status"
+
+							if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetDeviceStatusRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, notAllowedParams{
+										allowedMethods: "GET",
+										allowedHeaders: nil,
+										acceptPost:     "",
+										acceptPatch:    "",
+									})
+								}
+
+								return
+							}
+
+						}
+
+					}
+
+				case 'u': // Prefix: "users/"
+
+					if l := len("users/"); len(elem) >= l && elem[0:l] == "users/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
 
 					if len(elem) == 0 {
 						break
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/status"
+					case 'l': // Prefix: "login"
 
-						if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+						if l := len("login"); len(elem) >= l && elem[0:l] == "login" {
 							elem = elem[l:]
 						} else {
 							break
@@ -125,15 +186,38 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						if len(elem) == 0 {
 							// Leaf node.
 							switch r.Method {
-							case "GET":
-								s.handleGetDeviceStatusRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
+							case "POST":
+								s.handleLoginRequest([0]string{}, elemIsEscaped, w, r)
 							default:
 								s.notAllowed(w, r, notAllowedParams{
-									allowedMethods: "GET",
-									allowedHeaders: nil,
-									acceptPost:     "",
+									allowedMethods: "POST",
+									allowedHeaders: rn8AllowedHeaders,
+									acceptPost:     "application/json",
+									acceptPatch:    "",
+								})
+							}
+
+							return
+						}
+
+					case 'r': // Prefix: "register"
+
+						if l := len("register"); len(elem) >= l && elem[0:l] == "register" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleRegisterRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, notAllowedParams{
+									allowedMethods: "POST",
+									allowedHeaders: rn10AllowedHeaders,
+									acceptPost:     "application/json",
 									acceptPatch:    "",
 								})
 							}
@@ -270,63 +354,116 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "api/devices"
+			case 'a': // Prefix: "api/"
 
-				if l := len("api/devices"); len(elem) >= l && elem[0:l] == "api/devices" {
+				if l := len("api/"); len(elem) >= l && elem[0:l] == "api/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					switch method {
-					case "GET":
-						r.name = GetDevicesOperation
-						r.summary = "Get list of devices that match the provided filters"
-						r.operationID = "getDevices"
-						r.operationGroup = ""
-						r.pathPattern = "/api/devices"
-						r.args = args
-						r.count = 0
-						return r, true
-					case "POST":
-						r.name = AddDeviceOperation
-						r.summary = "Add a device. Please note that the new device is assigned to the owner currently logged in"
-						r.operationID = "addDevice"
-						r.operationGroup = ""
-						r.pathPattern = "/api/devices"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
-					}
+					break
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/"
+				case 'd': // Prefix: "devices"
 
-					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+					if l := len("devices"); len(elem) >= l && elem[0:l] == "devices" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
-					// Param: "deviceId"
-					// Match until "/"
-					idx := strings.IndexByte(elem, '/')
-					if idx < 0 {
-						idx = len(elem)
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							r.name = GetDevicesOperation
+							r.summary = "Get list of devices that match the provided filters"
+							r.operationID = "getDevices"
+							r.operationGroup = ""
+							r.pathPattern = "/api/devices"
+							r.args = args
+							r.count = 0
+							return r, true
+						case "POST":
+							r.name = AddDeviceOperation
+							r.summary = "Add a device. Please note that the new device is assigned to the owner currently logged in"
+							r.operationID = "addDevice"
+							r.operationGroup = ""
+							r.pathPattern = "/api/devices"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
 					}
-					args[0] = elem[:idx]
-					elem = elem[idx:]
+					switch elem[0] {
+					case '/': // Prefix: "/"
+
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						// Param: "deviceId"
+						// Match until "/"
+						idx := strings.IndexByte(elem, '/')
+						if idx < 0 {
+							idx = len(elem)
+						}
+						args[0] = elem[:idx]
+						elem = elem[idx:]
+
+						if len(elem) == 0 {
+							break
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/status"
+
+							if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetDeviceStatusOperation
+									r.summary = "Get device status by ID"
+									r.operationID = "getDeviceStatus"
+									r.operationGroup = ""
+									r.pathPattern = "/api/devices/{deviceId}/status"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
+						}
+
+					}
+
+				case 'u': // Prefix: "users/"
+
+					if l := len("users/"); len(elem) >= l && elem[0:l] == "users/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
 
 					if len(elem) == 0 {
 						break
 					}
 					switch elem[0] {
-					case '/': // Prefix: "/status"
+					case 'l': // Prefix: "login"
 
-						if l := len("/status"); len(elem) >= l && elem[0:l] == "/status" {
+						if l := len("login"); len(elem) >= l && elem[0:l] == "login" {
 							elem = elem[l:]
 						} else {
 							break
@@ -335,14 +472,39 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						if len(elem) == 0 {
 							// Leaf node.
 							switch method {
-							case "GET":
-								r.name = GetDeviceStatusOperation
-								r.summary = "Get device status by ID"
-								r.operationID = "getDeviceStatus"
+							case "POST":
+								r.name = LoginOperation
+								r.summary = "Log into an account. This endpoint sets a cookie with Bearer Header for authentication"
+								r.operationID = "login"
 								r.operationGroup = ""
-								r.pathPattern = "/api/devices/{deviceId}/status"
+								r.pathPattern = "/api/users/login"
 								r.args = args
-								r.count = 1
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+					case 'r': // Prefix: "register"
+
+						if l := len("register"); len(elem) >= l && elem[0:l] == "register" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "POST":
+								r.name = RegisterOperation
+								r.summary = "Register a user"
+								r.operationID = "register"
+								r.operationGroup = ""
+								r.pathPattern = "/api/users/register"
+								r.args = args
+								r.count = 0
 								return r, true
 							default:
 								return

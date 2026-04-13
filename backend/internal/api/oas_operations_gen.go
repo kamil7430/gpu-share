@@ -10,4 +10,6 @@ const (
 	GetDeviceStatusOperation OperationName = "GetDeviceStatus"
 	GetDevicesOperation      OperationName = "GetDevices"
 	GetHealthOperation       OperationName = "GetHealth"
+	LoginOperation           OperationName = "Login"
+	RegisterOperation        OperationName = "Register"
 )

@@ -12,3 +12,11 @@ type GetDeviceStatusRes interface {
 type GetDevicesRes interface {
 	getDevicesRes()
 }
+
+type LoginRes interface {
+	loginRes()
+}
+
+type RegisterRes interface {
+	registerRes()
+}

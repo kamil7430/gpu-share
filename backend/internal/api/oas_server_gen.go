@@ -32,6 +32,18 @@ type Handler interface {
 	//
 	// GET /health
 	GetHealth(ctx context.Context) error
+	// Login implements login operation.
+	//
+	// Log into an account. This endpoint sets a cookie with Bearer Header for authentication.
+	//
+	// POST /api/users/login
+	Login(ctx context.Context, req *LoginReq) (LoginRes, error)
+	// Register implements register operation.
+	//
+	// Register a user.
+	//
+	// POST /api/users/register
+	Register(ctx context.Context, req *RegisterReq) (RegisterRes, error)
 	// NewError creates *DefaultStatusCode from error returned by handler.
 	//
 	// Used for common default response.

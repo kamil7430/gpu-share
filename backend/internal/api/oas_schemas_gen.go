@@ -384,6 +384,46 @@ func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 // GetHealthOK is response for GetHealth operation.
 type GetHealthOK struct{}
 
+// LoginBadRequest is response for Login operation.
+type LoginBadRequest struct{}
+
+func (*LoginBadRequest) loginRes() {}
+
+// LoginNotFound is response for Login operation.
+type LoginNotFound struct{}
+
+func (*LoginNotFound) loginRes() {}
+
+// LoginOK is response for Login operation.
+type LoginOK struct{}
+
+func (*LoginOK) loginRes() {}
+
+type LoginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *LoginReq) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *LoginReq) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *LoginReq) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *LoginReq) SetPassword(val string) {
+	s.Password = val
+}
+
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
 	return OptInt{
@@ -474,6 +514,46 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// RegisterBadRequest is response for Register operation.
+type RegisterBadRequest struct{}
+
+func (*RegisterBadRequest) registerRes() {}
+
+// RegisterConflict is response for Register operation.
+type RegisterConflict struct{}
+
+func (*RegisterConflict) registerRes() {}
+
+// RegisterCreated is response for Register operation.
+type RegisterCreated struct{}
+
+func (*RegisterCreated) registerRes() {}
+
+type RegisterReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *RegisterReq) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *RegisterReq) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *RegisterReq) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *RegisterReq) SetPassword(val string) {
+	s.Password = val
 }
 
 // Ref: #

@@ -49,6 +49,24 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 	return ht.ErrNotImplemented
 }
 
+// Login implements login operation.
+//
+// Log into an account. This endpoint sets a cookie with Bearer Header for authentication.
+//
+// POST /api/users/login
+func (UnimplementedHandler) Login(ctx context.Context, req *LoginReq) (r LoginRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// Register implements register operation.
+//
+// Register a user.
+//
+// POST /api/users/register
+func (UnimplementedHandler) Register(ctx context.Context, req *RegisterReq) (r RegisterRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *DefaultStatusCode from error returned by handler.
 //
 // Used for common default response.

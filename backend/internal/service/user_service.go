@@ -35,3 +35,11 @@ func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.Op
 
 	panic("unreachable")
 }
+
+func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRes, error) {
+	panic("todo")
+}
+
+func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.RegisterRes, error) {
+	panic("todo")
+}

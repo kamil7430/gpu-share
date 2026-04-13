@@ -109,6 +109,56 @@ func encodeGetHealthResponse(response *GetHealthOK, w http.ResponseWriter, span 
 	return nil
 }
 
+func encodeLoginResponse(response LoginRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *LoginOK:
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		return nil
+
+	case *LoginBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	case *LoginNotFound:
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeRegisterResponse(response RegisterRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *RegisterCreated:
+		w.WriteHeader(201)
+		span.SetStatus(codes.Ok, http.StatusText(201))
+
+		return nil
+
+	case *RegisterBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	case *RegisterConflict:
+		w.WriteHeader(409)
+		span.SetStatus(codes.Error, http.StatusText(409))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeErrorResponse(response *DefaultStatusCode, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	code := response.StatusCode
