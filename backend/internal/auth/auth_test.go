@@ -1,11 +1,21 @@
 package auth
 
 import (
+	"encoding/base64"
+	"strings"
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
 )
+
+type tokenStructure struct {
+	Username string
+	Admin    bool
+	Exp      int64
+	Iat      int64
+}
 
 func TestTokens(t *testing.T) {
 	user := model.User{
@@ -25,10 +35,50 @@ func TestTokens(t *testing.T) {
 		require.Equal(t, user.Admin, token.Admin)
 	})
 
-	t.Run("modified token (admin changed to true) -- should fail", func(t *testing.T) {
-		tokenBase := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwiYWRtaW4iOnRydWUsImV4cCI6MTc3NjA4MzkzNSwiaWF0IjoxNzc2MDgzMzM1fQ.QwYUtPog_WlB1-ryyyO_zXDEkcv7sR6NUg3JPKvCeCg"
+	modifyTokenBody := func(token string, username *string, admin *bool) string {
+		tokenFragments := strings.Split(token, ".")
+		decoded := make([]byte, base64.RawURLEncoding.DecodedLen(len(tokenFragments[1])))
+		_, err := base64.RawURLEncoding.Decode(decoded, []byte(tokenFragments[1]))
+		require.NoError(t, err)
+		var tokenObj tokenStructure
+		err = json.Unmarshal(decoded, &tokenObj)
+		require.NoError(t, err)
 
-		token, err := ParseToken(tokenBase)
+		if username != nil {
+			tokenObj.Username = *username
+		}
+		if admin != nil {
+			tokenObj.Admin = *admin
+		}
+
+		modifiedToken, err := json.Marshal(tokenObj)
+		require.NoError(t, err)
+		encoded := make([]byte, base64.RawURLEncoding.EncodedLen(len(modifiedToken)))
+		base64.RawURLEncoding.Encode(encoded, modifiedToken)
+		tokenFragments[1] = string(encoded)
+		return strings.Join(tokenFragments, ".")
+	}
+
+	t.Run("modified token (admin changed to true) -- should fail", func(t *testing.T) {
+		validToken, err := CreateToken(&user)
+		require.NoError(t, err)
+
+		admin := true
+		modifiedToken := modifyTokenBody(validToken, nil, &admin)
+
+		token, err := ParseToken(modifiedToken)
+		require.Error(t, err)
+		require.Nil(t, token)
+	})
+
+	t.Run("modified token (username changed) -- should fail", func(t *testing.T) {
+		validToken, err := CreateToken(&user)
+		require.NoError(t, err)
+
+		username := "InnyUser"
+		modifiedToken := modifyTokenBody(validToken, &username, nil)
+
+		token, err := ParseToken(modifiedToken)
 		require.Error(t, err)
 		require.Nil(t, token)
 	})
