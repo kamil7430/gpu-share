@@ -167,6 +167,8 @@ func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
 		db.Exec("INSERT INTO users(name, password, admin) VALUES ('User1', ?, 'false');", userPassword)
 	}
 
+	resetDbContent()
+
 	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
 		"username": "User1",
 		"password": "TestUserPassword"
