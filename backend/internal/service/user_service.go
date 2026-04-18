@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -27,11 +28,13 @@ func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.Op
 		return nil, err
 	}
 
+	newCtx := context.WithValue(ctx, "username", token.Username)
+
 	if slices.Contains(t.Roles, "user") {
-		return ctx, nil
+		return newCtx, nil
 	} else if slices.Contains(t.Roles, "admin") {
 		if token.Admin {
-			return ctx, nil
+			return newCtx, nil
 		}
 		return nil, errors.New("forbidden")
 	}
@@ -103,5 +106,49 @@ func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.R
 }
 
 func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswordReq) (api.ChangePasswordRes, error) {
-	panic("todo")
+	username, ok := ctx.Value("username").(string)
+	if !ok {
+		fmt.Println("jeden")
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.ur.GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("trzy")
+
+	if err := auth.ValidatePassword(req.NewPassword); err != nil {
+		return &api.ChangePasswordBadRequest{}, nil
+	}
+	fmt.Println("dwa")
+
+	oldPasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.OldPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	if string(oldPasswordHash) != user.Password {
+		return &api.ChangePasswordUnauthorized{}, nil
+	}
+	fmt.Println("cztery")
+
+	newPasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
+	if string(newPasswordHash) == user.Password {
+		return &api.ChangePasswordBadRequest{}, nil
+	}
+	fmt.Println("piec")
+
+	user.Password = string(newPasswordHash)
+	err = s.ur.UpdateUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("szesc")
+
+	return &api.ChangePasswordOK{}, nil
 }
