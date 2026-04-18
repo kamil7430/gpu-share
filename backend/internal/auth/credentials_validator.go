@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"regexp"
 )
@@ -17,7 +16,7 @@ func ValidateUsername(username string) error {
 
 	regex := regexp.MustCompile(allowedCharactersRegex)
 	if !regex.MatchString(username) {
-		return errors.New("username must only contain alphanumeric characters")
+		return fmt.Errorf("username must only contain alphanumeric characters")
 	}
 
 	return nil
