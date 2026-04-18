@@ -13,9 +13,10 @@ import (
 func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 	resetDbContent := func() {
 		db.Exec("TRUNCATE TABLE users;")
-		db.Exec("INSERT INTO users(name, password, admin) VALUES " +
-			"('TestUser', '$2a$10$VEJHquwA/Rs7wA3rLwl/oOTxtvJUoEcbaGVZpQD/tthdi92jatgMe', 'false'), " +
-			"('TestAdmin', '$2a$10$K8BWpClmpDBHR2RwFBBzzuar1E8Xw6ia//83W13FPJPHyLWB8djDS', 'true'), ")
+		db.Exec("INSERT INTO users(name, password, admin) VALUES "+
+			"('TestUser', ?, 'false'), ('TestAdmin', ?, 'true');",
+			`$2a$10$VEJHquwA/Rs7wA3rLwl/oOTxtvJUoEcbaGVZpQD/tthdi92jatgMe`,
+			`$2a$10$K8BWpClmpDBHR2RwFBBzzuar1E8Xw6ia//83W13FPJPHyLWB8djDS`)
 	}
 
 	loginTestCase := func(username string, password string) *http.Response {
