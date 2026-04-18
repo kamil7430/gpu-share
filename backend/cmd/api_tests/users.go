@@ -2,10 +2,12 @@ package api_tests
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
+	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
@@ -35,6 +37,38 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 	t.Run("login -- normal user", func(t *testing.T) {
 		resp := loginTestCase("TestUser", "TestPassword")
 		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
 
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		token, err := auth.ParseToken(string(body))
+		require.NoError(t, err)
+		require.Equal(t, "TestUser", token.Username)
+		require.Equal(t, false, token.Admin)
+	})
+
+	t.Run("login -- admin user", func(t *testing.T) {
+		resp := loginTestCase("TestAdmin", "TestAdminPassword")
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		token, err := auth.ParseToken(string(body))
+		require.NoError(t, err)
+		require.Equal(t, "TestAdmin", token.Username)
+		require.Equal(t, true, token.Admin)
+	})
+
+	t.Run("login -- invalid user", func(t *testing.T) {
+		resp := loginTestCase("TestInvalidUser", "TestInvalidPassword")
+		require.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+
+	t.Run("login -- invalid password", func(t *testing.T) {
+		resp := loginTestCase("TestUser", "TestInvalidPassword")
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 }
