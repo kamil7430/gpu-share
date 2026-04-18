@@ -24,7 +24,7 @@ func main() {
 	repos := server.Repos{
 		DeviceRepo: repository.NewDeviceRepository(db),
 		GpuRepo:    repository.NewMockGpuRepository(),
-		UserRepo:   repository.NewMockUserRepository(),
+		UserRepo:   repository.NewUserRepository(db),
 	}
 
 	srv := server.NewServer(&repos)

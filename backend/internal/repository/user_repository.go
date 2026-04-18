@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
-	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserRepository interface {
@@ -14,58 +14,30 @@ type UserRepository interface {
 	UpdateUser(ctx context.Context, user *model.User) error
 }
 
-type mockUserRepository struct {
-	users map[string]*model.User
+type userRepository struct {
+	db *gorm.DB
 }
 
-func NewMockUserRepository() UserRepository {
-	users := make(map[string]*model.User)
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db}
+}
 
-	normalPassword, err := bcrypt.GenerateFromPassword([]byte("NormalPassword"), bcrypt.DefaultCost)
+func (r *userRepository) AddUser(ctx context.Context, user *model.User) error {
+	return gorm.G[model.User](r.db).Create(ctx, user)
+}
+
+func (r *userRepository) GetUserByName(ctx context.Context, name string) (*model.User, error) {
+	user, err := gorm.G[model.User](r.db).Where("Name = ?", name).First(ctx)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	users["NormalUser"] = &model.User{
-		Name:     "NormalUser",
-		Password: string(normalPassword),
-		Admin:    false,
-	}
-
-	adminPassword, err := bcrypt.GenerateFromPassword([]byte("AdminPassword"), bcrypt.DefaultCost)
-	if err != nil {
-		panic(err)
-	}
-	users["AdminUser"] = &model.User{
-		Name:     "AdminUser",
-		Password: string(adminPassword),
-		Admin:    true,
-	}
-
-	return &mockUserRepository{users}
+	return &user, nil
 }
 
-func (r *mockUserRepository) AddUser(ctx context.Context, user *model.User) error {
-	if _, ok := r.users[user.Name]; ok {
-		return errors.New("this user already exists")
+func (r *userRepository) UpdateUser(ctx context.Context, user *model.User) error {
+	rowsAffected, err := gorm.G[model.User](r.db).Where("Name = ?", user.Name).Updates(ctx, *user)
+	if rowsAffected != 1 {
+		return fmt.Errorf("invalid affected rows count: %d", rowsAffected)
 	}
-
-	r.users[user.Name] = user
-	return nil
-}
-
-func (r *mockUserRepository) GetUserByName(ctx context.Context, name string) (*model.User, error) {
-	user, ok := r.users[name]
-	if !ok {
-		return nil, errors.New("this user does not exist")
-	}
-	return user, nil
-}
-
-func (r *mockUserRepository) UpdateUser(ctx context.Context, user *model.User) error {
-	if _, ok := r.users[user.Name]; !ok {
-		return errors.New("this user does not exist")
-	}
-
-	r.users[user.Name] = user
-	return nil
+	return err
 }
