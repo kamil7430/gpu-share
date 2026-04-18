@@ -93,6 +93,7 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 	resetDbContent := func() {
 		db.Exec("TRUNCATE TABLE users;")
+		db.Exec("INSERT INTO users(name, password, admin) VALUES ('ExistingUser', 'DISABLED', 'false');")
 	}
 
 	registerTestCase := func(username, password string) *http.Response {
@@ -108,7 +109,7 @@ func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 		return resp
 	}
 
-	t.Run("register -- valid user, should register", func(t *testing.T) {
+	t.Run("register -- valid user", func(t *testing.T) {
 		resp := registerTestCase("TestUser1", "TestPassword1")
 		require.Equal(t, http.StatusCreated, resp.StatusCode)
 		defer resp.Body.Close()
@@ -126,10 +127,8 @@ func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.Equal(t, false, token.Admin)
 	})
 
-	t.Run("register -- existing username, should fail", func(t *testing.T) {
-		resp := registerTestCase("TestUser1", "TestPassword1")
-		require.Equal(t, http.StatusCreated, resp.StatusCode)
-		resp = registerTestCase("TestUser1", "TestPassword2")
+	t.Run("register -- existing username", func(t *testing.T) {
+		resp := registerTestCase("ExistingUser", "TestPassword1")
 		require.Equal(t, http.StatusConflict, resp.StatusCode)
 	})
 
