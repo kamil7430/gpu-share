@@ -4,4 +4,3 @@ required:
 properties:
   token:
     type: string
-    format: byte

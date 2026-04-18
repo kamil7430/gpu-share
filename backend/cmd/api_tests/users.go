@@ -8,41 +8,54 @@ import (
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
+	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
+type tokenResponse struct {
+	Token string
+}
+
 func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
+	userPassword, err := bcrypt.GenerateFromPassword([]byte("TestUserPassword"), bcrypt.DefaultCost)
+	require.NoError(t, err)
+	adminPassword, err := bcrypt.GenerateFromPassword([]byte("TestAdminPassword"), bcrypt.DefaultCost)
+	require.NoError(t, err)
+
 	resetDbContent := func() {
 		db.Exec("TRUNCATE TABLE users;")
-		db.Exec("INSERT INTO users(name, password, admin) VALUES "+
-			"('TestUser', ?, 'false'), ('TestAdmin', ?, 'true');",
-			`$2a$10$VEJHquwA/Rs7wA3rLwl/oOTxtvJUoEcbaGVZpQD/tthdi92jatgMe`,
-			`$2a$10$K8BWpClmpDBHR2RwFBBzzuar1E8Xw6ia//83W13FPJPHyLWB8djDS`)
+		db.Exec("INSERT INTO users(name, password, admin) VALUES ('TestUser', ?, 'false'), ('TestAdmin', ?, 'true');",
+			userPassword, adminPassword)
 	}
 
-	loginTestCase := func(username string, password string) *http.Response {
+	loginTestCase := func(username, password string) *http.Response {
 		resetDbContent()
 
 		payloadReader := strings.NewReader(fmt.Sprintf(`{
 			"username": "%s",
 			"password": "%s"
 		}`, username, password))
-		resp, err := http.Post(baseUrl+"/api/login", "application/json", payloadReader)
+		resp, err := http.Post(baseUrl+"/api/users/login", "application/json", payloadReader)
 
 		require.NoError(t, err)
 		return resp
 	}
 
 	t.Run("login -- normal user", func(t *testing.T) {
-		resp := loginTestCase("TestUser", "TestPassword")
+		resp := loginTestCase("TestUser", "TestUserPassword")
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
-		token, err := auth.ParseToken(string(body))
+		var tokenObj tokenResponse
+		err = json.Unmarshal(body, &tokenObj)
+		require.NoError(t, err)
+
+		token, err := auth.ParseToken(tokenObj.Token)
 		require.NoError(t, err)
 		require.Equal(t, "TestUser", token.Username)
 		require.Equal(t, false, token.Admin)
@@ -56,7 +69,11 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 		body, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
-		token, err := auth.ParseToken(string(body))
+		var tokenObj tokenResponse
+		err = json.Unmarshal(body, &tokenObj)
+		require.NoError(t, err)
+
+		token, err := auth.ParseToken(tokenObj.Token)
 		require.NoError(t, err)
 		require.Equal(t, "TestAdmin", token.Username)
 		require.Equal(t, true, token.Admin)
@@ -74,5 +91,25 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 }
 
 func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
+	resetDbContent := func() {
+		db.Exec("TRUNCATE TABLE users;")
+	}
 
+	registerTestCase := func(username, password string) *http.Response {
+		resetDbContent()
+
+		payloadReader := strings.NewReader(fmt.Sprintf(`{
+			"username": "%s",
+			"password": "%s"
+		}`, username, password))
+		resp, err := http.Post(baseUrl+"/api/users/register", "application/json", payloadReader)
+
+		require.NoError(t, err)
+		return resp
+	}
+
+	t.Run("register -- valid user, should register", func(t *testing.T) {
+		resp := registerTestCase("TestUser1", "TestPassword1")
+		require.Equal(t, http.StatusCreated, resp.StatusCode)
+	})
 }

@@ -145,16 +145,16 @@ func (*AddDeviceUnauthorized) addDeviceRes() {}
 
 // Ref: #
 type AuthToken struct {
-	Token []byte `json:"token"`
+	Token string `json:"token"`
 }
 
 // GetToken returns the value of Token.
-func (s *AuthToken) GetToken() []byte {
+func (s *AuthToken) GetToken() string {
 	return s.Token
 }
 
 // SetToken sets the value of Token.
-func (s *AuthToken) SetToken(val []byte) {
+func (s *AuthToken) SetToken(val string) {
 	s.Token = val
 }
 

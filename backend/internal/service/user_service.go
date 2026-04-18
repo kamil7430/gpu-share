@@ -59,7 +59,7 @@ func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRe
 	}
 
 	return &api.AuthToken{
-		Token: []byte(token),
+		Token: token,
 	}, nil
 }
 
@@ -98,6 +98,6 @@ func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.R
 	}
 
 	return &api.AuthToken{
-		Token: []byte(token),
+		Token: token,
 	}, nil
 }

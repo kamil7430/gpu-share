@@ -349,7 +349,7 @@ func (s *AuthToken) Encode(e *jx.Encoder) {
 func (s *AuthToken) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("token")
-		e.Base64(s.Token)
+		e.Str(s.Token)
 	}
 }
 
@@ -369,8 +369,8 @@ func (s *AuthToken) Decode(d *jx.Decoder) error {
 		case "token":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Base64()
-				s.Token = []byte(v)
+				v, err := d.Str()
+				s.Token = string(v)
 				if err != nil {
 					return err
 				}
