@@ -72,3 +72,7 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 }
+
+func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
+
+}
