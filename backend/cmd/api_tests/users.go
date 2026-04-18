@@ -30,4 +30,10 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.NoError(t, err)
 		return resp
 	}
+
+	t.Run("login -- normal user", func(t *testing.T) {
+		resp := loginTestCase("TestUser", "TestPassword")
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+
+	})
 }
