@@ -22,6 +22,15 @@ func (UnimplementedHandler) AddDevice(ctx context.Context, req *AddDeviceReq) (r
 	return r, ht.ErrNotImplemented
 }
 
+// ChangePassword implements changePassword operation.
+//
+// Change current logged in user's password.
+//
+// POST /api/users/changePassword
+func (UnimplementedHandler) ChangePassword(ctx context.Context, req *ChangePasswordReq) (r ChangePasswordRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetDeviceStatus implements getDeviceStatus operation.
 //
 // Get device status by ID.

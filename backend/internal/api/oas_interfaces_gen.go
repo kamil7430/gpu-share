@@ -5,6 +5,10 @@ type AddDeviceRes interface {
 	addDeviceRes()
 }
 
+type ChangePasswordRes interface {
+	changePasswordRes()
+}
+
 type GetDeviceStatusRes interface {
 	getDeviceStatusRes()
 }

@@ -186,6 +186,46 @@ func (s *BearerAuth) SetRoles(val []string) {
 	s.Roles = val
 }
 
+// ChangePasswordBadRequest is response for ChangePassword operation.
+type ChangePasswordBadRequest struct{}
+
+func (*ChangePasswordBadRequest) changePasswordRes() {}
+
+// ChangePasswordOK is response for ChangePassword operation.
+type ChangePasswordOK struct{}
+
+func (*ChangePasswordOK) changePasswordRes() {}
+
+type ChangePasswordReq struct {
+	OldPassword string `json:"oldPassword"`
+	NewPassword string `json:"newPassword"`
+}
+
+// GetOldPassword returns the value of OldPassword.
+func (s *ChangePasswordReq) GetOldPassword() string {
+	return s.OldPassword
+}
+
+// GetNewPassword returns the value of NewPassword.
+func (s *ChangePasswordReq) GetNewPassword() string {
+	return s.NewPassword
+}
+
+// SetOldPassword sets the value of OldPassword.
+func (s *ChangePasswordReq) SetOldPassword(val string) {
+	s.OldPassword = val
+}
+
+// SetNewPassword sets the value of NewPassword.
+func (s *ChangePasswordReq) SetNewPassword(val string) {
+	s.NewPassword = val
+}
+
+// ChangePasswordUnauthorized is response for ChangePassword operation.
+type ChangePasswordUnauthorized struct{}
+
+func (*ChangePasswordUnauthorized) changePasswordRes() {}
+
 // DefaultStatusCode wraps Error with StatusCode.
 type DefaultStatusCode struct {
 	StatusCode int

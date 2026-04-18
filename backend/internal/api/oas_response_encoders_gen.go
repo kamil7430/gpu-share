@@ -44,6 +44,31 @@ func encodeAddDeviceResponse(response AddDeviceRes, w http.ResponseWriter, span 
 	}
 }
 
+func encodeChangePasswordResponse(response ChangePasswordRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *ChangePasswordOK:
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		return nil
+
+	case *ChangePasswordBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	case *ChangePasswordUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeGetDeviceStatusResponse(response GetDeviceStatusRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DeviceStatus:
