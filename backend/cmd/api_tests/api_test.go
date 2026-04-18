@@ -29,6 +29,7 @@ var testsToRun = []func(*testing.T, *gorm.DB, string){
 	//testAddDevice,
 	testLogin,
 	testRegister,
+	testChangePassword,
 }
 
 func TestApi(t *testing.T) {

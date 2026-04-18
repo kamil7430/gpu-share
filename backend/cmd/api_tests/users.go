@@ -157,3 +157,85 @@ func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 }
+
+func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
+	userPassword, err := bcrypt.GenerateFromPassword([]byte("TestUserPassword"), bcrypt.DefaultCost)
+	require.NoError(t, err)
+
+	resetDbContent := func() {
+		db.Exec("TRUNCATE TABLE users;")
+		db.Exec("INSERT INTO users(name, password, admin) VALUES ('User1', ?, 'false');", userPassword)
+	}
+
+	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+		"username": "User1",
+		"password": "TestUserPassword"
+	}`))
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, loginResp.StatusCode)
+	defer loginResp.Body.Close()
+
+	body, err := io.ReadAll(loginResp.Body)
+	require.NoError(t, err)
+
+	var tokenObj tokenResponse
+	err = json.Unmarshal(body, &tokenObj)
+	require.NoError(t, err)
+
+	token := tokenObj.Token
+
+	changePasswordTestCase := func(oldPassword, newPassword string, bearerToken *string) *http.Response {
+		resetDbContent()
+
+		req, err := http.NewRequest("POST", baseUrl+"/api/users/changePassword", strings.NewReader(fmt.Sprintf(`{
+			"oldPassword": %s,
+			"newPassword": %s
+		}`, oldPassword, newPassword)))
+		require.NoError(t, err)
+
+		if bearerToken != nil {
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *bearerToken))
+		}
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		return resp
+	}
+
+	t.Run("change password -- not logged in", func(t *testing.T) {
+		resp := changePasswordTestCase("TestUserPassword", "NewPassword", nil)
+		require.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+
+	t.Run("change password -- valid request", func(t *testing.T) {
+		resp := changePasswordTestCase("TestUserPassword", "NewPassword", &token)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+
+		loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+			"username": "User1",
+			"password": "NewPassword"
+		}`))
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, loginResp.StatusCode)
+	})
+
+	t.Run("change password -- invalid old password", func(t *testing.T) {
+		resp := changePasswordTestCase("InvalidPassword", "NewPassword", &token)
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	t.Run("change password -- new password too short", func(t *testing.T) {
+		resp := changePasswordTestCase("TestUserPassword", "abc", &token)
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("change password -- new password too long", func(t *testing.T) {
+		resp := changePasswordTestCase("TestUserPassword", "12345678901234567890", &token)
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("change password -- passwords are the same", func(t *testing.T) {
+		resp := changePasswordTestCase("TestUserPassword", "TestUserPassword", &token)
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+}

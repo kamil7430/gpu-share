@@ -101,3 +101,7 @@ func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.R
 		Token: token,
 	}, nil
 }
+
+func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswordReq) (api.ChangePasswordRes, error) {
+	panic("todo")
+}
