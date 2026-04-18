@@ -111,5 +111,50 @@ func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 	t.Run("register -- valid user, should register", func(t *testing.T) {
 		resp := registerTestCase("TestUser1", "TestPassword1")
 		require.Equal(t, http.StatusCreated, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var tokenObj tokenResponse
+		err = json.Unmarshal(body, &tokenObj)
+		require.NoError(t, err)
+
+		token, err := auth.ParseToken(tokenObj.Token)
+		require.NoError(t, err)
+		require.Equal(t, "TestUser1", token.Username)
+		require.Equal(t, false, token.Admin)
+	})
+
+	t.Run("register -- existing username, should fail", func(t *testing.T) {
+		resp := registerTestCase("TestUser1", "TestPassword1")
+		require.Equal(t, http.StatusCreated, resp.StatusCode)
+		resp = registerTestCase("TestUser1", "TestPassword2")
+		require.Equal(t, http.StatusConflict, resp.StatusCode)
+	})
+
+	t.Run("register -- too short password", func(t *testing.T) {
+		resp := registerTestCase("TestUser", "12345")
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("register -- too long password", func(t *testing.T) {
+		resp := registerTestCase("TestUser", "12345678901234567890") // 20 chars
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("register -- too short username", func(t *testing.T) {
+		resp := registerTestCase("A", "123456789")
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("register -- too long username", func(t *testing.T) {
+		resp := registerTestCase("12345678901234567890123456789012345678901", "123456789") // 41 chars
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+
+	t.Run("register -- forbidden chars in username", func(t *testing.T) {
+		resp := registerTestCase("User@1234", "123456789")
+		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 }
