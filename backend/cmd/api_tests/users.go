@@ -10,7 +10,6 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -19,9 +18,9 @@ type tokenResponse struct {
 }
 
 func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
-	userPassword, err := bcrypt.GenerateFromPassword([]byte("TestUserPassword"), bcrypt.DefaultCost)
+	userPassword, err := auth.HashPassword("TestUserPassword")
 	require.NoError(t, err)
-	adminPassword, err := bcrypt.GenerateFromPassword([]byte("TestAdminPassword"), bcrypt.DefaultCost)
+	adminPassword, err := auth.HashPassword("TestAdminPassword")
 	require.NoError(t, err)
 
 	resetDbContent := func() {
@@ -138,7 +137,7 @@ func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	t.Run("register -- too long password", func(t *testing.T) {
-		resp := registerTestCase("TestUser", "12345678901234567890") // 20 chars
+		resp := registerTestCase("TestUser", "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890") // 140 chars
 		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 
@@ -159,7 +158,7 @@ func testRegister(t *testing.T, db *gorm.DB, baseUrl string) {
 }
 
 func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
-	userPassword, err := bcrypt.GenerateFromPassword([]byte("TestUserPassword"), bcrypt.DefaultCost)
+	userPassword, err := auth.HashPassword("TestUserPassword")
 	require.NoError(t, err)
 
 	resetDbContent := func() {
@@ -233,7 +232,7 @@ func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	t.Run("change password -- new password too long", func(t *testing.T) {
-		resp := changePasswordTestCase("TestUserPassword", "12345678901234567890", &token)
+		resp := changePasswordTestCase("TestUserPassword", "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", &token)
 		require.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 

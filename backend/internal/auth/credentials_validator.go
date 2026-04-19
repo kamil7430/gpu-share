@@ -24,7 +24,7 @@ func ValidateUsername(username string) error {
 
 func ValidatePassword(password string) error {
 	const minPasswordLength = 8
-	const maxPasswordLength = 18
+	const maxPasswordLength = 128
 
 	if len(password) < minPasswordLength || len(password) > maxPasswordLength {
 		return fmt.Errorf("password should be between %d and %d characters", minPasswordLength, maxPasswordLength)

@@ -9,7 +9,6 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -50,7 +49,7 @@ func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRe
 		return nil, err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	err = auth.CompareHashAndPassword(user.Password, req.Password)
 	if err != nil {
 		return &api.LoginUnauthorized{}, nil
 	}
@@ -79,7 +78,7 @@ func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.R
 		return &errResp, nil
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hash, err := auth.HashPassword(req.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +118,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswor
 		return &api.ChangePasswordBadRequest{}, nil
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword))
+	err = auth.CompareHashAndPassword(user.Password, req.OldPassword)
 	if err != nil {
 		return &api.ChangePasswordUnauthorized{}, nil
 	}
@@ -128,7 +127,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswor
 		return &api.ChangePasswordBadRequest{}, nil
 	}
 
-	newPasswordHash, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	newPasswordHash, err := auth.HashPassword(req.NewPassword)
 	if err != nil {
 		return nil, err
 	}
