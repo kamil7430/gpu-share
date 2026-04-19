@@ -17,7 +17,7 @@ post:
               type: string
   responses:
     "201":
-      description: The user created
+      description: User created
       content:
         application/json:
           schema:

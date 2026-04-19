@@ -1,5 +1,5 @@
 post:
-  summary: Log into an account. This endpoint return a token to use in header bearer for authentication
+  summary: Log into an account. Returns a token to use in the Authorization header as a Bearer token for authentication.
   operationId: login
   requestBody:
     required: true

@@ -105,7 +105,7 @@ get:
       $ref: "../../../responses/default.yaml"
 
 post:
-  summary: Add a device. Please note that the new device is assigned to the owner currently logged in
+  summary: Register a device. The device is assigned to the owner that's currently logged in
   operationId: addDevice
   security:
     - bearerAuth:
@@ -145,7 +145,7 @@ post:
               example: "535.104"
   responses:
     "201":
-      description: The device created
+      description: Device created
       content:
         application/json:
           schema:
