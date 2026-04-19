@@ -1,8 +1,8 @@
 *.idea
-./frontend/GpuShare.Frontend/obj/*
-./frontend/GpuShare.Frontend/bin/*
+./frontend/GpuShare.Frontend/obj/
+./frontend/GpuShare.Frontend/bin/
 
-[Dd]ebug/
+./frontend/GpuShare.Frontend/[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/

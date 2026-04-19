@@ -26,24 +26,20 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/Counter.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/NotFound.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb3RGb3VuZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/Weather.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
+[C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/Profile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcm9maWxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Pages/Search.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZWFyY2gucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Routes.razor]
@@ -61,3 +57,7 @@ build_metadata.AdditionalFiles.CssScope = b-2v81lfjo4r
 [C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/Layout/ReconnectModal.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcUmVjb25uZWN0TW9kYWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-3565ib3sti
+
+[C:/Users/ababi/GolandProjects/gpu-share/frontend/GpuShare.Frontend/Components/LoginModal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMb2dpbk1vZGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-7j2ka495xz

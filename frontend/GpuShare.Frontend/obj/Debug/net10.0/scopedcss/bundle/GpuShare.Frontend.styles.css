@@ -48,7 +48,8 @@ main[b-2v81lfjo4r] {
     display: flex;
     justify-content: space-between; /* Pushes brand left and nav-links right */
     align-items: center;
-    margin: 0px 60px 0px 0px;    /* Centers the container */
+    margin: 0px;    /* Centers the container */
+    font-weight: bold;
 }
 
 .brand[b-2v81lfjo4r] {
@@ -61,6 +62,7 @@ main[b-2v81lfjo4r] {
 /* Flex container for the links on the right */
 .nav-links[b-2v81lfjo4r] {
     display: flex;
+    align-items: center;
     gap: 20px; /* Spacing between 'About' and 'Contact' */
     color: #0a1128;
 }
@@ -68,7 +70,20 @@ main[b-2v81lfjo4r] {
 .nav-links[b-2v81lfjo4r]  a {
     text-decoration: none;
     color: inherit;
-    font-weight: bold;
+    font-weight: inherit;
+    font-size: inherit;
+}
+
+.nav-links button[b-2v81lfjo4r] {
+    text-decoration: none;
+    color: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    background: none;
+    border: 1px solid #0a1128;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 /* Ensures the page content starts below the header */
@@ -284,4 +299,70 @@ main[b-2v81lfjo4r] {
         height: 80px;
         opacity: 0;
     }
+}
+/* /Components/LoginModal.razor.rz.scp.css */
+/* Dark background that covers the whole screen */
+.modal-backdrop[b-7j2ka495xz] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* High z-index to stay on top */
+}
+
+/* The actual white box */
+.modal-content[b-7j2ka495xz] {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 350px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-header[b-7j2ka495xz] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.modal-header h3[b-7j2ka495xz] {
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+}
+
+.modal-body input[b-7j2ka495xz] {
+    width: 100%;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.action-btn[b-7j2ka495xz] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4c6eb2;
+    color: white;
+    border: none;   
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 12px;
+}
+
+.close-btn[b-7j2ka495xz] {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
 }

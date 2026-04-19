@@ -23,7 +23,6 @@ C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\scopedcss\Components\Layout\ReconnectModal.razor.rz.scp.css
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\scopedcss\bundle\GpuShare.Frontend.styles.css
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\scopedcss\projectbundle\GpuShare.Frontend.bundle.scp.css
-C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\vjg15ax42y-{0}-1kdicg1cu2-1kdicg1cu2.gz
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\0ln7w1xel5-{0}-bqjiyaj88i-bqjiyaj88i.gz
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\grub1kfbyu-{0}-c2jlpeoesf-c2jlpeoesf.gz
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\wjrh6p549k-{0}-erw9l3u2r3-erw9l3u2r3.gz
@@ -81,5 +80,7 @@ C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\GpuShare.Frontend.pdb
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\GpuShare.Frontend.genruntimeconfig.cache
 C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\ref\GpuShare.Frontend.dll
-C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\1j79mdq37r-{0}-44blvku8nn-44blvku8nn.gz
-C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\5p1evdo550-{0}-44blvku8nn-44blvku8nn.gz
+C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\vjg15ax42y-{0}-pb1i4ljalh-pb1i4ljalh.gz
+C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\scopedcss\Components\LoginModal.razor.rz.scp.css
+C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\1j79mdq37r-{0}-62j9z78uw8-62j9z78uw8.gz
+C:\Users\ababi\GolandProjects\gpu-share\frontend\GpuShare.Frontend\obj\Debug\net10.0\compressed\5p1evdo550-{0}-62j9z78uw8-62j9z78uw8.gz

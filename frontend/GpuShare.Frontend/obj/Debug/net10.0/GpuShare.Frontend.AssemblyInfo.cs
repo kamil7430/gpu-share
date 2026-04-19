@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GpuShare.Frontend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4dfa14f7ef140405c810c46fff62cf5b7fd27bf5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0694bcc8c16aed0b336bf7ed9b9e7d0d242dc05")]
 [assembly: System.Reflection.AssemblyProductAttribute("GpuShare.Frontend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GpuShare.Frontend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

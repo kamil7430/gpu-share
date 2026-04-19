@@ -1,0 +1,65 @@
+/* Dark background that covers the whole screen */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* High z-index to stay on top */
+}
+
+/* The actual white box */
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 350px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+}
+
+.modal-body input {
+    width: 100%;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4c6eb2;
+    color: white;
+    border: none;   
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 12px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}

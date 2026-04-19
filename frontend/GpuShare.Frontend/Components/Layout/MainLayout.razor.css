@@ -47,7 +47,8 @@ main {
     display: flex;
     justify-content: space-between; /* Pushes brand left and nav-links right */
     align-items: center;
-    margin: 0px 60px 0px 0px;    /* Centers the container */
+    margin: 0px;    /* Centers the container */
+    font-weight: bold;
 }
 
 .brand {
@@ -60,6 +61,7 @@ main {
 /* Flex container for the links on the right */
 .nav-links {
     display: flex;
+    align-items: center;
     gap: 20px; /* Spacing between 'About' and 'Contact' */
     color: #0a1128;
 }
@@ -67,7 +69,20 @@ main {
 .nav-links ::deep a {
     text-decoration: none;
     color: inherit;
-    font-weight: bold;
+    font-weight: inherit;
+    font-size: inherit;
+}
+
+.nav-links button {
+    text-decoration: none;
+    color: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    background: none;
+    border: 1px solid #0a1128;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 /* Ensures the page content starts below the header */
