@@ -164,7 +164,7 @@ func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	resetDbContent := func() {
 		db.Exec("TRUNCATE TABLE users;")
-		db.Exec("INSERT INTO users(name, password, admin) VALUES ('User1', ?, 'false');", userPassword)
+		db.Exec("INSERT INTO users(name, password, admin) VALUES ('User1', ?, 'false');", string(userPassword))
 	}
 
 	resetDbContent()
@@ -190,11 +190,12 @@ func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
 		resetDbContent()
 
 		req, err := http.NewRequest("POST", baseUrl+"/api/users/changePassword", strings.NewReader(fmt.Sprintf(`{
-			"oldPassword": %s,
-			"newPassword": %s
+			"oldPassword": "%s",
+			"newPassword": "%s"
 		}`, oldPassword, newPassword)))
 		require.NoError(t, err)
 
+		req.Header.Set("Content-Type", "application/json")
 		if bearerToken != nil {
 			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", *bearerToken))
 		}
