@@ -37,8 +37,8 @@ main {
 
 .top-nav {
     width: 100%;
-    background-color: white;
-    border-bottom: 1px solid #eee;
+    background-color: #4c6eb2;
+    border-bottom: 0px solid #eee;
     padding: 20px 36px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
@@ -54,17 +54,20 @@ main {
     font-weight: 800;
     font-size: 2rem;
     letter-spacing: 0px;
+    color: #0a1128;
 }
 
 /* Flex container for the links on the right */
 .nav-links {
     display: flex;
     gap: 20px; /* Spacing between 'About' and 'Contact' */
+    color: #0a1128;
 }
 
-.nav-links a {
+.nav-links ::deep a {
     text-decoration: none;
-    color: #007bff;
+    color: inherit;
+    font-weight: bold;
 }
 
 /* Ensures the page content starts below the header */

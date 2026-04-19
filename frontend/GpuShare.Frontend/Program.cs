@@ -18,6 +18,11 @@ if (!app.Environment.IsDevelopment())
 // Disable HTTPS redirect for Docker container
 // app.UseHttpsRedirection();
 
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
+app.UseStaticFiles();
+app.UseRouting();
+
 app.UseAntiforgery();
 
 app.MapStaticAssets();
