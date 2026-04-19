@@ -415,7 +415,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							return r, true
 						case "POST":
 							r.name = AddDeviceOperation
-							r.summary = "Add a device. Please note that the new device is assigned to the owner currently logged in"
+							r.summary = "Register a device. The device is assigned to the owner that's currently logged in"
 							r.operationID = "addDevice"
 							r.operationGroup = ""
 							r.pathPattern = "/api/devices"
@@ -527,7 +527,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							switch method {
 							case "POST":
 								r.name = LoginOperation
-								r.summary = "Log into an account. This endpoint return a token to use in header bearer for authentication"
+								r.summary = "Log into an account. Returns a token to use in the Authorization header as a Bearer token for authentication."
 								r.operationID = "login"
 								r.operationGroup = ""
 								r.pathPattern = "/api/users/login"

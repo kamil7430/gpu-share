@@ -30,7 +30,7 @@ func trimTrailingSlashes(u *url.URL) {
 type Invoker interface {
 	// AddDevice invokes addDevice operation.
 	//
-	// Add a device. Please note that the new device is assigned to the owner currently logged in.
+	// Register a device. The device is assigned to the owner that's currently logged in.
 	//
 	// POST /api/devices
 	AddDevice(ctx context.Context, request *AddDeviceReq) (AddDeviceRes, error)
@@ -60,7 +60,8 @@ type Invoker interface {
 	GetHealth(ctx context.Context) error
 	// Login invokes login operation.
 	//
-	// Log into an account. This endpoint return a token to use in header bearer for authentication.
+	// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+	// authentication.
 	//
 	// POST /api/users/login
 	Login(ctx context.Context, request *LoginReq) (LoginRes, error)
@@ -115,7 +116,7 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 
 // AddDevice invokes addDevice operation.
 //
-// Add a device. Please note that the new device is assigned to the owner currently logged in.
+// Register a device. The device is assigned to the owner that's currently logged in.
 //
 // POST /api/devices
 func (c *Client) AddDevice(ctx context.Context, request *AddDeviceReq) (AddDeviceRes, error) {
@@ -793,7 +794,8 @@ func (c *Client) sendGetHealth(ctx context.Context) (res *GetHealthOK, err error
 
 // Login invokes login operation.
 //
-// Log into an account. This endpoint return a token to use in header bearer for authentication.
+// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+// authentication.
 //
 // POST /api/users/login
 func (c *Client) Login(ctx context.Context, request *LoginReq) (LoginRes, error) {

@@ -10,7 +10,7 @@ import (
 type Handler interface {
 	// AddDevice implements addDevice operation.
 	//
-	// Add a device. Please note that the new device is assigned to the owner currently logged in.
+	// Register a device. The device is assigned to the owner that's currently logged in.
 	//
 	// POST /api/devices
 	AddDevice(ctx context.Context, req *AddDeviceReq) (AddDeviceRes, error)
@@ -40,7 +40,8 @@ type Handler interface {
 	GetHealth(ctx context.Context) error
 	// Login implements login operation.
 	//
-	// Log into an account. This endpoint return a token to use in header bearer for authentication.
+	// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+	// authentication.
 	//
 	// POST /api/users/login
 	Login(ctx context.Context, req *LoginReq) (LoginRes, error)

@@ -15,7 +15,7 @@ var _ Handler = UnimplementedHandler{}
 
 // AddDevice implements addDevice operation.
 //
-// Add a device. Please note that the new device is assigned to the owner currently logged in.
+// Register a device. The device is assigned to the owner that's currently logged in.
 //
 // POST /api/devices
 func (UnimplementedHandler) AddDevice(ctx context.Context, req *AddDeviceReq) (r AddDeviceRes, _ error) {
@@ -60,7 +60,8 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 
 // Login implements login operation.
 //
-// Log into an account. This endpoint return a token to use in header bearer for authentication.
+// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+// authentication.
 //
 // POST /api/users/login
 func (UnimplementedHandler) Login(ctx context.Context, req *LoginReq) (r LoginRes, _ error) {

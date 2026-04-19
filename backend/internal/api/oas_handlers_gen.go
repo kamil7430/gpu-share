@@ -35,7 +35,7 @@ func (c *codeRecorder) Unwrap() http.ResponseWriter {
 
 // handleAddDeviceRequest handles addDevice operation.
 //
-// Add a device. Please note that the new device is assigned to the owner currently logged in.
+// Register a device. The device is assigned to the owner that's currently logged in.
 //
 // POST /api/devices
 func (s *Server) handleAddDeviceRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -178,7 +178,7 @@ func (s *Server) handleAddDeviceRequest(args [0]string, argsEscaped bool, w http
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    AddDeviceOperation,
-			OperationSummary: "Add a device. Please note that the new device is assigned to the owner currently logged in",
+			OperationSummary: "Register a device. The device is assigned to the owner that's currently logged in",
 			OperationID:      "addDevice",
 			Body:             request,
 			RawBody:          rawBody,
@@ -922,7 +922,8 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 
 // handleLoginRequest handles login operation.
 //
-// Log into an account. This endpoint return a token to use in header bearer for authentication.
+// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+// authentication.
 //
 // POST /api/users/login
 func (s *Server) handleLoginRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1019,7 +1020,7 @@ func (s *Server) handleLoginRequest(args [0]string, argsEscaped bool, w http.Res
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    LoginOperation,
-			OperationSummary: "Log into an account. This endpoint return a token to use in header bearer for authentication",
+			OperationSummary: "Log into an account. Returns a token to use in the Authorization header as a Bearer token for authentication.",
 			OperationID:      "login",
 			Body:             request,
 			RawBody:          rawBody,
