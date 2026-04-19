@@ -1,0 +1,30 @@
+post:
+  summary: Log into an account. Returns a token to use in the Authorization header as a Bearer token for authentication.
+  operationId: login
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+  responses:
+    "200":
+      description: User logged in and token generated
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/AuthToken.yaml"
+    "401":
+      description: Bad password
+    "404":
+      description: User not found
+    default:
+      $ref: "../../../responses/default.yaml"

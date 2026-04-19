@@ -23,7 +23,7 @@ func decodeGetAgentStatusResponse(resp *http.Response) (res GetAgentStatusRes, _
 		return &GetAgentStatusNotFound{}, nil
 	}
 	// Convenient error response.
-	defRes, err := func() (res *ErrorStatusCode, err error) {
+	defRes, err := func() (res *DefaultStatusCode, err error) {
 		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 		if err != nil {
 			return res, errors.Wrap(err, "parse media type")
@@ -53,7 +53,7 @@ func decodeGetAgentStatusResponse(resp *http.Response) (res GetAgentStatusRes, _
 				}
 				return res, err
 			}
-			return &ErrorStatusCode{
+			return &DefaultStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
 			}, nil
@@ -74,7 +74,7 @@ func decodeGetHealthResponse(resp *http.Response) (res *GetHealthOK, _ error) {
 		return &GetHealthOK{}, nil
 	}
 	// Convenient error response.
-	defRes, err := func() (res *ErrorStatusCode, err error) {
+	defRes, err := func() (res *DefaultStatusCode, err error) {
 		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 		if err != nil {
 			return res, errors.Wrap(err, "parse media type")
@@ -104,7 +104,7 @@ func decodeGetHealthResponse(resp *http.Response) (res *GetHealthOK, _ error) {
 				}
 				return res, err
 			}
-			return &ErrorStatusCode{
+			return &DefaultStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
 			}, nil
@@ -160,7 +160,7 @@ func decodeScheduleTaskResponse(resp *http.Response) (res ScheduleTaskRes, _ err
 		return &ScheduleTaskBadRequest{}, nil
 	}
 	// Convenient error response.
-	defRes, err := func() (res *ErrorStatusCode, err error) {
+	defRes, err := func() (res *DefaultStatusCode, err error) {
 		ct, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 		if err != nil {
 			return res, errors.Wrap(err, "parse media type")
@@ -190,7 +190,7 @@ func decodeScheduleTaskResponse(resp *http.Response) (res ScheduleTaskRes, _ err
 				}
 				return res, err
 			}
-			return &ErrorStatusCode{
+			return &DefaultStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
 			}, nil

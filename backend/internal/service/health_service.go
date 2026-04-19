@@ -17,9 +17,9 @@ func (*HealthService) GetHealth(ctx context.Context) error {
 	return nil
 }
 
-func (*HealthService) NewError(ctx context.Context, err error) *api.ErrorStatusCode {
+func (*HealthService) NewError(ctx context.Context, err error) *api.DefaultStatusCode {
 	log.Println(err)
-	return &api.ErrorStatusCode{
+	return &api.DefaultStatusCode{
 		StatusCode: 500,
 		Response:   api.Error(err.Error()),
 	}

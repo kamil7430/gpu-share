@@ -290,3 +290,59 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		getDevicesTestNotFound("states=RENTED&states=REPORTED")
 	})
 }
+
+func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
+	resetDbContent := func() {
+		db.Exec("TRUNCATE TABLE devices;")
+	}
+
+	sendRequest := func(payload string) *http.Response {
+		payloadReader := strings.NewReader(payload)
+		resp, err := http.Post(baseUrl+"/api/devices", "application/json", payloadReader)
+		require.NoError(t, err)
+		return resp
+	}
+
+	// TODO: implement after login implementation
+	//t.Run("add device -- not logged in", func(t *testing.T) {
+	//
+	//})
+
+	t.Run("add device -- invalid request body fields", func(t *testing.T) {
+		resetDbContent()
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": -5,
+			"cudaCores": -10,
+			"pricePerHourUsdCents": -145,
+			"driverVersion": "abc"
+		}`)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- valid data", func(t *testing.T) {
+		resp := sendRequest(`{
+	        "name": "Moja karta RTX 4090",
+	        "gpuModel": "NVIDIA GeForce RTX 4090",
+	        "vramMb": 24576,
+	        "cudaCores": 16384,
+	        "pricePerHourUsdCents": 45,
+	        "driverVersion": "535.104"
+	    }`)
+		require.Equal(t, 201, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		expected := `{
+			"deviceId": "550e8400-e29b-41d4-a716-446655440000",
+			"ownerId": "test_user",
+			"state": "AVAILABLE",
+			"createdAt": "2026-01-06T12:34:56Z"
+		}`
+
+		require.JSONEq(t, expected, string(body))
+	})
+}

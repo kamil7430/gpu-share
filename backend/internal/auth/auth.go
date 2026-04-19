@@ -1,12 +1,15 @@
 package auth
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/kamil7430/gpu-share/backend/internal/model"
 )
+
+const tokenValidity = 10 * time.Minute
 
 var secretKey = func() []byte {
 	token := os.Getenv("JWT_SECRET_KEY")
@@ -16,12 +19,21 @@ var secretKey = func() []byte {
 	return []byte(token)
 }()
 
-func CreateToken(username string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"username": username,
-			"exp":      time.Now().Add(time.Hour * 24).Unix(),
-		})
+type jwtClaims struct {
+	Username string `json:"username"`
+	Admin    bool   `json:"admin"`
+	jwt.RegisteredClaims
+}
+
+func CreateToken(user *model.User) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims{
+		Username: user.Name,
+		Admin:    user.Admin,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenValidity)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	})
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
@@ -31,19 +43,24 @@ func CreateToken(username string) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string) error {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+func ParseToken(tokenString string) (*Token, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &jwtClaims{}, func(token *jwt.Token) (any, error) {
 		return secretKey, nil
 	})
-
 	if err != nil {
-		return err
+		return nil, err
 	}
-
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return nil, errors.New("invalid token")
 	}
 
-	return nil
-}
+	claims, ok := token.Claims.(*jwtClaims)
+	if !ok {
+		return nil, errors.New("invalid token")
+	}
 
+	return &Token{
+		Username: claims.Username,
+		Admin:    claims.Admin,
+	}, nil
+}

@@ -8,6 +8,18 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// AddDevice implements addDevice operation.
+	//
+	// Register a device. The device is assigned to the owner that's currently logged in.
+	//
+	// POST /api/devices
+	AddDevice(ctx context.Context, req *AddDeviceReq) (AddDeviceRes, error)
+	// ChangePassword implements changePassword operation.
+	//
+	// Change current logged in user's password.
+	//
+	// POST /api/users/changePassword
+	ChangePassword(ctx context.Context, req *ChangePasswordReq) (ChangePasswordRes, error)
 	// GetDeviceStatus implements getDeviceStatus operation.
 	//
 	// Get device status by ID.
@@ -26,27 +38,42 @@ type Handler interface {
 	//
 	// GET /health
 	GetHealth(ctx context.Context) error
-	// NewError creates *ErrorStatusCode from error returned by handler.
+	// Login implements login operation.
+	//
+	// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+	// authentication.
+	//
+	// POST /api/users/login
+	Login(ctx context.Context, req *LoginReq) (LoginRes, error)
+	// Register implements register operation.
+	//
+	// Register a user.
+	//
+	// POST /api/users/register
+	Register(ctx context.Context, req *RegisterReq) (RegisterRes, error)
+	// NewError creates *DefaultStatusCode from error returned by handler.
 	//
 	// Used for common default response.
-	NewError(ctx context.Context, err error) *ErrorStatusCode
+	NewError(ctx context.Context, err error) *DefaultStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and
 // calls Handler to handle requests.
 type Server struct {
-	h Handler
+	h   Handler
+	sec SecurityHandler
 	baseServer
 }
 
 // NewServer creates new Server.
-func NewServer(h Handler, opts ...ServerOption) (*Server, error) {
+func NewServer(h Handler, sec SecurityHandler, opts ...ServerOption) (*Server, error) {
 	s, err := newServerConfig(opts...).baseServer()
 	if err != nil {
 		return nil, err
 	}
 	return &Server{
 		h:          h,
+		sec:        sec,
 		baseServer: s,
 	}, nil
 }

@@ -6,39 +6,39 @@ import (
 	"fmt"
 )
 
-func (s *ErrorStatusCode) Error() string {
+func (s *DefaultStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
-type DeviceId string
-
-type Error string
-
-// ErrorStatusCode wraps Error with StatusCode.
-type ErrorStatusCode struct {
+// DefaultStatusCode wraps Error with StatusCode.
+type DefaultStatusCode struct {
 	StatusCode int
 	Response   Error
 }
 
 // GetStatusCode returns the value of StatusCode.
-func (s *ErrorStatusCode) GetStatusCode() int {
+func (s *DefaultStatusCode) GetStatusCode() int {
 	return s.StatusCode
 }
 
 // GetResponse returns the value of Response.
-func (s *ErrorStatusCode) GetResponse() Error {
+func (s *DefaultStatusCode) GetResponse() Error {
 	return s.Response
 }
 
 // SetStatusCode sets the value of StatusCode.
-func (s *ErrorStatusCode) SetStatusCode(val int) {
+func (s *DefaultStatusCode) SetStatusCode(val int) {
 	s.StatusCode = val
 }
 
 // SetResponse sets the value of Response.
-func (s *ErrorStatusCode) SetResponse(val Error) {
+func (s *DefaultStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
+
+type DeviceId string
+
+type Error string
 
 // GetAgentStatusNotFound is response for GetAgentStatus operation.
 type GetAgentStatusNotFound struct{}

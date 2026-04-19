@@ -9,6 +9,7 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
+	ht "github.com/ogen-go/ogen/http"
 	"gorm.io/gorm"
 )
 
@@ -108,4 +109,8 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 		MemoryUsedMb:       status.MemoryUsedMb,
 		LastHeartbeat:      status.LastHeartbeat,
 	}, nil
+}
+
+func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (api.AddDeviceRes, error) {
+	return nil, ht.ErrNotImplemented
 }
