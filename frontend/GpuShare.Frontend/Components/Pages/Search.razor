@@ -1,7 +1,67 @@
 ﻿@page "/"
+@using GpuShare.Frontend.Components.Modals
+@using GpuShare.Frontend.Models
 
 <PageTitle>Search for GPUs</PageTitle>
 
 <h1>Search for GPUs</h1>
 
-Welcome to your new app.
+<div class="search-container">
+
+    <input @bind="Filter.Term" placeholder="Search..." class="form-control" />
+
+    <button class="btn btn-outline-secondary" @onclick="OpenModal">
+        Filters
+    </button>
+
+    <button class="btn btn-primary" @onclick="ApplySearch">
+        Search
+    </button>
+</div>
+
+<!-- Active filters preview -->
+<div class="mt-2">
+    @if (!string.IsNullOrEmpty(Filter.Category))
+    {
+        <span class="badge bg-secondary">Category: @Filter.Category</span>
+    }
+    @if (Filter.MinPrice.HasValue)
+    {
+        <span class="badge bg-secondary">Min: @Filter.MinPrice</span>
+    }
+    @if (Filter.MaxPrice.HasValue)
+    {
+        <span class="badge bg-secondary">Max: @Filter.MaxPrice</span>
+    }
+    @if (Filter.InStock.HasValue)
+    {
+        <span class="badge bg-secondary">
+            @(Filter.InStock.Value ? "In Stock" : "Out of Stock")
+        </span>
+    }
+</div>
+
+<FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
+
+@code {
+    private SearchFilter Filter = new();
+    private FilterModal Modal;
+
+    private void OpenModal()
+    {
+        Modal?.Open(Filter);
+    }
+
+    private async Task ApplySearch()
+    {
+        await OnSearch.InvokeAsync(Filter);
+        Console.WriteLine($"Searching for '{Filter.Term}' with category '{Filter.Category}', price between {Filter.MinPrice} and {Filter.MaxPrice}, in stock: {Filter.InStock}");
+    }
+
+    private void OnFiltersApplied(SearchFilter updated)
+    {
+        Filter = updated;
+    }
+
+    [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
+}

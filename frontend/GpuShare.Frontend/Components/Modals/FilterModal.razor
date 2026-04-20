@@ -1,0 +1,96 @@
+@using GpuShare.Frontend.Models
+
+@if (IsOpen)
+{
+    @* <div class="modal-backdrop fade show"></div> *@
+
+    <div class="modal-backdrop">
+        <div class="modal-dialog">
+            
+        
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3>Filters</h3>
+                <button class="close-btn" @onclick="Close">&times;</button>
+            </div>
+
+            <div class="modal-body">
+
+                <select @bind="TempFilter.Category" class="form-select mb-2">
+                    <option value="">All Categories</option>
+                    @foreach (var c in Categories)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+
+                <input name="MinPrice" type="number" @bind="TempFilter.MinPrice" placeholder="Min Price" class="form-control mb-2" />
+                <input name="MaxPrice" type="number" @bind="TempFilter.MaxPrice" placeholder="Max Price" class="form-control mb-2" />
+
+                <select @bind="TempFilter.InStock" class="form-select mb-2">
+                    <option value="">All</option>
+                    <option value="true">In Stock</option>
+                    <option value="false">Out of Stock</option>
+                </select>
+
+                <select @bind="TempFilter.SortBy" class="form-select">
+                    <option value="SortOption.None">No Sorting</option>
+                    <option value="SortOption.NameAsc">Name ↑</option>
+                    <option value="SortOption.NameDesc">Name ↓</option>
+                    <option value="SortOption.PriceAsc">Price ↑</option>
+                    <option value="SortOption.PriceDesc">Price ↓</option>
+                </select>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="Close">Cancel</button>
+                <button class="btn btn-primary" @onclick="Apply">Apply</button>
+            </div>
+
+        </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<SearchFilter> OnApply { get; set; }
+    [Parameter] public SearchFilter CurrentFilter { get; set; }
+
+    private bool IsOpen;
+    private SearchFilter TempFilter = new();
+
+    private List<string> Categories = new()
+    {
+        "Books", "Electronics", "Clothing"
+    };
+
+    public void Open(SearchFilter existing)
+    {
+        // clone so user edits don't apply until confirmed
+        TempFilter = new SearchFilter
+        {
+            Term = existing.Term,
+            Category = existing.Category,
+            MinPrice = existing.MinPrice,
+            MaxPrice = existing.MaxPrice,
+            InStock = existing.InStock,
+            SortBy = existing.SortBy
+        };
+
+        IsOpen = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        IsOpen = false;
+    }
+
+    private async Task Apply()
+    {
+        IsOpen = false;
+        await OnApply.InvokeAsync(TempFilter);
+    }
+}
