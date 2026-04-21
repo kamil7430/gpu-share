@@ -1,0 +1,31 @@
+.search-container {
+    display: flex;
+    gap: 10px;
+}
+
+.search-container input {
+    width: 30%;
+    border: 1px solid #4C6EB2;
+    border-radius: 12px;
+    padding: 6px 18px;
+    color: #0a1128;
+}
+
+.search-container button {
+    border: 1px solid #4C6EB2;
+    border-radius: 12px;
+    padding: 6px 12px;
+    color: #4C6EB2;
+}
+
+.search-container button:hover {
+    background-color: #C5D8E8;
+}
+
+.filter-badge {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    background-color: #C5D8E8 !important;
+    color: #4C6EB2;
+}

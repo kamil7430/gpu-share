@@ -1,0 +1,162 @@
+@using Blazorise
+@using GpuShare.Frontend.Models
+
+@* Filters:
+ - Model?
+ - Brand?
+ - vram
+ - Price range
+ - Cores num range
+ - min driver version?
+ - supported frameworks
+ - availability
+
+Decisions:
+    Show when gpu will be available?
+    Add brand to model?
+*@
+
+@if (IsOpen)
+{
+    @* <div class="modal-backdrop fade show"></div> *@
+
+    <div class="modal-backdrop">
+        <div class="modal-dialog">
+            
+        
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h3>Filters</h3>
+                <button class="close-btn" @onclick="Close">&times;</button>
+            </div>
+
+            <div class="modal-body">
+
+                @* <select @bind="TempFilter.Category" class="form-select mb-2">
+                    <option value="">All Categories</option>
+                    @foreach (var c in Categories)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select> *@
+                <label>VRAM:</label>
+                <CheckBoxList className="checkbox-list" TItem="int" Data="VRAMOptions" TextField="@((int c) => $"{c} GB")" ValueField="@((int c) => c.ToString())" SelectedValues="@TempFilter.VRAM_MB" />
+
+                <label>Price per hour:</label>  
+                <Field>
+                    <RangeSlider TValue="decimal" @bind-Value="@PricePerHour" Min="0" Max="100" Step="0.1m" StartAriaLabel="Minimum value" EndAriaLabel="Maximum value" />
+                    <FieldHelp>Selected range: @PricePerHour.Start - @PricePerHour.End</FieldHelp>
+                </Field>
+                @* <input name="MinPrice" type="number" @bind="TempFilter.MinPricePerHour" placeholder="Min Price Per Hour" class="form-control mb-2" />
+                <input name="MaxPrice" type="number" @bind="TempFilter.MaxPricePerHour" placeholder="Max Price Per Hour" class="form-control mb-2" /> *@
+
+                <label>CUDA cores:</label>
+                @* <input name="MinCores" type="number" @bind="TempFilter.MinCores" placeholder="Min Cores" class="form-control mb-2" />
+                <input name="MaxCores" type="number" @bind="TempFilter.MaxCores" placeholder="Max Cores" class="form-control mb-2" /> *@
+                <Field>
+                    <RangeSlider TValue="int" @bind-Value="@Cores" Min="1000" Max="30000" Step="100" StartAriaLabel="Minimum value" EndAriaLabel="Maximum value" />
+                    <FieldHelp>Selected range: @Cores.Start - @Cores.End</FieldHelp>
+                </Field>
+
+                @* <select @bind="TempFilter.InStock" class="form-select mb-2">
+                    <option value="">All</option>
+                    <option value="true">In Stock</option>
+                    <option value="false">Out of Stock</option>
+                </select> *@
+
+                <label>Supported Frameworks:</label>
+                <CheckBoxList className="checkbox-list" TItem="string" Data="SupportedFrameworks" TextField="@(new Func<string, string>(c => c))" ValueField="@(new Func<string, string>(c => c))" SelectedValues="@TempFilter.SupportedFrameworks" />
+
+                <label class="custom-checkbox" style="margin-bottom: 16px;">
+                    <input type="checkbox" style="width: auto;" @bind="TempFilter.AvailableOnly" class="" />
+                    <span class="checkmark"></span>
+                    Available Only
+                </label>
+                @* <RadioGroup TValue="bool?" @bind-Value="@TempF" class="mb-2">
+                    <Radio Value="false">All</Radio>
+                    <Radio Value="true">Available Only</Radio>
+                </RadioGroup> *@
+                @* <select @bind="TempFilter.AvailableOnly" class="form-select mb-2">
+                    <option value="false">All</option>
+                    <option value="true">Available Only</option>
+                </select> *@
+
+                <label>Sorting:</label>
+                <select @bind="@TempFilter.SortBy" class="form-select">
+                    <option value="@SortOption.None">No Sorting</option>
+                    <option value="@SortOption.Name">Name</option>
+                    <option value="@SortOption.Model">Model</option>
+                    <option value="@SortOption.Price">Price</option>
+                </select>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="Close">Cancel</button>
+                <button class="btn btn-primary" @onclick="Apply">Apply</button>
+            </div>
+
+        </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<SearchFilter> OnApply { get; set; }
+    [Parameter] public SearchFilter CurrentFilter { get; set; }
+
+    private bool IsOpen;
+    private SearchFilter TempFilter = new();
+    private RangeSliderValue<decimal> PricePerHour = new RangeSliderValue<decimal>(0, 100);
+    private RangeSliderValue<int> Cores = new RangeSliderValue<int>(1000, 30000);
+
+    private List<string> Categories = new()
+    {
+        "Books", "Electronics", "Clothing"
+    };
+
+    // Placeholder VRAM options, replace with actual values as needed
+    // Call to database or keep as list somewhere and update as needed when new GPUs get added?
+    private List<int> VRAMOptions = new()
+    {
+        2, 4, 6, 8, 10, 12, 16, 24, 32
+    }; 
+
+    private List<int> SelectedVRAM = [];
+
+    private List<string> SupportedFrameworks = new()
+    {
+        "TensorFlow", "PyTorch", "MXNet", "Keras", "Caffe"
+    };
+    private List<string> SelectedFrameworks = [];
+
+    public void Open(SearchFilter existing)
+    {
+        // clone so user edits don't apply until confirmed
+        TempFilter = new SearchFilter
+        {
+            Term = existing.Term,
+            VRAM_MB = existing.VRAM_MB,
+            PricePerHour = existing.PricePerHour,
+            Cores = existing.Cores,
+            SupportedFrameworks = existing.SupportedFrameworks,
+            AvailableOnly = existing.AvailableOnly,
+            SortBy = existing.SortBy
+        };
+
+        IsOpen = true;
+        StateHasChanged();
+    }
+
+    private void Close()
+    {
+        IsOpen = false;
+    }
+
+    private async Task Apply()
+    {
+        IsOpen = false;
+        await OnApply.InvokeAsync(TempFilter);
+    }
+}

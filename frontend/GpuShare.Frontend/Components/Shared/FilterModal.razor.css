@@ -39,22 +39,25 @@
 /* Content */
 .modal-content {
     background: white;
-    padding: 2rem;
+    padding: 0px;
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
+    max-height: 80vh;
 
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0px;
 }
 
 /* Header */
 .modal-header {
+    padding: 2rem;
+    padding-bottom: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
 .modal-header h3 {
@@ -63,6 +66,12 @@
 }
 
 /* Body */
+.modal-body {
+    padding: 0.5rem 2rem;
+    overflow-y: auto;   /* enables scrolling */
+    flex: 1;            /* fills remaining space */
+}
+
 .modal-body input {
     width: 100%;
     padding: 10px 16px;
@@ -70,6 +79,100 @@
     border: 1px solid #ccc;
     border-radius: 10px;
     font-size: 15px;
+}
+
+.modal-body select {
+    width: 100%;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.modal-body label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.modal-body div {
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+}
+
+::deep .checkbox-list {
+    overflow-y: auto; 
+    margin-bottom: 16px;
+}
+
+/* Container */
+::deep .custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+/* Hide default checkbox */
+::deep .custom-checkbox input {
+    display: none;
+}
+
+/* Custom box */
+::deep .checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #4C6EB2;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Checked state */
+::deep .custom-checkbox input:checked + .checkmark {
+    background-color: #4C6EB2;
+}
+
+/* Check icon */
+::deep .checkmark::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 0px;
+    width: 5px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+/* Show check */
+::deep .custom-checkbox input:checked + .checkmark::after {
+    opacity: 1;
+}
+
+/* Hover effect */
+::deep .custom-checkbox:hover .checkmark {
+    border-color: #2f4f9f;
+}
+
+/* Range Slider */
+::deep .form-group {
+    margin-top: 0.5rem;
+}
+
+/* ::deep .range-slider-range {
+    background-color: #4C6EB2 !important;
+} */
+
+::deep .range-slider-tooltip {
+    font-size: 0.9rem;
+    transform: translate(-50%, calc(-100% + 0.3rem)) !important;
 }
 
 /* Footer */
