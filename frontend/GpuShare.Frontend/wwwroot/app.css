@@ -24,7 +24,8 @@ h1:focus {
 }
 
 h3 {
-  color: #0a1128;  
+  color: #0a1128;
+  font-size: 24px;
 }
 
 .valid.modified:not([type=checkbox]) {

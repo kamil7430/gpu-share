@@ -31,6 +31,8 @@
 
 .price {
     margin-top: auto;
+    font-size: 1rem;
+    font-weight: bold;
 }
 
 .gpu-body .right {

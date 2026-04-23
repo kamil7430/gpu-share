@@ -1,1 +1,39 @@
 @page "/profile"
+
+<div class="profile-page">
+<div class="profile-card">
+    <div class="header-main-row">
+        <div class="user-info">
+            <h3>My Username/Email</h3>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-label">Balance</span>
+                    <span class="stat-value">120$</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Rating</span>
+                    <span class="stat-value">
+                        4.56/5 <span class="rating-count">(21)</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-change-password btn-secondary" @onclick="HandleChangePassword">
+            Change Password
+        </button>
+    </div>
+</div>
+
+</div>
+
+<ChangePasswordModal IsVisible="@showChangePasswordModal" OnClose="@(() => showChangePasswordModal = false)" />
+
+@code {
+    private bool showChangePasswordModal = false;
+    private void HandleChangePassword()
+    {
+        showChangePasswordModal = true;
+    }
+}
