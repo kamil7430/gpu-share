@@ -1,0 +1,47 @@
+@rendermode InteractiveServer
+
+<div class="gpu-card">
+
+    <div class="gpu-body">
+        <div class="left">
+            <div class="gpu-header">
+                <h4>@Gpu.Name</h4>
+            </div>
+
+            <div>Model name</div>
+
+            <div class="price">
+                Price per hour: <strong>@Gpu.PricePerHour$</strong>
+            </div>
+        </div>
+
+        <div class="middle">
+            <div>VRAM MB: @Gpu.VramMb</div>
+            <div>CUDA cores: @Gpu.CudaCores</div>
+            <div>Driver version: @Gpu.DriverVersion</div>
+            <div>
+                Supported frameworks:
+                @string.Join(", ", Gpu.Frameworks)
+            </div>
+        </div>
+
+        <div class="right">
+            <span class="badge @(Gpu.IsAvailable ? "available" : "unavailable")">
+                @(Gpu.IsAvailable ? "Available" : "Unavailable")
+            </span>
+            <button class="btn btn-primary" disabled=@(!Gpu.IsAvailable) @onclick="OrderGpu">Order</button>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public GpuModel Gpu { get; set; } = default!;
+
+    public void OrderGpu()
+    {
+        // Implement order logic here
+        Console.WriteLine($"Ordering GPU: {Gpu.Name}");
+    }
+}

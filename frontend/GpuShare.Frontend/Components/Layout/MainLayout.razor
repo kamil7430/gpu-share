@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using GpuShare.Frontend.Models
 
 <div class="page">
     <header class="top-nav">
@@ -7,7 +8,15 @@
 
             <nav class="nav-links">
                 <NavLink href="/">Search</NavLink>
-                <button class="login-btn" @onclick="OpenLogin">Login</button>
+                @if (IsLoggedIn)
+                {
+                    <NavLink href="/profile">@CurrentUser.Username</NavLink>
+                    <button class="login-btn" @onclick="Logout">Logout</button>
+                }
+                else
+                {
+                    <button class="login-btn" @onclick="OpenLogin">Login</button>
+                }
             </nav>
         </div>
     </header>
@@ -28,10 +37,17 @@
 
 @code {
     private bool ShowModal = false;
+    private User CurrentUser = new User("JKowalski", "password123");
+    private bool IsLoggedIn = true;
 
     private void OpenLogin() { 
         ShowModal = true; 
         Console.WriteLine("Login modal opened");
+    }
+
+    private void Logout() { 
+        IsLoggedIn = false; 
+        Console.WriteLine("User logged out");
     }
     private void CloseModal() => ShowModal = false;
 

@@ -1,0 +1,60 @@
+.gpu-card {
+    background: #f7f9fc;
+    border: 2px solid #c5d8e8;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gpu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gpu-body {
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr;
+    gap: 16px;
+    align-items: center;
+}
+
+.gpu-body .left {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    height: 100%;           /* Ensure it stays stretched */
+}
+
+.price {
+    margin-top: auto;
+}
+
+.gpu-body .right {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    height: 100%;           /* Ensure it stays stretched */
+}
+
+.badge {
+    align-self: flex-end;
+}
+
+.available {
+    background: #dff6e5;
+    color: #2e7d32;
+}
+
+.unavailable {
+    background: #f5d7d7;
+    color: #c62828;
+}
+
+.btn-primary {
+    margin-top: auto;
+    align-self: flex-end;
+}
+

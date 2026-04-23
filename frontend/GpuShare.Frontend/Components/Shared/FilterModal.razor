@@ -22,13 +22,11 @@ Decisions:
 
     <div class="modal-backdrop">
         <div class="modal-dialog">
-            
-        
-        <div class="modal-content">
+        <div class="modal-content" @onclick:stopPropagation="true">
 
             <div class="modal-header">
                 <h3>Filters</h3>
-                <button class="close-btn" @onclick="Close">&times;</button>
+                <button class="btn-close" @onclick="Close">&times;</button>
             </div>
 
             <div class="modal-body">
@@ -93,7 +91,7 @@ Decisions:
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" @onclick="Close">Cancel</button>
+                <button class="btn btn-cancel" @onclick="Close">Cancel</button>
                 <button class="btn btn-primary" @onclick="Apply">Apply</button>
             </div>
 

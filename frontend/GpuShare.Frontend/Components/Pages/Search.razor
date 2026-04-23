@@ -14,7 +14,7 @@
         Filters
     </button>
 
-    <button class="btn btn-primary" @onclick="ApplySearch" style="color: white; background-color: #4c6eb2; border-color: #4c6eb2;">
+    <button class="btn btn-primary btn-search" @onclick="ApplySearch">
         Search
     </button>
 
@@ -22,38 +22,61 @@
     <div class="mt-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0px !important;">
         @if (!string.IsNullOrEmpty(Filter.VRAM_MB?.Count > 0 ? string.Join(", ", Filter.VRAM_MB) + " GB VRAM" : null))
         {
-            <span class="filter-badge badge bg-secondary">VRAM: @string.Join(", ", Filter.VRAM_MB!) GB</span>
+            <span class="filter-badge badge">VRAM: @string.Join(", ", Filter.VRAM_MB!) GB</span>
         }
         @if (Filter.PricePerHour != null)
         {
-            <span class="filter-badge badge bg-secondary">Price: @Filter.PricePerHour.Value.Start - @Filter.PricePerHour.Value.End</span>
+            <span class="filter-badge badge">Price: @Filter.PricePerHour.Value.Start - @Filter.PricePerHour.Value.End</span>
         }
         @if (Filter.Cores != null)
         {
-            <span class="filter-badge badge bg-secondary">Cores: @Filter.Cores.Value.Start - @Filter.Cores.Value.End</span>
+            <span class="filter-badge badge">Cores: @Filter.Cores.Value.Start - @Filter.Cores.Value.End</span>
         }
         @if (Filter.AvailableOnly == true)
         {
-            <span class="filter-badge badge bg-secondary">
+            <span class="filter-badge badge">
                 Available Only
             </span>
         }
         @if (Filter.SupportedFrameworks?.Count > 0)
         {
-            <span class="filter-badge badge bg-secondary">Frameworks: @string.Join(", ", Filter.SupportedFrameworks)</span>
+            <span class="filter-badge badge">Frameworks: @string.Join(", ", Filter.SupportedFrameworks)</span>
         }
         @if (Filter.SortBy != SortOption.None)
         {
-            <span class="filter-badge badge bg-secondary">Sort: @Filter.SortBy</span>
+            <span class="filter-badge badge">Sort: @Filter.SortBy</span>
         }
+    </div>
+</div>
+
+<div class="results-container">
+    @foreach (var gpu in PagedGpus)
+    {
+        <GpuCard Gpu="gpu" />
+    }
+
+    <div class="pagination">
+        <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
+
+        <span>Page @_page / @_totalPages</span>
+
+        <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
     </div>
 </div>
 
 <FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
 
 @code {
+    [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
+
     private SearchFilter Filter = new();
     private FilterModal Modal;
+    private List<GpuModel> _allGpus = [];
+    private List<GpuModel> PagedGpus = [];
+
+    private int _page = 1;
+    private int _pageSize = 10;
+    private int _totalPages;
 
     private void OpenModal()
     {
@@ -71,5 +94,49 @@
         Filter = updated;
     }
 
-    [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
+    protected override void OnInitialized()
+    {
+        // mock data
+        _allGpus = Enumerable.Range(1, 10).Select(i => new GpuModel
+        {
+            Id = i,
+            Name = $"GPU {i}",
+            IsAvailable = i % 2 == 0,
+            VramMb = 24567,
+            CudaCores = 16384,
+            DriverVersion = "535.104",
+            Frameworks = ["PyTorch", "Tensorflow"],
+            PricePerHour = 5
+        }).ToList();
+
+        _totalPages = (int)Math.Ceiling(_allGpus.Count / (double)_pageSize);
+
+        LoadPage();
+    }
+
+    private void LoadPage()
+    {
+        PagedGpus = _allGpus
+            .Skip((_page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+    }
+
+    private void NextPage()
+    {
+        if (_page < _totalPages)
+        {
+            _page++;
+            LoadPage();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_page > 1)
+        {
+            _page--;
+            LoadPage();
+        }
+    }
 }
