@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kamil7430/gpu-share/backend/internal/auth"
+	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
@@ -292,32 +294,105 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 }
 
 func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
+	testUserPassword, err := auth.HashPassword("TestPassword")
+	require.NoError(t, err)
+
 	resetDbContent := func() {
 		db.Exec("TRUNCATE TABLE devices;")
+		db.Exec("TRUNCATE TABLE users;")
+		db.Exec("INSERT INTO users(name, password, admin) VALUES ('TestUser', ?, 'false');", testUserPassword)
 	}
 
-	sendRequest := func(payload string) *http.Response {
+	sendRequest := func(payload string, bearerToken string) *http.Response {
+		resetDbContent()
 		payloadReader := strings.NewReader(payload)
-		resp, err := http.Post(baseUrl+"/api/devices", "application/json", payloadReader)
+		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/devices", payloadReader)
+		require.NoError(t, err)
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+bearerToken)
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		return resp
 	}
 
-	// TODO: implement after login implementation
-	//t.Run("add device -- not logged in", func(t *testing.T) {
-	//
-	//})
-
-	t.Run("add device -- invalid request body fields", func(t *testing.T) {
+	t.Run("add device -- not logged in", func(t *testing.T) {
 		resetDbContent()
+		payloadReader := strings.NewReader(`{
+	        "name": "Moja karta RTX 4090",
+	        "gpuModel": "NVIDIA GeForce RTX 4090",
+	        "vramMb": 24576,
+	        "cudaCores": 16384,
+	        "pricePerHourUsdCents": 45,
+	        "driverVersion": "535.104"
+	    }`)
+		resp, err := http.Post(baseUrl+"/api/devices", "application/json", payloadReader)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+
+	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+		"username": "TestUser",
+		"password": "TestPassword"
+	}`))
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, loginResp.StatusCode)
+	defer loginResp.Body.Close()
+
+	body, err := io.ReadAll(loginResp.Body)
+	require.NoError(t, err)
+
+	var tokenObj tokenResponse
+	err = json.Unmarshal(body, &tokenObj)
+	require.NoError(t, err)
+
+	token := tokenObj.Token
+
+	t.Run("add device -- invalid vram", func(t *testing.T) {
 		resp := sendRequest(`{
 			"name": "TestCard1",
 			"model": "Testidia GPU 1234",
 			"vramMb": -5,
+			"cudaCores": 10,
+			"pricePerHourUsdCents": 145,
+			"driverVersion": "510.13"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- invalid cuda cores", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": 5,
 			"cudaCores": -10,
+			"pricePerHourUsdCents": 145,
+			"driverVersion": "510.13"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- invalid price", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": 5,
+			"cudaCores": 10,
 			"pricePerHourUsdCents": -145,
+			"driverVersion": "510.13"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- invalid driver version", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": 5,
+			"cudaCores": 10,
+			"pricePerHourUsdCents": 145,
 			"driverVersion": "abc"
-		}`)
+		}`, token)
 		require.Equal(t, 400, resp.StatusCode)
 	})
 
@@ -329,7 +404,7 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 	        "cudaCores": 16384,
 	        "pricePerHourUsdCents": 45,
 	        "driverVersion": "535.104"
-	    }`)
+	    }`, token)
 		require.Equal(t, 201, resp.StatusCode)
 		defer resp.Body.Close()
 
@@ -338,7 +413,7 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 
 		expected := `{
 			"deviceId": "550e8400-e29b-41d4-a716-446655440000",
-			"ownerId": "test_user",
+			"ownerId": "TestUser",
 			"state": "AVAILABLE",
 			"createdAt": "2026-01-06T12:34:56Z"
 		}`

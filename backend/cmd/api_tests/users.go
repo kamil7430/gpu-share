@@ -188,7 +188,7 @@ func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
 	changePasswordTestCase := func(oldPassword, newPassword string, bearerToken *string) *http.Response {
 		resetDbContent()
 
-		req, err := http.NewRequest("POST", baseUrl+"/api/users/changePassword", strings.NewReader(fmt.Sprintf(`{
+		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/users/changePassword", strings.NewReader(fmt.Sprintf(`{
 			"oldPassword": "%s",
 			"newPassword": "%s"
 		}`, oldPassword, newPassword)))
