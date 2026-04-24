@@ -146,9 +146,9 @@ func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (a
 	}
 
 	return &api.AddDeviceCreated{
-		DeviceId:   strconv.Itoa(int(device.ID)),
-		OwnerLogin: user.Name,
-		State:      device.State,
-		CreatedAt:  device.CreatedAt,
+		DeviceId:      strconv.Itoa(int(device.ID)),
+		OwnerUsername: user.Name,
+		State:         device.State,
+		CreatedAt:     device.CreatedAt,
 	}, nil
 }

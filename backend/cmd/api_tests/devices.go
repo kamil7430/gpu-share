@@ -415,17 +415,17 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.NoError(t, err)
 
 		type responseSchema struct {
-			DeviceId   string
-			OwnerLogin string
-			State      api.State
-			CreatedAt  time.Time
+			DeviceId      string
+			OwnerUsername string
+			State         api.State
+			CreatedAt     time.Time
 		}
 
 		var response responseSchema
 		err = json.Unmarshal(body, &response)
 		require.NoError(t, err)
 
-		require.Equal(t, "TestUser", response.OwnerLogin)
+		require.Equal(t, "TestUser", response.OwnerUsername)
 		require.Equal(t, api.StateAVAILABLE, response.State)
 		require.InDelta(t, timestamp.UTC().Unix(), response.CreatedAt.Unix(), time.Minute.Seconds())
 	})

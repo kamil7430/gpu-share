@@ -152,13 +152,13 @@ post:
             type: object
             required:
               - deviceId
-              - ownerLogin
+              - ownerUsername
               - state
               - createdAt
             properties:
               deviceId:
                 type: string
-              ownerLogin:
+              ownerUsername:
                 type: string
               state:
                 $ref: "../../../schemas/State.yaml"
