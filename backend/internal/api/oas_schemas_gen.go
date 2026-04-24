@@ -19,10 +19,10 @@ type AddDeviceBadRequest struct{}
 func (*AddDeviceBadRequest) addDeviceRes() {}
 
 type AddDeviceCreated struct {
-	DeviceId  string    `json:"deviceId"`
-	OwnerId   string    `json:"ownerId"`
-	State     State     `json:"state"`
-	CreatedAt time.Time `json:"createdAt"`
+	DeviceId   string    `json:"deviceId"`
+	OwnerLogin string    `json:"ownerLogin"`
+	State      State     `json:"state"`
+	CreatedAt  time.Time `json:"createdAt"`
 }
 
 // GetDeviceId returns the value of DeviceId.
@@ -30,9 +30,9 @@ func (s *AddDeviceCreated) GetDeviceId() string {
 	return s.DeviceId
 }
 
-// GetOwnerId returns the value of OwnerId.
-func (s *AddDeviceCreated) GetOwnerId() string {
-	return s.OwnerId
+// GetOwnerLogin returns the value of OwnerLogin.
+func (s *AddDeviceCreated) GetOwnerLogin() string {
+	return s.OwnerLogin
 }
 
 // GetState returns the value of State.
@@ -50,9 +50,9 @@ func (s *AddDeviceCreated) SetDeviceId(val string) {
 	s.DeviceId = val
 }
 
-// SetOwnerId sets the value of OwnerId.
-func (s *AddDeviceCreated) SetOwnerId(val string) {
-	s.OwnerId = val
+// SetOwnerLogin sets the value of OwnerLogin.
+func (s *AddDeviceCreated) SetOwnerLogin(val string) {
+	s.OwnerLogin = val
 }
 
 // SetState sets the value of State.

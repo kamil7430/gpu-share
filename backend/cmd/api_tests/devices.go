@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
@@ -397,6 +399,8 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	t.Run("add device -- valid data", func(t *testing.T) {
+		timestamp := time.Now().UTC()
+
 		resp := sendRequest(`{
 	        "name": "Moja karta RTX 4090",
 	        "gpuModel": "NVIDIA GeForce RTX 4090",
@@ -411,9 +415,16 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 		body, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
+		type responseSchema struct {
+			DeviceId   string
+			OwnerLogin string
+			State      api.State
+			CreatedAt  time.Time
+		}
+
 		expected := `{
 			"deviceId": "550e8400-e29b-41d4-a716-446655440000",
-			"ownerId": "TestUser",
+			"ownerLogin": "TestUser",
 			"state": "AVAILABLE",
 			"createdAt": "2026-01-06T12:34:56Z"
 		}`
