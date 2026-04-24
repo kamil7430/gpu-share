@@ -41,7 +41,7 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 		if verbose {
 			log.Println("Migrating models...")
 		}
-		err = db.AutoMigrate(&model.Device{}, &model.User{})
+		err = db.AutoMigrate(&model.User{}, &model.Device{})
 		if err != nil {
 			return nil, err
 		}
