@@ -26,8 +26,8 @@ func (s *AddDeviceCreated) encodeFields(e *jx.Encoder) {
 		e.Str(s.DeviceId)
 	}
 	{
-		e.FieldStart("ownerId")
-		e.Str(s.OwnerId)
+		e.FieldStart("ownerUsername")
+		e.Str(s.OwnerUsername)
 	}
 	{
 		e.FieldStart("state")
@@ -41,7 +41,7 @@ func (s *AddDeviceCreated) encodeFields(e *jx.Encoder) {
 
 var jsonFieldsNameOfAddDeviceCreated = [4]string{
 	0: "deviceId",
-	1: "ownerId",
+	1: "ownerUsername",
 	2: "state",
 	3: "createdAt",
 }
@@ -67,17 +67,17 @@ func (s *AddDeviceCreated) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"deviceId\"")
 			}
-		case "ownerId":
+		case "ownerUsername":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := d.Str()
-				s.OwnerId = string(v)
+				s.OwnerUsername = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"ownerId\"")
+				return errors.Wrap(err, "decode field \"ownerUsername\"")
 			}
 		case "state":
 			requiredBitSet[0] |= 1 << 2

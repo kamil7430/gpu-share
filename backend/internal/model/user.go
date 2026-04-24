@@ -7,4 +7,5 @@ type User struct {
 	Name     string
 	Password string
 	Admin    bool
+	Devices  []Device
 }
