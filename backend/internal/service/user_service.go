@@ -9,6 +9,7 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +27,7 @@ func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.Op
 		return nil, err
 	}
 
-	newCtx := context.WithValue(ctx, "username", token.Username)
+	newCtx := context.WithValue(ctx, utils.ContextUsernameKey, token.Username)
 
 	if slices.Contains(t.Roles, "user") {
 		return newCtx, nil
@@ -104,7 +105,7 @@ func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.R
 }
 
 func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswordReq) (api.ChangePasswordRes, error) {
-	username, ok := ctx.Value("username").(string)
+	username, ok := ctx.Value(utils.ContextUsernameKey).(string)
 	if !ok {
 		return nil, errors.New("username not found in context")
 	}

@@ -113,7 +113,7 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 }
 
 func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (api.AddDeviceRes, error) {
-	username, ok := ctx.Value("username").(string)
+	username, ok := ctx.Value(utils.ContextUsernameKey).(string)
 	if !ok {
 		return nil, errors.New("username not found in context")
 	}
