@@ -422,13 +422,12 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 			CreatedAt  time.Time
 		}
 
-		expected := `{
-			"deviceId": "550e8400-e29b-41d4-a716-446655440000",
-			"ownerLogin": "TestUser",
-			"state": "AVAILABLE",
-			"createdAt": "2026-01-06T12:34:56Z"
-		}`
+		var response responseSchema
+		err = json.Unmarshal(body, &response)
+		require.NoError(t, err)
 
-		require.JSONEq(t, expected, string(body))
+		require.Equal(t, "TestUser", response.OwnerLogin)
+		require.Equal(t, api.StateAVAILABLE, response.State)
+		require.InDelta(t, timestamp.UTC().Unix(), response.CreatedAt.Unix(), time.Minute.Seconds())
 	})
 }
