@@ -7,19 +7,20 @@ import (
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
+	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
-	ht "github.com/ogen-go/ogen/http"
 	"gorm.io/gorm"
 )
 
 type DeviceService struct {
 	dr repository.DeviceRepository
 	gr repository.GpuRepository
+	ur repository.UserRepository
 }
 
-func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepository) DeviceService {
-	return DeviceService{dr, gr}
+func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepository, ur repository.UserRepository) DeviceService {
+	return DeviceService{dr, gr, ur}
 }
 
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
@@ -112,5 +113,42 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 }
 
 func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (api.AddDeviceRes, error) {
-	return nil, ht.ErrNotImplemented
+	username, ok := ctx.Value("username").(string)
+	if !ok {
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.ur.GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	dv, err := utils.DriverVersionFromString(req.DriverVersion)
+	if err != nil {
+		return &api.AddDeviceBadRequest{}, nil
+	}
+
+	device := model.Device{
+		Name:                 req.Name,
+		GpuModel:             req.GpuModel,
+		VramMb:               req.VramMb,
+		CudaCores:            req.CudaCores,
+		PricePerHourUsdCents: req.PricePerHourUsdCents,
+		DriverVersionMajor:   dv.Major,
+		DriverVersionMinor:   dv.Minor,
+		State:                api.StateAVAILABLE,
+		UserID:               user.ID,
+	}
+
+	err = s.dr.AddDevice(ctx, &device)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.AddDeviceCreated{
+		DeviceId:   strconv.Itoa(int(device.ID)),
+		OwnerLogin: user.Name,
+		State:      device.State,
+		CreatedAt:  device.CreatedAt,
+	}, nil
 }

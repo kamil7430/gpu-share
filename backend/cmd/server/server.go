@@ -21,7 +21,7 @@ type sauron struct {
 func NewServer(repos *Repos) *http.Server {
 	sauron := sauron{
 		service.NewHealthService(),
-		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo),
+		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo, repos.UserRepo),
 		service.NewUserService(repos.UserRepo),
 	}
 
