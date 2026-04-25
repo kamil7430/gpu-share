@@ -1,0 +1,12 @@
+type: object
+required:
+  - host
+  - port
+  - protocol
+properties:
+  host:
+    type: string
+  port:
+    type: string
+  protocol:
+    type: string

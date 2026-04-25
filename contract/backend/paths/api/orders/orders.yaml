@@ -1,0 +1,62 @@
+post:
+  summary: Initialize a device rental
+  operationId: orderDevice
+  security:
+    - bearerAuth:
+        - user
+  parameters:
+    - name: deviceId
+      in: query
+      required: true
+      description: Id of device to rent
+      schema:
+        type: string
+    - name: dockerImage
+      in: query
+      required: true
+      description: Name of Docker image to run on the device
+      schema:
+        type: string
+    - name: durationHours
+      in: query
+      required: true
+      description: Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002 (slightly less than 1 second)
+      examples:
+        oneMinute:
+          summary: Example of a one minute of duration
+          value: 0.017
+        oneAndHalfHour:
+          summary: Example of a one and a half an hour of duration
+          value: 1.5
+      schema:
+        type: number
+        format: double
+        minimum: 0.0002 # one second
+  responses:
+    "201":
+      description: Device rental created
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - orderId
+              - status
+              - connectionDetails
+              - totalReservedCostCents
+            properties:
+              orderId:
+                type: string
+              status:
+                $ref: "../../../schemas/RentalStatus.yaml"
+              connectionDetails:
+                $ref: "../../../schemas/ConnectionDetails.yaml"
+              totalReservedCostCents:
+                type: integer
+                minimum: 1
+    "400":
+      description: Invalid request parameters
+#    "402":
+#      description: Insufficient amount in user's wallet
+    default:
+      $ref: "../../../responses/default.yaml"

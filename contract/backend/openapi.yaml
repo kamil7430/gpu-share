@@ -12,6 +12,8 @@ paths:
     $ref: "./paths/api/devices/devices.yaml"
   /api/devices/{deviceId}/status:
     $ref: "./paths/api/devices/status.yaml"
+  /api/orders:
+    $ref: "./paths/api/orders/orders.yaml"
   /api/users/changePassword:
     $ref: "./paths/api/users/changePassword.yaml"
   /api/users/login:
