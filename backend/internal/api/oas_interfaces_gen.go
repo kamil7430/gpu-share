@@ -21,6 +21,10 @@ type LoginRes interface {
 	loginRes()
 }
 
+type OrderDeviceRes interface {
+	orderDeviceRes()
+}
+
 type RegisterRes interface {
 	registerRes()
 }

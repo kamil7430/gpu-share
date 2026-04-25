@@ -45,6 +45,12 @@ type Handler interface {
 	//
 	// POST /api/users/login
 	Login(ctx context.Context, req *LoginReq) (LoginRes, error)
+	// OrderDevice implements orderDevice operation.
+	//
+	// Initialize a device rental.
+	//
+	// POST /api/orders
+	OrderDevice(ctx context.Context, params OrderDeviceParams) (OrderDeviceRes, error)
 	// Register implements register operation.
 	//
 	// Register a user.

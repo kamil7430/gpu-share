@@ -932,3 +932,170 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 	}
 	return params, nil
 }
+
+// OrderDeviceParams is parameters of orderDevice operation.
+type OrderDeviceParams struct {
+	// Id of device to rent.
+	DeviceId string
+	// Name of Docker image to run on the device.
+	DockerImage string
+	// Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002
+	// (slightly less than 1 second).
+	DurationHours float64
+}
+
+func unpackOrderDeviceParams(packed middleware.Parameters) (params OrderDeviceParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "deviceId",
+			In:   "query",
+		}
+		params.DeviceId = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "dockerImage",
+			In:   "query",
+		}
+		params.DockerImage = packed[key].(string)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "durationHours",
+			In:   "query",
+		}
+		params.DurationHours = packed[key].(float64)
+	}
+	return params
+}
+
+func decodeOrderDeviceParams(args [0]string, argsEscaped bool, r *http.Request) (params OrderDeviceParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: deviceId.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "deviceId",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.DeviceId = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "deviceId",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: dockerImage.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "dockerImage",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.DockerImage = c
+				return nil
+			}); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "dockerImage",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: durationHours.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "durationHours",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToFloat64(val)
+				if err != nil {
+					return err
+				}
+
+				params.DurationHours = c
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if err := (validate.Float{
+					MinSet:        true,
+					Min:           0.0002,
+					MaxSet:        false,
+					Max:           0,
+					MinExclusive:  false,
+					MaxExclusive:  false,
+					MultipleOfSet: false,
+					MultipleOf:    nil,
+					Pattern:       nil,
+				}).Validate(float64(params.DurationHours)); err != nil {
+					return errors.Wrap(err, "float")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "durationHours",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}

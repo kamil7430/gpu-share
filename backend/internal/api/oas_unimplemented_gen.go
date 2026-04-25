@@ -68,6 +68,15 @@ func (UnimplementedHandler) Login(ctx context.Context, req *LoginReq) (r LoginRe
 	return r, ht.ErrNotImplemented
 }
 
+// OrderDevice implements orderDevice operation.
+//
+// Initialize a device rental.
+//
+// POST /api/orders
+func (UnimplementedHandler) OrderDevice(ctx context.Context, params OrderDeviceParams) (r OrderDeviceRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // Register implements register operation.
 //
 // Register a user.
