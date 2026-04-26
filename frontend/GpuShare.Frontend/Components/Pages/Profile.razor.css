@@ -14,27 +14,7 @@
     box-sizing: border-box;
 }
 
-.profile-page .devices-card {
-    border: 1px solid #5c7ebf;  /* Same darker blue border */
-    border-radius: 15px;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    flex-direction: column;
-}
-
-.profile-page .devices-card {
-    border: 1px solid #5c7ebf;  /* Same darker blue border */
-    border-radius: 15px;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    flex-direction: column;
-}
-
-.profile-page .orders-card {
+.profile-page .card {
     border: 1px solid #5c7ebf;  /* Same darker blue border */
     border-radius: 15px;
     padding: 15px 20px;
@@ -53,7 +33,11 @@
 
 .user-info h3 {
     margin: 0 0 15px 0;
-    color: #0a1a33; /* Very dark blue for text */
+    font-weight: bold;
+}
+
+.header-main-row h3 {
+    margin-left: 15px;
     font-weight: bold;
 }
 

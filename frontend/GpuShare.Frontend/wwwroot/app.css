@@ -122,6 +122,22 @@ h3 {
     opacity: 1;
 }
 
+/* Close button */
+.btn-danger {
+    background-color: #B63939;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.btn-danger:hover {
+    background-color: #8a2222;
+    color: white;
+}
+
 .badge {
     font-size: 0.8rem;
     padding: 0.5rem 0.75rem;

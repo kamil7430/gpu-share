@@ -60,27 +60,8 @@ TODO:
     </div>
 </div>
 
-@if (PagedGpus.Count == 0)
-{
-    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No devices match your criteria.</p>
-}
-else
-{
-    <div class="results-container">
-        @foreach (var gpu in PagedGpus)
-        {
-            <GpuCard Gpu="gpu" />
-        }
+<GpuCard />
 
-        <div class="pagination">
-            <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
-
-            <span>Page @_page / @_totalPages</span>
-
-            <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
-        </div>
-    </div>
-}
 <FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
 
 @code {
@@ -88,12 +69,6 @@ else
 
     private SearchFilter Filter = new();
     private FilterModal Modal;
-    private List<GpuModel> _allGpus = [];
-    private List<GpuModel> PagedGpus = [];
-
-    private int _page = 1;
-    private int _pageSize = 10;
-    private int _totalPages;
 
     private void OpenModal()
     {
@@ -109,51 +84,5 @@ else
     private void OnFiltersApplied(SearchFilter updated)
     {
         Filter = updated;
-    }
-
-    protected override void OnInitialized()
-    {
-        // mock data
-        _allGpus = Enumerable.Range(1, 10).Select(i => new GpuModel
-        {
-            Id = i,
-            Name = $"GPU {i}",
-            IsAvailable = i % 2 == 0,
-            VramMb = 24567,
-            CudaCores = 16384,
-            DriverVersion = "535.104",
-            Frameworks = ["PyTorch", "Tensorflow"],
-            PricePerHour = 5
-        }).ToList();
-
-        _totalPages = (int)Math.Ceiling(_allGpus.Count / (double)_pageSize);
-
-        LoadPage();
-    }
-
-    private void LoadPage()
-    {
-        PagedGpus = _allGpus
-            .Skip((_page - 1) * _pageSize)
-            .Take(_pageSize)
-            .ToList();
-    }
-
-    private void NextPage()
-    {
-        if (_page < _totalPages)
-        {
-            _page++;
-            LoadPage();
-        }
-    }
-
-    private void PrevPage()
-    {
-        if (_page > 1)
-        {
-            _page--;
-            LoadPage();
-        }
     }
 }
