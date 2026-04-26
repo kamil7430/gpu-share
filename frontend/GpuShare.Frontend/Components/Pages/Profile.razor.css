@@ -1,3 +1,10 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 30px;
+}
+
 .profile-page .profile-card {
     background-color: #eaf6ff; /* Light blue background */
     border: 2px solid #5c7ebf;  /* Darker blue border */
@@ -7,10 +14,41 @@
     box-sizing: border-box;
 }
 
+.profile-page .devices-card {
+    border: 1px solid #5c7ebf;  /* Same darker blue border */
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.profile-page .devices-card {
+    border: 1px solid #5c7ebf;  /* Same darker blue border */
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.profile-page .orders-card {
+    border: 1px solid #5c7ebf;  /* Same darker blue border */
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-direction: column;
+}
+
 .header-main-row {
     display: flex;
     justify-content: space-between; /* Pushes text left, button right */
     align-items: flex-start;
+    width: 100%;
 }
 
 .user-info h3 {
@@ -54,4 +92,29 @@
 
 .btn-change-password:hover {
     background-color: #d1eaff;
+}
+
+.results-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #4c6eb2;
+    background: white;
+    cursor: pointer;
+    color: #4C6EB2;
+}
+
+.pagination button:hover {
+    background-color: #C5D8E8;
 }

@@ -60,21 +60,27 @@ TODO:
     </div>
 </div>
 
-<div class="results-container">
-    @foreach (var gpu in PagedGpus)
-    {
-        <GpuCard Gpu="gpu" />
-    }
+@if (PagedGpus.Count == 0)
+{
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No devices match your criteria.</p>
+}
+else
+{
+    <div class="results-container">
+        @foreach (var gpu in PagedGpus)
+        {
+            <GpuCard Gpu="gpu" />
+        }
 
-    <div class="pagination">
-        <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
+        <div class="pagination">
+            <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
 
-        <span>Page @_page / @_totalPages</span>
+            <span>Page @_page / @_totalPages</span>
 
-        <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
+            <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
+        </div>
     </div>
-</div>
-
+}
 <FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
 
 @code {

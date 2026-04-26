@@ -20,10 +20,48 @@
             </div>
         </div>
 
-        <button class="btn-change-password btn-secondary" @onclick="HandleChangePassword">
+        <button class="btn-change-password btn-secondary" @onclick="ChangePassword">
             Change Password
         </button>
     </div>
+</div>
+
+<div class="devices-card">
+    <div class="header-main-row">
+        <h3>My Devices</h3>
+        <button class="btn-add-device btn-primary" @onclick="AddDevice">Add Device</button>
+    </div>
+
+    @if (PagedGpus.Count == 0)
+    {
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No devices added yet.</p>
+    }
+    else
+    {
+    <div class="results-container">
+        @foreach (var gpu in PagedGpus)
+        {
+            <GpuCard Gpu="gpu" />
+        }
+
+        <div class="pagination">
+            <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
+
+            <span>Page @_page / @_totalPages</span>
+
+            <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
+        </div>
+    </div>
+    }
+</div>
+
+<div class="orders-card">
+    <div class="header-main-row">
+        <h3>My Orders</h3>
+    </div>
+
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No orders yet.</p>
+
 </div>
 
 </div>
@@ -31,9 +69,67 @@
 <ChangePasswordModal IsVisible="@showChangePasswordModal" OnClose="@(() => showChangePasswordModal = false)" />
 
 @code {
+    private List<GpuModel> _allGpus = [];
+    private List<GpuModel> PagedGpus = [];
     private bool showChangePasswordModal = false;
-    private void HandleChangePassword()
+    private int _page = 1;
+    private int _pageSize = 5;
+    private int _totalPages;
+
+    protected override void OnInitialized()
+    {
+        // mock data
+        _allGpus = Enumerable.Range(1, 10).Select(i => new GpuModel
+        {
+            Id = i,
+            Name = $"GPU {i}",
+            IsAvailable = i % 2 == 0,
+            VramMb = 24567,
+            CudaCores = 16384,
+            DriverVersion = "535.104",
+            Frameworks = ["PyTorch", "Tensorflow"],
+            PricePerHour = 5
+        }).ToList();
+        //_allGpus = [];
+
+        _totalPages = (int)Math.Ceiling(_allGpus.Count / (double)_pageSize);
+
+        LoadPage();
+    }
+
+    private void ChangePassword()
     {
         showChangePasswordModal = true;
+    }
+
+    private void AddDevice()
+    {
+        
+    }
+
+    private void LoadPage()
+    {
+        PagedGpus = _allGpus
+            .Skip((_page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+    }
+
+    private void NextPage()
+    {
+        if (_page < _totalPages)
+        {
+            _page++;
+            LoadPage();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_page > 1)
+        {
+            _page--;
+            LoadPage();
+        }
     }
 }

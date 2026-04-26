@@ -1,0 +1,45 @@
+<div class="table-card">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th>Owner</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Cost</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rental in Rentals)
+            {
+                <tr>
+                    <td>@rental.Device</td>
+                    <td>@rental.Owner</td>
+                    <td>@rental.StartDate</td>
+                    <td>@(string.IsNullOrEmpty(rental.EndDate) ? "-" : rental.EndDate)</td>
+                    <td>@(rental.Cost == 0 ? "-" : $"{rental.Cost}$")</td>
+                    <td>@rental.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="load-more-container">
+    <a href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
+</div>
+
+@code {
+    // Replace this with your actual data model/service call
+    private List<RentalItem> Rentals = new()
+    {
+        new ("GPU#69", "User1", "21-12-2025 21:37", "24-12-2025 13:13", 200, "Ended"),
+        new ("GPU#67", "User2", "15-04-2026 21:37", "", 0, "Ongoing"),
+        new ("GPU#2137", "User2137", "21-04-2026 21:37", "", 0, "Scheduled")
+    };
+
+    private void LoadMore() { /* Logic to fetch more rows */ }
+
+    public record RentalItem(string Device, string Owner, string StartDate, string EndDate, int Cost, string Status);
+}
