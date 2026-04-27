@@ -1,0 +1,59 @@
+<div class="opinions-container">
+    @if (Opinions.Count == 0)
+    {
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No reviews yet.</p>
+    }
+    else
+    {
+        @foreach (Opinion opinion in Opinions)
+        {
+            bool isExpanded = ExpandedReviews.Contains(opinion.Username);
+
+            <div class="opinion-card">
+            <h4 class="user-name">@opinion.Username</h4>
+            
+            <div class="star-rating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span>@(i <= opinion.Rating ? "★" : "☆")</span>
+                }
+            </div>
+
+            <p class="opinion-text @(isExpanded ? "" : "text-clamp")">
+                @opinion.Comment
+            </p>
+
+            @if (opinion.Comment.Length > 200)
+            {
+                <button class="toggle-text-btn" @onclick="() => ToggleExpand(opinion.Username)">
+                    @(isExpanded ? "Show less" : "Read more...")
+                </button>
+            }
+        </div>
+        }
+    }
+</div>
+
+<div class="load-more-container">
+    <a href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
+</div>
+
+@code {
+    private HashSet<string> ExpandedReviews = new();
+
+    private void ToggleExpand(string username)
+    {
+        if (ExpandedReviews.Contains(username))
+            ExpandedReviews.Remove(username);
+        else
+            ExpandedReviews.Add(username);
+    }
+
+    private List<Opinion> Opinions = new()
+    {
+        new () { Username = "User1", Rating = 5, Comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sit amet mi nec arcu hendrerit auctor varius sit amet diam. Duis tempor elit felis, ac sollicitudin lacus fringilla non. Suspendisse potenti. Vestibulum dictum metus felis, et scelerisque justo feugiat eget. Phasellus sed dictum risus, sit amet faucibus lorem. Proin eu lacus at dolor tempus tempus. Sed ullamcorper tortor massa, quis egestas mauris luctus a. Suspendisse in purus nulla. Nunc pellentesque arcu ac vehicula placerat. Proin eget lorem eu sapien volutpat consectetur. Nullam placerat purus neque, aliquet convallis purus tempor vitae. Suspendisse ut erat quis neque commodo venenatis. Nulla vel fringilla nisl. Curabitur lacinia sapien posuere, interdum eros sed, porta tellus. Proin euismod eros vitae porta placerat. Curabitur ornare metus a elit faucibus hendrerit." },
+        new () { Username = "User2", Rating = 4, Comment = "Nice :)" }
+    };
+
+    private void LoadMore() { /* Logic */ }
+}
