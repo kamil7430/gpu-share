@@ -1,3 +1,5 @@
+namespace GpuShare.Frontend.Models;
+
 public class GpuModel
 {
     public int Id { get; set; }

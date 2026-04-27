@@ -22,8 +22,8 @@
                     <tr>
                         <td>@order.Device</td>
                         <td><a class="profile-link" href="/profile/@order.Owner">@order.Owner</a></td>
-                        <td>@order.StartDate</td>
-                        <td>@(string.IsNullOrEmpty(order.EndDate) ? "-" : order.EndDate)</td>
+                        <td>@(order.StartDate == null || order.StartDate == DateTime.MinValue ? "-" : order.StartDate.ToString())</td>
+                        <td>@(order.EndDate == null || order.EndDate == DateTime.MinValue ? "-" : order.EndDate.ToString())</td>
                         <td>@(order.Cost == 0 ? "-" : $"{order.Cost}$")</td>
                         <td>@order.Status</td>
                     </tr>
@@ -41,9 +41,9 @@
     // Replace this with your actual data model/service call
     private List<Order> Orders = new()
     {
-        new ("GPU#69", "User1", "21-12-2025 21:37", "24-12-2025 13:13", 200, "Ended"),
-        new ("GPU#67", "User2", "15-04-2026 21:37", "", 0, "Ongoing"),
-        new ("GPU#2137", "User2137", "21-04-2026 21:37", "", 0, "Scheduled")
+        new ("GPU#69", "User1", DateTime.Parse("21-12-2025 21:37"), DateTime.Parse("24-12-2025 13:13"), 200, "Ended"),
+        new ("GPU#67", "User2", DateTime.Parse("15-04-2026 21:37"), null, 0, "Ongoing"),
+        new ("GPU#2137", "User2137", DateTime.Parse("21-04-2026 21:37"), null, 0, "Scheduled")
     };
 
     private void LoadMore() { /* Logic to fetch more rows */ }

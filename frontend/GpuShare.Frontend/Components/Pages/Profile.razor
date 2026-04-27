@@ -1,4 +1,13 @@
 @page "/profile"
+@page "/profile/{Username}"
+
+@* 
+Project decisions:
+- is the timeframe of the order fixed? if not then when and how the user can change/cancel the order?
+- does the owner have to accept the order or is it automatically accepted? 
+- i'd add a calendar for user to be able to see all orders for their devices
+- maybe a calendar for every gpu when ordering?
+*@
 
 <div class="profile-page">
 <div class="profile-card">
@@ -20,21 +29,33 @@
             </div>
         </div>
 
-        <button class="btn-change-password btn-secondary" @onclick="ChangePassword">
-            Change Password
-        </button>
+        @if (string.IsNullOrEmpty(Username))
+        {
+            <button class="btn-change-password btn-secondary" @onclick="ChangePassword">
+                Change Password
+            </button>
+        }
     </div>
 </div>
 
 <div class="card">
     <div class="header-main-row">
-        <h3>My Devices</h3>
-        <button class="btn-add-device btn-primary" @onclick="AddDevice">Add Device</button>
+        @if (string.IsNullOrEmpty(Username))
+        {
+            <h3>My Devices</h3>
+            <button class="btn-add-device btn-primary" @onclick="AddDevice">Add Device</button>
+        }
+        else
+        {
+            <h3>@Username's Devices</h3>
+        }
     </div>
 
-    <GpuCard />
+    <GpuCard authorized="@authorized" />
 </div>
 
+@if (string.IsNullOrEmpty(Username))
+{
 <div class="card">
     <div class="header-main-row">
         <h3>My Orders</h3>
@@ -42,6 +63,7 @@
 
     <OrderTable />
 </div>
+}
 
 <div class="card">
     <div class="header-main-row">
@@ -53,12 +75,29 @@
 
 </div>
 
-<ChangePasswordModal IsVisible="@showChangePasswordModal" OnClose="@(() => showChangePasswordModal = false)" />
+@if (string.IsNullOrEmpty(Username))
+{
+    <ChangePasswordModal IsVisible="@showChangePasswordModal" OnClose="@(() => showChangePasswordModal = false)" />
+}
 
 @code {
+    [Parameter] public string? Username { get; set; }
+    private bool authorized = false;
     private bool showChangePasswordModal = false;
 
-    
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrEmpty(Username))
+        {
+            // Logic: Load the current logged-in user's data
+            authorized = true; // Mocked authorization, replace with actual auth logic
+        }
+        else
+        {
+            // Logic: Load data for the specific "Username"
+            authorized = false; // Mocked authorization, replace with actual auth logic
+        }
+    }
 
     private void ChangePassword()
     {

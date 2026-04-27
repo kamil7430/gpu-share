@@ -39,7 +39,7 @@ else
                         <span class="badge @(gpu.IsAvailable ? "available" : "unavailable")">
                             @(gpu.IsAvailable ? "Available" : "Unavailable")
                         </span>
-                        @if (isCurrentUser)
+                        @if (authorized)
                         {
                             <div class="buttons-wrapper">
                                 <button class="btn btn-primary" @onclick="() => EditGpu(gpu)">Edit</button>
@@ -67,6 +67,7 @@ else
 }
 
 @code {
+    [Parameter] public bool authorized { get; set; } = false;
     private List<GpuModel> _allGpus = [];
     private List<GpuModel> PagedGpus = [];
     private int _page = 1;
