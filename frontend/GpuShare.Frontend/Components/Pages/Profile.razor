@@ -42,12 +42,12 @@ Project decisions:
     <div class="header-main-row">
         @if (string.IsNullOrEmpty(Username))
         {
-            <h3>My Devices</h3>
-            <button class="btn-add-device btn-primary" @onclick="AddDevice">Add Device</button>
+            <h3>My GPUs</h3>
+            <button class="btn-add-device btn-primary" @onclick="AddDevice">Add GPU</button>
         }
         else
         {
-            <h3>@Username's Devices</h3>
+            <h3>@Username's GPUs</h3>
         }
     </div>
 

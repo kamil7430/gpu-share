@@ -1,4 +1,5 @@
 @rendermode InteractiveServer
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
 
 @if (PagedGpus.Count == 0)
 {
@@ -68,8 +69,8 @@ else
 
 @code {
     [Parameter] public bool authorized { get; set; } = false;
-    private List<GpuModel> _allGpus = [];
-    private List<GpuModel> PagedGpus = [];
+    private List<Gpu> _allGpus = [];
+    private List<Gpu> PagedGpus = [];
     private int _page = 1;
     private int _pageSize = 5;
     private int _totalPages;
@@ -78,7 +79,7 @@ else
     protected override void OnInitialized()
     {
         // mock data
-        _allGpus = Enumerable.Range(1, 10).Select(i => new GpuModel
+        _allGpus = Enumerable.Range(1, 10).Select(i => new Gpu
         {
             Id = i,
             Name = $"GPU {i}",
@@ -122,19 +123,20 @@ else
         }
     }
 
-    public void OrderGpu(GpuModel gpu)
+    public void OrderGpu(Gpu gpu)
     {
         // Implement order logic here
         Console.WriteLine($"Ordering GPU: {gpu.Name}");
     }
 
-    public void EditGpu(GpuModel gpu)
+    public void EditGpu(Gpu gpu)
     {
         // Implement edit logic here
         Console.WriteLine($"Editing GPU: {gpu.Name}");
+        Navigation.NavigateTo($"/device/edit/{gpu.Id}");
     }
 
-    public void RemoveGpu(GpuModel gpu)
+    public void RemoveGpu(Gpu gpu)
     {
         // Implement remove logic here
         Console.WriteLine($"Removing GPU: {gpu.Name}");
