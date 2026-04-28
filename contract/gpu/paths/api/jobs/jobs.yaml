@@ -35,10 +35,4 @@ post:
     "400":
       description: Invalid request
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../../schemas/Error.yaml"
-
-
+      $ref: "../../../responses/default.yaml"

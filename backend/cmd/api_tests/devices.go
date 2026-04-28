@@ -5,7 +5,11 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/kamil7430/gpu-share/backend/internal/api"
+	"github.com/kamil7430/gpu-share/backend/internal/auth"
+	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
@@ -13,7 +17,7 @@ import (
 func testGetDeviceStatus(t *testing.T, db *gorm.DB, baseUrl string) {
 	deviceId := "123"
 
-	db.Exec("TRUNCATE TABLE devices;")
+	db.Exec("TRUNCATE TABLE devices, users;")
 	db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
 		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE');")
 
@@ -48,7 +52,7 @@ func testGetDeviceStatus(t *testing.T, db *gorm.DB, baseUrl string) {
 
 func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 	resetDbContent := func() {
-		db.Exec("TRUNCATE TABLE devices;")
+		db.Exec("TRUNCATE TABLE devices, users;")
 		db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
 			"VALUES ('2137', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'UNAVAILABLE'), " +
 			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '2599', '595', '97', 'AVAILABLE'), " +
@@ -288,5 +292,141 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	t.Run("get devices by states -- not found", func(t *testing.T) {
 		getDevicesTestNotFound("states=RENTED&states=REPORTED")
+	})
+}
+
+func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
+	testUserPassword, err := auth.HashPassword("TestPassword")
+	require.NoError(t, err)
+
+	resetDbContent := func() {
+		db.Exec("TRUNCATE TABLE devices, users;")
+		db.Exec("INSERT INTO users(name, password, admin) VALUES ('TestUser', ?, 'false');", testUserPassword)
+	}
+
+	sendRequest := func(payload string, bearerToken string) *http.Response {
+		resetDbContent()
+		payloadReader := strings.NewReader(payload)
+		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/devices", payloadReader)
+		require.NoError(t, err)
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+bearerToken)
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		return resp
+	}
+
+	t.Run("add device -- not logged in", func(t *testing.T) {
+		resetDbContent()
+		payloadReader := strings.NewReader(`{
+	        "name": "Moja karta RTX 4090",
+	        "gpuModel": "NVIDIA GeForce RTX 4090",
+	        "vramMb": 24576,
+	        "cudaCores": 16384,
+	        "pricePerHourUsdCents": 45,
+	        "driverVersion": "535.104"
+	    }`)
+		resp, err := http.Post(baseUrl+"/api/devices", "application/json", payloadReader)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+
+	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+		"username": "TestUser",
+		"password": "TestPassword"
+	}`))
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, loginResp.StatusCode)
+	defer loginResp.Body.Close()
+
+	body, err := io.ReadAll(loginResp.Body)
+	require.NoError(t, err)
+
+	var tokenObj tokenResponse
+	err = json.Unmarshal(body, &tokenObj)
+	require.NoError(t, err)
+
+	token := tokenObj.Token
+
+	t.Run("add device -- invalid vram", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": -5,
+			"cudaCores": 10,
+			"pricePerHourUsdCents": 145,
+			"driverVersion": "510.13"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- invalid cuda cores", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": 5,
+			"cudaCores": -10,
+			"pricePerHourUsdCents": 145,
+			"driverVersion": "510.13"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- invalid price", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": 5,
+			"cudaCores": 10,
+			"pricePerHourUsdCents": -145,
+			"driverVersion": "510.13"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- invalid driver version", func(t *testing.T) {
+		resp := sendRequest(`{
+			"name": "TestCard1",
+			"model": "Testidia GPU 1234",
+			"vramMb": 5,
+			"cudaCores": 10,
+			"pricePerHourUsdCents": 145,
+			"driverVersion": "abc"
+		}`, token)
+		require.Equal(t, 400, resp.StatusCode)
+	})
+
+	t.Run("add device -- valid data", func(t *testing.T) {
+		timestamp := time.Now().UTC()
+
+		resp := sendRequest(`{
+	        "name": "Moja karta RTX 4090",
+	        "gpuModel": "NVIDIA GeForce RTX 4090",
+	        "vramMb": 24576,
+	        "cudaCores": 16384,
+	        "pricePerHourUsdCents": 45,
+	        "driverVersion": "535.104"
+	    }`, token)
+		require.Equal(t, 201, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		type responseSchema struct {
+			DeviceId      string
+			OwnerUsername string
+			State         api.State
+			CreatedAt     time.Time
+		}
+
+		var response responseSchema
+		err = json.Unmarshal(body, &response)
+		require.NoError(t, err)
+
+		require.Equal(t, "TestUser", response.OwnerUsername)
+		require.Equal(t, api.StateAVAILABLE, response.State)
+		require.InDelta(t, timestamp.UTC().Unix(), response.CreatedAt.Unix(), time.Minute.Seconds())
 	})
 }

@@ -13,8 +13,4 @@ get:
     "404":
       description: Device not found
     default:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "../../../schemas/Error.yaml"
+      $ref: "../../../responses/default.yaml"

@@ -50,7 +50,7 @@ func (ar *AgentRepository) SendTo(agentId string, message *proto.CoordinatorMess
 	defer ar.mu.Unlock()
 	agent, ok := ar.agents[agentId]
 	if !ok {
-		return fmt.Errorf("No agent found with id %v", agentId)
+		return fmt.Errorf("no agent found with id %v", agentId)
 	}
 
 	agent.SendCh <- message

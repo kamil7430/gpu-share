@@ -15,14 +15,17 @@ import (
 type sauron struct {
 	service.HealthService
 	service.DeviceService
+	service.UserService
 }
 
 func NewServer(repos *Repos) *http.Server {
 	sauron := sauron{
 		service.NewHealthService(),
-		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo),
+		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo, repos.UserRepo),
+		service.NewUserService(repos.UserRepo),
 	}
-	srv, err := api.NewServer(&sauron)
+
+	srv, err := api.NewServer(&sauron, &sauron.UserService)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -14,6 +14,15 @@ import (
 var migratedMutex sync.Mutex
 var migrated bool = false
 
+func performMigration(db *gorm.DB) error {
+	// Migration should be performed in a specific order. Since the database traces the dependencies
+	// (foreign keys consistency) between the tables, we have to migrate the "leaves" of the dependency
+	// tree first. In other words, if the dependency tree looks like this:
+	//     C <- B1 <- A -> B2,
+	// we should migrate C before B1, and B1 together with B2 before A.
+	return db.AutoMigrate(&model.User{}, &model.Device{})
+}
+
 func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 	if verbose {
 		log.Println("Loading environment variables...")
@@ -41,7 +50,7 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 		if verbose {
 			log.Println("Migrating models...")
 		}
-		err = db.AutoMigrate(&model.Device{})
+		err = performMigration(db)
 		if err != nil {
 			return nil, err
 		}

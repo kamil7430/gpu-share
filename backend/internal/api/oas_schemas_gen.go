@@ -9,8 +9,247 @@ import (
 	"github.com/go-faster/errors"
 )
 
-func (s *ErrorStatusCode) Error() string {
+func (s *DefaultStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
+
+// AddDeviceBadRequest is response for AddDevice operation.
+type AddDeviceBadRequest struct{}
+
+func (*AddDeviceBadRequest) addDeviceRes() {}
+
+type AddDeviceCreated struct {
+	DeviceId      string    `json:"deviceId"`
+	OwnerUsername string    `json:"ownerUsername"`
+	State         State     `json:"state"`
+	CreatedAt     time.Time `json:"createdAt"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *AddDeviceCreated) GetDeviceId() string {
+	return s.DeviceId
+}
+
+// GetOwnerUsername returns the value of OwnerUsername.
+func (s *AddDeviceCreated) GetOwnerUsername() string {
+	return s.OwnerUsername
+}
+
+// GetState returns the value of State.
+func (s *AddDeviceCreated) GetState() State {
+	return s.State
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *AddDeviceCreated) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *AddDeviceCreated) SetDeviceId(val string) {
+	s.DeviceId = val
+}
+
+// SetOwnerUsername sets the value of OwnerUsername.
+func (s *AddDeviceCreated) SetOwnerUsername(val string) {
+	s.OwnerUsername = val
+}
+
+// SetState sets the value of State.
+func (s *AddDeviceCreated) SetState(val State) {
+	s.State = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *AddDeviceCreated) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+func (*AddDeviceCreated) addDeviceRes() {}
+
+type AddDeviceReq struct {
+	Name      string `json:"name"`
+	GpuModel  string `json:"gpuModel"`
+	VramMb    int    `json:"vramMb"`
+	CudaCores int    `json:"cudaCores"`
+	// Price per active usage hour in USD cents, for example a value of `45` means `0.45 USD/h`.
+	PricePerHourUsdCents int `json:"pricePerHourUsdCents"`
+	// Driver version expressed as the major version followed by a period and a minor version.
+	DriverVersion string `json:"driverVersion"`
+}
+
+// GetName returns the value of Name.
+func (s *AddDeviceReq) GetName() string {
+	return s.Name
+}
+
+// GetGpuModel returns the value of GpuModel.
+func (s *AddDeviceReq) GetGpuModel() string {
+	return s.GpuModel
+}
+
+// GetVramMb returns the value of VramMb.
+func (s *AddDeviceReq) GetVramMb() int {
+	return s.VramMb
+}
+
+// GetCudaCores returns the value of CudaCores.
+func (s *AddDeviceReq) GetCudaCores() int {
+	return s.CudaCores
+}
+
+// GetPricePerHourUsdCents returns the value of PricePerHourUsdCents.
+func (s *AddDeviceReq) GetPricePerHourUsdCents() int {
+	return s.PricePerHourUsdCents
+}
+
+// GetDriverVersion returns the value of DriverVersion.
+func (s *AddDeviceReq) GetDriverVersion() string {
+	return s.DriverVersion
+}
+
+// SetName sets the value of Name.
+func (s *AddDeviceReq) SetName(val string) {
+	s.Name = val
+}
+
+// SetGpuModel sets the value of GpuModel.
+func (s *AddDeviceReq) SetGpuModel(val string) {
+	s.GpuModel = val
+}
+
+// SetVramMb sets the value of VramMb.
+func (s *AddDeviceReq) SetVramMb(val int) {
+	s.VramMb = val
+}
+
+// SetCudaCores sets the value of CudaCores.
+func (s *AddDeviceReq) SetCudaCores(val int) {
+	s.CudaCores = val
+}
+
+// SetPricePerHourUsdCents sets the value of PricePerHourUsdCents.
+func (s *AddDeviceReq) SetPricePerHourUsdCents(val int) {
+	s.PricePerHourUsdCents = val
+}
+
+// SetDriverVersion sets the value of DriverVersion.
+func (s *AddDeviceReq) SetDriverVersion(val string) {
+	s.DriverVersion = val
+}
+
+// AddDeviceUnauthorized is response for AddDevice operation.
+type AddDeviceUnauthorized struct{}
+
+func (*AddDeviceUnauthorized) addDeviceRes() {}
+
+// Ref: #
+type AuthToken struct {
+	Token string `json:"token"`
+}
+
+// GetToken returns the value of Token.
+func (s *AuthToken) GetToken() string {
+	return s.Token
+}
+
+// SetToken sets the value of Token.
+func (s *AuthToken) SetToken(val string) {
+	s.Token = val
+}
+
+func (*AuthToken) loginRes()    {}
+func (*AuthToken) registerRes() {}
+
+type BearerAuth struct {
+	Token string
+	Roles []string
+}
+
+// GetToken returns the value of Token.
+func (s *BearerAuth) GetToken() string {
+	return s.Token
+}
+
+// GetRoles returns the value of Roles.
+func (s *BearerAuth) GetRoles() []string {
+	return s.Roles
+}
+
+// SetToken sets the value of Token.
+func (s *BearerAuth) SetToken(val string) {
+	s.Token = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *BearerAuth) SetRoles(val []string) {
+	s.Roles = val
+}
+
+// ChangePasswordBadRequest is response for ChangePassword operation.
+type ChangePasswordBadRequest struct{}
+
+func (*ChangePasswordBadRequest) changePasswordRes() {}
+
+// ChangePasswordOK is response for ChangePassword operation.
+type ChangePasswordOK struct{}
+
+func (*ChangePasswordOK) changePasswordRes() {}
+
+type ChangePasswordReq struct {
+	OldPassword string `json:"oldPassword"`
+	NewPassword string `json:"newPassword"`
+}
+
+// GetOldPassword returns the value of OldPassword.
+func (s *ChangePasswordReq) GetOldPassword() string {
+	return s.OldPassword
+}
+
+// GetNewPassword returns the value of NewPassword.
+func (s *ChangePasswordReq) GetNewPassword() string {
+	return s.NewPassword
+}
+
+// SetOldPassword sets the value of OldPassword.
+func (s *ChangePasswordReq) SetOldPassword(val string) {
+	s.OldPassword = val
+}
+
+// SetNewPassword sets the value of NewPassword.
+func (s *ChangePasswordReq) SetNewPassword(val string) {
+	s.NewPassword = val
+}
+
+// ChangePasswordUnauthorized is response for ChangePassword operation.
+type ChangePasswordUnauthorized struct{}
+
+func (*ChangePasswordUnauthorized) changePasswordRes() {}
+
+// DefaultStatusCode wraps Error with StatusCode.
+type DefaultStatusCode struct {
+	StatusCode int
+	Response   Error
+}
+
+// GetStatusCode returns the value of StatusCode.
+func (s *DefaultStatusCode) GetStatusCode() int {
+	return s.StatusCode
+}
+
+// GetResponse returns the value of Response.
+func (s *DefaultStatusCode) GetResponse() Error {
+	return s.Response
+}
+
+// SetStatusCode sets the value of StatusCode.
+func (s *DefaultStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
+}
+
+// SetResponse sets the value of Response.
+func (s *DefaultStatusCode) SetResponse(val Error) {
+	s.Response = val
 }
 
 // Ref: #
@@ -181,32 +420,6 @@ func (*DeviceStatus) getDeviceStatusRes() {}
 
 type Error string
 
-// ErrorStatusCode wraps Error with StatusCode.
-type ErrorStatusCode struct {
-	StatusCode int
-	Response   Error
-}
-
-// GetStatusCode returns the value of StatusCode.
-func (s *ErrorStatusCode) GetStatusCode() int {
-	return s.StatusCode
-}
-
-// GetResponse returns the value of Response.
-func (s *ErrorStatusCode) GetResponse() Error {
-	return s.Response
-}
-
-// SetStatusCode sets the value of StatusCode.
-func (s *ErrorStatusCode) SetStatusCode(val int) {
-	s.StatusCode = val
-}
-
-// SetResponse sets the value of Response.
-func (s *ErrorStatusCode) SetResponse(val Error) {
-	s.Response = val
-}
-
 // GetDeviceStatusNotFound is response for GetDeviceStatus operation.
 type GetDeviceStatusNotFound struct{}
 
@@ -228,6 +441,41 @@ func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 
 // GetHealthOK is response for GetHealth operation.
 type GetHealthOK struct{}
+
+// LoginNotFound is response for Login operation.
+type LoginNotFound struct{}
+
+func (*LoginNotFound) loginRes() {}
+
+type LoginReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *LoginReq) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *LoginReq) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *LoginReq) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *LoginReq) SetPassword(val string) {
+	s.Password = val
+}
+
+// LoginUnauthorized is response for Login operation.
+type LoginUnauthorized struct{}
+
+func (*LoginUnauthorized) loginRes() {}
 
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
@@ -319,6 +567,40 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+type RegisterBadRequestApplicationJSON string
+
+func (*RegisterBadRequestApplicationJSON) registerRes() {}
+
+// RegisterConflict is response for Register operation.
+type RegisterConflict struct{}
+
+func (*RegisterConflict) registerRes() {}
+
+type RegisterReq struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *RegisterReq) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *RegisterReq) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *RegisterReq) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *RegisterReq) SetPassword(val string) {
+	s.Password = val
 }
 
 // Ref: #

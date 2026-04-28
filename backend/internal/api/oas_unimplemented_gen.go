@@ -13,6 +13,24 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AddDevice implements addDevice operation.
+//
+// Register a device. The device is assigned to the owner that's currently logged in.
+//
+// POST /api/devices
+func (UnimplementedHandler) AddDevice(ctx context.Context, req *AddDeviceReq) (r AddDeviceRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ChangePassword implements changePassword operation.
+//
+// Change current logged in user's password.
+//
+// POST /api/users/changePassword
+func (UnimplementedHandler) ChangePassword(ctx context.Context, req *ChangePasswordReq) (r ChangePasswordRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetDeviceStatus implements getDeviceStatus operation.
 //
 // Get device status by ID.
@@ -40,10 +58,29 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 	return ht.ErrNotImplemented
 }
 
-// NewError creates *ErrorStatusCode from error returned by handler.
+// Login implements login operation.
+//
+// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
+// authentication.
+//
+// POST /api/users/login
+func (UnimplementedHandler) Login(ctx context.Context, req *LoginReq) (r LoginRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// Register implements register operation.
+//
+// Register a user.
+//
+// POST /api/users/register
+func (UnimplementedHandler) Register(ctx context.Context, req *RegisterReq) (r RegisterRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// NewError creates *DefaultStatusCode from error returned by handler.
 //
 // Used for common default response.
-func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorStatusCode) {
-	r = new(ErrorStatusCode)
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *DefaultStatusCode) {
+	r = new(DefaultStatusCode)
 	return r
 }
