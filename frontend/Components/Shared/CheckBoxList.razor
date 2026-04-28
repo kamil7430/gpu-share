@@ -1,0 +1,63 @@
+@* Taken from: https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/ *@
+
+@typeparam TItem  
+<div class=@className style=@Style>  
+    @if (Data != null)  
+    {  
+        foreach (var item in Data)  
+        {  
+            var Text = TextField?.Invoke(item);  
+            var Value = ValueField?.Invoke(item).ToString();  
+            bool Checked = false;  
+            if (Value != null && SelectedValues.Contains(Value))  
+            {  
+                Checked = true;  
+            }
+            <label class="custom-checkbox">
+                <input type="checkbox" style="width: auto;" checked=@Checked class="checkbox-list-item"
+                    @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" />
+                <span class="checkmark"></span>
+                    @Text
+            </label>  
+            @* <input type="checkbox" checked=@Checked class="checkbox-list-item" 
+                   @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" /> <br />   *@
+        }  
+    }  
+    @ChildContent  
+</div>  
+  
+@code {  
+    //Data for the Checkbox
+    [Parameter] public string? className { get; set; }   
+    [Parameter] public IEnumerable<TItem> Data { get; set; }
+    // The field to be shown adjacent to checkbox  
+    [Parameter] public Func<TItem, string> TextField { get; set; }  
+    // The Value which checkbox will return when checked   
+    [Parameter] public Func<TItem, object> ValueField { get; set; }  
+    // CSS Style for the Checkbox container   
+    [Parameter] public string? Style { get; set; }  
+    // Any childd content for the control (if needed)  
+    [Parameter] public RenderFragment ChildContent { get; set; }  
+    // The array which contains the list of selected checkboxs   
+    [Parameter] public List<string> SelectedValues { get; set; } = new List<string>();  
+  
+    //Method to update the selected value on click on checkbox   
+    public void CheckboxClicked(string? aSelectedId, object? aChecked)  
+    {  
+        if (aChecked != null && (bool)aChecked)  
+        {  
+            if (aSelectedId != null && !SelectedValues.Contains(aSelectedId))  
+            {  
+                SelectedValues.Add(aSelectedId);  
+            }  
+        }  
+        else  
+        {  
+            if (aSelectedId != null && SelectedValues.Contains(aSelectedId))  
+            {  
+                SelectedValues.Remove(aSelectedId);  
+            }  
+        }  
+        StateHasChanged();  
+    }  
+}  

@@ -1,1 +1,36 @@
 *.idea
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Node/Frontend
+node_modules/
+dist/
+
+# Environment files
+.env
+.env.local
+
+# Local app settings with secrets
+appsettings.Development.json
+appsettings.*.json
+
+# JetBrains
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

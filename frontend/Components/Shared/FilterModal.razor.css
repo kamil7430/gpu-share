@@ -1,0 +1,121 @@
+.modal-body select {
+    width: 100%;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.modal-body label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.modal-body div {
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+}
+
+/* Checkbox list */
+::deep .checkbox-list {
+    overflow-y: auto; 
+    margin-bottom: 16px;
+}
+
+/* Container */
+::deep .custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+/* Hide default checkbox */
+::deep .custom-checkbox input {
+    display: none;
+}
+
+/* Custom box */
+::deep .checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #4C6EB2;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Checked state */
+::deep .custom-checkbox input:checked + .checkmark {
+    background-color: #4C6EB2;
+}
+
+/* Check icon */
+::deep .checkmark::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 0px;
+    width: 5px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+/* Show check */
+::deep .custom-checkbox input:checked + .checkmark::after {
+    opacity: 1;
+}
+
+/* Hover effect */
+::deep .custom-checkbox:hover .checkmark {
+    border-color: #2f4f9f;
+}
+
+/* Range Slider */
+::deep .form-group {
+    margin-top: 0.5rem;
+}
+
+/* ::deep .range-slider-range {
+    background-color: #4C6EB2 !important;
+} */
+
+::deep .range-slider-tooltip {
+    font-size: 0.9rem;
+    transform: translate(-50%, calc(-100% + 0.3rem)) !important;
+}
+
+/* Footer */
+.modal-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #eee;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+
+
+/* Mobile optimization */
+@media (max-width: 576px) {
+    .modal-dialog {
+        max-width: 100%;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+}
+
+body.modal-open {
+    overflow: hidden;
+}

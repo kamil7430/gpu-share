@@ -98,7 +98,12 @@ flowchart LR
 
 ### Frontend
 
-- `Blazor` (expected)
+- `ASP.NET Core` (.NET 10.0)
+- `Blazor Web App` - Interactive Server Components
+- `Blazorise` - Component library
+- `Bootstrap 5` - Responsive CSS framework
+- `C#` - Primary language
+- `Razor Components` - Component-based architecture
 
 ### Others
 
@@ -123,7 +128,14 @@ docs/
   decisions/                 # ADRs
   project_documentation.pdf  # specification
   # user stories in Issues
-frontend/                    # future project structure for Blazor
+frontend/                    # Blazor ASP.NET Core frontend
+  Components/                # Razor components (Pages, Layouts, Shared)
+  Models/                    # Data models
+  Services/                  # Business logic and API services
+  Properties/                # Configuration and launch settings
+  wwwroot/                   # Static files (CSS, images, scripts)
+  Program.cs                 # Application entry point
+  GpuShare.Frontend.csproj   # Project configuration
 ```
 
 ## Recommended workflow

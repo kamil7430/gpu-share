@@ -1,0 +1,104 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.profile-page .profile-card {
+    background-color: #eaf6ff; /* Light blue background */
+    border: 2px solid #5c7ebf;  /* Darker blue border */
+    border-radius: 15px;
+    padding: 20px 30px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.profile-page .card {
+    border: 1px solid #5c7ebf;  /* Same darker blue border */
+    border-radius: 15px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.header-main-row {
+    display: flex;
+    justify-content: space-between; /* Pushes text left, button right */
+    align-items: flex-start;
+    width: 100%;
+}
+
+.user-info h3 {
+    margin: 0 0 15px 0;
+    font-weight: bold;
+}
+
+.header-main-row h3 {
+    margin-left: 15px;
+    font-weight: bold;
+}
+
+.stats-row {
+    display: flex;
+    gap: 40px; /* Spacing between Balance and Rating */
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    color: #5c7ebf;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #0a1a33;
+}
+
+.rating-count {
+    color: #5c7ebf;
+    font-weight: normal;
+    font-size: 0.9rem;
+}
+
+.btn-change-password {
+    background-color: #eaf6ff;
+    transition: background-color 0.2s;
+}
+
+.btn-change-password:hover {
+    background-color: #d1eaff;
+}
+
+.results-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #4c6eb2;
+    background: white;
+    cursor: pointer;
+    color: #4C6EB2;
+}
+
+.pagination button:hover {
+    background-color: #C5D8E8;
+}

@@ -1,0 +1,119 @@
+@page "/device/{Mode}/{Id:int?}"
+@using GpuShare.Frontend.Models
+
+<div class="device-container">
+    <div class="page-header">
+        <NavLink href="/profile" class="back-link">&lt;- Back to Profile</NavLink>
+        <div class="actions">
+            @if (Mode == "view")
+            {
+                <button class="btn-edit" @onclick='() => Navigation.NavigateTo($"/device/edit/{Id}")'>
+                    Edit Device
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="device-card">
+        @if (Mode == "edit" || Mode == "add")
+        {
+            <h3>@(Mode == "add" ? "Register New Device" : "Edit Device Specs")</h3>
+            <EditForm Model="gpu" OnValidSubmit="HandleSave">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Device Name</label>
+                        <InputText @bind-Value="gpu.Name" placeholder="e.g. My Beast Rig" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input list="models" @bind="gpu.Model" />
+                        <datalist id="models">
+                            <option value="NVIDIA RTX 4090" />
+                            <option value="NVIDIA A100" />
+                        </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label>VRAM</label>
+                        <InputSelect @bind-Value="gpu.VramMb">
+                            <option value="2048">2 GB</option>
+                            <option value="4096">4 GB</option>
+                            <option value="6144">6 GB</option>
+                            <option value="8192">8 GB</option>
+                            <option value="10240">10 GB</option>
+                            <option value="12288">12 GB</option>
+                            <option value="16384">16 GB</option>
+                            <option value="24576">24 GB</option>
+                            <option value="32768">32 GB</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cores</label>
+                        <InputNumber @bind-Value="gpu.CudaCores" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Driver Version</label>
+                        <InputText @bind-Value="gpu.DriverVersion" />
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-save">Save Configuration</button>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <div class="view-layout">
+                <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
+                    @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
+                </div>
+                
+                <h1>@gpu.Name</h1>
+                <p class="model-sub">@gpu.Model</p>
+
+                <div class="spec-grid">
+                    <div class="spec-box">
+                        <span class="label">VRAM</span>
+                        <span class="value">@gpu.VramMb MB</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Cores</span>
+                        <span class="value">@gpu.CudaCores</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Driver</span>
+                        <span class="value">@gpu.DriverVersion</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Mode { get; set; } = "view"; // "view", "edit", or "add"
+    [Parameter] public int? Id { get; set; }
+
+    [Inject] public NavigationManager Navigation { get; set; } = default!;
+
+    private Gpu gpu = new();
+
+    protected override void OnParametersSet()
+    {
+        if (Id.HasValue)
+        {
+            // Mock: Load existing device data
+            gpu = new Gpu { Name = "Workstation-Alpha", Model = "RTX 4090", VramMb = 24576, CudaCores = 16384 };
+        }
+    }
+
+    private void HandleSave()
+    {
+        // Save to DB logic...
+        Navigation.NavigateTo($"/device/view/{Id ?? 1}");
+    }
+}

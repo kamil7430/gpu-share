@@ -1,0 +1,144 @@
+@rendermode InteractiveServer
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+
+@if (PagedGpus.Count == 0)
+{
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No devices added yet.</p>
+}
+else
+{
+    <div class="results-container">
+        @foreach (var gpu in PagedGpus)
+        {
+            <div class="gpu-card">
+
+                <div class="gpu-body">
+                    <div class="left">
+                        <div class="gpu-header">
+                            <h4>@gpu.Name</h4>
+                        </div>
+
+                        <div>Model: @gpu.Model</div>
+                        <div>Owner name</div>
+
+                        <div class="price">
+                            Price per hour: @gpu.PricePerHour$
+                        </div>
+                    </div>
+
+                    <div class="middle">
+                        <div>VRAM MB: @gpu.VramMb</div>
+                        <div>CUDA cores: @gpu.CudaCores</div>
+                        <div>Driver version: @gpu.DriverVersion</div>
+                        <div>
+                            Supported frameworks:
+                            @string.Join(", ", gpu.Frameworks)
+                        </div>
+                    </div>
+
+                    <div class="right">
+                        <span class="badge @(gpu.IsAvailable ? "available" : "unavailable")">
+                            @(gpu.IsAvailable ? "Available" : "Unavailable")
+                        </span>
+                        @if (authorized)
+                        {
+                            <div class="buttons-wrapper">
+                                <button class="btn btn-primary" @onclick="() => EditGpu(gpu)">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => RemoveGpu(gpu)">Remove</button>
+                            </div>
+                        }
+                        else 
+                        {
+                            <button class="btn btn-primary" disabled=@(!gpu.IsAvailable) @onclick="() => OrderGpu(gpu)">Order</button>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        }
+
+        <div class="pagination">
+            <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
+
+            <span>Page @_page / @_totalPages</span>
+
+            <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool authorized { get; set; } = false;
+    private List<Gpu> _allGpus = [];
+    private List<Gpu> PagedGpus = [];
+    private int _page = 1;
+    private int _pageSize = 5;
+    private int _totalPages;
+    private bool isCurrentUser = true; // Mocked login state, replace with actual auth logic
+
+    protected override void OnInitialized()
+    {
+        // mock data
+        _allGpus = Enumerable.Range(1, 10).Select(i => new Gpu
+        {
+            Id = i,
+            Name = $"GPU {i}",
+            IsAvailable = i % 2 == 0,
+            VramMb = 24567,
+            CudaCores = 16384,
+            DriverVersion = "535.104",
+            Frameworks = ["PyTorch", "Tensorflow"],
+            PricePerHour = 5
+        }).ToList();
+        //_allGpus = [];
+
+        _totalPages = (int)Math.Ceiling(_allGpus.Count / (double)_pageSize);
+
+        LoadPage();
+    }
+
+    private void LoadPage()
+    {
+        PagedGpus = _allGpus
+            .Skip((_page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+    }
+
+    private void NextPage()
+    {
+        if (_page < _totalPages)
+        {
+            _page++;
+            LoadPage();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_page > 1)
+        {
+            _page--;
+            LoadPage();
+        }
+    }
+
+    public void OrderGpu(Gpu gpu)
+    {
+        // Implement order logic here
+        Console.WriteLine($"Ordering GPU: {gpu.Name}");
+    }
+
+    public void EditGpu(Gpu gpu)
+    {
+        // Implement edit logic here
+        Console.WriteLine($"Editing GPU: {gpu.Name}");
+        Navigation.NavigateTo($"/device/edit/{gpu.Id}");
+    }
+
+    public void RemoveGpu(Gpu gpu)
+    {
+        // Implement remove logic here
+        Console.WriteLine($"Removing GPU: {gpu.Name}");
+    }
+}

@@ -1,0 +1,60 @@
+.table-card {
+    background-color: white; /* Table area looks cleaner white */
+    border: 2px solid #d1e3f8; /* Light blue border from your screenshot */
+    border-radius: 12px;
+    padding: 10px 20px;
+    overflow: hidden; /* Keeps the rounded corners clean */
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+}
+
+/* Header Styling */
+.custom-table th {
+    text-align: left;
+    padding: 15px 10px;
+    color: #444;
+    font-weight: 500;
+    border-bottom: 2px solid #d1e3f8; /* Subtle line under header */
+}
+
+/* Row Styling */
+.custom-table td {
+    padding: 15px 10px;
+    color: #222;
+    border-bottom: 1px solid #f0f7ff; /* Very light row separators */
+}
+
+/* Remove border from last row */
+.custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* "Load more" styling */
+.load-more-container {
+    margin-top: 10px;
+    padding-left: 5px;
+}
+
+.load-more-container a {
+    color: #4c6eb2;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.load-more-container a:hover {
+    text-decoration: underline;
+}
+
+.profile-link {
+    color: #4c6eb2;
+    text-decoration: none;
+}
+
+.profile-link:hover {
+    color: #3b5a8a;
+    text-decoration: none;
+}

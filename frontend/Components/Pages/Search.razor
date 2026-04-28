@@ -1,0 +1,88 @@
+﻿@page "/"
+@using GpuShare.Frontend.Components.Shared
+@using GpuShare.Frontend.Models
+
+@*
+TODO:
+- move sorting outside of filters
+- badges scrolling horizontally if too many
+- add "clear filters" button ?
+- removing filters with badges 
+- disable page buttons when no more pages
+- handle empty results
+- add loading state
+*@
+
+<PageTitle>Search for GPUs</PageTitle>
+
+<h1>Search for GPUs</h1>
+
+<div class="search-container">
+
+    <input @bind="Filter.Term" placeholder="Search..." class="form-control" />
+
+    <button class="btn btn-outline-secondary" @onclick="OpenModal">
+        Filters
+    </button>
+
+    <button class="btn btn-primary btn-search" @onclick="ApplySearch">
+        Search
+    </button>
+
+    <!-- Active filters preview -->
+    <div class="mt-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0px !important;">
+        @if (!string.IsNullOrEmpty(Filter.VRAM_MB?.Count > 0 ? string.Join(", ", Filter.VRAM_MB) + " GB VRAM" : null))
+        {
+            <span class="filter-badge badge">VRAM: @string.Join(", ", Filter.VRAM_MB!) GB</span>
+        }
+        @if (Filter.PricePerHour != null)
+        {
+            <span class="filter-badge badge">Price: @Filter.PricePerHour.Value.Start - @Filter.PricePerHour.Value.End</span>
+        }
+        @if (Filter.Cores != null)
+        {
+            <span class="filter-badge badge">Cores: @Filter.Cores.Value.Start - @Filter.Cores.Value.End</span>
+        }
+        @if (Filter.AvailableOnly == true)
+        {
+            <span class="filter-badge badge">
+                Available Only
+            </span>
+        }
+        @if (Filter.SupportedFrameworks?.Count > 0)
+        {
+            <span class="filter-badge badge">Frameworks: @string.Join(", ", Filter.SupportedFrameworks)</span>
+        }
+        @if (Filter.SortBy != SortOption.None)
+        {
+            <span class="filter-badge badge">Sort: @Filter.SortBy</span>
+        }
+    </div>
+</div>
+
+<GpuCard />
+
+<FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
+
+@code {
+    [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
+
+    private SearchFilter Filter = new();
+    private FilterModal Modal;
+
+    private void OpenModal()
+    {
+        Modal?.Open(Filter);
+    }
+
+    private async Task ApplySearch()
+    {
+        await OnSearch.InvokeAsync(Filter);
+        Console.WriteLine($"Searching for '{Filter.Term}', price between {Filter.PricePerHour?.Start ?? 0} and {Filter.PricePerHour?.End ?? 0}, cores between {Filter.Cores?.Start ?? 0} and {Filter.Cores?.End ?? 0}, available only: {Filter.AvailableOnly}");
+    }
+
+    private void OnFiltersApplied(SearchFilter updated)
+    {
+        Filter = updated;
+    }
+}
