@@ -22,4 +22,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Test
-        run: cd docker/test && docker compose up --build --abort-on-container-exit 
+        run: cd docker/test && docker compose --env-file ../../.env up --build --abort-on-container-exit
