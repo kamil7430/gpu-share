@@ -5,20 +5,21 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
 
 func LoginCmd(args []string) {
-	fs := flag.NewFlagSet("login", flag.ExitOnError)
+	fs := flag.NewFlagSet("login", flag.ContinueOnError)
 	username := fs.String("u", "", "username")
 	password := fs.String("p", "", "password")
 	envIp := os.Getenv("BACKEND_IP")
 	if envIp == "" {
 		envIp = "10.5.0.2"
 	}
-	addr := flag.String("addr", envIp+":2137", "backend addr")
-	flag.Parse()
+	addr := fs.String("addr", envIp+":2137", "backend addr")
+	fs.Parse(args)
 
 	if *username == "" {
 		fmt.Print("username> ")
@@ -36,7 +37,16 @@ func LoginCmd(args []string) {
 
 	resp, err := http.Post("http://"+*addr+"/api/users/login", "application/json", bytes.NewBuffer(body))
 	if err != nil {
-		panic(err)
+		log.Fatalf("couldn't connect to %v (%v)", *addr, err)
+	}
+	if resp.StatusCode == 401 {
+		log.Fatal("incorrect password")
+	}
+	if resp.StatusCode == 404 {
+		log.Fatal("username not found")
+	}
+	if resp.StatusCode != 200 {
+		log.Fatal("server error")
 	}
 	defer resp.Body.Close()
 
@@ -45,11 +55,11 @@ func LoginCmd(args []string) {
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	if err := SaveToken(result.Token); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	fmt.Println("logged in")

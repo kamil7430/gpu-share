@@ -33,7 +33,7 @@ func ConnectCmd(args []string) {
 
 	req, _ := http.NewRequest(
 		"POST",
-		*backend+"/api/devices/"+*deviceID+"/connect",
+		*backend+"/api/devices/"+*deviceID,
 		bytes.NewBuffer([]byte("{}")),
 	)
 	req.Header.Set("Authorization", "Bearer "+token)

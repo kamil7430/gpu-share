@@ -2,11 +2,13 @@ package agent
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
+	"os"
 )
 
-func devicesCmd(args []string) {
+func DevicesCmd(args []string) {
 	if len(args) < 1 {
 		fmt.Println("expected 'list'")
 		return
@@ -26,7 +28,14 @@ func ListDevices() {
 		panic("not logged in")
 	}
 
-	req, _ := http.NewRequest("GET", "http://localhost:8080/api/devices", nil)
+	fs := flag.NewFlagSet("devices", flag.ExitOnError)
+
+	backIp := os.Getenv("BACKEND_IP")
+	if backIp == "" {
+		backIp = "10.5.0.2"
+	}
+	backend := fs.String("backend", backIp+":2137", "backend addr")
+	req, _ := http.NewRequest("GET", "http://"+*backend+"/api/devices", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := http.DefaultClient.Do(req)
@@ -35,7 +44,7 @@ func ListDevices() {
 	}
 	defer resp.Body.Close()
 
-	var devices []map[string]interface{}
+	var devices []map[string]any
 	json.NewDecoder(resp.Body).Decode(&devices)
 
 	for _, d := range devices {
