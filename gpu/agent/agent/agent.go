@@ -26,9 +26,10 @@ func StartGrpcClient(ctx context.Context, url string) (Stream, error) {
 	return client.Connect(ctx)
 }
 
-func SendHelloMessage(stream Stream, agentId string) error {
+func SendHelloMessage(stream Stream, agentId string, token string) error {
 	return stream.Send(&proto.AgentMessage{
 		AgentId: agentId,
+		Token: token,
 	})
 }
 

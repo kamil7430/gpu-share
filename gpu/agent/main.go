@@ -1,41 +1,52 @@
 package main
 
 import (
-	"context"
-	"flag"
 	"fmt"
-	"log"
-	"math/rand"
 	"os"
-
+	
 	"github.com/kamil7430/gpu-share/gpu/agent/agent"
 )
 
+func usage() {
+	fmt.Println("usage: agent [login|devices|connect]")
+	os.Exit(1)
+}
+
+var modes = []string{"login", "devices", "connect"}
+
+func chooseMode() int {
+	for i, m := range modes {
+		fmt.Printf("%v) %v\n", i+1, m)
+	}
+
+	for {
+		fmt.Print("Choose mode> ")
+		var i int
+		fmt.Scan(&i)
+		if i > 0 && i <= len(modes) {
+			return i - 1
+		}
+	}
+}
+
 func main() {
-	envIp := os.Getenv("GPU_IP")
-	if envIp == "" {
-		envIp = "10.5.0.3"
-	}
-	ip := flag.String("ip", envIp, "IP of the coordinator service")
-	port := flag.String("port", "2139", "port of the coordinator service")
-	flag.Parse()
-
-	log.Printf("Connecting to %v:%v...", *ip, *port)
-	stream, err := agent.StartGrpcClient(context.Background(), *ip+":"+*port)
-	if err != nil {
-		log.Fatal(err)
+	var cmd string
+	args := os.Args
+	if len(args) < 2 {
+		cmd = modes[chooseMode()]
+	} else {
+		cmd = os.Args[1]
+		args = args[2:]
 	}
 
-	// TODO: this should be assigned by the `backend`, but it requires the
-	// `POST /api/devices` endpoint to be implemented
-	agentId := fmt.Sprintf("%v", rand.Int()%1000)
-	if err := agent.SendHelloMessage(stream, agentId); err != nil {
-		log.Fatalf("couldn't connect to coordinator (%v)", err)
+	switch cmd {
+	case "login":
+		agent.LoginCmd(args)
+	case "devices":
+		agent.ListDevices()
+	case "connect":
+		agent.ConnectCmd(args)
+	default:
+		usage()
 	}
-
-	log.Printf("Agent %v connected to coordinator at %v", agentId, *ip)
-
-	go agent.SendHeartbeats(context.Background(), stream, agentId)
-
-	agent.ReceiveLoop(context.Background(), stream, agentId)
 }
