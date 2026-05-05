@@ -22,6 +22,7 @@ var ip = func() string {
 	}
 	return ip
 }()
+
 const restPort = "22138"
 const grpcPort = "22139"
 
@@ -34,7 +35,8 @@ func startAgent(t *testing.T, agentId string) {
 		log.Fatal(err)
 	}
 
-	agent.SendHelloMessage(stream, agentId)
+	token := ""
+	agent.SendHelloMessage(stream, agentId, token)
 	go agent.SendHeartbeats(t.Context(), stream, agentId)
 	agent.ReceiveLoop(t.Context(), stream, agentId)
 }

@@ -42,7 +42,8 @@ func (UnimplementedHandler) GetDeviceStatus(ctx context.Context, params GetDevic
 
 // GetDevices implements getDevices operation.
 //
-// Get list of devices that match the provided filters.
+// Get list of devices that match the provided filters. If an auth token is provided, it returns only
+// the devices owned by the authenticated user.
 //
 // GET /api/devices
 func (UnimplementedHandler) GetDevices(ctx context.Context, params GetDevicesParams) (r GetDevicesRes, _ error) {

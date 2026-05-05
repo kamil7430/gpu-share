@@ -10,8 +10,9 @@ import (
 )
 
 type DeviceRepository interface {
-	GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error)
+	GetDevices(ctx context.Context, params api.GetDevicesParams) ([]model.Device, error)
 	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
+	GetDevicesForUser(ctx context.Context, userId uint, params api.GetDevicesParams) ([]model.Device, error)
 	AddDevice(ctx context.Context, device *model.Device) error
 	Transaction(fn func(repository DeviceRepository) error) error
 }
@@ -24,7 +25,7 @@ func NewDeviceRepository(db *gorm.DB) DeviceRepository {
 	return &deviceRepository{db}
 }
 
-func (r *deviceRepository) GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error) {
+func (r *deviceRepository) queryFromParams(params api.GetDevicesParams) (gorm.ChainInterface[model.Device], error) {
 	// codegen handles defaults
 	limit := params.Limit.Value
 	query := gorm.G[model.Device](r.db).Limit(limit)
@@ -75,8 +76,16 @@ func (r *deviceRepository) GetDevices(ctx context.Context, params api.GetDevices
 		query = query.Where("state IN ?", params.States)
 	}
 
-	devices, err := query.Order("ID").Find(ctx)
-	return &devices, err
+	return query, nil
+}
+
+func (r *deviceRepository) GetDevices(ctx context.Context, params api.GetDevicesParams) ([]model.Device, error) {
+	query, err := r.queryFromParams(params)
+	if err != nil {
+		return nil, err
+	}
+
+	return query.Order("ID").Find(ctx)
 }
 
 func (r *deviceRepository) GetDeviceById(ctx context.Context, id string) (*model.Device, error) {
@@ -85,6 +94,16 @@ func (r *deviceRepository) GetDeviceById(ctx context.Context, id string) (*model
 		return nil, err
 	}
 	return &device, nil
+}
+
+func (r *deviceRepository) GetDevicesForUser(ctx context.Context, userId uint, params api.GetDevicesParams) ([]model.Device, error) {
+	query, err := r.queryFromParams(params)
+	if err != nil {
+		return nil, err
+	}
+	query = query.Where("user_id = ?", userId)
+
+	return query.Order("ID").Find(ctx)
 }
 
 func (r *deviceRepository) AddDevice(ctx context.Context, device *model.Device) error {
