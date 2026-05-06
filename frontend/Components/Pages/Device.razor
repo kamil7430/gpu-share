@@ -7,9 +7,7 @@
         <div class="actions">
             @if (Mode == "view")
             {
-                <button class="btn-edit" @onclick='() => Navigation.NavigateTo($"/device/edit/{Id}")'>
-                    Edit Device
-                </button>
+                
             }
         </div>
     </div>
@@ -61,15 +59,20 @@
                 </div>
 
                 <div class="form-footer">
-                    <button type="submit" class="btn-save">Save Configuration</button>
+                    <button type="submit" class="btn-primary btn-save">Save Configuration</button>
                 </div>
             </EditForm>
         }
         else
         {
             <div class="view-layout">
-                <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
-                    @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
+                <div class="wrapper"> 
+                    <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
+                        @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
+                    </div>
+                    <button class="btn-primary btn-edit" @onclick='() => Navigation.NavigateTo($"/device/edit/{Id}")'>
+                        Edit Device
+                    </button>
                 </div>
                 
                 <h1>@gpu.Name</h1>
@@ -87,6 +90,10 @@
                     <div class="spec-box">
                         <span class="label">Driver</span>
                         <span class="value">@gpu.DriverVersion</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Supported Frameworks</span>
+                        <span class="value">@(string.Join(", ", @gpu.Frameworks))</span>
                     </div>
                 </div>
             </div>

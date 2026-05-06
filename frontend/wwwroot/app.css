@@ -63,6 +63,14 @@ h3 {
     text-align: start;
 }
 
+input, select {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
 /* buttons and badges */
 .btn-secondary {
     border: 1px solid #4C6EB2;
