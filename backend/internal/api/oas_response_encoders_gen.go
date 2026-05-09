@@ -187,6 +187,12 @@ func encodeOrderDeviceResponse(response OrderDeviceRes, w http.ResponseWriter, s
 
 		return nil
 
+	case *OrderDevicePaymentRequired:
+		w.WriteHeader(402)
+		span.SetStatus(codes.Error, http.StatusText(402))
+
+		return nil
+
 	default:
 		return errors.Errorf("unexpected response type: %T", response)
 	}

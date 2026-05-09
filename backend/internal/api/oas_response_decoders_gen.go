@@ -550,6 +550,9 @@ func decodeOrderDeviceResponse(resp *http.Response) (res OrderDeviceRes, _ error
 	case 400:
 		// Code 400.
 		return &OrderDeviceBadRequest{}, nil
+	case 402:
+		// Code 402.
+		return &OrderDevicePaymentRequired{}, nil
 	}
 	// Convenient error response.
 	defRes, err := func() (res *DefaultStatusCode, err error) {

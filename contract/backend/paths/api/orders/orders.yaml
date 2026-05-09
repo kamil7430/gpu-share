@@ -56,7 +56,7 @@ post:
                 minimum: 1
     "400":
       description: Invalid request parameters
-#    "402":
-#      description: Insufficient amount in user's wallet
+    "402":
+      description: Insufficient amount in user's wallet
     default:
       $ref: "../../../responses/default.yaml"

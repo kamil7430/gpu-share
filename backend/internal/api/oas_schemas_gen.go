@@ -660,6 +660,11 @@ func (s *OrderDeviceCreated) SetTotalReservedCostCents(val int) {
 
 func (*OrderDeviceCreated) orderDeviceRes() {}
 
+// OrderDevicePaymentRequired is response for OrderDevice operation.
+type OrderDevicePaymentRequired struct{}
+
+func (*OrderDevicePaymentRequired) orderDeviceRes() {}
+
 type RegisterBadRequestApplicationJSON string
 
 func (*RegisterBadRequestApplicationJSON) registerRes() {}
