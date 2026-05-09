@@ -18,30 +18,12 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	resetDbContent := func() {
 		truncateTables(db)
-		db.Exec("INSERT INTO users(id, name, password, admin) VALUES (100, 'TestOwner', ?, 'false');", testUserPassword)
-		db.Exec("INSERT INTO users(id, name, password, admin) VALUES (101, 'TestRentingUser', ?, 'false');", testUserPassword)
+		db.Exec("INSERT INTO users(id, name, password, admin, wallet_balance_cents) VALUES (100, 'TestOwner', ?, 'false', 0);", testUserPassword)
+		db.Exec("INSERT INTO users(id, name, password, admin, wallet_balance_cents) VALUES (101, 'TestRentingUser1', ?, 'false', 10000);", testUserPassword)
+		db.Exec("INSERT INTO users(id, name, password, admin, wallet_balance_cents) VALUES (102, 'TestRentingUser2', ?, 'false', 10);", testUserPassword)
 		db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state, user_id) " +
 			"VALUES ('1', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE', '100');")
 	}
-
-	resetDbContent()
-
-	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
-		"username": "TestRentingUser",
-		"password": "TestPassword"
-	}`))
-	require.NoError(t, err)
-	require.Equal(t, http.StatusOK, loginResp.StatusCode)
-	defer loginResp.Body.Close()
-
-	body, err := io.ReadAll(loginResp.Body)
-	require.NoError(t, err)
-
-	var tokenObj tokenResponse
-	err = json.Unmarshal(body, &tokenObj)
-	require.NoError(t, err)
-
-	token := tokenObj.Token
 
 	sendRequest := func(payload string, bearerToken string) *http.Response {
 		resetDbContent()
@@ -88,8 +70,25 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.Equal(t, http.StatusBadRequest, response.StatusCode)
 	})
 
-	t.Run("order device -- device rent", func(t *testing.T) {
+	t.Run("order device -- insufficient balance", func(t *testing.T) {
 		resetDbContent()
+
+		loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+			"username": "TestRentingUser2",
+			"password": "TestPassword"
+		}`))
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, loginResp.StatusCode)
+		defer loginResp.Body.Close()
+
+		body, err := io.ReadAll(loginResp.Body)
+		require.NoError(t, err)
+
+		var tokenObj tokenResponse
+		err = json.Unmarshal(body, &tokenObj)
+		require.NoError(t, err)
+
+		token := tokenObj.Token
 
 		payload := `{
 			"deviceId": "1",
@@ -100,7 +99,39 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 		response := sendRequest(payload, token)
 		defer response.Body.Close()
 
-		body, err := io.ReadAll(response.Body)
+		require.Equal(t, http.StatusPaymentRequired, response.StatusCode)
+	})
+
+	t.Run("order device -- device rent", func(t *testing.T) {
+		resetDbContent()
+
+		loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+			"username": "TestRentingUser1",
+			"password": "TestPassword"
+		}`))
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, loginResp.StatusCode)
+		defer loginResp.Body.Close()
+
+		body, err := io.ReadAll(loginResp.Body)
+		require.NoError(t, err)
+
+		var tokenObj tokenResponse
+		err = json.Unmarshal(body, &tokenObj)
+		require.NoError(t, err)
+
+		token := tokenObj.Token
+
+		payload := `{
+			"deviceId": "1",
+			"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
+			"durationHours": 2
+		}`
+
+		response := sendRequest(payload, token)
+		defer response.Body.Close()
+
+		body, err = io.ReadAll(response.Body)
 		require.NoError(t, err)
 
 		expected := `{

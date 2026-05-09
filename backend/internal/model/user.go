@@ -4,8 +4,9 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Name     string
-	Password string
-	Admin    bool
-	Devices  []Device
+	Name               string
+	Password           string
+	Admin              bool
+	WalletBalanceCents int
+	Devices            []Device
 }
