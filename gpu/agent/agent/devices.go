@@ -2,25 +2,26 @@ package agent
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 )
 
-func DevicesCmd(args []string) {
-	if len(args) < 1 {
-		fmt.Println("expected 'list'")
-		return
-	}
+type Device struct {
+	DeviceID             string `json:"deviceId"`
+	Name                 string `json:"name"`
+	GPUModel             string `json:"gpuModel"`
+	VramMb               int    `json:"vramMb"`
+	CudaCores            int    `json:"cudaCores"`
+	PricePerHourUsdCents int    `json:"pricePerHourUsdCents"`
+	DriverVersion        string `json:"driverVersion"`
+	State                string `json:"state"`
+}
 
-	switch args[0] {
-	case "list":
-		ListDevices()
-	default:
-		fmt.Println("unknown devices subcommand")
-	}
+type errorResponse struct {
+	ErrorMessage string `json:"errorMessage"`
 }
 
 func ListDevices() {
@@ -29,34 +30,71 @@ func ListDevices() {
 		log.Fatal("not logged in")
 	}
 
-	fs := flag.NewFlagSet("devices", flag.ExitOnError)
-
 	backIp := os.Getenv("BACKEND_IP")
 	if backIp == "" {
 		backIp = "10.5.0.2"
 	}
-	backend := fs.String("backend", backIp+":2137", "backend addr")
-	req, _ := http.NewRequest("GET", "http://"+*backend+"/api/devices", nil)
+
+	url := "http://" + backIp + ":2137/api/devices"
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("couldn't connect to %v (%v)", *backend, err)
+		log.Fatalf("couldn't connect to backend (%v)", err)
 	}
 	defer resp.Body.Close()
 
-	var devices []map[string]any
-	// TODO: we should probably just take the device ids from the jsons
-	if err := json.NewDecoder(resp.Body).Decode(&devices); err != nil {
-		log.Fatal(err)
-	}
+	switch resp.StatusCode {
+	case http.StatusOK:
+		var devices []Device
 
-	if len(devices) == 0 {
-		fmt.Printf("no registered devices")
-		os.Exit(0)
-	}
-	fmt.Println("your devices:")
-	for _, d := range devices {
-		fmt.Printf("ID: %v, Name: %v\n", d["deviceId"], d["name"])
+		if err := json.NewDecoder(resp.Body).Decode(&devices); err != nil {
+			log.Fatal(err)
+		}
+
+		if len(devices) == 0 {
+			fmt.Println("no registered devices")
+			return
+		}
+
+		fmt.Println("your devices:")
+
+		for i, d := range devices {
+			fmt.Printf(
+				"[%d] %s | %s | %d MB VRAM | %d CUDA cores | $%.2f/h | %s\n",
+				i,
+				d.Name,
+				d.GPUModel,
+				d.VramMb,
+				d.CudaCores,
+				float64(d.PricePerHourUsdCents)/100.0,
+				d.State,
+			)
+		}
+
+	case http.StatusNotFound:
+		fmt.Println("no registered devices")
+
+	case http.StatusBadRequest:
+		var errResp errorResponse
+
+		if err := json.NewDecoder(resp.Body).Decode(&errResp); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Fatalf("bad request: %s", errResp.ErrorMessage)
+
+	case http.StatusUnauthorized:
+		log.Fatal("invalid or expired token")
+
+	default:
+		body, _ := io.ReadAll(resp.Body)
+		log.Fatalf("backend returned %s: %s", resp.Status, string(body))
 	}
 }

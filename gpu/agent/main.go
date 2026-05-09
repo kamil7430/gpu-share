@@ -20,7 +20,7 @@ func chooseMode() int {
 	}
 
 	for {
-		fmt.Print("Choose mode> ")
+		fmt.Print("Choose action> ")
 		var i int
 		fmt.Scan(&i)
 		if i > 0 && i <= len(modes) {
