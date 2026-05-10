@@ -45,7 +45,7 @@ func (t *Transaction) retrieveDb() *gorm.DB {
 	// update the logic on every repo list change
 
 	if db == nil {
-		log.Fatal("Couldn't retrieve db pointer in WithTransaction method")
+		log.Fatal("Couldn't retrieve db pointer for transaction")
 	}
 
 	return db
