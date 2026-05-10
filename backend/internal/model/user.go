@@ -9,4 +9,5 @@ type User struct {
 	Admin              bool
 	WalletBalanceCents int
 	Devices            []Device
+	Orders             []Order
 }

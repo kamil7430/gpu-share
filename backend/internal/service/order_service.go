@@ -7,7 +7,8 @@ import (
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 )
 
-type OrderService struct{}
+type OrderService struct {
+}
 
 func NewOrderService() OrderService {
 	return OrderService{}
