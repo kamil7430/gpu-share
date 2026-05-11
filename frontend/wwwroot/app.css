@@ -221,6 +221,68 @@ input, select {
     font-size: 15px;
 }
 
+/* Checkbox list */
+.checkbox-list {
+    overflow-y: auto; 
+    margin-bottom: 16px;
+}
+
+/* Container */
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+/* Hide default checkbox */
+.custom-checkbox input {
+    display: none;
+}
+
+/* Custom box */
+.checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #4C6EB2;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Checked state */
+.custom-checkbox input:checked + .checkmark {
+    background-color: #4C6EB2;
+}
+
+/* Check icon */
+.checkmark::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 0px;
+    width: 5px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+/* Show check */
+.custom-checkbox input:checked + .checkmark::after {
+    opacity: 1;
+}
+
+/* Hover effect */
+.custom-checkbox:hover .checkmark {
+    border-color: #2f4f9f;
+}
+
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }

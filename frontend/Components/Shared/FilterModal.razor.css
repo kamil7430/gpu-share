@@ -13,67 +13,6 @@
     flex-direction: row;
 }
 
-/* Checkbox list */
-::deep .checkbox-list {
-    overflow-y: auto; 
-    margin-bottom: 16px;
-}
-
-/* Container */
-::deep .custom-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    user-select: none;
-}
-
-/* Hide default checkbox */
-::deep .custom-checkbox input {
-    display: none;
-}
-
-/* Custom box */
-::deep .checkmark {
-    width: 18px;
-    height: 18px;
-    border: 2px solid #4C6EB2;
-    border-radius: 4px;
-    display: inline-block;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-/* Checked state */
-::deep .custom-checkbox input:checked + .checkmark {
-    background-color: #4C6EB2;
-}
-
-/* Check icon */
-::deep .checkmark::after {
-    content: "";
-    position: absolute;
-    left: 5px;
-    top: 0px;
-    width: 5px;
-    height: 12px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    opacity: 0;
-}
-
-/* Show check */
-::deep .custom-checkbox input:checked + .checkmark::after {
-    opacity: 1;
-}
-
-/* Hover effect */
-::deep .custom-checkbox:hover .checkmark {
-    border-color: #2f4f9f;
-}
-
 /* Range Slider */
 ::deep .form-group {
     margin-top: 0.5rem;

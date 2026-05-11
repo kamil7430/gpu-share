@@ -5,18 +5,18 @@
 - [x] EmailInput - Pole e-mail z walidacją formatu
 - [x] PasswordInput - Pole hasła z przełącznikiem widoczności
 - [ ] OAuthButton - Logowanie przez Google / GitHub (opcjonalne)
-- [ ] ErrorBanner - Komunikat błędu logowania (nieprawidłowe dane, konto zablokowane)
+- [x] ErrorBanner - Komunikat błędu logowania (nieprawidłowe dane, konto zablokowane)
 - [x] SubmitButton - Przycisk „Zaloguj się"
 - [x] RegisterLink - Przekierowanie do rejestracji
 
 ### /register (modal)
 
-- [ ] NameInput - Imię i nazwisko
-- [x] EmailInput - E-mail z walidacją unikalności
+- [x] UsernameInput - Imię i nazwisko
+- [ ] EmailInput - E-mail z walidacją unikalności (do ustalenia)
 - [x] PasswordInput - Hasło + potwierdzenie hasła, wskaźnik siły
-- [x] ~~RoleSelector - Wybór roli: Klient / Właściciel GPU (radio)~~
-- [ ] TermsCheckbox - Akceptacja regulaminu
-- [ ] VerificationInfo - Informacja o wysłaniu e-maila weryfikacyjnego
+- [ ] ~~RoleSelector - Wybór roli: Klient / Właściciel GPU (radio)~~
+- [x] TermsCheckbox - Akceptacja regulaminu
+- [ ] VerificationInfo - Informacja o wysłaniu e-maila weryfikacyjnego (do ustalenia)
 
 ### /search
 

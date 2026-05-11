@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations;
 
 @if (IsVisible)
 {
@@ -21,8 +22,12 @@
                         <input name="password" autocomplete="current-password" type="password" placeholder="Password" @bind-value="loginModel.Password" />
                         <button class="action-btn btn-primary" type="submit">Sign In</button>
                     </EditForm>
+                    <p class="error-banner">
+                        @ErrorMessage
+                    </p>
                     <p style="margin-bottom: 0px; margin-top: 16px; font-size: smaller;">
-                        New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a></p>
+                        New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a>
+                    </p>
                 }
                 else
                 {
@@ -34,10 +39,19 @@
                         <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="registerModel.Username" />
                         <input name="password" autocomplete="new-password" type="password" placeholder="Password" @bind-value="registerModel.Password" />
                         <input name="confirmPassword" type="password" placeholder="Confirm Password" @bind-value="registerModel.ConfirmPassword" />
+                        <label class="custom-checkbox" style="margin-top: 8px;margin-bottom: 8px;">
+                            <input type="checkbox" style="width: auto;" @bind-value="registerModel.AcceptTerms" />
+                            <span class="checkmark"></span>
+                            I accept<a href="/terms" target="_blank">Terms and Conditions</a>
+                        </label>
                         <button class="action-btn btn-primary" type="submit">Create Account</button>
                     </EditForm>
+                    <p class="error-banner">
+                        @ErrorMessage
+                    </p>
                     <p style="margin-bottom: 0px; margin-top: 16px; font-size: smaller;">
-                        Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a></p>
+                        Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a>
+                    </p>
                 }
             </div>
         </div>
@@ -48,6 +62,7 @@
 @code {
     private LoginModel loginModel = new LoginModel();
     private RegisterModel registerModel = new RegisterModel();
+    private string? ErrorMessage = "Error";
 
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
@@ -86,5 +101,8 @@
         public string Username { get; set; } = "";
         public string Password { get; set; } = "";
         public string ConfirmPassword { get; set; } = "";
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the Terms and Conditions.")]
+        public bool AcceptTerms { get; set; }
     }
 }

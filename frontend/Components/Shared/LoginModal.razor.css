@@ -12,3 +12,10 @@
     font-size: 15px;
     margin-top: 12px;
 }
+
+.error-banner {
+    margin-bottom: 0px; 
+    margin-top: 16px; 
+    font-size: smaller;
+    color: #777;
+}
