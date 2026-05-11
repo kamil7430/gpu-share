@@ -11,6 +11,14 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
+::deep .card {
+    background: white;
+    border: 1px solid #d1e3f8;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
 .wrapper {
     display: flex;
     flex-direction: row;
@@ -79,6 +87,150 @@
     font-size: 1.2rem;
     font-weight: bold;
     color: #0a1a33;
+}
+
+/* calendar */
+
+.calendar-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.week-calendar {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+}
+
+.calendar-header {
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    height: 60px;
+}
+
+.calendar-header-cell {
+    background: #f5f5f5;
+    border-left: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.calendar-header-cell .date {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.time-label {
+    height: 80px;
+    border-bottom: 1px solid #eee;
+    padding: 4px;
+    font-size: 0.75rem;
+    color: #666;
+    background: #fafafa;
+}
+
+.calendar-cell {
+    position: relative;
+    height: 80px;
+    border-left: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.reservation-block {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+
+    border-radius: 8px;
+    padding: 6px;
+
+    color: white;
+
+    z-index: 5;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.reservation-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.reservation-time {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+
+    .week-calendar {
+        font-size: 0.7rem;
+    }
+
+    .time-label {
+        width: 60px;
+    }
+
+    .reservation-title {
+        font-size: 0.7rem;
+    }
+}
+
+/* calendar legend */
+.calendar-legend {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    margin-top: 20px;
+    padding-top: 15px;
+
+    border-top: 1px solid #eee;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.legend-color {
+    width: 18px;
+    height: 18px;
+
+    border-radius: 4px;
+}
+
+/* MATCH RESERVATION COLORS */
+
+.legend-color.reserved {
+    background: #ff9800;
+}
+
+.legend-color.in-use {
+    background: #f44336;
+}
+
+.legend-color.completed {
+    background: #2196f3;
+}
+
+.legend-color.available {
+    background: #4caf50;
 }
 
 @media (max-width: 1200px) {
