@@ -1,0 +1,73 @@
+.opinions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between the cards */
+}
+
+.opinion-card {
+    background-color: #f0f7ff; /* Matching your theme's light blue */
+    border: 2px solid #d1e3f8;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-sizing: border-box;
+}
+
+.user-name {
+    margin: 0 0 5px 0;
+    color: #0a1a33;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.star-rating {
+    color: #0a1a33; /* Dark stars to match the text */
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.opinion-text {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+/* This CSS property hides text after 3 lines */
+.text-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Number of lines to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.toggle-text-btn {
+    background: none;
+    border: none;
+    color: #4c6eb2;
+    padding: 0;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.toggle-text-btn:hover {
+    text-decoration: underline;
+}
+
+/* "Load more" link styling */
+.load-more-container {
+    margin-top: 15px;
+}
+
+.load-more-container a {
+    color: #4c6eb2;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.load-more-container a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,54 @@
+﻿@inherits LayoutComponentBase
+@using GpuShare.Frontend.Models
+
+<div class="page">
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="brand">GPUSHARE</div>
+
+            <nav class="nav-links">
+                <NavLink href="/">Search</NavLink>
+                @if (IsLoggedIn)
+                {
+                    <NavLink href="/profile">@CurrentUser.Username</NavLink>
+                    <button class="login-btn" @onclick="Logout">Logout</button>
+                }
+                else
+                {
+                    <button class="login-btn" @onclick="OpenLogin">Login</button>
+                }
+            </nav>
+        </div>
+    </header>
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+<LoginModal IsVisible="ShowModal" OnClose="CloseModal" />
+
+@code {
+    private bool ShowModal = false;
+    private User CurrentUser = new User("JKowalski", "password123");
+    private bool IsLoggedIn = true;
+
+    private void OpenLogin() { 
+        ShowModal = true; 
+        Console.WriteLine("Login modal opened");
+    }
+
+    private void Logout() { 
+        IsLoggedIn = false; 
+        Console.WriteLine("User logged out");
+    }
+    private void CloseModal() => ShowModal = false;
+
+}
