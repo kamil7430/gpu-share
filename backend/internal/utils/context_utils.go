@@ -1,3 +1,3 @@
 package utils
 
-const ContextUsernameKey = "username"
+type ContextUsernameKey struct{}
