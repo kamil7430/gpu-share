@@ -19,10 +19,6 @@ type deviceRepository struct {
 	db *gorm.DB
 }
 
-func NewDeviceRepository(db *gorm.DB) DeviceRepository {
-	return &deviceRepository{db}
-}
-
 func (r *deviceRepository) GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error) {
 	// codegen handles defaults
 	limit := params.Limit.Value
