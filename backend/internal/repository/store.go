@@ -32,6 +32,8 @@ func (s store) Gpus() GpuRepository {
 
 func (s store) Transaction(fn func(Store) error) error {
 	return s.db.Transaction(func(tx *gorm.DB) error {
-		return fn(store{db: tx})
+		return fn(store{
+			db: tx,
+		})
 	})
 }
