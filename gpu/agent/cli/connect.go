@@ -45,7 +45,7 @@ func ConnectCmd(args []string) {
 
 		deviceIndex := 0
 		for {
-			deviceIndex = promptInt(reader, "device index")
+			deviceIndex = promptIntWithDefault(reader, 0, "device index")
 			if !(deviceIndex >= 0 && deviceIndex < len(devices)) {
 				fmt.Printf("index must be in [0, %v)\n", len(devices))
 				continue

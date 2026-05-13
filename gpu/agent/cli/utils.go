@@ -32,3 +32,20 @@ func promptInt(reader *bufio.Reader, label string) int {
 		return n
 	}
 }
+
+func promptIntWithDefault(reader *bufio.Reader, def int, label string) int {
+	for {
+		value := promptString(reader, fmt.Sprintf("%v (%v)", label, def))
+		if value == "" {
+			return def
+		}
+
+		n, err := strconv.Atoi(value)
+		if err != nil {
+			fmt.Println("enter a valid integer")
+			continue
+		}
+
+		return n
+	}
+}

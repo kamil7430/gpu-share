@@ -66,9 +66,10 @@ func ListDevices() ([]Device, error) {
 
 		for i, d := range devices {
 			fmt.Printf(
-				"[%d] %s | %s | %d MB VRAM | %d CUDA cores | $%.2f/h | %s\n",
+				"[%d] %s (id: %v) | %s | %d MB VRAM | %d CUDA cores | $%.2f/h | %s\n",
 				i,
 				d.Name,
+				d.DeviceID,
 				d.GPUModel,
 				d.VramMb,
 				d.CudaCores,
