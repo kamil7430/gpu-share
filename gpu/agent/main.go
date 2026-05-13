@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	
-	"github.com/kamil7430/gpu-share/gpu/agent/agent"
+
+	"github.com/kamil7430/gpu-share/gpu/agent/cli"
 )
 
 func usage() {
@@ -14,7 +14,7 @@ func usage() {
 
 var modes = []string{"login", "devices", "connect"}
 
-func chooseMode() int {
+func chooseAction() int {
 	for i, m := range modes {
 		fmt.Printf("%v) %v\n", i+1, m)
 	}
@@ -33,7 +33,7 @@ func main() {
 	var cmd string
 	args := os.Args
 	if len(args) < 2 {
-		cmd = modes[chooseMode()]
+		cmd = modes[chooseAction()]
 	} else {
 		cmd = os.Args[1]
 		args = args[2:]
@@ -41,11 +41,11 @@ func main() {
 
 	switch cmd {
 	case "login":
-		agent.LoginCmd(args)
+		cli.LoginCmd(args)
 	case "devices":
-		agent.ListDevices()
+		cli.ListDevices()
 	case "connect":
-		agent.ConnectCmd(args)
+		cli.ConnectCmd(args)
 	default:
 		usage()
 	}

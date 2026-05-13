@@ -1,6 +1,7 @@
-package agent
+package cli
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"flag"
@@ -21,13 +22,13 @@ func LoginCmd(args []string) {
 	addr := fs.String("addr", envIp+":2137", "backend addr")
 	fs.Parse(args)
 
+	reader := bufio.NewReader(os.Stdin)
+
 	if *username == "" {
-		fmt.Print("username> ")
-		fmt.Scan(username)
+		*username = promptString(reader, "username")
 	}
 	if *password == "" {
-		fmt.Print("password> ")
-		fmt.Scan(password)
+		*password = promptString(reader, "password")
 	}
 
 	body, _ := json.Marshal(map[string]string{

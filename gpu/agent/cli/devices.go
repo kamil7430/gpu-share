@@ -1,4 +1,4 @@
-package agent
+package cli
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ type errorResponse struct {
 	ErrorMessage string `json:"errorMessage"`
 }
 
-func ListDevices() {
+func ListDevices() ([]Device, error) {
 	token, err := LoadToken()
 	if err != nil {
 		log.Fatal("not logged in")
@@ -50,17 +50,16 @@ func ListDevices() {
 	}
 	defer resp.Body.Close()
 
+	var devices []Device
 	switch resp.StatusCode {
 	case http.StatusOK:
-		var devices []Device
-
 		if err := json.NewDecoder(resp.Body).Decode(&devices); err != nil {
 			log.Fatal(err)
 		}
 
 		if len(devices) == 0 {
 			fmt.Println("no registered devices")
-			return
+			return devices, nil
 		}
 
 		fmt.Println("your devices:")
@@ -97,4 +96,6 @@ func ListDevices() {
 		body, _ := io.ReadAll(resp.Body)
 		log.Fatalf("backend returned %s: %s", resp.Status, string(body))
 	}
+
+	return devices, nil
 }
