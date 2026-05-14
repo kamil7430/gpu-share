@@ -2,7 +2,7 @@
 @using GpuShare.Frontend.Models
 @using MudBlazor
 
-<MudThemeProvider />
+<MudThemeProvider Theme="@GpuTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
@@ -57,4 +57,18 @@
     }
     private void CloseModal() => ShowModal = false;
 
+    private MudTheme GpuTheme = new()
+{
+    PaletteLight = new PaletteLight()
+    {
+        Primary = "#4C6EB2",
+        Secondary = "#7c4dff",
+        Success = "#4caf50",
+        Info = "#2196f3",
+        Warning = "#ff9800",
+        Error = "#f44336",
+        Background = "#f5f7fb",
+        Surface = "#ffffff"
+    }
+};
 }

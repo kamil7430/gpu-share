@@ -1,4 +1,4 @@
-<div class="opinions-container">
+<div class=@(Class == null ? "opinions-container" : Class + " opinions-container")>
     @if (Opinions.Count == 0)
     {
         <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No reviews yet.</p>
@@ -39,6 +39,7 @@
 </div>
 
 @code {
+    [Parameter] public string? Class {get; set;} = null;
     private HashSet<string> ExpandedReviews = new();
 
     private void ToggleExpand(string username)

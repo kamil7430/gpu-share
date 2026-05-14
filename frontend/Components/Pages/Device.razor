@@ -3,15 +3,11 @@
 @using MudBlazor
 @using MudBlazor.Charts;
 
-<div class="device-container">
-    <div class="page-header">
+@* what happens when the reserved time run out but the job is not finished *@
+
+<div class="cards-container">
+    <div class="page-header" style="margin-bottom: 8px;">
         <NavLink href="/profile" class="back-link">&lt;- Back to Profile</NavLink>
-        <div class="actions">
-            @if (Mode == "view")
-            {
-                
-            }
-        </div>
     </div>
 
     <div class="device-card">
@@ -58,9 +54,15 @@
                         <label>Driver Version</label>
                         <InputText @bind-Value="gpu.DriverVersion" />
                     </div>
+
+                    <div class="form-group" style="flex-direction: row; align-items: center;">
+                        <label>Price per hour</label>
+                        <InputNumber style="width: 100px" @bind-Value="gpu.PricePerHour" />
+                        <label>$</label>
+                    </div>
                 </div>
 
-                <div class="form-footer">
+                <div class="form-footer" style="margin-top:8px">
                     <button type="submit" class="btn-primary btn-save">Save Configuration</button>
                 </div>
             </EditForm>
@@ -77,7 +79,15 @@
                     </button>
                 </div>
                 
-                <h1>@gpu.Name</h1>
+                <div class="gpu-header">
+                    <h1 style="margin-bottom: 0px;">@gpu.Name</h1>
+                    @if (!isAuthorized) {
+                        <h2 style="margin: 0 20px;">|</h2>
+                        <NavLink href="@($"/profile/{Username}")" class="profile-link">
+                            @Username
+                        </NavLink>
+                    }
+                </div>
                 <p class="model-sub">@gpu.Model</p>
 
                 <div class="spec-grid">
@@ -94,6 +104,10 @@
                         <span class="value">@gpu.DriverVersion</span>
                     </div>
                     <div class="spec-box">
+                        <span class="label">Price per hour</span>
+                        <span class="value">@gpu.PricePerHour $</span>
+                    </div>
+                    <div class="spec-box spec-box-long">
                         <span class="label">Supported Frameworks</span>
                         <span class="value">@(string.Join(", ", @gpu.Frameworks))</span>
                     </div>
@@ -102,7 +116,7 @@
         }
     </div>
 
-    @if (Mode == "view") {  
+    @if (Mode == "view" && isAuthorized) {  
     //<!-- GPU USAGE CHART -->
     <MudPaper Class="card mt-6">
         <MudText Typo="Typo.h6">GPU Usage</MudText>
@@ -196,6 +210,16 @@
     </MudPaper>
     }
 
+    @if (Mode == "view" && !isAuthorized) {
+        <div class="card">
+            <h3 style="margin-bottom: 16px;">Owner rating: 4.5 </h3>
+            <h3 style="margin-bottom: 24px;">Opinions about this gpu:</h3>
+            <OpinionsCard></OpinionsCard>
+        </div>
+
+        <GpuOrderForm></GpuOrderForm>
+    }
+
 </div>
 
 @code {
@@ -206,6 +230,8 @@
 
     private Gpu gpu = new();
     private LineChartOptions options = new(){};
+    private bool isAuthorized = false;
+    private string Username = "user1";
     
     protected override void OnInitialized()
     {

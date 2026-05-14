@@ -29,14 +29,14 @@
 
 ### /gpu/:deviceId
 
-- [x] GPUSpecCard - Model, VRAM, CUDA cores, driver, obsługiwane frameworki, lokalizacja?
-- [ ] PricingBadge - Cena za godzinę + szacowany koszt dla wybranego czasu
-- [ ] RatingWidget - Średnia ocena właściciela + lista ostatnich opinii
-- [ ] LiveStatusIndicator - Aktualny stan GPU (dostępna/zajęta) — polling lub SSE
-- [ ] DurationPicker - Wybór czasu trwania sesji (suwak + input numeryczny, min 1h)
-- [ ] DockerImageInput - Pole na docker image (z przykładami: pytorch, tensorflow)
-- [ ] RentButton - CTA „Wypożycz" — aktywny gdy GPU dostępna i saldo wystarczy
-- [ ] OwnerMiniProfile - Awatar + nazwa właściciela, link do jego profilu
+- [x] GPUSpecCard - Model, VRAM, CUDA cores, driver, obsługiwane frameworki, **lokalizacja?**
+- [x] PricingBadge - Cena za godzinę + szacowany koszt dla wybranego czasu
+- [x] RatingWidget - Średnia ocena właściciela + lista ostatnich opinii
+- [x] LiveStatusIndicator - Aktualny stan GPU (dostępna/zajęta) — polling lub SSE
+- [x] DurationPicker - Wybór czasu trwania sesji (suwak + input numeryczny, min 1h)
+- [x] DockerImageInput - Pole na docker image (z przykładami: pytorch, tensorflow)
+- [x] RentButton - CTA „Wypożycz" — aktywny gdy GPU dostępna i saldo wystarczy
+- [x] OwnerMiniProfile - Awatar + nazwa właściciela, link do jego profilu
 
 ### /rentals/:rentalId (/orders/:orderId)
 

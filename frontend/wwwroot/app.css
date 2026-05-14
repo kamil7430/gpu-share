@@ -71,6 +71,32 @@ input, select {
     font-size: 15px;
 }
 
+.cards-container {
+    margin: 40px 40px;
+    padding: 0 20px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #d1e3f8;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 24px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
 /* buttons and badges */
 .btn-secondary {
     border: 1px solid #4C6EB2;
@@ -78,6 +104,7 @@ input, select {
     padding: 6px 12px;
     color: #4C6EB2;
     cursor: pointer;
+    text-transform: none;
 }
 
 .btn-secondary:hover {

@@ -1,0 +1,197 @@
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Forms;
+
+@* 
+For GPU workloads, uploading files is usually better than typing Docker image names because users can provide:
+- Dockerfile
+- compose config
+- inference code
+- startup scripts
+- model configs
+instead of relying on public registries only.
+
+Later you can support BOTH:
+
+[ Upload Package ]
+OR
+[ Docker Image URL ]
+
+which is what most cloud GPU platforms end up doing.
+ *@
+
+<div class="order-form-container card">
+
+    <div class="order-header">
+        <h3>Order this GPU</h3>
+
+        <p>
+            Configure your GPU session and deployment container.
+        </p>
+    </div>
+
+    <EditForm Model="orderModel" OnValidSubmit="SubmitOrder">
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- START --><!-- DURATION -->
+        <div class="form-section flex-row">
+            <MudDatePicker Label="Start Date" Editable="true" Placeholder="dd.mm.yyyy" Mask="@(new DateMask("dd.MM.yyyy"))" DateFormat="dd.MM.yyyy" @bind-Date="orderModel.StartDate" ShowToolbar="false" Variant="Variant.Text" />
+            <MudTimePicker Label="Start Time" Placeholder="hh:mm" Editable="true" @bind-Time="orderModel.StartTime" Variant="Variant.Text" />
+            <MudNumericField @bind-Value="orderModel.DurationHours" Label="Duration (hours)" Min="1" Max="168" Variant="Variant.Text" />
+        </div>
+
+        <!-- DOCKER -->
+        <div class="form-section">
+
+            <label>Deployment Package</label>
+
+            <MudFileUpload T="IBrowserFile"
+                        DragAndDrop="true"
+                        FilesChanged="OnFileSelected"
+                        Accept=".zip,.tar,.gz,.dockerfile,.yml,.yaml"
+                        HideInput="True">
+                <SelectedTemplate Context="another_name"/>
+            </MudFileUpload>
+
+            @if (selectedFile is not null)
+            {
+                <div class="uploaded-file">
+
+                    <div class="uploaded-file-info">
+                        <MudIcon Icon="@Icons.Material.Filled.Description"
+                                Size="Size.Small" />
+
+                        <span>@selectedFile.Name</span>
+
+                        <span class="file-size">
+                            (@(selectedFile.Size / 1024) KB)
+                        </span>
+                    </div>
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                       Size="Size.Small"
+                       Color="Color.Primary"
+                       Class="remove-file-btn"
+                       OnClick="@(() => selectedFile = null)" />
+
+                </div>
+            }
+
+            @if(selectedFile == null) {
+                <div class="input-hint">
+                    Upload a Docker deployment archive or compose configuration
+                </div>
+            }
+
+        </div>
+
+        <!-- ESTIMATION -->
+        <div class="cost-card">
+
+            <div class="cost-row">
+                <span>GPU Price</span>
+                <span>$@GpuHourlyPrice.ToString("0.00") / hour</span>
+            </div>
+
+            <div class="cost-row">
+                <span>Duration</span>
+                <span>@orderModel.DurationHours h</span>
+            </div>
+
+            <div class="cost-divider"></div>
+
+            <div class="cost-total">
+                <span style="color: #4C6EB2">Estimated Total</span>
+
+                <span style="color: #4C6EB2">
+                    $@EstimatedCost.ToString("0.00")
+                </span>
+            </div>
+
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit"
+                class="btn-primary order-btn">
+            Order GPU
+        </button>
+
+    </EditForm>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public int GpuId { get; set; }
+
+    [Parameter]
+    public decimal GpuHourlyPrice { get; set; } = 2.50m;
+
+    private IBrowserFile? selectedFile;
+
+    private OrderModel orderModel = new()
+    {
+        StartDate = DateTime.Today,
+        StartTime = new TimeSpan(12, 0, 0),
+        DurationHours = 1
+    };
+
+    private decimal EstimatedCost =>
+        GpuHourlyPrice * orderModel.DurationHours;
+
+    public class OrderModel
+    {
+        [Required]
+        public DateTime? StartDate { get; set; }
+
+        [Required]
+        public TimeSpan? StartTime { get; set; }
+
+        [Range(1, 168)]
+        public int DurationHours { get; set; }
+
+        // [Required]
+        // public string DockerImage { get; set; } = ""; 
+    }
+
+    private async Task OnFileSelected(IBrowserFile? file)
+    {
+        selectedFile = file;
+
+        if (file is null)
+            return;
+
+        Console.WriteLine($"""
+            FILE UPLOADED
+            Name: {file.Name}
+            Size: {file.Size}
+            Type: {file.ContentType}
+        """);
+
+        // TODO:
+        // upload to backend/storage
+    }
+
+    private async Task SubmitOrder()
+    {
+        var start =
+            orderModel.StartDate?.Date + orderModel.StartTime;
+
+        Console.WriteLine($"""
+            ORDER
+            GPU: {GpuId}
+            Start: {start}
+            Duration: {orderModel.DurationHours}
+        """);
+        // Docker: {orderModel.DockerImage}
+
+        // TODO:
+        // - validate conflicts
+        // - send API request
+        // - payment flow
+        // - deployment scheduling
+    }
+}

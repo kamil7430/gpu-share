@@ -1,0 +1,110 @@
+.order-header {
+    margin-bottom: 24px;
+}
+
+.order-header p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: 600;
+}
+
+.form-input {
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 10px;
+    border: 1px solid #d7deea;
+
+    box-sizing: border-box;
+}
+
+.input-hint {
+    margin-top: 6px;
+
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.cost-card {
+    background: #f7faff;
+
+    border: 1px solid #dce7ff;
+    border-radius: 14px;
+
+    padding: 18px;
+
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.cost-row,
+.cost-total {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+}
+
+.cost-divider {
+    height: 1px;
+
+    background: #dce7ff;
+
+    margin: 14px 0;
+}
+
+.cost-total {
+    font-size: 1.1rem;
+    font-weight: bold;
+
+    color: #2457d6;
+}
+
+.order-btn {
+    padding: 0.5rem 1.5rem;
+}
+
+.uploaded-file {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-top: 20px;
+    padding: 10px 12px;
+
+    background: #f5f8ff;
+    border: 1px solid #dce7ff;
+    border-radius: 10px;
+
+    font-size: 0.9rem;
+}
+
+.file-size {
+    color: #777;
+    font-size: 0.8rem;
+}
+
+.uploaded-file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    overflow: hidden;
+}
+
+.remove-file-btn {
+    flex-shrink: 0;
+}

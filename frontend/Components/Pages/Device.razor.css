@@ -1,22 +1,10 @@
-.device-container {
-    margin: 40px 40px;
-    padding: 0 20px;
-}
-
 .device-card {
     background: white;
     border: 1px solid #d1e3f8;
     border-radius: 16px;
     padding: 40px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-::deep .card {
-    background: white;
-    border: 1px solid #d1e3f8;
-    border-radius: 16px;
-    padding: 40px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 24px;
 }
 
 .wrapper {
@@ -25,6 +13,13 @@
     justify-content: space-between;
     width: 100%;
     margin-bottom: 10px;
+}
+
+.gpu-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
 /* Edit Mode Layout */
@@ -74,6 +69,11 @@
     padding: 20px;
     border-radius: 12px;
     text-align: center;
+}
+
+.spec-box-long {
+    grid-column-start: 2;
+    grid-column-end: 4;
 }
 
 .spec-box .label {
@@ -237,6 +237,10 @@
     .spec-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    .spec-box-long {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }   
 }
 
 @media (max-width: 675px) {
@@ -247,5 +251,9 @@
     .spec-grid {
         grid-template-columns: repeat(1, 1fr);
     }
+    .spec-box-long {
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }       
 }
 
