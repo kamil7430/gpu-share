@@ -1,14 +1,20 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"context"
+
+	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"gorm.io/gorm"
+)
 
 type OrderRepository interface {
+	AddOrder(ctx context.Context, order *model.Order) error
 }
 
 type orderRepository struct {
 	db *gorm.DB
 }
 
-func NewOrderRepository(db *gorm.DB) OrderRepository {
-	return &orderRepository{db}
+func (r *orderRepository) AddOrder(ctx context.Context, order *model.Order) error {
+	return gorm.G[model.Order](r.db).Create(ctx, order)
 }

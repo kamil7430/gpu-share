@@ -25,7 +25,7 @@ func NewServer(store repository.Store) *http.Server {
 		service.NewHealthService(),
 		service.NewDeviceService(store.Devices(), store.Gpus(), store.Users()),
 		service.NewUserService(store.Users()),
-		service.NewOrderService(),
+		service.NewOrderService(store),
 	}
 
 	srv, err := api.NewServer(&sauron, &sauron.UserService)

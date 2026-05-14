@@ -13,6 +13,7 @@ type DeviceRepository interface {
 	GetDevices(ctx context.Context, params api.GetDevicesParams) (*[]model.Device, error)
 	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
 	AddDevice(ctx context.Context, device *model.Device) error
+	UpdateDevice(ctx context.Context, device *model.Device) error
 }
 
 type deviceRepository struct {
@@ -84,4 +85,8 @@ func (r *deviceRepository) GetDeviceById(ctx context.Context, id string) (*model
 
 func (r *deviceRepository) AddDevice(ctx context.Context, device *model.Device) error {
 	return gorm.G[model.Device](r.db).Create(ctx, device)
+}
+
+func (r *deviceRepository) UpdateDevice(ctx context.Context, device *model.Device) error {
+	return gorm.G[model.Device](r.db).Update(ctx, device)
 }
