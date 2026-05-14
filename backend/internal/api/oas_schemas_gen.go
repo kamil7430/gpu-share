@@ -665,6 +665,46 @@ type OrderDevicePaymentRequired struct{}
 
 func (*OrderDevicePaymentRequired) orderDeviceRes() {}
 
+type OrderDeviceReq struct {
+	// Id of device to rent.
+	DeviceId string `json:"deviceId"`
+	// Name of Docker image to run on the device.
+	DockerImage string `json:"dockerImage"`
+	// Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002
+	// (slightly less than 1 second).
+	DurationHours float64 `json:"durationHours"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *OrderDeviceReq) GetDeviceId() string {
+	return s.DeviceId
+}
+
+// GetDockerImage returns the value of DockerImage.
+func (s *OrderDeviceReq) GetDockerImage() string {
+	return s.DockerImage
+}
+
+// GetDurationHours returns the value of DurationHours.
+func (s *OrderDeviceReq) GetDurationHours() float64 {
+	return s.DurationHours
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *OrderDeviceReq) SetDeviceId(val string) {
+	s.DeviceId = val
+}
+
+// SetDockerImage sets the value of DockerImage.
+func (s *OrderDeviceReq) SetDockerImage(val string) {
+	s.DockerImage = val
+}
+
+// SetDurationHours sets the value of DurationHours.
+func (s *OrderDeviceReq) SetDurationHours(val float64) {
+	s.DurationHours = val
+}
+
 type RegisterBadRequestApplicationJSON string
 
 func (*RegisterBadRequestApplicationJSON) registerRes() {}

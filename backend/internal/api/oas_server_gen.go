@@ -50,7 +50,7 @@ type Handler interface {
 	// Initialize a device rental.
 	//
 	// POST /api/orders
-	OrderDevice(ctx context.Context, params OrderDeviceParams) (OrderDeviceRes, error)
+	OrderDevice(ctx context.Context, req *OrderDeviceReq) (OrderDeviceRes, error)
 	// Register implements register operation.
 	//
 	// Register a user.

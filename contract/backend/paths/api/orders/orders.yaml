@@ -4,34 +4,35 @@ post:
   security:
     - bearerAuth:
         - user
-  parameters:
-    - name: deviceId
-      in: query
-      required: true
-      description: Id of device to rent
-      schema:
-        type: string
-    - name: dockerImage
-      in: query
-      required: true
-      description: Name of Docker image to run on the device
-      schema:
-        type: string
-    - name: durationHours
-      in: query
-      required: true
-      description: Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002 (slightly less than 1 second)
-      examples:
-        oneMinute:
-          summary: Example of a one minute of duration
-          value: 0.017
-        oneAndHalfHour:
-          summary: Example of a one and a half an hour of duration
-          value: 1.5
-      schema:
-        type: number
-        format: double
-        minimum: 0.0002 # one second
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - deviceId
+            - dockerImage
+            - durationHours
+          properties:
+            deviceId:
+              description: Id of device to rent
+              type: string
+            dockerImage:
+              description: Name of Docker image to run on the device
+              type: string
+            durationHours:
+              description: Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002 (slightly less than 1 second)
+              type: number
+              format: double
+              minimum: 0.0002 # one second
+              example:
+                oneMinute:
+                  summary: Example of a one minute of duration
+                  value: 0.017
+                oneAndHalfHour:
+                  summary: Example of a one and a half an hour of duration
+                  value: 1.5
   responses:
     "201":
       description: Device rental created

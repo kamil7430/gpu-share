@@ -31,6 +31,6 @@ func (m *mockGpuRepository) GetConnectionDetailsById(ctx context.Context, id str
 	return &model.ConnectionDetails{
 		Host:     "node-01.gpushare.net",
 		Port:     "443",
-		Protocol: "wws",
+		Protocol: "wss",
 	}, nil
 }

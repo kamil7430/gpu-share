@@ -22,7 +22,7 @@ func NewOrderService(store repository.Store) OrderService {
 	}
 }
 
-func (s *OrderService) OrderDevice(ctx context.Context, params api.OrderDeviceParams) (api.OrderDeviceRes, error) {
+func (s *OrderService) OrderDevice(ctx context.Context, params *api.OrderDeviceReq) (api.OrderDeviceRes, error) {
 	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
 	if !ok {
 		return nil, errors.New("username not found in context")

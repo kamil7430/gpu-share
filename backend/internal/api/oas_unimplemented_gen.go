@@ -73,7 +73,7 @@ func (UnimplementedHandler) Login(ctx context.Context, req *LoginReq) (r LoginRe
 // Initialize a device rental.
 //
 // POST /api/orders
-func (UnimplementedHandler) OrderDevice(ctx context.Context, params OrderDeviceParams) (r OrderDeviceRes, _ error) {
+func (UnimplementedHandler) OrderDevice(ctx context.Context, req *OrderDeviceReq) (r OrderDeviceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

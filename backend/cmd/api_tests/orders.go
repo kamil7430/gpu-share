@@ -139,7 +139,7 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 			"status": "WAITING_FOR_START",
 			"connectionDetails": {
 				"host": "node-01.gpushare.net",
-				"port": 443,
+				"port": "443",
 				"protocol": "wss"
 			},
 			"totalReservedCostCents": 3198

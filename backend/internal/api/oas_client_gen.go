@@ -70,7 +70,7 @@ type Invoker interface {
 	// Initialize a device rental.
 	//
 	// POST /api/orders
-	OrderDevice(ctx context.Context, params OrderDeviceParams) (OrderDeviceRes, error)
+	OrderDevice(ctx context.Context, request *OrderDeviceReq) (OrderDeviceRes, error)
 	// Register invokes register operation.
 	//
 	// Register a user.
@@ -881,12 +881,12 @@ func (c *Client) sendLogin(ctx context.Context, request *LoginReq) (res LoginRes
 // Initialize a device rental.
 //
 // POST /api/orders
-func (c *Client) OrderDevice(ctx context.Context, params OrderDeviceParams) (OrderDeviceRes, error) {
-	res, err := c.sendOrderDevice(ctx, params)
+func (c *Client) OrderDevice(ctx context.Context, request *OrderDeviceReq) (OrderDeviceRes, error) {
+	res, err := c.sendOrderDevice(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendOrderDevice(ctx context.Context, params OrderDeviceParams) (res OrderDeviceRes, err error) {
+func (c *Client) sendOrderDevice(ctx context.Context, request *OrderDeviceReq) (res OrderDeviceRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("orderDevice"),
 		semconv.HTTPRequestMethodKey.String("POST"),
@@ -927,56 +927,13 @@ func (c *Client) sendOrderDevice(ctx context.Context, params OrderDeviceParams) 
 	pathParts[0] = "/api/orders"
 	uri.AddPathParts(u, pathParts[:]...)
 
-	stage = "EncodeQueryParams"
-	q := uri.NewQueryEncoder()
-	{
-		// Encode "deviceId" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "deviceId",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.DeviceId))
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	{
-		// Encode "dockerImage" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "dockerImage",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.StringToString(params.DockerImage))
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	{
-		// Encode "durationHours" parameter.
-		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "durationHours",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			return e.EncodeValue(conv.Float64ToString(params.DurationHours))
-		}); err != nil {
-			return res, errors.Wrap(err, "encode query")
-		}
-	}
-	u.RawQuery = q.Values().Encode()
-
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "POST", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeOrderDeviceRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
 	}
 
 	{
