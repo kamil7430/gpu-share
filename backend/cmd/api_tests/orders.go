@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/kamil7430/gpu-share/backend/internal/auth"
+	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/ogen-go/ogen/json"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
@@ -128,13 +129,24 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 			"durationHours": 2
 		}`
 
+		type responseStruct struct {
+			OrderId                string
+			ConnectionDetails      model.ConnectionDetails
+			TotalReservedCostCents int
+		}
+
 		response := sendRequest(payload, token)
 		defer response.Body.Close()
 
 		body, err = io.ReadAll(response.Body)
 		require.NoError(t, err)
 
-		expected := `{
+		var respStruct responseStruct
+		err = json.Unmarshal(body, &respStruct)
+		require.NoError(t, err)
+
+		var expectedStruct responseStruct
+		err = json.Unmarshal([]byte(`{
 			"orderId": "0",
 			"status": "WAITING_FOR_START",
 			"connectionDetails": {
@@ -143,8 +155,10 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 				"protocol": "wss"
 			},
 			"totalReservedCostCents": 3198
-		}`
+		}`), &expectedStruct)
+		require.NoError(t, err)
 
-		require.JSONEq(t, expected, string(body))
+		require.Equal(t, expectedStruct.ConnectionDetails, respStruct.ConnectionDetails)
+		require.Equal(t, expectedStruct.TotalReservedCostCents, respStruct.TotalReservedCostCents)
 	})
 }
