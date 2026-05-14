@@ -1,0 +1,82 @@
+.device-container {
+    margin: 40px 40px;
+    padding: 0 20px;
+}
+
+.device-card {
+    background: white;
+    border: 1px solid #d1e3f8;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Edit Mode Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group input, .form-group select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.full-width { grid-column: span 2; }
+
+/* View Mode Layout */
+.status-banner {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.online { background: #e6ffed; color: #22863a; }
+.offline { background: #ffeef0; color: #cf222e; }
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.spec-box {
+    background: #f8fbff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.spec-box .label {
+    display: block;
+    font-size: 0.8rem;
+    color: #5c7ebf;
+    margin-bottom: 5px;
+}
+
+.spec-box .value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0a1a33;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}

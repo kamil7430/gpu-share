@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
+	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/service"
 )
 
@@ -16,15 +17,13 @@ type sauron struct {
 	service.HealthService
 	service.DeviceService
 	service.UserService
-	service.OrderService
 }
 
-func NewServer(repos *Repos) *http.Server {
+func NewServer(store repository.Store) *http.Server {
 	sauron := sauron{
 		service.NewHealthService(),
-		service.NewDeviceService(repos.DeviceRepo, repos.GpuRepo, repos.UserRepo),
-		service.NewUserService(repos.UserRepo),
-		service.NewOrderService(),
+		service.NewDeviceService(store.Devices(), store.Gpus(), store.Users()),
+		service.NewUserService(store.Users()),
 	}
 
 	srv, err := api.NewServer(&sauron, &sauron.UserService)

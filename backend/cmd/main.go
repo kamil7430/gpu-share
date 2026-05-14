@@ -21,13 +21,9 @@ func main() {
 	db, err := utils.InitializeDatabaseConnection(true)
 	fatalIfError(err)
 
-	repos := server.Repos{
-		DeviceRepo: repository.NewDeviceRepository(db),
-		GpuRepo:    repository.NewMockGpuRepository(),
-		UserRepo:   repository.NewUserRepository(db),
-	}
+	store := repository.NewStore(db)
 
-	srv := server.NewServer(&repos)
+	srv := server.NewServer(store)
 	defer func() {
 		err := srv.Close()
 		if err != nil {

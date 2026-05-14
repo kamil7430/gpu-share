@@ -1,0 +1,52 @@
+<div class="table-card">
+    @if (Orders.Count == 0)
+    {
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No orders yet.</p>
+    }
+    else
+    {
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Device</th>
+                    <th>Owner</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Orders)
+                {
+                    <tr>
+                        <td>@order.Device</td>
+                        <td><a class="profile-link" href="/profile/@order.Owner">@order.Owner</a></td>
+                        <td>@(order.StartDate == null || order.StartDate == DateTime.MinValue ? "-" : order.StartDate.ToString())</td>
+                        <td>@(order.EndDate == null || order.EndDate == DateTime.MinValue ? "-" : order.EndDate.ToString())</td>
+                        <td>@(order.Cost == 0 ? "-" : $"{order.Cost}$")</td>
+                        <td>@order.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<div class="load-more-container">
+    <a href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
+</div>
+
+@code {
+    // Replace this with your actual data model/service call
+    private List<Order> Orders = new()
+    {
+        new ("GPU#69", "User1", DateTime.Parse("21-12-2025 21:37"), DateTime.Parse("24-12-2025 13:13"), 200, "Ended"),
+        new ("GPU#67", "User2", DateTime.Parse("15-04-2026 21:37"), null, 0, "Ongoing"),
+        new ("GPU#2137", "User2137", DateTime.Parse("21-04-2026 21:37"), null, 0, "Scheduled")
+    };
+
+    private void LoadMore() { /* Logic to fetch more rows */ }
+
+    
+}
