@@ -21,9 +21,9 @@ func performMigration(db *gorm.DB) error {
 	//     C <- B1 <- A -> B2,
 	// we should migrate C before B1, and B1 together with B2 before A.
 	return db.AutoMigrate(
-		&model.Order{},
 		&model.User{},
 		&model.Device{},
+		&model.Order{},
 	)
 }
 
