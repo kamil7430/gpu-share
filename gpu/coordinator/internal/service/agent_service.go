@@ -28,7 +28,9 @@ func (as *AgentService) verifyID(agentID string, token string) error {
 		return err
 	}
 	found := false
+	log.Printf("devices: %v", len(devices))
 	for _, d := range devices {
+		log.Printf("device id: %v", d.DeviceID)
 		if d.DeviceID == agentID {
 			found = true
 			break

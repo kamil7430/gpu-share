@@ -65,6 +65,9 @@ func (dr *DeviceRepository) GetDevices(token string) ([]Device, error) {
 	case http.StatusUnauthorized:
 		log.Fatal("invalid or expired token")
 
+	case http.StatusNotFound:
+		log.Println("not found")
+
 	default:
 		body, _ := io.ReadAll(resp.Body)
 		log.Fatalf("backend returned %s: %s", resp.Status, string(body))

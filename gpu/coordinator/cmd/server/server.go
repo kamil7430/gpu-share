@@ -53,8 +53,11 @@ func StartGrpcServer(ctx context.Context, addr string, as *service.AgentService)
 	grpcServer := grpc.NewServer()
 	proto.RegisterAgentServiceServer(grpcServer, as)
 
-	log.Printf("Coordinator listening on %v\n", addr)
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatal(err)
-	}
+	go func() {
+		log.Printf("Coordinator listening on %v\n", addr)
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatal(err)
+		}
+	}()
+	log.Println("Coordinator finished")
 }

@@ -89,7 +89,7 @@ func ConnectCmd(args []string) {
 
 	fmt.Printf("connected as device with id %v\n", *deviceID)
 
-	go agent.SendHeartbeats(context.Background(), stream, *deviceID)
+	go agent.SendHeartbeats(context.Background(), stream, *deviceID, token)
 
 	if err = agent.ReceiveLoop(context.Background(), stream, *deviceID); err != nil {
 		log.Fatal(err)

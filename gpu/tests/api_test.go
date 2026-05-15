@@ -1,6 +1,8 @@
 package tests
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +13,7 @@ import (
 	"time"
 
 	"github.com/kamil7430/gpu-share/gpu/agent/agent"
+	"github.com/kamil7430/gpu-share/gpu/agent/cli"
 	"github.com/kamil7430/gpu-share/gpu/coordinator/cmd/server"
 	"github.com/stretchr/testify/require"
 )
@@ -23,26 +26,96 @@ var ip = func() string {
 	return ip
 }()
 
-const restPort = "22138"
-const grpcPort = "22139"
+const backPort = "2137"
+const restPort = "2138"
+const grpcPort = "2139"
 
 var restUrl string = fmt.Sprintf("http://%v:%v", ip, restPort)
 var grpcUrl string = fmt.Sprintf("%v:%v", ip, grpcPort)
 
-func startAgent(t *testing.T, agentId string) {
-	stream, err := agent.StartGrpcClient(t.Context(), grpcUrl)
-	if err != nil {
-		log.Fatal(err)
+func registerUser(t *testing.T) {
+	body, _ := json.Marshal(map[string]string{
+		"username": "test",
+		"password": "maklowicz",
+	})
+
+	req, err := http.NewRequestWithContext(
+		t.Context(),
+		"POST",
+		"http://"+ip+":"+backPort+"/api/users/register",
+		bytes.NewBuffer(body),
+	)
+	require.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusCreated, resp.StatusCode)
+}
+
+func registerDevice(t *testing.T, token string) string {
+	body, _ := json.Marshal(map[string]any{
+		"name":                 "GPU_Maklowicza1",
+		"gpuModel":             "RTX 5090",
+		"vramMb":               32000,
+		"cudaCores":            21760,
+		"pricePerHourUsdCents": 2000,
+		"driverVersion":        "596.36",
+	})
+
+	req, err := http.NewRequestWithContext(
+		t.Context(),
+		"POST",
+		"http://"+ip+":"+backPort+"/api/devices",
+		bytes.NewBuffer(body),
+	)
+	require.NoError(t, err)
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	require.Equal(t, http.StatusCreated, resp.StatusCode)
+
+	var result struct {
+		DeviceID       string `json:"deviceId"`
+		OwnerUsername  string `json:"ownerUsername"`
+		State          string `json:"state"`
+		CreatedAt      string `json:"createdAt"`
 	}
 
-	token := ""
-	agent.SendHelloMessage(stream, agentId, token)
-	go agent.SendHeartbeats(t.Context(), stream, agentId)
-	agent.ReceiveLoop(t.Context(), stream, agentId)
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	require.NoError(t, err)
+
+	require.NotEmpty(t, result.DeviceID)
+
+	return result.DeviceID
+}
+
+func login(t *testing.T) string {
+	cli.LoginCmd([]string{"-u", "test", "-p", "maklowicz"})
+	token, err := cli.LoadToken()
+	require.NoError(t, err)
+	return token
+}
+
+func startAgent(t *testing.T, agentId string, token string) {
+	stream, err := agent.StartGrpcClient(t.Context(), grpcUrl)
+	require.NoError(t, err)
+
+	err = agent.SendHelloMessage(stream, agentId, token)
+	require.NoError(t, err)
+
+	go agent.SendHeartbeats(t.Context(), stream, agentId, token)
+
+	err = agent.ReceiveLoop(t.Context(), stream, agentId)
+	require.NoError(t, err)
 }
 
 func TestApi(t *testing.T) {
-	go server.InitializeSystem(t.Context(), restUrl, grpcUrl)
+	server.InitializeSystem(t.Context(), restUrl, grpcUrl)
 
 	log.Println("Checking whether server is up...")
 	retries := 10
@@ -58,8 +131,11 @@ func TestApi(t *testing.T) {
 	require.Less(t, i, retries, "Could not connect to server!")
 	log.Println("Server is up!")
 
-	agentId := "123"
-	go startAgent(t, agentId)
+	registerUser(t)
+	token := login(t)
+
+	agentId := registerDevice(t, token)
+	go startAgent(t, agentId, token)
 
 	log.Println("Checking whether agent is connected...")
 	i = 0
@@ -75,12 +151,12 @@ func TestApi(t *testing.T) {
 	log.Println("Agent connected! Running the tests...")
 
 	t.Run("Agent job", func(t *testing.T) {
-		payload := `{
-			"deviceId": "123",
+		payload := fmt.Sprintf(`{
+			"deviceId": "%v",
 			"resources": {
 				"vRamMb": 200
 			}
-		}`
+		}`, agentId)
 		reader := strings.NewReader(payload)
 
 		resp, err := http.Post(restUrl+"/api/jobs", "application/json", reader)
