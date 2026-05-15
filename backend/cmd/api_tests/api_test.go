@@ -39,13 +39,9 @@ func TestApi(t *testing.T) {
 	tx := db.Begin()
 	defer tx.Rollback()
 
-	repos := server.Repos{
-		DeviceRepo: repository.NewDeviceRepository(tx),
-		GpuRepo:    repository.NewMockGpuRepository(),
-		UserRepo:   repository.NewUserRepository(tx),
-	}
+	store := repository.NewStore(tx)
 
-	srv := server.NewServer(&repos)
+	srv := server.NewServer(store)
 	defer func() {
 		err := srv.Shutdown(t.Context())
 		if err != nil {

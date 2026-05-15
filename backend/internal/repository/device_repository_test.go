@@ -16,7 +16,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	tx := db.Begin()
 	defer tx.Rollback()
 
-	r := NewDeviceRepository(tx)
+	r := NewStore(tx).Devices()
 
 	deviceId := "2137"
 

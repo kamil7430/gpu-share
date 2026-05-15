@@ -1,12 +1,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
-WORKDIR /app
+WORKDIR /src
 
-COPY frontend/GpuShare.Frontend ./
+COPY frontend/GpuShare.Frontend.csproj ./
+RUN dotnet restore GpuShare.Frontend.csproj
 
-RUN dotnet restore
-RUN dotnet build -c Release --no-restore
-RUN dotnet publish -c Release --no-restore -o /app/out
+COPY frontend/. ./
+
+RUN dotnet publish GpuShare.Frontend.csproj -c Release --no-restore -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 
