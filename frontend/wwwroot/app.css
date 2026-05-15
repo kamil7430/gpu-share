@@ -8,12 +8,17 @@ html, body {
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: #4C6EB2;
+    text-decoration: none;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+a:hover {
+    color: #3b5a8a;
 }
+
+/* .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+} */
 
 .content {
     padding: 1.1rem;
@@ -88,6 +93,7 @@ input, select {
 .flex-row {
     display: flex;
     flex-direction: row;
+    align-items: center;
     width: 100%;
     gap: 24px;
 }

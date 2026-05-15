@@ -3,16 +3,71 @@
 @using MudBlazor
 @using MudBlazor.Charts;
 
-@* what happens when the reserved time run out but the job is not finished *@
+@* what happens when the reserved time run out but the job is not finished 
+TO-DO:
+-availability switch
+-click on gpu name to go to device page
+*@
 
 <div class="cards-container">
     <div class="page-header" style="margin-bottom: 8px;">
         <NavLink href="/profile" class="back-link">&lt;- Back to Profile</NavLink>
     </div>
 
-    <div class="device-card">
-        @if (Mode == "edit" || Mode == "add")
-        {
+    @if (Mode != "add") {
+        <div class="device-card">
+            <div class="view-layout">
+                <div class="wrapper"> 
+                    <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
+                        @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
+                    </div>
+                    @if (isAuthorized) {
+                        <button class="btn-primary btn-edit" @onclick='() => Mode = "edit"'>
+                            Edit Device
+                        </button>
+                    }
+                </div>
+                
+                <div class="gpu-header">
+                    <h1 style="margin-bottom: 0px;">@gpu.Name</h1>
+                    @if (!isAuthorized) {
+                        <h2 style="margin: 0 20px;">|</h2>
+                        <NavLink href="@($"/profile/{Username}")" class="profile-link">
+                            @Username
+                        </NavLink>
+                    }
+                </div>
+                <p class="model-sub">@gpu.Model</p>
+
+                <div class="spec-grid">
+                    <div class="spec-box">
+                        <span class="label">VRAM</span>
+                        <span class="value">@gpu.VramMb MB</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Cores</span>
+                        <span class="value">@gpu.CudaCores</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Driver</span>
+                        <span class="value">@gpu.DriverVersion</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Price per hour</span>
+                        <span class="value">@gpu.PricePerHour $</span>
+                    </div>
+                    <div class="spec-box spec-box-long">
+                        <span class="label">Supported Frameworks</span>
+                        <span class="value">@(string.Join(", ", @gpu.Frameworks))</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if ((Mode == "edit" || Mode == "add") && isAuthorized)
+    {
+        <div class="card">
             <h3>@(Mode == "add" ? "Register New Device" : "Edit Device Specs")</h3>
             <EditForm FormName="SaveSpec" Model="gpu" OnValidSubmit="HandleSave">
                 <div class="form-grid">
@@ -62,61 +117,32 @@
                     </div>
                 </div>
 
+                <div class="availability-section">
+
+                    <div class="flex-row">
+                    <MudSwitch Style="font-size: 0.875rem" T="bool"
+                            @bind-Value="gpu.IsAvailable"
+                            Color="Color.Primary"
+                            Label="" />
+                    <label>Device available for orders</label>
+                    </div>
+
+                    <div class="availability-hint">
+                        @(gpu.IsAvailable
+                            ? "Users can reserve and run workloads on this GPU."
+                            : "Device is hidden from scheduling and reservations.")
+                    </div>
+
+                </div>
+
                 <div class="form-footer" style="margin-top:8px">
                     <button type="submit" class="btn-primary btn-save">Save Configuration</button>
                 </div>
             </EditForm>
-        }
-        else
-        {
-            <div class="view-layout">
-                <div class="wrapper"> 
-                    <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
-                        @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
-                    </div>
-                    <button class="btn-primary btn-edit" @onclick='() => Navigation.NavigateTo($"/device/edit/{Id}")'>
-                        Edit Device
-                    </button>
-                </div>
-                
-                <div class="gpu-header">
-                    <h1 style="margin-bottom: 0px;">@gpu.Name</h1>
-                    @if (!isAuthorized) {
-                        <h2 style="margin: 0 20px;">|</h2>
-                        <NavLink href="@($"/profile/{Username}")" class="profile-link">
-                            @Username
-                        </NavLink>
-                    }
-                </div>
-                <p class="model-sub">@gpu.Model</p>
+        </div>
+    }
 
-                <div class="spec-grid">
-                    <div class="spec-box">
-                        <span class="label">VRAM</span>
-                        <span class="value">@gpu.VramMb MB</span>
-                    </div>
-                    <div class="spec-box">
-                        <span class="label">Cores</span>
-                        <span class="value">@gpu.CudaCores</span>
-                    </div>
-                    <div class="spec-box">
-                        <span class="label">Driver</span>
-                        <span class="value">@gpu.DriverVersion</span>
-                    </div>
-                    <div class="spec-box">
-                        <span class="label">Price per hour</span>
-                        <span class="value">@gpu.PricePerHour $</span>
-                    </div>
-                    <div class="spec-box spec-box-long">
-                        <span class="label">Supported Frameworks</span>
-                        <span class="value">@(string.Join(", ", @gpu.Frameworks))</span>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    @if (Mode == "view" && isAuthorized) {  
+    @if (Mode != "add" && isAuthorized) {  
     //<!-- GPU USAGE CHART -->
     <MudPaper Class="card mt-6">
         <MudText Typo="Typo.h6">GPU Usage</MudText>
@@ -210,7 +236,7 @@
     </MudPaper>
     }
 
-    @if (Mode == "view" && !isAuthorized) {
+    @if (Mode != "add" && !isAuthorized) {
         <div class="card">
             <h3 style="margin-bottom: 16px;">Owner rating: 4.5 </h3>
             <h3 style="margin-bottom: 24px;">Opinions about this gpu:</h3>
@@ -223,14 +249,14 @@
 </div>
 
 @code {
-    [Parameter] public string Mode { get; set; } = "view"; // "view", "edit", or "add"
+    [Parameter] public string Mode { get; set; } = "view"; // "view", "edit"
     [Parameter] public int? Id { get; set; }
 
     [Inject] public NavigationManager Navigation { get; set; } = default!;
 
     private Gpu gpu = new();
     private LineChartOptions options = new(){};
-    private bool isAuthorized = false;
+    private bool isAuthorized = true;
     private string Username = "user1";
     
     protected override void OnInitialized()
@@ -265,7 +291,8 @@
     private void HandleSave()
     {
         // Save to DB logic...
-        Navigation.NavigateTo($"/device/view/{Id ?? 1}");
+        //Navigation.NavigateTo($"/device/view/{Id ?? 1}");
+        Mode = "view";
     }
 
     // ===== GPU CHART =====

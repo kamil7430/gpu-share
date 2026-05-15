@@ -44,6 +44,17 @@
 
 .full-width { grid-column: span 2; }
 
+.availability-section {
+    margin-bottom: 20px;
+}
+
+.availability-hint {
+    margin-top: 8px;
+
+    font-size: 0.85rem;
+    color: #666;
+}
+
 /* View Mode Layout */
 .status-banner {
     display: inline-block;

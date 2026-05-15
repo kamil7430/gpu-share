@@ -15,7 +15,7 @@ else
                 <div class="gpu-body">
                     <div class="left">
                         <div class="gpu-header">
-                            <h4>@gpu.Name</h4>
+                            <h4><NavLink href="@($"/device/view/{gpu.Id}")">@gpu.Name</NavLink></h4>
                         </div>
 
                         <div>Model: @gpu.Model</div>
