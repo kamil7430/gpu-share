@@ -1,0 +1,98 @@
+.gpu-card {
+    background: #f7f9fc;
+    border: 2px solid #c5d8e8;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.gpu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.gpu-body {
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr;
+    gap: 16px;
+    align-items: center;
+}
+
+.gpu-body .left {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    height: 100%;           /* Ensure it stays stretched */
+}
+
+.price {
+    margin-top: auto;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.gpu-body .right {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    height: 100%;           /* Ensure it stays stretched */
+}
+
+.badge {
+    align-self: flex-end;
+}
+
+.available {
+    background: #dff6e5;
+    color: #2e7d32;
+}
+
+.unavailable {
+    background: #f5d7d7;
+    color: #c62828;
+}
+
+.buttons-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-top: auto; /* Pushes buttons to the bottom */
+    align-self: flex-end;
+}
+
+.btn-primary {
+    margin-top: auto;
+    align-self: flex-end;
+}
+
+.btn-danger {
+    margin-top: auto;
+    align-self: flex-end;
+}
+
+.results-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #4c6eb2;
+    background: white;
+    cursor: pointer;
+    color: #4C6EB2;
+}
+
+.pagination button:hover {
+    background-color: #C5D8E8;
+}

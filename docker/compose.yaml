@@ -39,6 +39,18 @@ services:
     networks:
       network:
         ipv4_address: ${DB_IP}
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    env_file: ../.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    networks:
+      network:
+        ipv4_address: ${FRONTEND_IP}
 
 volumes:
   db-data:

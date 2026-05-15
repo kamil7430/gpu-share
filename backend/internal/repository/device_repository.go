@@ -14,15 +14,10 @@ type DeviceRepository interface {
 	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
 	GetDevicesForUser(ctx context.Context, userId uint, params api.GetDevicesParams) ([]model.Device, error)
 	AddDevice(ctx context.Context, device *model.Device) error
-	Transaction(fn func(repository DeviceRepository) error) error
 }
 
 type deviceRepository struct {
 	db *gorm.DB
-}
-
-func NewDeviceRepository(db *gorm.DB) DeviceRepository {
-	return &deviceRepository{db}
 }
 
 func (r *deviceRepository) queryFromParams(params api.GetDevicesParams) (gorm.ChainInterface[model.Device], error) {
@@ -108,10 +103,4 @@ func (r *deviceRepository) GetDevicesForUser(ctx context.Context, userId uint, p
 
 func (r *deviceRepository) AddDevice(ctx context.Context, device *model.Device) error {
 	return gorm.G[model.Device](r.db).Create(ctx, device)
-}
-
-func (r *deviceRepository) Transaction(fn func(repository DeviceRepository) error) error {
-	return r.db.Transaction(func(tx *gorm.DB) error {
-		return fn(&deviceRepository{tx})
-	})
 }

@@ -67,7 +67,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 		return &api.GetDevicesBadRequest{ErrorMessage: fmt.Sprint(err)}, nil
 	}
 
-	username, containsUsername := ctx.Value(utils.ContextUsernameKey).(string)
+	username, containsUsername := ctx.Value(utils.ContextUsernameKey{}).(string)
 	var devices []model.Device
 	var err error
 	if containsUsername {
@@ -139,7 +139,7 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 }
 
 func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (api.AddDeviceRes, error) {
-	username, ok := ctx.Value(utils.ContextUsernameKey).(string)
+	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
 	if !ok {
 		return nil, errors.New("username not found in context")
 	}

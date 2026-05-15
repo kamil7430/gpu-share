@@ -18,10 +18,6 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{db}
-}
-
 func (r *userRepository) AddUser(ctx context.Context, user *model.User) error {
 	return gorm.G[model.User](r.db).Create(ctx, user)
 }
