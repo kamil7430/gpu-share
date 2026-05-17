@@ -50,9 +50,9 @@
 ### /rentals (/orders)
 
 - [x] RentalTable - Lista wypożyczeń: GPU, data, czas trwania, koszt, status (badge)
-- [ ] StatusFilter - Filtr statusu: aktywne / zakończone / anulowane / spór
+- [x] StatusFilter - Filtr statusu: aktywne / zakończone / anulowane / spór
 - [ ] ~~ReceiptModal - Podgląd paragonu z podsumowaniem kosztów~~ (optional)
-- [ ] LeaveReviewButton - Przycisk „Wystaw opinię" dla zakończonych bez oceny
+- [x] LeaveReviewButton - Przycisk „Wystaw opinię" dla zakończonych bez oceny
 
 
 ### /wallet (modal?)
@@ -136,3 +136,4 @@
 ### Do ogarnięcia wizualnie:
 - wallet
 - telemetry
+- orders table
