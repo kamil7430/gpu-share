@@ -90,8 +90,11 @@ func (r *deviceRepository) AddDevice(ctx context.Context, device *model.Device) 
 
 func (r *deviceRepository) UpdateDevice(ctx context.Context, device *model.Device) error {
 	rowsAffected, err := gorm.G[model.Device](r.db).Where("id = ?", device.ID).Updates(ctx, *device)
+	if err != nil {
+		return err
+	}
 	if rowsAffected != 1 {
 		return errors.New("affected rows is not equal to 1")
 	}
-	return err
+	return nil
 }
