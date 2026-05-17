@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations;
 
-@if (IsVisible)
+@* @if (IsVisible)
 {
     <div class="modal-backdrop" @onclick="CloseModal">
         <div class="modal-dialog">
@@ -35,7 +35,7 @@
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
-                        @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> *@
+                        @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> 
                         <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="registerModel.Username" />
                         <input name="password" autocomplete="new-password" type="password" placeholder="Password" @bind-value="registerModel.Password" />
                         <input name="confirmPassword" type="password" placeholder="Confirm Password" @bind-value="registerModel.ConfirmPassword" />
@@ -57,7 +57,54 @@
         </div>
         </div>
     </div>
-}
+} *@
+
+<BaseModal IsVisible="IsVisible" Title="@(CurrentMode == AuthMode.Login ? "Login" : "Register")" OnClose="CloseModal" SizeClass="small">
+
+    @if (CurrentMode == AuthMode.Login)
+    {
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="loginModel.Username" />
+            <input name="password" autocomplete="current-password" type="password" placeholder="Password" @bind-value="loginModel.Password" />
+            <button class="action-btn btn-primary" type="submit">Sign In</button>            
+
+        </EditForm>
+
+        <p class="error-banner">
+            @ErrorMessage
+        </p>
+        <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
+            New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a>
+        </p>
+    } else
+    {
+        <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> *@
+            <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="registerModel.Username" />
+            <input name="password" autocomplete="new-password" type="password" placeholder="Password" @bind-value="registerModel.Password" />
+            <input name="confirmPassword" type="password" placeholder="Confirm Password" @bind-value="registerModel.ConfirmPassword" />
+            <label class="custom-checkbox" style="margin-top: 8px;margin-bottom: 8px;">
+            <input type="checkbox" style="width: auto;" @bind-value="registerModel.AcceptTerms" />
+            <span class="checkmark"></span>
+                I accept<a href="/terms" target="_blank">Terms and Conditions</a>
+            </label>
+            <button class="action-btn btn-primary" type="submit">Create Account</button>
+        </EditForm>
+        <p class="error-banner">
+            @ErrorMessage
+        </p>
+        <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
+            Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a>
+        </p>
+    }
+</BaseModal>
 
 @code {
     private LoginModel loginModel = new LoginModel();
@@ -68,9 +115,21 @@
     [Parameter] public EventCallback OnClose { get; set; }
 
     private bool ShowModal = false;
-    private bool IsLoginMode = true;
+    private AuthMode CurrentMode = AuthMode.Login;
 
-    private void ToggleMode() => IsLoginMode = !IsLoginMode;
+    public enum AuthMode
+    {
+        Login,
+        Register
+    }
+
+    private void ToggleMode() 
+    {
+        if (CurrentMode == AuthMode.Login) CurrentMode = AuthMode.Register;
+        else CurrentMode = AuthMode.Login;
+
+        ErrorMessage = null;
+    }
 
     private async Task CloseModal()
     {

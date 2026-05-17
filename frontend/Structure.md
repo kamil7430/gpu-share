@@ -72,18 +72,18 @@
 
 ### /profile (own)
 
-- [ ] EarningsSummary - Zarobki: dzisiaj / ten miesiąc / łącznie (metric cards)
-- [ ] DeviceStatusList - Karty GPU: nazwa, status, aktualny najemca, uptime
+- [ ] ~~EarningsSummary - Zarobki: dzisiaj / ten miesiąc / łącznie (metric cards)~~ (optional)
+- [x] DeviceStatusList - Karty GPU: nazwa, status, aktualny najemca, uptime
 - [x] ActiveRentalFeed - Lista trwających wypożyczeń z licznikiem czasu
-- [ ] NotificationFeed - Powiadomienia: nowe rezerwacje, zakończenia, zgłoszone spory (optional)
+- [ ] ~~NotificationFeed - Powiadomienia: nowe rezerwacje, zakończenia, zgłoszone spory~~ (optional)
 
 ### devices modal
 
-- [ ] AddDeviceButton - Przycisk otwierający formularz rejestracji nowej karty
-- [ ] DeviceTable - Tabela: model, VRAM, cena/h, status, toggle dostępności
-- [ ] AvailabilityToggle - Switch włącz/wyłącz udostępnianie — natychmiastowy PATCH
-- [ ] EditDeviceDrawer - ~~Panel boczny~~ edycji parametrów i ceny bez przeładowania strony
-- [ ] RemoveDeviceModal - Potwierdzenie usunięcia karty z systemu
+- [x] AddDeviceButton - Przycisk otwierający formularz rejestracji nowej karty
+- [x] DeviceTable - Tabela: model, VRAM, cena/h, status, toggle dostępności
+- [x] AvailabilityToggle - Switch włącz/wyłącz udostępnianie — natychmiastowy PATCH
+- [x] EditDeviceDrawer - ~~Panel boczny~~ edycji parametrów i ceny bez przeładowania strony
+- [ ] RemoveDeviceModal - Potwierdzenie usunięcia karty z systemu **(modal potwierdzenia)**
 
 ### /owner/devices/new
 
@@ -102,10 +102,10 @@
 
 ### /owner/earnings
 
-- [ ] RevenueChart - Wykres słupkowy zarobków miesięcznie (ostatnie 12 mies.) (optional)
+- [ ] ~~RevenueChart - Wykres słupkowy zarobków miesięcznie (ostatnie 12 mies.)~~ (optional)
 - [x] PayoutHistory - Historia wypłat: data, kwota, status (zrealizowana/oczekuje)
 - [x] PayoutAccountForm - Formularz konta bankowego / PayPal do wypłat
-- [ ] InvoiceExport - Eksport faktur / zestawień w PDF lub CSV (optional)
+- [ ] ~~InvoiceExport - Eksport faktur / zestawień w PDF lub CSV (optional)~~
 
 ## Admin
 

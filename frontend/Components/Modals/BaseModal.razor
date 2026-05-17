@@ -1,0 +1,66 @@
+@if (IsVisible)
+{
+    <div class="modal-backdrop" @onclick="HandleBackdropClick">
+        <div class="modal-dialog @SizeClass">
+            <div class="modal-content"
+                 @onclick:stopPropagation="true">
+                <div class="modal-header">
+                    <h3>@Title</h3>
+                    @if (ShowCloseButton)
+                    {
+                        <button class="btn-close" @onclick="Close">&times;</button>
+                    }
+                </div>
+                <div class="modal-body">
+                    @ChildContent
+                </div>
+                @if (FooterContent is not null)
+                {
+                    <div class="modal-footer">
+                        @FooterContent
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public bool CloseOnBackdrop { get; set; } = true;
+
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = true;
+
+    [Parameter]
+    public string SizeClass { get; set; } = "";
+
+    private async Task HandleBackdropClick()
+    {
+        if (CloseOnBackdrop)
+        {
+            await Close();
+        }
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

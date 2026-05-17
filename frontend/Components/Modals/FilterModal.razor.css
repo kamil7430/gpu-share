@@ -27,17 +27,6 @@
     transform: translate(-50%, calc(-100% + 0.3rem)) !important;
 }
 
-/* Footer */
-.modal-footer {
-    padding: 1rem 1.25rem;
-    border-top: 1px solid #eee;
-
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-}
-
-
 
 /* Mobile optimization */
 @media (max-width: 576px) {
