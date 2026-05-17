@@ -86,3 +86,98 @@
 .pagination button:hover {
     background-color: #C5D8E8;
 }
+
+.devices-card {
+    grid-column: span 2;
+}
+
+.device-status-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+
+    margin-top: 20px;
+}
+
+.device-status-item {
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1fr
+        120px;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 18px;
+
+    border-radius: 14px;
+
+    background: #f8fbff;
+
+    border: 1px solid #dce7ff;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+}
+
+.device-status-item:hover {
+    background: #eef4ff;
+
+    transform: translateY(-1px);
+}
+
+.device-title-row {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.device-name {
+    font-weight: 700;
+
+    color: #222;
+}
+
+.device-model {
+    margin-top: 6px;
+
+    color: #666;
+
+    font-size: 0.9rem;
+}
+
+.device-label {
+    font-size: 0.8rem;
+
+    color: #777;
+
+    margin-bottom: 4px;
+}
+
+.device-value {
+    font-weight: 600;
+
+    color: #222;
+}
+
+@media (max-width: 900px) {
+
+    .devices-card {
+        grid-column: span 1;
+    }
+
+    .device-status-item {
+        grid-template-columns: 1fr;
+
+        gap: 16px;
+    }
+
+}

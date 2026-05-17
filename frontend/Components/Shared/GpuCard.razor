@@ -18,8 +18,10 @@ else
                             <h4><NavLink href="@($"/device/view/{gpu.Id}")">@gpu.Name</NavLink></h4>
                         </div>
 
-                        <div>Model: @gpu.Model</div>
-                        <div>Owner name</div>
+                        <div>Model: <span style="color: #0A1128;">@gpu.Model</span></div>
+                        @if (!authorized){
+                            <div>Owner name: User1</div>
+                        }
 
                         <div class="price">
                             Price per hour: @gpu.PricePerHour$
@@ -27,12 +29,12 @@ else
                     </div>
 
                     <div class="middle">
-                        <div>VRAM MB: @gpu.VramMb</div>
-                        <div>CUDA cores: @gpu.CudaCores</div>
-                        <div>Driver version: @gpu.DriverVersion</div>
+                        <div>VRAM MB: <span style="color: #0A1128;">@gpu.VramMb</span></div>
+                        <div>CUDA cores: <span style="color: #0A1128;">@gpu.CudaCores</span></div>
+                        <div>Driver version: <span style="color: #0A1128;">@gpu.DriverVersion</span></div>
                         <div>
                             Supported frameworks:
-                            @string.Join(", ", gpu.Frameworks)
+                            <span style="color: #0A1128;">@string.Join(", ", gpu.Frameworks)</span>
                         </div>
                     </div>
 
@@ -54,7 +56,17 @@ else
                     </div>
                 </div>
 
-            </div>
+                @if(authorized)
+                {
+                    <hr class="section-divider" />
+
+                    <div class="flex-row" style="justify-content: space-between; color: #0A1128;">
+                        <span style="font-weight: bold;">Current tenant: -</span>
+                        <span style="font-weight: bold;">Uptime: 1h 45min</span>
+                    </div>
+                }
+
+            </div>            
         }
 
         <div class="pagination">

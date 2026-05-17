@@ -85,7 +85,24 @@ Project decisions:
     [Parameter] public string? Username { get; set; }
     private bool authorized = false;
     private bool showChangePasswordModal = false;
+    private List<Gpu> devices = [];
 
+    protected override void OnInitialized()
+    {
+        // mock data
+        devices = Enumerable.Range(1, 10).Select(i => new Gpu
+        {
+            Id = i,
+            Name = $"GPU {i}",
+            IsAvailable = i % 2 == 0,
+            VramMb = 24567,
+            CudaCores = 16384,
+            DriverVersion = "535.104",
+            Frameworks = ["PyTorch", "Tensorflow"],
+            PricePerHour = 5
+        }).ToList();
+    }
+    
     protected override void OnParametersSet()
     {
         if (string.IsNullOrEmpty(Username))
@@ -110,5 +127,5 @@ Project decisions:
         
     }
 
-    
+          
 }

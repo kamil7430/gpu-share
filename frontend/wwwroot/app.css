@@ -12,6 +12,13 @@ a, .btn-link {
     text-decoration: none;
 }
 
+hr {
+    border: none;
+    height: 1px;
+    background: #4C6EB2;
+    margin: 24px 0;
+}
+
 a:hover {
     color: #3b5a8a;
 }
