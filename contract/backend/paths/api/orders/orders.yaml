@@ -26,7 +26,7 @@ post:
               type: number
               format: double
               minimum: 0.0002 # one second
-              example:
+              examples:
                 oneMinute:
                   summary: Example of a one minute of duration
                   value: 0.017
