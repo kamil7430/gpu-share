@@ -26,13 +26,19 @@ post:
               type: number
               format: double
               minimum: 0.0002 # one second
-              examples:
-                oneMinute:
-                  summary: Example of a one minute of duration
-                  value: 0.017
-                oneAndHalfHour:
-                  summary: Example of a one and a half an hour of duration
-                  value: 1.5
+        examples:
+          oneMinuteExample:
+            summary: Example with one minute of duration
+            value:
+              deviceId: "2137"
+              dockerImage: "ubuntu:latest"
+              durationHours: 0.017
+          oneAndHalfHourExample:
+            summary: Example with one and a half hours of duration
+            value:
+              deviceId: "6969"
+              dockerImage: "ubuntu:latest"
+              durationHours: 1.5
   responses:
     "201":
       description: Device rental created
