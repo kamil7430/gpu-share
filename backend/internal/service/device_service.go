@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -21,52 +22,77 @@ func NewDeviceService(store repository.Store) DeviceService {
 	return DeviceService{store}
 }
 
-func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
-	// See `/contract/openapi/paths/api/devices/devices.yaml` for more information.
-	// In particular regarding filters values constraints.
+func verifyParams(params api.GetDevicesParams) error {
 	if minVramMb, ok := params.MinVramMb.Get(); ok {
 		if maxVramMb, ok := params.MaxVramMb.Get(); ok && minVramMb > maxVramMb {
-			return &api.GetDevicesBadRequest{}, nil
+			return errors.New("minVramMb should be <= maxVramMb")
 		}
 	}
 
 	if minCudaCores, ok := params.MinCudaCores.Get(); ok {
 		if maxCudaCores, ok := params.MaxCudaCores.Get(); ok && minCudaCores > maxCudaCores {
-			return &api.GetDevicesBadRequest{}, nil
+			return errors.New("minCudaCores should be <= maxCudaCores")
 		}
 	}
 
 	if minPricePerHour, ok := params.MinPricePerHourUsdCents.Get(); ok {
 		if maxPricePerHour, ok := params.MaxPricePerHourUsdCents.Get(); ok && minPricePerHour > maxPricePerHour {
-			return &api.GetDevicesBadRequest{}, nil
+			return errors.New("minPricePerHourUsdCents should be <= maxPricePerHourUsdCents")
 		}
 	}
 
 	minDriverVersion, err := utils.DriverVersionFromString(params.MinDriverVersion.Or("0.0"))
 	if err != nil {
-		return &api.GetDevicesBadRequest{}, err
+		return err
 	}
 	if v, ok := params.MaxDriverVersion.Get(); ok {
 		maxDriverVersion, err := utils.DriverVersionFromString(v)
-		if err != nil || minDriverVersion.Compare(maxDriverVersion) > 0 {
-			return &api.GetDevicesBadRequest{}, err
+		if err != nil {
+			return err
+		}
+		if minDriverVersion.Compare(maxDriverVersion) > 0 {
+			return errors.New("minDriverVersion should be <= maxDriverVersion")
 		}
 	}
 
-	devices, err := s.store.Devices().GetDevices(ctx, params)
+	return nil
+}
+
+func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
+	// See `/contract/openapi/paths/api/devices/devices.yaml` for more information.
+	// In particular regarding filters values constraints.
+	if err := verifyParams(params); err != nil {
+		return &api.GetDevicesBadRequest{ErrorMessage: fmt.Sprint(err)}, nil
+	}
+
+	username, containsUsername := ctx.Value(utils.ContextUsernameKey{}).(string)
+	var devices []model.Device
+	var err error
+	if containsUsername {
+		user, err := s.store.Users().GetUserByName(ctx, username)
+		if err != nil {
+			return nil, err
+		}
+
+		devices, err = s.store.Devices().GetDevicesForUser(ctx, user.ID, params)
+	}
+
+	if !containsUsername {
+		devices, err = s.store.Devices().GetDevices(ctx, params)
+	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &api.GetDevicesNotFound{}, nil
 		}
 		return nil, err
 	}
-	if len(*devices) <= 0 {
+	if len(devices) <= 0 {
 		return &api.GetDevicesNotFound{}, nil
 	}
 
 	var result api.GetDevicesOKApplicationJSON
 
-	for _, dev := range *devices {
+	for _, dev := range devices {
 		dv, err := utils.NewDriverVersion(dev.DriverVersionMajor, dev.DriverVersionMinor)
 		if err != nil {
 			log.Fatal(err) // should be unreachable
@@ -123,7 +149,7 @@ func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (a
 
 	dv, err := utils.DriverVersionFromString(req.DriverVersion)
 	if err != nil {
-		return &api.AddDeviceBadRequest{}, nil
+		return &api.AddDeviceBadRequest{ErrorMessage: fmt.Sprint(err)}, nil
 	}
 
 	device := model.Device{

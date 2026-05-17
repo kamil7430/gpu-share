@@ -40,6 +40,9 @@ var operationRolesBearerAuth = map[string][]string{
 	ChangePasswordOperation: []string{
 		"user",
 	},
+	GetDevicesOperation: []string{
+		"user",
+	},
 	OrderDeviceOperation: []string{
 		"user",
 	},

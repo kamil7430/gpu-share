@@ -28,7 +28,8 @@ type Handler interface {
 	GetDeviceStatus(ctx context.Context, params GetDeviceStatusParams) (GetDeviceStatusRes, error)
 	// GetDevices implements getDevices operation.
 	//
-	// Get list of devices that match the provided filters.
+	// Get list of devices that match the provided filters. If an auth token is provided, it returns only
+	// the devices owned by the authenticated user.
 	//
 	// GET /api/devices
 	GetDevices(ctx context.Context, params GetDevicesParams) (GetDevicesRes, error)

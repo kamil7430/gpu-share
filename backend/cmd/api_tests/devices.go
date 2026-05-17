@@ -430,3 +430,113 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.InDelta(t, timestamp.UTC().Unix(), response.CreatedAt.Unix(), time.Minute.Seconds())
 	})
 }
+
+func testGetDevicesForUser(t *testing.T, db *gorm.DB, baseUrl string) {
+	testUserPassword, err := auth.HashPassword("TestPassword")
+	require.NoError(t, err)
+
+	resetDbContent := func() {
+		// user owns 2/3 devices
+		truncateTables(db)
+		db.Exec("INSERT INTO users(id, name, password) VALUES ('69', 'maklowicz', ?);", testUserPassword)
+		db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state, user_id) " +
+			"VALUES ('2137', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'UNAVAILABLE', '69'), " +
+			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '2599', '595', '97', 'AVAILABLE', NULL), " +
+			"('2139', 'TestCard3', 'NVIDIA GeForce GTX 1050 Ti', '4096', '768', '699', '582', '28', 'AVAILABLE', '69');")
+	}
+
+	login := func() string {
+		resp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+			"username": "maklowicz",
+			"password": "TestPassword"
+		}`))
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var tokenObj tokenResponse
+		err = json.Unmarshal(body, &tokenObj)
+		require.NoError(t, err)
+
+		return tokenObj.Token
+	}
+
+	testCardInfo := `{
+		"deviceId": "2137",
+		"name": "TestCard",
+		"gpuModel": "NVIDIA GeForce RTX 3050",
+		"vramMb": 8192,
+		"cudaCores": 2560,
+		"pricePerHourUsdCents": 1599,
+		"driverVersion": "595.97",
+		"state": "UNAVAILABLE"
+	}`
+
+	testCard3Info := `{
+		"deviceId": "2139",
+		"name": "TestCard3",
+		"gpuModel": "NVIDIA GeForce GTX 1050 Ti",
+		"vramMb": 4096,
+		"cudaCores": 768,
+		"pricePerHourUsdCents": 699,
+		"driverVersion": "582.28",
+		"state": "AVAILABLE"
+	}`
+
+	getDevicesTestCase := func(params string, expectedDevices ...string) {
+		resetDbContent()
+		token := login()
+
+		req, err := http.NewRequest("GET", baseUrl+"/api/devices?"+params, nil)
+		require.NoError(t, err)
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		defer resp.Body.Close()
+
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var expected strings.Builder
+		expected.WriteString("[")
+		expected.WriteString(strings.Join(expectedDevices, ","))
+		expected.WriteString("]")
+
+		require.JSONEq(t, expected.String(), string(body))
+	}
+
+	t.Run("get devices for user -- no filter", func(t *testing.T) {
+		getDevicesTestCase("",
+			testCardInfo,
+			testCard3Info,
+		)
+	})
+
+	t.Run("get devices for user -- filtered by model", func(t *testing.T) {
+		getDevicesTestCase("gpuModel=NVIDIA%20GeForce%20GTX%201050%20Ti",
+			testCard3Info,
+		)
+	})
+
+	t.Run("get devices for user -- not found", func(t *testing.T) {
+		resetDbContent()
+		token := login()
+
+		req, err := http.NewRequest("GET", baseUrl+"/api/devices?gpuModel=NONEXISTENT", nil)
+		require.NoError(t, err)
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
+		require.Equal(t, http.StatusNotFound, resp.StatusCode)
+	})
+}

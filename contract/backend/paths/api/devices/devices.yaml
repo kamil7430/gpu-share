@@ -1,6 +1,10 @@
 get:
-  summary: Get list of devices that match the provided filters
+  summary: Get list of devices that match the provided filters. If an auth token is provided, it returns only the devices owned by the authenticated user.
   operationId: getDevices
+  security:
+    - bearerAuth:
+        - user
+    - {}
   parameters:
     - $ref: "../../../parameters/query/limit.yaml"
     - name: name
@@ -101,6 +105,15 @@ get:
       description: No devices found
     "400":
       description: Invalid filter parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - errorMessage
+            properties:
+              errorMessage:
+                type: string
     default:
       $ref: "../../../responses/default.yaml"
 
@@ -167,6 +180,15 @@ post:
                 format: date-time
     "400":
       description: Invalid device parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - errorMessage
+            properties:
+              errorMessage:
+                type: string
     "401":
       description: The client is not logged in
     default:

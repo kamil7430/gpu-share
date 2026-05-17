@@ -26,6 +26,7 @@ var baseUrl = func() string {
 var testsToRun = []func(*testing.T, *gorm.DB, string){
 	testGetDeviceStatus,
 	testGetDevices,
+	testGetDevicesForUser,
 	testAddDevice,
 	testLogin,
 	testRegister,

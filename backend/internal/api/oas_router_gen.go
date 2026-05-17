@@ -12,6 +12,7 @@ import (
 
 var (
 	rn1AllowedHeaders = map[string]string{
+		"GET":  "Authorization",
 		"POST": "Authorization,Content-Type",
 	}
 	rn11AllowedHeaders = map[string]string{
@@ -434,7 +435,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						switch method {
 						case "GET":
 							r.name = GetDevicesOperation
-							r.summary = "Get list of devices that match the provided filters"
+							r.summary = "Get list of devices that match the provided filters. If an auth token is provided, it returns only the devices owned by the authenticated user."
 							r.operationID = "getDevices"
 							r.operationGroup = ""
 							r.pathPattern = "/api/devices"

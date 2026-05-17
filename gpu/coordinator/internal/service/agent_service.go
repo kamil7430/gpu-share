@@ -14,11 +14,32 @@ type AgentService struct {
 	proto.UnimplementedAgentServiceServer
 
 	ar         *repository.AgentRepository
+	dr         *repository.DeviceRepository
 	lastTaskId int
 }
 
 func NewAgentService(ar *repository.AgentRepository) *AgentService {
 	return &AgentService{ar: ar, lastTaskId: 0}
+}
+
+func (as *AgentService) verifyID(agentID string, token string) error {
+	devices, err := as.dr.GetDevices(token)
+	if err != nil {
+		return err
+	}
+	found := false
+	log.Printf("devices: %v", len(devices))
+	for _, d := range devices {
+		log.Printf("device id: %v", d.DeviceID)
+		if d.DeviceID == agentID {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return fmt.Errorf("device %v not found in registered devices", agentID)
+	}
+	return nil
 }
 
 func (as *AgentService) Connect(stream proto.AgentService_ConnectServer) error {
@@ -28,12 +49,19 @@ func (as *AgentService) Connect(stream proto.AgentService_ConnectServer) error {
 	}
 
 	agentID := firstMsg.AgentId
+	token := firstMsg.Token
+	if err := as.verifyID(agentID, token); err != nil {
+		return err
+	}
 	agent := &repository.Agent{
 		Id:     agentID,
 		Stream: stream,
 		SendCh: make(chan *proto.CoordinatorMessage, 10),
 	}
 
+	if as.ar.IsConnected(agentID) {
+		return fmt.Errorf("agent %v already connected", agentID)
+	}
 	as.ar.Register(agent)
 	defer as.ar.Unregister(agentID)
 

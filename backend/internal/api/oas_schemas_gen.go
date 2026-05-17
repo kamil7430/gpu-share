@@ -13,8 +13,19 @@ func (s *DefaultStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
-// AddDeviceBadRequest is response for AddDevice operation.
-type AddDeviceBadRequest struct{}
+type AddDeviceBadRequest struct {
+	ErrorMessage string `json:"errorMessage"`
+}
+
+// GetErrorMessage returns the value of ErrorMessage.
+func (s *AddDeviceBadRequest) GetErrorMessage() string {
+	return s.ErrorMessage
+}
+
+// SetErrorMessage sets the value of ErrorMessage.
+func (s *AddDeviceBadRequest) SetErrorMessage(val string) {
+	s.ErrorMessage = val
+}
 
 func (*AddDeviceBadRequest) addDeviceRes() {}
 
@@ -462,8 +473,19 @@ type GetDeviceStatusNotFound struct{}
 
 func (*GetDeviceStatusNotFound) getDeviceStatusRes() {}
 
-// GetDevicesBadRequest is response for GetDevices operation.
-type GetDevicesBadRequest struct{}
+type GetDevicesBadRequest struct {
+	ErrorMessage string `json:"errorMessage"`
+}
+
+// GetErrorMessage returns the value of ErrorMessage.
+func (s *GetDevicesBadRequest) GetErrorMessage() string {
+	return s.ErrorMessage
+}
+
+// SetErrorMessage sets the value of ErrorMessage.
+func (s *GetDevicesBadRequest) SetErrorMessage(val string) {
+	s.ErrorMessage = val
+}
 
 func (*GetDevicesBadRequest) getDevicesRes() {}
 

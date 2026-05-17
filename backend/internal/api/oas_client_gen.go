@@ -48,7 +48,8 @@ type Invoker interface {
 	GetDeviceStatus(ctx context.Context, params GetDeviceStatusParams) (GetDeviceStatusRes, error)
 	// GetDevices invokes getDevices operation.
 	//
-	// Get list of devices that match the provided filters.
+	// Get list of devices that match the provided filters. If an auth token is provided, it returns only
+	// the devices owned by the authenticated user.
 	//
 	// GET /api/devices
 	GetDevices(ctx context.Context, params GetDevicesParams) (GetDevicesRes, error)
@@ -435,7 +436,8 @@ func (c *Client) sendGetDeviceStatus(ctx context.Context, params GetDeviceStatus
 
 // GetDevices invokes getDevices operation.
 //
-// Get list of devices that match the provided filters.
+// Get list of devices that match the provided filters. If an auth token is provided, it returns only
+// the devices owned by the authenticated user.
 //
 // GET /api/devices
 func (c *Client) GetDevices(ctx context.Context, params GetDevicesParams) (GetDevicesRes, error) {
@@ -705,6 +707,40 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 	r, err := ht.NewRequest(ctx, "GET", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, GetDevicesOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+				{},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
 	}
 
 	stage = "SendRequest"

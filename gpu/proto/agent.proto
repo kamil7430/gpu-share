@@ -10,10 +10,11 @@ service AgentService {
 
 message AgentMessage {
   string agent_id = 1;
+  string token = 2;
 
   oneof payload {
-    Heartbeat heartbeat = 2;
-    TaskUpdate task_update = 3;
+    Heartbeat heartbeat = 3;
+    TaskUpdate task_update = 4;
   }
 }
 
