@@ -14,11 +14,11 @@ import (
 )
 
 type UserService struct {
-	ur repository.UserRepository
+	store repository.Store
 }
 
-func NewUserService(ur repository.UserRepository) UserService {
-	return UserService{ur}
+func NewUserService(store repository.Store) UserService {
+	return UserService{store}
 }
 
 func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.OperationName, t api.BearerAuth) (context.Context, error) {
@@ -42,7 +42,7 @@ func (s *UserService) HandleBearerAuth(ctx context.Context, operationName api.Op
 }
 
 func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRes, error) {
-	user, err := s.ur.GetUserByName(ctx, req.Username)
+	user, err := s.store.Users().GetUserByName(ctx, req.Username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &api.LoginNotFound{}, nil
@@ -66,7 +66,7 @@ func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRe
 }
 
 func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.RegisterRes, error) {
-	if _, err := s.ur.GetUserByName(ctx, req.Username); err == nil {
+	if _, err := s.store.Users().GetUserByName(ctx, req.Username); err == nil {
 		return &api.RegisterConflict{}, nil
 	}
 
@@ -89,7 +89,7 @@ func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.R
 		Password: string(hash),
 		Admin:    false,
 	}
-	err = s.ur.AddUser(ctx, user)
+	err = s.store.Users().AddUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswor
 		return nil, errors.New("username not found in context")
 	}
 
-	user, err := s.ur.GetUserByName(ctx, username)
+	user, err := s.store.Users().GetUserByName(ctx, username)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ func (s *UserService) ChangePassword(ctx context.Context, req *api.ChangePasswor
 	}
 
 	user.Password = string(newPasswordHash)
-	err = s.ur.UpdateUser(ctx, user)
+	err = s.store.Users().UpdateUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}

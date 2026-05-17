@@ -12,5 +12,6 @@ const (
 	GetDevicesOperation      OperationName = "GetDevices"
 	GetHealthOperation       OperationName = "GetHealth"
 	LoginOperation           OperationName = "Login"
+	OrderDeviceOperation     OperationName = "OrderDevice"
 	RegisterOperation        OperationName = "Register"
 )

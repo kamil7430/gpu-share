@@ -43,6 +43,9 @@ var operationRolesBearerAuth = map[string][]string{
 	GetDevicesOperation: []string{
 		"user",
 	},
+	OrderDeviceOperation: []string{
+		"user",
+	},
 }
 
 // GetRolesForBearerAuth returns the required roles for the given operation.

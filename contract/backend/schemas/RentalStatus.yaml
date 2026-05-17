@@ -1,0 +1,7 @@
+type: string
+enum:
+  - WAITING_FOR_START
+  - RUNNING
+  - COMPLETED
+  - SUSPENDED
+  - FAILURE

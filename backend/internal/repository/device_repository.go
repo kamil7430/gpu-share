@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"github.com/go-faster/errors"
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
@@ -14,6 +15,7 @@ type DeviceRepository interface {
 	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
 	GetDevicesForUser(ctx context.Context, userId uint, params api.GetDevicesParams) ([]model.Device, error)
 	AddDevice(ctx context.Context, device *model.Device) error
+	UpdateDevice(ctx context.Context, device *model.Device) error
 }
 
 type deviceRepository struct {
@@ -103,4 +105,15 @@ func (r *deviceRepository) GetDevicesForUser(ctx context.Context, userId uint, p
 
 func (r *deviceRepository) AddDevice(ctx context.Context, device *model.Device) error {
 	return gorm.G[model.Device](r.db).Create(ctx, device)
+}
+
+func (r *deviceRepository) UpdateDevice(ctx context.Context, device *model.Device) error {
+	rowsAffected, err := gorm.G[model.Device](r.db).Where("id = ?", device.ID).Updates(ctx, *device)
+	if err != nil {
+		return err
+	}
+	if rowsAffected != 1 {
+		return errors.New("affected rows is not equal to 1")
+	}
+	return nil
 }
