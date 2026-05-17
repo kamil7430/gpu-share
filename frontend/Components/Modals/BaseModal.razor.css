@@ -62,14 +62,17 @@
 /* Body */
 .modal-body {
     padding: 0.5rem 2rem;
-    padding-bottom: 1.5rem;
     overflow-y: auto;   /* enables scrolling */
     flex: 1;            /* fills remaining space */
 }
 
+.modal-body.without-footer {
+    padding-bottom: 1.5rem;
+}
+
 /* Footer */
 .modal-footer {
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.5rem;
     border-top: 1px solid #eee;
 
     display: flex;

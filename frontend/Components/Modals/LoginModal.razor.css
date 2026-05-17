@@ -11,3 +11,7 @@
     font-size: smaller;
     color: #777;
 }
+
+.modal-body {
+    padding-bottom: 1.5rem;
+}

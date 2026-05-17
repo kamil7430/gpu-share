@@ -83,15 +83,15 @@
 - [x] DeviceTable - Tabela: model, VRAM, cena/h, status, toggle dostępności
 - [x] AvailabilityToggle - Switch włącz/wyłącz udostępnianie — natychmiastowy PATCH
 - [x] EditDeviceDrawer - ~~Panel boczny~~ edycji parametrów i ceny bez przeładowania strony
-- [ ] RemoveDeviceModal - Potwierdzenie usunięcia karty z systemu **(modal potwierdzenia)**
+- [x] RemoveDeviceModal - Potwierdzenie usunięcia karty z systemu
 
 ### /owner/devices/new
 
-- [ ] DeviceSpecForm - Pola: nazwa, model, VRAM, CUDA cores, cena/h, lokalizacja
-- [ ] FrameworkCheckboxes - Checkboxy: PyTorch, TensorFlow, ONNX, JAX, inne
-- [ ] AvailabilityScheduler - Siatka godzin dostępności (dni tygodnia × godziny) (optional)
-- [ ] AgentInstallInstructions - Instrukcja instalacji Node Agenta z kopiowanym tokenem
-- [ ] ValidationSummary - Podsumowanie błędów walidacji przed wysłaniem
+- [x] DeviceSpecForm - Pola: nazwa, model, VRAM, CUDA cores, cena/h, lokalizacja
+- [x] FrameworkCheckboxes - Checkboxy: PyTorch, TensorFlow, ONNX, JAX, inne
+- [ ] ~~AvailabilityScheduler - Siatka godzin dostępności (dni tygodnia × godziny)~~ (optional)
+- [x] AgentInstallInstructions - Instrukcja instalacji Node Agenta z kopiowanym tokenem
+- [x] ValidationSummary - Podsumowanie błędów walidacji przed wysłaniem
 
 ### /owner/devices/:deviceId/telemetry (modal?)
 

@@ -79,14 +79,19 @@ else
     </div>
 }
 
+<RemoveDeviceModal Gpu="@_selectedGpu" IsVisible="@showRemoveDeviceModal" OnClose="@(() => showRemoveDeviceModal = false)" />
+
 @code {
     [Parameter] public bool authorized { get; set; } = false;
     private List<Gpu> _allGpus = [];
     private List<Gpu> PagedGpus = [];
+    private Gpu? _selectedGpu = null;
     private int _page = 1;
     private int _pageSize = 5;
     private int _totalPages;
     private bool isCurrentUser = true; // Mocked login state, replace with actual auth logic
+
+    private bool showRemoveDeviceModal = false;
 
     protected override void OnInitialized()
     {
@@ -150,6 +155,8 @@ else
 
     public void RemoveGpu(Gpu gpu)
     {
+        _selectedGpu = gpu;
+        showRemoveDeviceModal = true;
         // Implement remove logic here
         Console.WriteLine($"Removing GPU: {gpu.Name}");
     }

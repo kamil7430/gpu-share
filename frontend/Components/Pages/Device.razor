@@ -1,7 +1,5 @@
 @page "/device/{Mode}/{Id:int?}"
-@using GpuShare.Frontend.Models
-@using MudBlazor
-@using MudBlazor.Charts;
+@inject IJSRuntime JS
 
 @* what happens when the reserved time run out but the job is not finished 
 TO-DO:
@@ -70,6 +68,8 @@ TO-DO:
         <div class="card">
             <h3>@(Mode == "add" ? "Register New Device" : "Edit Device Specs")</h3>
             <EditForm FormName="SaveSpec" Model="gpu" OnValidSubmit="HandleSave">
+                <DataAnnotationsValidator />
+
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label>Device Name</label>
@@ -110,9 +110,14 @@ TO-DO:
                         <InputText @bind-Value="gpu.DriverVersion" />
                     </div>
 
-                    <div class="form-group" style="flex-direction: row; align-items: center;">
+                    <div class="form-group">
+                        <label>Supported Frameworks</label>
+                        <CheckBoxList className="checkbox-list" TItem="string" Data="SupportedFrameworks" TextField="@(new Func<string, string>(c => c))" ValueField="@(new Func<string, string>(c => c))" SelectedValues="@SelectedFrameworks" />
+                    </div>
+
+                    <div class="form-group" style="flex-direction: row; align-items: center; height: fit-content;">
                         <label>Price per hour</label>
-                        <InputNumber style="width: 100px" @bind-Value="gpu.PricePerHour" />
+                        <InputNumber Min="0" style="width: 100px" @bind-Value="gpu.PricePerHour" />
                         <label>$</label>
                     </div>
                 </div>
@@ -120,19 +125,55 @@ TO-DO:
                 <div class="availability-section">
 
                     <div class="flex-row">
-                    <MudSwitch Style="font-size: 0.875rem" T="bool"
-                            @bind-Value="gpu.IsAvailable"
-                            Color="Color.Primary"
-                            Label="" />
-                    <label>Device available for orders</label>
+                        <MudSwitch Style="font-size: 0.875rem" T="bool" @bind-Value="gpu.IsAvailable" Color="Color.Primary" Label="" />
+                        <label>Device available for orders</label>
                     </div>
 
-                    <div class="availability-hint">
-                        @(gpu.IsAvailable
-                            ? "Users can reserve and run workloads on this GPU."
-                            : "Device is hidden from scheduling and reservations.")
+                    <div class="hint mt-2">
+                        @(gpu.IsAvailable ? "Users can reserve and run workloads on this GPU." : "Device is hidden from scheduling and reservations.")
                     </div>
 
+                </div>
+
+                @* validation errors *@
+                @if (validationErrors.Any())
+                {
+                    <div class="validation-summary">
+                        <div class="validation-summary-title">
+                            Please fix the following issues:
+                        </div>
+                        <ul>
+                            @foreach (var error in validationErrors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="agent-install-section">
+                    <div class="agent-header">
+                        <div>
+                            <h4>Node Agent Installation</h4>
+                            <p>
+                                Install the GPU Share node agent on your machine
+                                to enable monitoring, reservations, and workload execution.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="agent-command-container">
+                        <code class="agent-command">
+                            curl -sSL https://gpu-share.io/install.sh | bash -s -- --token @AgentToken
+                        </code>
+
+                        <button type="button" class="btn-primary" @onclick="CopyAgentToken">Copy</button>
+                    </div>
+
+                    <div class="hint mt-4">
+                        After installation, the node will automatically connect
+                        to your account and begin reporting GPU telemetry.
+                    </div>
                 </div>
 
                 <div class="form-footer" style="margin-top:8px">
@@ -147,11 +188,8 @@ TO-DO:
     <MudPaper Class="card mt-6">
         <MudText Typo="Typo.h6">GPU Usage</MudText>
 
-        <MudChart T="double" ChartType="ChartType.Line"
-                  ChartLabels="@chartLabels"
-                  ChartSeries="@chartData"
-                  Width="100%"
-                  Height="300px" MatchBoundsToSize=true ChartOptions="@options" />
+        <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@chartLabels" ChartSeries="@chartData"
+                  Width="100%" Height="300px" MatchBoundsToSize=true ChartOptions="@options" />
     </MudPaper>
 
     //<!-- RESERVATION CALENDAR -->
@@ -258,6 +296,24 @@ TO-DO:
     private LineChartOptions options = new(){};
     private bool isAuthorized = true;
     private string Username = "user1";
+
+    private List<string> SupportedFrameworks = new()
+    {
+        "TensorFlow", "PyTorch", "MXNet", "Keras", "Caffe"
+    };
+
+    private List<string> SelectedFrameworks = [];
+
+    private string AgentToken = "gpu_node_x7A92kLmP";
+
+    private List<string> validationErrors = new() {"Error1", "Error2 a bit longerrrrrrr rrrrrrrrr rrrrrrrrrrrrrrr rrrrrrrrrr rrrrrrrrrr rrrrrrrr rrrrrrrrrrr rrrrrrrrrrrrrrr"};
+
+    private async Task CopyAgentToken()
+    {
+        await JS.InvokeVoidAsync(
+            "navigator.clipboard.writeText",
+            $"curl -sSL https://gpu-share.io/install.sh | bash -s -- --token {AgentToken}");
+    }
     
     protected override void OnInitialized()
     {
