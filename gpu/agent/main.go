@@ -22,7 +22,9 @@ func chooseAction() int {
 	for {
 		fmt.Print("Choose action> ")
 		var i int
-		fmt.Scan(&i)
+		if n, err := fmt.Scan(&i); err != nil || n != 1 {
+			continue
+		}
 		if i > 0 && i <= len(modes) {
 			return i - 1
 		}
