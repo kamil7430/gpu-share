@@ -115,7 +115,7 @@ func startAgent(t *testing.T, agentId string, token string) {
 }
 
 func TestApi(t *testing.T) {
-	server.InitializeSystem(t.Context(), restUrl, grpcUrl)
+	go server.InitializeSystem(t.Context(), restUrl, grpcUrl)
 
 	log.Println("Checking whether server is up...")
 	retries := 10
