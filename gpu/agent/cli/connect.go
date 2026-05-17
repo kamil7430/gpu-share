@@ -18,16 +18,8 @@ func ConnectCmd(args []string) {
 	fs := flag.NewFlagSet("connect", flag.ExitOnError)
 	deviceID := fs.String("device", "", "device ID")
 
-	backIp := os.Getenv("BACKEND_IP")
-	if backIp == "" {
-		backIp = "10.5.0.2"
-	}
-	backend := fs.String("backend", backIp+":2137", "backend addr")
-	gpuIp := os.Getenv("GPU_IP")
-	if gpuIp == "" {
-		gpuIp = "10.5.0.3"
-	}
-	coord := fs.String("coord", gpuIp+":2139", "coordinator addr")
+	backend := fs.String("backend", backendIp()+":"+backendPort, "backend addr")
+	coord := fs.String("coord", gpuIp()+":"+coordinatorGrpcPort, "coordinator addr")
 	fs.Parse(args)
 
 	token, err := LoadToken()

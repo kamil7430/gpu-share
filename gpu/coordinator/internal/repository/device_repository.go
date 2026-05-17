@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 type Device struct {
@@ -26,12 +25,7 @@ type errorResponse struct {
 type DeviceRepository struct{}
 
 func (dr *DeviceRepository) GetDevices(token string) ([]Device, error) {
-	backIp := os.Getenv("BACKEND_IP")
-	if backIp == "" {
-		backIp = "10.5.0.2"
-	}
-
-	url := "http://" + backIp + ":2137/api/devices"
+	url := "http://" + backendIp() + ":" + backendPort + "/api/devices"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

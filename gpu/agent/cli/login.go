@@ -15,11 +15,7 @@ func LoginCmd(args []string) {
 	fs := flag.NewFlagSet("login", flag.ContinueOnError)
 	username := fs.String("u", "", "username")
 	password := fs.String("p", "", "password")
-	envIp := os.Getenv("BACKEND_IP")
-	if envIp == "" {
-		envIp = "10.5.0.2"
-	}
-	addr := fs.String("addr", envIp+":2137", "backend addr")
+	addr := fs.String("addr", backendIp()+":"+backendPort, "backend addr")
 	fs.Parse(args)
 
 	reader := bufio.NewReader(os.Stdin)

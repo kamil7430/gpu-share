@@ -4,9 +4,31 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
+
+const (
+	backendPort = "2137"
+	coordinatorGrpcPort = "2139"
+)
+
+func backendIp() string {
+	backIp := os.Getenv("BACKEND_IP")
+	if backIp == "" {
+		backIp = "10.5.0.2"
+	}
+	return backIp
+}
+
+func gpuIp() string {
+	gpuIp := os.Getenv("GPU_IP")
+	if gpuIp == "" {
+		gpuIp = "10.5.0.3"
+	}
+	return gpuIp
+}
 
 func promptString(reader *bufio.Reader, label string) string {
 	fmt.Printf("%s: ", label)
