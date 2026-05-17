@@ -2,6 +2,7 @@ namespace GpuShare.Frontend.Models;
 
 public class Order
 {
+    public int Id { get; set; }
     public string Device { get; set; } = string.Empty;
     public string Owner { get; set; } = string.Empty;
     public DateTime? StartDate { get; set; } = null;
@@ -9,8 +10,11 @@ public class Order
     public int Cost { get; set; }
     public string Status { get; set; } = string.Empty;
 
-    public Order(string device, string owner, DateTime? startDate, DateTime? endDate, int cost, string status)
+    public Order(){}
+    
+    public Order(int id, string device, string owner, DateTime? startDate, DateTime? endDate, int cost, string status)
     {
+        Id = id;
         Device = device;
         Owner = owner;
         StartDate = startDate;

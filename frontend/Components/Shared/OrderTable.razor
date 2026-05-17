@@ -1,3 +1,21 @@
+<div class="table-controls">
+
+    <div class="status-filters">
+
+        @foreach (var filter in StatusFilters)
+        {
+            <button class="filter-btn @(SelectedStatus == filter ? "active" : "")"
+                    @onclick="@(() => SelectStatus(filter))">
+
+                @filter
+
+            </button>
+        }
+
+    </div>
+
+</div>
+
 <div class="table-card">
     @if (Orders.Count == 0)
     {
@@ -8,24 +26,44 @@
         <table class="custom-table">
             <thead>
                 <tr>
+                    <th>Order</th>
                     <th>Device</th>
                     <th>Owner</th>
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Cost</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var order in Orders)
+                @foreach (var order in FilteredOrders)
                 {
                     <tr>
+                        @* <!-- Singular order page --> *@
+                        <td>
+                            <a class="order-link" href="@($"/orders/{order.Id}")">#@order.Id</a>
+                        </td>
                         <td>@order.Device</td>
                         <td><a class="profile-link" href="/profile/@order.Owner">@order.Owner</a></td>
                         <td>@(order.StartDate == null || order.StartDate == DateTime.MinValue ? "-" : order.StartDate.ToString())</td>
                         <td>@(order.EndDate == null || order.EndDate == DateTime.MinValue ? "-" : order.EndDate.ToString())</td>
                         <td>@(order.Cost == 0 ? "-" : $"{order.Cost}$")</td>
-                        <td>@order.Status</td>
+                        <td>
+                            <span class="status-badge @GetStatusClass(order.Status)">
+                                @order.Status
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="order-actions">
+                                @* <a class="details-btn" href="@($"/orders/{order.Id}")">Details</a> *@
+                                @if (order.Status == "Completed") // && !order.HasReview
+                                {
+                                    <button class="review-btn" @onclick="@(() => LeaveReview(order.Id))">Leave Review</button>
+                                }
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -38,15 +76,91 @@
 </div>
 
 @code {
-    // Replace this with your actual data model/service call
+    private string SelectedStatus = "All";
+
+    private List<string> StatusFilters = new()
+    {
+        "All",
+        "Active",
+        "Completed",
+        "Cancelled",
+        "Dispute"
+    };
+    
     private List<Order> Orders = new()
     {
-        new ("GPU#69", "User1", DateTime.Parse("21-12-2025 21:37"), DateTime.Parse("24-12-2025 13:13"), 200, "Ended"),
-        new ("GPU#67", "User2", DateTime.Parse("15-04-2026 21:37"), null, 0, "Ongoing"),
-        new ("GPU#2137", "User2137", DateTime.Parse("21-04-2026 21:37"), null, 0, "Scheduled")
+        new()
+        {
+            Id = 1001,
+            Device = "GPU#69",
+            Owner = "User1",
+            StartDate = DateTime.Parse("2026-05-10 12:00"),
+            EndDate = DateTime.Parse("2026-05-12 18:00"),
+            Cost = 200,
+            Status = "Completed"
+        },
+
+        new()
+        {
+            Id = 1002,
+            Device = "GPU#67",
+            Owner = "User2",
+            StartDate = DateTime.Parse("2026-05-15 09:00"),
+            Cost = 0,
+            Status = "Active"
+        },
+
+        new()
+        {
+            Id = 1003,
+            Device = "GPU#2137",
+            Owner = "User2137",
+            StartDate = DateTime.Parse("2026-05-20 18:00"),
+            Cost = 120,
+            Status = "Cancelled"
+        },
+
+        new()
+        {
+            Id = 1004,
+            Device = "GPU#404",
+            Owner = "User404",
+            StartDate = DateTime.Parse("2026-05-17 11:00"),
+            Cost = 350,
+            Status = "Dispute"
+        }
     };
 
-    private void LoadMore() { /* Logic to fetch more rows */ }
+    private List<Order> FilteredOrders =>
+        SelectedStatus == "All"
+            ? Orders
+            : Orders.Where(x => x.Status == SelectedStatus).ToList();
 
-    
+    private void SelectStatus(string status)
+    {
+        SelectedStatus = status;
+    }
+
+    private void LeaveReview(int orderId)
+    {
+        Console.WriteLine($"Review order {orderId}");
+    }
+
+    private void LoadMore()
+    {
+        // fetch more
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Active" => "status-active",
+            "Completed" => "status-completed",
+            "Cancelled" => "status-cancelled",
+            "Dispute" => "status-dispute",
+            _ => ""
+        };
+    }
+
 }

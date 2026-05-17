@@ -1,0 +1,301 @@
+@using MudBlazor
+
+<div class="telemetry-grid">
+
+    <!-- Temperature -->
+
+    <MudPaper Class="telemetry-card"
+              Elevation="0">
+
+        <div class="telemetry-header">
+
+            <MudText Typo="Typo.h6">
+                GPU Temperature
+            </MudText>
+
+            <MudChip T="string"
+                     Color="@TemperatureColor"
+                     Variant="Variant.Filled">
+
+                @($"{GpuTemperature}°C")
+
+            </MudChip>
+
+        </div>
+
+        <div class="temp-gauge-container">
+
+            <MudProgressCircular Color="@TemperatureColor"
+                                 Size="Size.Large"
+                                 Indeterminate="false"
+                                 Value="@TemperaturePercent"
+                                 Class="temp-gauge" />
+
+            <div class="temp-center">
+
+                <div class="temp-value">
+                    @GpuTemperature°
+                </div>
+
+                <div class="temp-label">
+                    GPU Core
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="temp-thresholds">
+
+            <div class="threshold safe">
+                Safe
+            </div>
+
+            <div class="threshold warning">
+                Warning
+            </div>
+
+            <div class="threshold critical">
+                Critical
+            </div>
+
+        </div>
+
+    </MudPaper>
+
+    <!-- Heartbeat -->
+
+    <MudPaper Class="telemetry-card"
+              Elevation="0">
+
+        <div class="telemetry-header">
+
+            <MudText Typo="Typo.h6">
+                Agent Heartbeat
+            </MudText>
+
+            <MudChip T="string"
+                     Color="@(AgentOnline ? Color.Success : Color.Error)"
+                     Variant="Variant.Filled">
+
+                @(AgentOnline ? "Online" : "Offline")
+
+            </MudChip>
+
+        </div>
+
+        <div class="heartbeat-content">
+
+            <div class="heartbeat-item">
+
+                <div class="heartbeat-label">
+                    Last heartbeat
+                </div>
+
+                <div class="heartbeat-value">
+                    @LastHeartbeat
+                </div>
+
+            </div>
+
+            <div class="heartbeat-item">
+
+                <div class="heartbeat-label">
+                    Agent version
+                </div>
+
+                <div class="heartbeat-value">
+                    v1.4.2
+                </div>
+
+            </div>
+
+            <div class="heartbeat-item">
+
+                <div class="heartbeat-label">
+                    Node uptime
+                </div>
+
+                <div class="heartbeat-value">
+                    12d 4h
+                </div>
+
+            </div>
+
+        </div>
+
+    </MudPaper>
+
+    <!-- Utilization -->
+
+    <MudPaper Class="telemetry-card telemetry-wide"
+              Elevation="0">
+
+        <div class="telemetry-header">
+
+            <MudText Typo="Typo.h6">
+                GPU Utilization
+            </MudText>
+
+            <MudChip T="string"
+                     Color="Color.Info"
+                     Variant="Variant.Outlined">
+
+                Last 30 min
+
+            </MudChip>
+
+        </div>
+
+        <MudChart T="double"
+                  ChartType="ChartType.Line"
+                  Labels="UtilizationLabels"
+                  Data="UtilizationSeries"
+                  Width="100%"
+                  Height="320px" />
+
+        <div class="chart-legend">
+
+            <div class="legend-item">
+
+                <div class="legend-dot gpu"></div>
+
+                <span>GPU Usage</span>
+
+            </div>
+
+            <div class="legend-item">
+
+                <div class="legend-dot vram"></div>
+
+                <span>VRAM Usage</span>
+
+            </div>
+
+        </div>
+
+    </MudPaper>
+
+    <!-- Metric History -->
+
+    <MudPaper Class="telemetry-card telemetry-wide"
+              Elevation="0">
+
+        <div class="telemetry-header">
+
+            <MudText Typo="Typo.h6">
+                Metric History
+            </MudText>
+
+            <div class="metric-actions">
+
+                <MudSelect T="string"
+                           @bind-Value="SelectedRange"
+                           Dense="true"
+                           Variant="Variant.Outlined">
+
+                    <MudSelectItem Value='"1h"'>1 Hour</MudSelectItem>
+                    <MudSelectItem Value='"24h"'>24 Hours</MudSelectItem>
+                    <MudSelectItem Value='"7d"'>7 Days</MudSelectItem>
+
+                </MudSelect>
+
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Primary"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Download">
+
+                    Export CSV
+
+                </MudButton>
+
+            </div>
+
+        </div>
+
+        <div class="metrics-summary-grid">
+
+            <div class="metric-box">
+
+                <div class="metric-title">
+                    Avg GPU Usage
+                </div>
+
+                <div class="metric-value">
+                    68%
+                </div>
+
+            </div>
+
+            <div class="metric-box">
+
+                <div class="metric-title">
+                    Avg VRAM Usage
+                </div>
+
+                <div class="metric-value">
+                    71%
+                </div>
+
+            </div>
+
+            <div class="metric-box">
+
+                <div class="metric-title">
+                    Peak Temperature
+                </div>
+
+                <div class="metric-value">
+                    82°C
+                </div>
+
+            </div>
+
+            <div class="metric-box">
+
+                <div class="metric-title">
+                    Runtime
+                </div>
+
+                <div class="metric-value">
+                    142h
+                </div>
+
+            </div>
+
+        </div>
+
+    </MudPaper>
+
+</div>
+
+@code {
+private int GpuTemperature = 72;
+
+    private bool AgentOnline = true;
+
+    private string LastHeartbeat = "12 seconds ago";
+
+    private string SelectedRange = "24h";
+
+    private double TemperaturePercent => GpuTemperature;
+
+    private Color TemperatureColor =>
+        GpuTemperature switch
+        {
+            < 70 => Color.Success,
+            < 85 => Color.Warning,
+            _ => Color.Error
+        };
+
+    private string[] UtilizationLabels =
+    {
+        "0m", "5m", "10m", "15m", "20m", "25m", "30m"
+    };
+
+    private double[][] UtilizationSeries =
+    {
+        new double[] { 22, 48, 65, 82, 76, 61, 58 },
+        new double[] { 18, 35, 57, 72, 69, 63, 60 }
+    };
+}

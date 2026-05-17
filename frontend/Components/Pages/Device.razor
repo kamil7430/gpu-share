@@ -72,94 +72,96 @@ TO-DO:
     }
 
     @if (Mode != "add" && isAuthorized) {  
-    //<!-- GPU USAGE CHART -->
-    <MudPaper Class="card mt-6">
-        <MudText Typo="Typo.h6">GPU Usage</MudText>
+        <TelemetryCard></TelemetryCard>
 
-        <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@chartLabels" ChartSeries="@chartData"
-                  Width="100%" Height="300px" MatchBoundsToSize=true ChartOptions="@options" />
-    </MudPaper>
+        //<!-- GPU USAGE CHART -->
+        <MudPaper Class="card mt-6">
+            <MudText Typo="Typo.h6">GPU Usage</MudText>
 
-    //<!-- RESERVATION CALENDAR -->
-    <MudPaper Class="card mt-6">
-        <div class="calendar-toolbar">
-            <MudButton Class="btn-secondary" OnClick="PreviousWeek">
-                Previous
-            </MudButton>
+            <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@chartLabels" ChartSeries="@chartData"
+                    Width="100%" Height="300px" MatchBoundsToSize=true ChartOptions="@options" />
+        </MudPaper>
 
-            <MudText Typo="Typo.h6">
-                @(WeekStart.ToString("dd.MM.yyyy")) - @(WeekStart.AddDays(6).ToString("dd.MM.yyyy"))
-            </MudText>
+        //<!-- RESERVATION CALENDAR -->
+        <MudPaper Class="card mt-6">
+            <div class="calendar-toolbar">
+                <MudButton Class="btn-secondary" OnClick="PreviousWeek">
+                    Previous
+                </MudButton>
 
-            <MudButton Class="btn-secondary" OnClick="NextWeek">
-                Next
-            </MudButton>
-        </div>
+                <MudText Typo="Typo.h6">
+                    @(WeekStart.ToString("dd.MM.yyyy")) - @(WeekStart.AddDays(6).ToString("dd.MM.yyyy"))
+                </MudText>
 
-        <div class="week-calendar">
+                <MudButton Class="btn-secondary" OnClick="NextWeek">
+                    Next
+                </MudButton>
+            </div>
 
-            <div class="calendar-header"></div>
+            <div class="week-calendar">
 
-            @foreach (var day in WeekDays)
-            {
-                <div class="calendar-header-cell">
-                    <div>@day.ToString("ddd")</div>
-                    <div class="date">@day.Day</div>
-                </div>
-            }
-
-            @foreach (var hour in Hours)
-            {
-                <div class="time-label">
-                    @($"{hour:00}:00")
-                </div>
+                <div class="calendar-header"></div>
 
                 @foreach (var day in WeekDays)
                 {
-                    <div class="calendar-cell">
-                        @foreach (var reservation in GetReservationsForSlot(day, hour))
-                        {
-                            <div class="reservation-block"
-                                style="@GetReservationStyle(reservation)"
-                                title="@reservation.Title">
-                                <div class="reservation-title">
-                                    @reservation.Title
-                                </div>
-
-                                <div class="reservation-time">
-                                    @reservation.Start.ToString("HH:mm") - @reservation.End.ToString("HH:mm")
-                                </div>
-                            </div>
-                        }
+                    <div class="calendar-header-cell">
+                        <div>@day.ToString("ddd")</div>
+                        <div class="date">@day.Day</div>
                     </div>
                 }
-            }
-        </div>
 
-        <div class="calendar-legend">
+                @foreach (var hour in Hours)
+                {
+                    <div class="time-label">
+                        @($"{hour:00}:00")
+                    </div>
 
-            <div class="legend-item">
-                <div class="legend-color reserved"></div>
-                <span>Reserved</span>
+                    @foreach (var day in WeekDays)
+                    {
+                        <div class="calendar-cell">
+                            @foreach (var reservation in GetReservationsForSlot(day, hour))
+                            {
+                                <div class="reservation-block"
+                                    style="@GetReservationStyle(reservation)"
+                                    title="@reservation.Title">
+                                    <div class="reservation-title">
+                                        @reservation.Title
+                                    </div>
+
+                                    <div class="reservation-time">
+                                        @reservation.Start.ToString("HH:mm") - @reservation.End.ToString("HH:mm")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
             </div>
 
-            <div class="legend-item">
-                <div class="legend-color in-use"></div>
-                <span>In Use</span>
-            </div>
+            <div class="calendar-legend">
 
-            <div class="legend-item">
-                <div class="legend-color completed"></div>
-                <span>Completed</span>
-            </div>
+                <div class="legend-item">
+                    <div class="legend-color reserved"></div>
+                    <span>Reserved</span>
+                </div>
 
-            <div class="legend-item">
-                <div class="legend-color available"></div>
-                <span>Available</span>
-            </div>
+                <div class="legend-item">
+                    <div class="legend-color in-use"></div>
+                    <span>In Use</span>
+                </div>
 
-        </div>
-    </MudPaper>
+                <div class="legend-item">
+                    <div class="legend-color completed"></div>
+                    <span>Completed</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>Available</span>
+                </div>
+
+            </div>
+        </MudPaper>
     }
 
     @if (Mode != "add" && !isAuthorized) {

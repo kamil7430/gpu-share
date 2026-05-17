@@ -49,9 +49,9 @@
 
 ### /rentals (/orders)
 
-- [ ] RentalTable - Lista wypożyczeń: GPU, data, czas trwania, koszt, status (badge)
+- [x] RentalTable - Lista wypożyczeń: GPU, data, czas trwania, koszt, status (badge)
 - [ ] StatusFilter - Filtr statusu: aktywne / zakończone / anulowane / spór
-- [ ] ReceiptModal - Podgląd paragonu z podsumowaniem kosztów
+- [ ] ~~ReceiptModal - Podgląd paragonu z podsumowaniem kosztów~~ (optional)
 - [ ] LeaveReviewButton - Przycisk „Wystaw opinię" dla zakończonych bez oceny
 
 
@@ -95,10 +95,10 @@
 
 ### /owner/devices/:deviceId/telemetry (modal?)
 
-- [ ] TempGauge - Wskaźnik temperatury GPU z progami ostrzeżenia
-- [ ] UtilizationChart - Wykres wykorzystania GPU/VRAM — ostatnie 30 min, SSE stream
-- [ ] HeartbeatStatus - Czas ostatniego heartbeatu agenta, status online/offline
-- [ ] MetricHistory - Wybór zakresu czasu (1h/24h/7d) i eksport CSV
+- [x] TempGauge - Wskaźnik temperatury GPU z progami ostrzeżenia
+- [x] UtilizationChart - Wykres wykorzystania GPU/VRAM — ostatnie 30 min, SSE stream
+- [x] HeartbeatStatus - Czas ostatniego heartbeatu agenta, status online/offline
+- [x] MetricHistory - Wybór zakresu czasu (1h/24h/7d) i eksport CSV
 
 ### /owner/earnings
 
@@ -131,3 +131,8 @@
 - [ ] DisputeDetailPanel - Pełen wątek: wiadomości obu stron, logi telemetrii, załączniki
 - [ ] ClarificationRequest - Formularz prośby o wyjaśnienia do klienta lub właściciela
 - [ ] ResolutionForm - Decyzja: na korzyść klienta (zwrot) / właściciela, pole uzasadnienia
+
+
+### Do ogarnięcia wizualnie:
+- wallet
+- telemetry
