@@ -17,7 +17,7 @@ import (
 func testGetDeviceStatus(t *testing.T, db *gorm.DB, baseUrl string) {
 	deviceId := "123"
 
-	db.Exec("TRUNCATE TABLE devices, users;")
+	truncateTables(db)
 	db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
 		"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE');")
 
@@ -52,7 +52,7 @@ func testGetDeviceStatus(t *testing.T, db *gorm.DB, baseUrl string) {
 
 func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 	resetDbContent := func() {
-		db.Exec("TRUNCATE TABLE devices, users;")
+		truncateTables(db)
 		db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
 			"VALUES ('2137', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'UNAVAILABLE'), " +
 			"('2138', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '2599', '595', '97', 'AVAILABLE'), " +
@@ -300,7 +300,7 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 	require.NoError(t, err)
 
 	resetDbContent := func() {
-		db.Exec("TRUNCATE TABLE devices, users;")
+		truncateTables(db)
 		db.Exec("INSERT INTO users(name, password, admin) VALUES ('TestUser', ?, 'false');", testUserPassword)
 	}
 

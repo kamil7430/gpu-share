@@ -14,13 +14,11 @@ import (
 )
 
 type DeviceService struct {
-	dr repository.DeviceRepository
-	gr repository.GpuRepository
-	ur repository.UserRepository
+	store repository.Store
 }
 
-func NewDeviceService(dr repository.DeviceRepository, gr repository.GpuRepository, ur repository.UserRepository) DeviceService {
-	return DeviceService{dr, gr, ur}
+func NewDeviceService(store repository.Store) DeviceService {
+	return DeviceService{store}
 }
 
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
@@ -55,7 +53,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 		}
 	}
 
-	devices, err := s.dr.GetDevices(ctx, params)
+	devices, err := s.store.Devices().GetDevices(ctx, params)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &api.GetDevicesNotFound{}, nil
@@ -89,7 +87,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 }
 
 func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDeviceStatusParams) (api.GetDeviceStatusRes, error) {
-	device, err := s.dr.GetDeviceById(ctx, params.DeviceId)
+	device, err := s.store.Devices().GetDeviceById(ctx, params.DeviceId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &api.GetDeviceStatusNotFound{}, nil
@@ -97,7 +95,7 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 		return nil, err
 	}
 
-	status, err := s.gr.GetDeviceStatusById(ctx, params.DeviceId)
+	status, err := s.store.Gpus().GetDeviceStatusById(ctx, params.DeviceId)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +116,7 @@ func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (a
 		return nil, errors.New("username not found in context")
 	}
 
-	user, err := s.ur.GetUserByName(ctx, username)
+	user, err := s.store.Users().GetUserByName(ctx, username)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +138,7 @@ func (s *DeviceService) AddDevice(ctx context.Context, req *api.AddDeviceReq) (a
 		UserID:               user.ID,
 	}
 
-	err = s.dr.AddDevice(ctx, &device)
+	err = s.store.Devices().AddDevice(ctx, &device)
 	if err != nil {
 		return nil, err
 	}

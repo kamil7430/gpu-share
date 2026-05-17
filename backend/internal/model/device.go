@@ -16,4 +16,5 @@ type Device struct {
 	DriverVersionMinor   int
 	State                api.State
 	UserID               uint
+	Orders               []Order
 }

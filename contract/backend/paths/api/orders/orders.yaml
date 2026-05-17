@@ -1,0 +1,69 @@
+post:
+  summary: Initialize a device rental
+  operationId: orderDevice
+  security:
+    - bearerAuth:
+        - user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - deviceId
+            - dockerImage
+            - durationHours
+          properties:
+            deviceId:
+              description: Id of device to rent
+              type: string
+            dockerImage:
+              description: Name of Docker image to run on the device
+              type: string
+            durationHours:
+              description: Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002 (slightly less than 1 second)
+              type: number
+              format: double
+              minimum: 0.0002 # one second
+        examples:
+          oneMinuteExample:
+            summary: Example with one minute of duration
+            value:
+              deviceId: "2137"
+              dockerImage: "ubuntu:latest"
+              durationHours: 0.017
+          oneAndHalfHourExample:
+            summary: Example with one and a half hours of duration
+            value:
+              deviceId: "6969"
+              dockerImage: "ubuntu:latest"
+              durationHours: 1.5
+  responses:
+    "201":
+      description: Device rental created
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - orderId
+              - status
+              - connectionDetails
+              - totalReservedCostCents
+            properties:
+              orderId:
+                type: string
+              status:
+                $ref: "../../../schemas/RentalStatus.yaml"
+              connectionDetails:
+                $ref: "../../../schemas/ConnectionDetails.yaml"
+              totalReservedCostCents:
+                type: integer
+                minimum: 1
+    "400":
+      description: Invalid request parameters
+    "402":
+      description: Insufficient amount in user's wallet
+    default:
+      $ref: "../../../responses/default.yaml"

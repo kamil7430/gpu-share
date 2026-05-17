@@ -6,6 +6,7 @@ type Store interface {
 	Users() UserRepository
 	Devices() DeviceRepository
 	Gpus() GpuRepository
+	Orders() OrderRepository
 	Transaction(fn func(Store) error) error
 }
 
@@ -30,10 +31,12 @@ func (s store) Gpus() GpuRepository {
 	return NewMockGpuRepository()
 }
 
+func (s store) Orders() OrderRepository {
+	return &orderRepository{db: s.db}
+}
+
 func (s store) Transaction(fn func(Store) error) error {
 	return s.db.Transaction(func(tx *gorm.DB) error {
-		return fn(store{
-			db: tx,
-		})
+		return fn(store{db: tx})
 	})
 }
