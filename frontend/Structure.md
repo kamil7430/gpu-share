@@ -57,10 +57,10 @@
 
 ### /wallet (modal?)
 
-- [ ] BalanceCard - Bieżące saldo konta (duża liczba), zablokowane środki
-- [ ] TopUpForm - Formularz wpłaty: kwota + metoda płatności (karta/przelew)
-- [ ] TransactionHistory - Lista transakcji: typ (wpłata/blokada/rozliczenie), kwota, data
-- [ ] PendingReservations - Aktywne blokady środków z linkiem do zamówienia
+- [x] BalanceCard - Bieżące saldo konta (duża liczba), zablokowane środki
+- [x] TopUpForm - Formularz wpłaty: kwota + metoda płatności (karta/przelew)
+- [x] TransactionHistory - Lista transakcji: typ (wpłata/blokada/rozliczenie), kwota, data
+- [x] PendingReservations - Aktywne blokady środków z linkiem do zamówienia
 
 ### /disputes/new
 
@@ -74,8 +74,8 @@
 
 - [ ] EarningsSummary - Zarobki: dzisiaj / ten miesiąc / łącznie (metric cards)
 - [ ] DeviceStatusList - Karty GPU: nazwa, status, aktualny najemca, uptime
-- [ ] ActiveRentalFeed - Lista trwających wypożyczeń z licznikiem czasu
-- [ ] NotificationFeed - Powiadomienia: nowe rezerwacje, zakończenia, zgłoszone spory
+- [x] ActiveRentalFeed - Lista trwających wypożyczeń z licznikiem czasu
+- [ ] NotificationFeed - Powiadomienia: nowe rezerwacje, zakończenia, zgłoszone spory (optional)
 
 ### devices modal
 
@@ -89,7 +89,7 @@
 
 - [ ] DeviceSpecForm - Pola: nazwa, model, VRAM, CUDA cores, cena/h, lokalizacja
 - [ ] FrameworkCheckboxes - Checkboxy: PyTorch, TensorFlow, ONNX, JAX, inne
-- [ ] AvailabilityScheduler - Siatka godzin dostępności (dni tygodnia × godziny)
+- [ ] AvailabilityScheduler - Siatka godzin dostępności (dni tygodnia × godziny) (optional)
 - [ ] AgentInstallInstructions - Instrukcja instalacji Node Agenta z kopiowanym tokenem
 - [ ] ValidationSummary - Podsumowanie błędów walidacji przed wysłaniem
 
@@ -102,10 +102,10 @@
 
 ### /owner/earnings
 
-- [ ] RevenueChart - Wykres słupkowy zarobków miesięcznie (ostatnie 12 mies.)
-- [ ] PayoutHistory - Historia wypłat: data, kwota, status (zrealizowana/oczekuje)
-- [ ] PayoutAccountForm - Formularz konta bankowego / PayPal do wypłat
-- [ ] InvoiceExport - Eksport faktur / zestawień w PDF lub CSV
+- [ ] RevenueChart - Wykres słupkowy zarobków miesięcznie (ostatnie 12 mies.) (optional)
+- [x] PayoutHistory - Historia wypłat: data, kwota, status (zrealizowana/oczekuje)
+- [x] PayoutAccountForm - Formularz konta bankowego / PayPal do wypłat
+- [ ] InvoiceExport - Eksport faktur / zestawień w PDF lub CSV (optional)
 
 ## Admin
 
