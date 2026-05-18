@@ -7,288 +7,142 @@
 <div class="order-page">
 
     <!-- Header -->
-
     <div class="order-header">
-
         <div>
-
-            <div class="order-subtitle">
-                Order #@OrderId
-            </div>
-
-            <h1 class="order-title">
-                RTX 4090 • Workstation Alpha
-            </h1>
-
+            <div class="order-subtitle">Order #@OrderId</div>
+            <h1 class="order-title">RTX 4090 • Workstation Alpha</h1>
         </div>
 
-        <MudChip T="string"
-                 Color="Color.Success"
-                 Variant="Variant.Filled">
-
+        <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">
             Active Session
-
         </MudChip>
 
     </div>
 
     <!-- Live Stats -->
-
     <div class="stats-grid">
-
         <!-- Countdown -->
-
         <MudPaper Class="stat-card" Elevation="0">
-
-            <div class="stat-label">
-                Remaining Time
-            </div>
-
-            <div class="countdown-value">
-                @RemainingTime.ToString(@"hh\:mm\:ss")
-            </div>
-
-            <div class="stat-hint">
-                Session ends at @EndTime.ToString("HH:mm:ss")
-            </div>
-
+            <div class="stat-label">Remaining Time</div>
+            <div class="countdown-value">@RemainingTime.ToString(@"hh\:mm\:ss")</div>
+            <div class="stat-hint">Session ends at @EndTime.ToString("HH:mm:ss")</div>
         </MudPaper>
 
         <!-- Cost -->
-
         <MudPaper Class="stat-card" Elevation="0">
-
-            <div class="stat-label">
-                Live Cost
-            </div>
-
-            <div class="cost-value">
-                $@CurrentCost.ToString("0.00")
-            </div>
-
-            <div class="stat-hint">
-                $2.40 / hour
-            </div>
-
+            <div class="stat-label">Live Cost</div>
+            <div class="cost-value">$@CurrentCost.ToString("0.00")</div>
+            <div class="stat-hint">$2.40 / hour</div>
         </MudPaper>
 
         <!-- Heartbeat -->
-
         <MudPaper Class="stat-card" Elevation="0">
-
-            <div class="stat-label">
-                Agent Status
-            </div>
-
+            <div class="stat-label">Agent Status</div>
             <div class="heartbeat-row">
-
                 <div class="heartbeat-dot"></div>
-
                 <span>Connected</span>
-
             </div>
-
-            <div class="stat-hint">
-                Last heartbeat 4s ago
-            </div>
-
+            <div class="stat-hint">Last heartbeat 4s ago</div>
         </MudPaper>
-
     </div>
 
     <!-- Telemetry -->
-
-    <MudPaper Class="telemetry-card"
-              Elevation="0">
-
+    <MudPaper Class="telemetry-card" Elevation="0">
         <div class="telemetry-header">
-
-            <MudText Typo="Typo.h6">
-                Live GPU Telemetry
-            </MudText>
-
-            <MudChip T="string"
-                     Color="Color.Info"
-                     Variant="Variant.Outlined">
-
-                SSE Stream
-
-            </MudChip>
-
+            <MudText Typo="Typo.h6">Live GPU Telemetry</MudText>
+            <MudChip T="string" Color="Color.Info"Variant="Variant.Outlined">SSE Stream</MudChip>
         </div>
 
-        <MudChart T="double"
-                  ChartType="ChartType.Line"
-                  Labels="ChartLabels"
-                  Data="ChartSeries"
-                  Width="100%"
-                  Height="360px" />
+        <MudChart T="double" ChartType="ChartType.Line" Labels="ChartLabels" Data="ChartSeries" Width="100%" Height="360px" />
 
         <div class="telemetry-legend">
-
             <div class="legend-item">
                 <div class="legend-dot gpu"></div>
                 GPU %
             </div>
-
             <div class="legend-item">
                 <div class="legend-dot memory"></div>
                 VRAM %
             </div>
-
             <div class="legend-item">
                 <div class="legend-dot temp"></div>
                 Temp °C
             </div>
-
         </div>
-
     </MudPaper>
 
     <!-- Connection -->
-
-    <MudPaper Class="connection-card"
-              Elevation="0">
-
+    <MudPaper Class="connection-card" Elevation="0">
         <div class="telemetry-header">
-
-            <MudText Typo="Typo.h6">
-                Connection Details
-            </MudText>
-
+            <MudText Typo="Typo.h6"> Connection Details</MudText>
         </div>
 
         <div class="connection-grid">
-
             <div class="connection-item">
-
-                <div class="connection-label">
-                    Host
-                </div>
-
-                <div class="connection-value">
-                    gpu-12.gpushare.io
-                </div>
-
+                <div class="connection-label">Host</div>
+                <div class="connection-value">gpu-12.gpushare.io</div>
             </div>
 
             <div class="connection-item">
-
-                <div class="connection-label">
-                    Port
-                </div>
-
-                <div class="connection-value">
-                    443
-                </div>
-
+                <div class="connection-label">Port</div>
+                <div class="connection-value">443</div>
             </div>
 
             <div class="connection-item">
-
-                <div class="connection-label">
-                    Protocol
-                </div>
-
-                <div class="connection-value">
-                    WSS
-                </div>
-
+                <div class="connection-label">Protocol</div>
+                <div class="connection-value">WSS</div>
             </div>
 
         </div>
 
         <div class="connection-command">
+            <code>wss://gpu-12.gpushare.io/connect/session_x82A</code>
 
-            <code>
-                wss://gpu-12.gpushare.io/connect/session_x82A
-            </code>
-
-            <MudButton Variant="Variant.Filled"
-                       Size="Size.Small"
-                       OnClick="CopyConnectionString">
-
+            <MudButton Variant="Variant.Filled" Size="Size.Small" OnClick="CopyConnectionString">
                 Copy
-
             </MudButton>
-
         </div>
 
     </MudPaper>
 
     <!-- Actions -->
-
     <div class="actions-row">
-
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Error"
-                   StartIcon="@Icons.Material.Filled.StopCircle"
-                   OnClick="@(() => ShowEndModal = true)">
-
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.StopCircle" OnClick="@(() => ShowEndModal = true)">
             End Session
-
         </MudButton>
 
         @if (CanOpenDispute)
         {
-            <a class="dispute-link"
-               href="@($"/orders/{OrderId}/dispute")">
-
-                Report an Issue
-
-            </a>
+            <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
         }
-
     </div>
-
 </div>
 
 <!-- End Session Modal -->
 
 @if (ShowEndModal)
 {
-    <BaseModal IsVisible="true"
-               Title="End Session"
-               OnClose="CloseEndModal"
-               SizeClass="small">
+    <BaseModal IsVisible="true" Title="End Session" OnClose="CloseEndModal" SizeClass="small">
         <ChildContent>
         <div class="end-session-modal">
-
-            <MudIcon Icon="@Icons.Material.Filled.WarningAmber"
-                     Color="Color.Warning"
-                     Size="Size.Large" />
-
-            <p>
-                Are you sure you want to terminate this GPU session?
-            </p>
-
+            <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" />
+            <p>Are you sure you want to terminate this GPU session?</p>
             <div class="modal-warning">
-
                 Running workloads may be interrupted immediately.
-
             </div>
 
         </div>
         </ChildContent>
         <FooterContent>
-
-            <MudButton Variant="Variant.Text"
-                       OnClick="CloseEndModal">
-
+            <MudButton Variant="Variant.Text" OnClick="CloseEndModal">
                 Cancel
-
             </MudButton>
 
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Error"
-                       OnClick="EndSession">
-
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EndSession">
                 End Session
-
             </MudButton>
 
         </FooterContent>
-
     </BaseModal>
 }
 

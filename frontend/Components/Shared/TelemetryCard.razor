@@ -1,271 +1,139 @@
 @using MudBlazor
+@using MudBlazor.Charts
 
-<div class="telemetry-grid">
+<div class="card telemetry-grid">
 
     <!-- Temperature -->
-
-    <MudPaper Class="telemetry-card"
-              Elevation="0">
-
+    <div class="telemetry-card">
         <div class="telemetry-header">
+            <h4 class="telemetry-title">GPU Temperature</h4>
 
-            <MudText Typo="Typo.h6">
-                GPU Temperature
-            </MudText>
-
-            <MudChip T="string"
-                     Color="@TemperatureColor"
-                     Variant="Variant.Filled">
-
+            <MudChip T="string" Color="@TemperatureColor" Variant="Variant.Filled">
                 @($"{GpuTemperature}°C")
-
             </MudChip>
-
         </div>
 
         <div class="temp-gauge-container">
-
-            <MudProgressCircular Color="@TemperatureColor"
-                                 Size="Size.Large"
-                                 Indeterminate="false"
-                                 Value="@TemperaturePercent"
-                                 Class="temp-gauge" />
-
-            <div class="temp-center">
-
-                <div class="temp-value">
-                    @GpuTemperature°
-                </div>
-
-                <div class="temp-label">
-                    GPU Core
-                </div>
-
-            </div>
-
+            <MudProgressCircular Color="@TemperatureColor" Style="height: 120px; width: 120px" Indeterminate="false" Value="@TemperaturePercent" Class="temp-gauge"> 
+                <ChildContent>
+                    <div class="temp-center">
+                        <div class="temp-value">@GpuTemperature°</div>
+                        <div class="temp-label">GPU Core</div>
+                    </div>
+                </ChildContent>
+            </MudProgressCircular>
         </div>
 
         <div class="temp-thresholds">
-
-            <div class="threshold safe">
-                Safe
-            </div>
-
-            <div class="threshold warning">
-                Warning
-            </div>
-
-            <div class="threshold critical">
-                Critical
-            </div>
-
+            <div class="threshold safe">Safe</div>
+            <div class="threshold warning">Warning</div>
+            <div class="threshold critical">Critical</div>
         </div>
 
-    </MudPaper>
+    </div>
 
     <!-- Heartbeat -->
-
-    <MudPaper Class="telemetry-card"
-              Elevation="0">
-
+    <div class="telemetry-card">
         <div class="telemetry-header">
-
-            <MudText Typo="Typo.h6">
-                Agent Heartbeat
-            </MudText>
-
-            <MudChip T="string"
-                     Color="@(AgentOnline ? Color.Success : Color.Error)"
-                     Variant="Variant.Filled">
-
+            <h4 class="telemetry-title">Agent Heartbeat</h4>
+            <MudChip T="string" Color="@(AgentOnline ? Color.Success : Color.Error)" Variant="Variant.Filled">
                 @(AgentOnline ? "Online" : "Offline")
-
             </MudChip>
-
         </div>
 
         <div class="heartbeat-content">
-
             <div class="heartbeat-item">
-
-                <div class="heartbeat-label">
-                    Last heartbeat
-                </div>
-
-                <div class="heartbeat-value">
-                    @LastHeartbeat
-                </div>
-
+                <div class="heartbeat-label">Last heartbeat</div>
+                <div class="heartbeat-value">@LastHeartbeat</div>
             </div>
 
             <div class="heartbeat-item">
-
-                <div class="heartbeat-label">
-                    Agent version
-                </div>
-
-                <div class="heartbeat-value">
-                    v1.4.2
-                </div>
-
+                <div class="heartbeat-label">Agent version</div>
+                <div class="heartbeat-value">v1.4.2</div>
             </div>
 
             <div class="heartbeat-item">
-
-                <div class="heartbeat-label">
-                    Node uptime
-                </div>
-
-                <div class="heartbeat-value">
-                    12d 4h
-                </div>
-
+                <div class="heartbeat-label">Node uptime</div>
+                <div class="heartbeat-value">12d 4h</div>
             </div>
-
         </div>
 
-    </MudPaper>
+    </div>
 
     <!-- Utilization -->
-
-    <MudPaper Class="telemetry-card telemetry-wide"
-              Elevation="0">
-
+    @* to do: different time ranges, only one chart at once *@
+    <div class="telemetry-card telemetry-wide">
         <div class="telemetry-header">
-
-            <MudText Typo="Typo.h6">
-                GPU Utilization
-            </MudText>
-
-            <MudChip T="string"
-                     Color="Color.Info"
-                     Variant="Variant.Outlined">
-
+            <h4 class="telemetry-title">GPU Utilization</h4>
+            <MudChip T="string" Color="Color.Info" Variant="Variant.Outlined">
                 Last 30 min
-
             </MudChip>
-
         </div>
 
-        <MudChart T="double"
-                  ChartType="ChartType.Line"
-                  Labels="UtilizationLabels"
-                  Data="UtilizationSeries"
-                  Width="100%"
-                  Height="320px" />
+        <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@UtilizationLabels" ChartSeries="@UtilizationSeries" Width="100%"Height="320px" MatchBoundsToSize=true ChartOptions="@options" />
+        @* <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@chartLabels" ChartSeries="@chartData"
+                    Width="100%" Height="300px" MatchBoundsToSize=true ChartOptions="@options" /> *@
 
         <div class="chart-legend">
-
             <div class="legend-item">
-
                 <div class="legend-dot gpu"></div>
-
                 <span>GPU Usage</span>
-
             </div>
 
             <div class="legend-item">
-
                 <div class="legend-dot vram"></div>
-
                 <span>VRAM Usage</span>
-
             </div>
-
         </div>
 
-    </MudPaper>
+    </div>
 
     <!-- Metric History -->
-
-    <MudPaper Class="telemetry-card telemetry-wide"
-              Elevation="0">
+    <div class="telemetry-card telemetry-wide">
 
         <div class="telemetry-header">
-
-            <MudText Typo="Typo.h6">
-                Metric History
-            </MudText>
+            <h4 class="telemetry-title">Metric History</h4>
 
             <div class="metric-actions">
+                <select T="string" @bind="@SelectedRange" Dense="true" Variant="Variant.Outlined">
+                    <option value="1h">1 Hour</option>
+                    <option value="24h">24 Hours</option>
+                    <option value="7d">7 Days</option>
+                </select>
 
-                <MudSelect T="string"
-                           @bind-Value="SelectedRange"
-                           Dense="true"
-                           Variant="Variant.Outlined">
-
-                    <MudSelectItem Value='"1h"'>1 Hour</MudSelectItem>
-                    <MudSelectItem Value='"24h"'>24 Hours</MudSelectItem>
-                    <MudSelectItem Value='"7d"'>7 Days</MudSelectItem>
-
-                </MudSelect>
-
-                <MudButton Variant="Variant.Outlined"
-                           Color="Color.Primary"
-                           Size="Size.Small"
-                           StartIcon="@Icons.Material.Filled.Download">
-
+                @* <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Medium" StartIcon="@Icons.Material.Filled.Download">
                     Export CSV
-
-                </MudButton>
-
+                </MudButton> *@
+                <button class="btn btn-primary" style="width: 250px;" @onclick="ExportCsv">
+                    <MudIcon Icon="@Icons.Material.Filled.Download" />
+                    Export CSV
+                </button>
             </div>
-
         </div>
 
         <div class="metrics-summary-grid">
-
             <div class="metric-box">
-
-                <div class="metric-title">
-                    Avg GPU Usage
-                </div>
-
-                <div class="metric-value">
-                    68%
-                </div>
-
+                <div class="metric-title">Avg GPU Usage</div>
+                <div class="metric-value">68%</div>
             </div>
 
             <div class="metric-box">
-
-                <div class="metric-title">
-                    Avg VRAM Usage
-                </div>
-
-                <div class="metric-value">
-                    71%
-                </div>
-
+                <div class="metric-title">Avg VRAM Usage</div>
+                <div class="metric-value">71%</div>
             </div>
 
             <div class="metric-box">
-
-                <div class="metric-title">
-                    Peak Temperature
-                </div>
-
-                <div class="metric-value">
-                    82°C
-                </div>
-
+                <div class="metric-title">Peak Temperature</div>
+                <div class="metric-value">82°C</div>
             </div>
 
             <div class="metric-box">
-
-                <div class="metric-title">
-                    Runtime
-                </div>
-
-                <div class="metric-value">
-                    142h
-                </div>
-
+                <div class="metric-title">Runtime</div>
+                <div class="metric-value">142h</div>
             </div>
-
         </div>
 
-    </MudPaper>
+    </div>
 
 </div>
 
@@ -293,9 +161,31 @@ private int GpuTemperature = 72;
         "0m", "5m", "10m", "15m", "20m", "25m", "30m"
     };
 
-    private double[][] UtilizationSeries =
-    {
-        new double[] { 22, 48, 65, 82, 76, 61, 58 },
-        new double[] { 18, 35, 57, 72, 69, 63, 60 }
+    private List<ChartSeries<double>> UtilizationSeries =
+    new() {
+        new ChartSeries<double> { Name = "GPU Usage", Data = new double[] { 22, 48, 65, 82, 76, 61, 58 } },
+        new ChartSeries<double> { Name = "VRAM Usage", Data = new double[] { 18, 35, 57, 72, 69, 63, 60 } }
     };
+
+    private LineChartOptions options = new(){};
+
+    protected override void OnInitialized()
+    {
+        options.SeriesDisplayOverrides = new Dictionary<IChartSeries, SeriesDisplayOverride>()
+        {
+            { UtilizationSeries[0], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } },
+            { UtilizationSeries[1], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } }
+        };
+        options.ShowDataMarkers = true;
+    }
+
+    private void ExportCsv()
+    {
+        // Placeholder for CSV export functionality
+        Console.WriteLine("Exporting telemetry data to CSV...");
+    }
 }

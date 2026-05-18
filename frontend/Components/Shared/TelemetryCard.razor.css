@@ -2,19 +2,14 @@
 
 .telemetry-grid {
     display: grid;
-
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 24px;
 }
 
 .telemetry-card {
     padding: 24px;
-
     border-radius: 18px;
-
-    border: 1px solid #dce7ff;
-
+    border: 1px solid #4C6EB2;
     background: white;
 }
 
@@ -24,12 +19,15 @@
 
 .telemetry-header {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
     margin-bottom: 24px;
+}
+
+.telemetry-title {
+    margin-bottom: 0px;
+    color: #0a1128;
+    font-size: 21px;
 }
 
 .temp-gauge-container {
@@ -57,8 +55,8 @@
 
 .temp-value {
     font-size: 2rem;
-
     font-weight: 700;
+    color: #0a1128;
 }
 
 .temp-label {
