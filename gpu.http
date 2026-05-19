@@ -1,25 +1,64 @@
-@host = http://localhost:2137
+@backend = http://localhost:2137
+@coordinator = http://localhost:2138
 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJhZG1pbiI6ZmFsc2UsImV4cCI6MTc3OTA5NDAwNywiaWF0IjoxNzc5MDkzNDA3fQ.jU7WEu4Yg4rDq3nqp71doF7nI_bV9fdjzgx8Kwx-rOw
+# copy the token from /api/users/register or /api/users/login response
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJhZG1pbiI6ZmFsc2UsImV4cCI6MTc3OTE5MDk3OSwiaWF0IjoxNzc5MTkwMzc5fQ.39DjdNZK1_HeQ69J0RsmnZJxo9ra0wur8USw9H3NvL8
+@agentId = 1
+@deviceId = 1
 
-### Prawidłowe Logowanie
-POST {{host}}/api/users/login
+@username = test
+@password = maklowicz
+
+### Backend health
+GET {{backend}}/health
+
+### Coordinator health
+GET {{coordinator}}/health
+
+### Register a user
+POST {{backend}}/api/users/register
 Content-Type: application/json
 
-{"username": "test", "password": "12345678"}
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
 
-### Logowanie z blednym haslem
-POST {{host}}/api/users/login
+### Login
+POST {{backend}}/api/users/login
 Content-Type: application/json
 
-{"username": "test", "password": "invalid-password"}
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
 
-
-### Pobranie urzadzen
-
-POST {{host}}/api/devices 
+### Register device
+POST {{backend}}/api/devices
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
-{"name":"GPU_Maklowicza1","gpuModel":"RTX 5090","vramMb":32000,"cudaCores":21760,"pricePerHourUsdCents":2000, "driverVersion": "596.36"}
+{
+  "name": "GPU_Maklowicza1",
+  "gpuModel": "RTX 5090",
+  "vramMb": 32000,
+  "cudaCores": 21760,
+  "pricePerHourUsdCents": 2000,
+  "driverVersion": "596.36"
+}
 
+### Schedule a job
+POST {{coordinator}}/api/jobs
+Content-Type: application/json
+
+{
+  "deviceId": "{{deviceId}}",
+  "resources": {
+    "vRamMb": 8000,
+    "cudaCores": 4000
+  },
+  "maxTimeSec": 3600
+}
+
+### Agent status
+GET {{coordinator}}/api/agents/{{agentId}}/status
