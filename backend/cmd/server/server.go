@@ -35,7 +35,7 @@ func NewServer(store repository.Store) *http.Server {
 
 	envIp := os.Getenv("BACKEND_IP")
 	if envIp == "" {
-		envIp = "10.5.0.2"
+		envIp = "127.0.0.1"
 	}
 	ip := flag.String("ip", envIp, "IP of the backend service")
 	port := flag.String("port", "2137", "port of the backend service")

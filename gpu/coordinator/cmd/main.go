@@ -11,7 +11,7 @@ import (
 func main() {
 	envIp := os.Getenv("GPU_IP")
 	if envIp == "" {
-		envIp = "10.5.0.3"
+		envIp = "127.0.0.1"
 	}
 	ip := flag.String("ip", envIp, "IP of the coordinator service")
 	restPort := flag.String("rest-port", "2138", "port of the coordinator REST service")
