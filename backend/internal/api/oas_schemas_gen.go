@@ -13,8 +13,19 @@ func (s *DefaultStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
-// AddDeviceBadRequest is response for AddDevice operation.
-type AddDeviceBadRequest struct{}
+type AddDeviceBadRequest struct {
+	ErrorMessage string `json:"errorMessage"`
+}
+
+// GetErrorMessage returns the value of ErrorMessage.
+func (s *AddDeviceBadRequest) GetErrorMessage() string {
+	return s.ErrorMessage
+}
+
+// SetErrorMessage sets the value of ErrorMessage.
+func (s *AddDeviceBadRequest) SetErrorMessage(val string) {
+	s.ErrorMessage = val
+}
 
 func (*AddDeviceBadRequest) addDeviceRes() {}
 
@@ -226,6 +237,43 @@ type ChangePasswordUnauthorized struct{}
 
 func (*ChangePasswordUnauthorized) changePasswordRes() {}
 
+// Ref: #
+type ConnectionDetails struct {
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	Protocol string `json:"protocol"`
+}
+
+// GetHost returns the value of Host.
+func (s *ConnectionDetails) GetHost() string {
+	return s.Host
+}
+
+// GetPort returns the value of Port.
+func (s *ConnectionDetails) GetPort() string {
+	return s.Port
+}
+
+// GetProtocol returns the value of Protocol.
+func (s *ConnectionDetails) GetProtocol() string {
+	return s.Protocol
+}
+
+// SetHost sets the value of Host.
+func (s *ConnectionDetails) SetHost(val string) {
+	s.Host = val
+}
+
+// SetPort sets the value of Port.
+func (s *ConnectionDetails) SetPort(val string) {
+	s.Port = val
+}
+
+// SetProtocol sets the value of Protocol.
+func (s *ConnectionDetails) SetProtocol(val string) {
+	s.Protocol = val
+}
+
 // DefaultStatusCode wraps Error with StatusCode.
 type DefaultStatusCode struct {
 	StatusCode int
@@ -425,8 +473,19 @@ type GetDeviceStatusNotFound struct{}
 
 func (*GetDeviceStatusNotFound) getDeviceStatusRes() {}
 
-// GetDevicesBadRequest is response for GetDevices operation.
-type GetDevicesBadRequest struct{}
+type GetDevicesBadRequest struct {
+	ErrorMessage string `json:"errorMessage"`
+}
+
+// GetErrorMessage returns the value of ErrorMessage.
+func (s *GetDevicesBadRequest) GetErrorMessage() string {
+	return s.ErrorMessage
+}
+
+// SetErrorMessage sets the value of ErrorMessage.
+func (s *GetDevicesBadRequest) SetErrorMessage(val string) {
+	s.ErrorMessage = val
+}
 
 func (*GetDevicesBadRequest) getDevicesRes() {}
 
@@ -569,6 +628,105 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+// OrderDeviceBadRequest is response for OrderDevice operation.
+type OrderDeviceBadRequest struct{}
+
+func (*OrderDeviceBadRequest) orderDeviceRes() {}
+
+type OrderDeviceCreated struct {
+	OrderId                string            `json:"orderId"`
+	Status                 RentalStatus      `json:"status"`
+	ConnectionDetails      ConnectionDetails `json:"connectionDetails"`
+	TotalReservedCostCents int               `json:"totalReservedCostCents"`
+}
+
+// GetOrderId returns the value of OrderId.
+func (s *OrderDeviceCreated) GetOrderId() string {
+	return s.OrderId
+}
+
+// GetStatus returns the value of Status.
+func (s *OrderDeviceCreated) GetStatus() RentalStatus {
+	return s.Status
+}
+
+// GetConnectionDetails returns the value of ConnectionDetails.
+func (s *OrderDeviceCreated) GetConnectionDetails() ConnectionDetails {
+	return s.ConnectionDetails
+}
+
+// GetTotalReservedCostCents returns the value of TotalReservedCostCents.
+func (s *OrderDeviceCreated) GetTotalReservedCostCents() int {
+	return s.TotalReservedCostCents
+}
+
+// SetOrderId sets the value of OrderId.
+func (s *OrderDeviceCreated) SetOrderId(val string) {
+	s.OrderId = val
+}
+
+// SetStatus sets the value of Status.
+func (s *OrderDeviceCreated) SetStatus(val RentalStatus) {
+	s.Status = val
+}
+
+// SetConnectionDetails sets the value of ConnectionDetails.
+func (s *OrderDeviceCreated) SetConnectionDetails(val ConnectionDetails) {
+	s.ConnectionDetails = val
+}
+
+// SetTotalReservedCostCents sets the value of TotalReservedCostCents.
+func (s *OrderDeviceCreated) SetTotalReservedCostCents(val int) {
+	s.TotalReservedCostCents = val
+}
+
+func (*OrderDeviceCreated) orderDeviceRes() {}
+
+// OrderDevicePaymentRequired is response for OrderDevice operation.
+type OrderDevicePaymentRequired struct{}
+
+func (*OrderDevicePaymentRequired) orderDeviceRes() {}
+
+type OrderDeviceReq struct {
+	// Id of device to rent.
+	DeviceId string `json:"deviceId"`
+	// Name of Docker image to run on the device.
+	DockerImage string `json:"dockerImage"`
+	// Maximum execution duration in hours as a double-precision floating number. The minimum is 0.0002
+	// (slightly less than 1 second).
+	DurationHours float64 `json:"durationHours"`
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *OrderDeviceReq) GetDeviceId() string {
+	return s.DeviceId
+}
+
+// GetDockerImage returns the value of DockerImage.
+func (s *OrderDeviceReq) GetDockerImage() string {
+	return s.DockerImage
+}
+
+// GetDurationHours returns the value of DurationHours.
+func (s *OrderDeviceReq) GetDurationHours() float64 {
+	return s.DurationHours
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *OrderDeviceReq) SetDeviceId(val string) {
+	s.DeviceId = val
+}
+
+// SetDockerImage sets the value of DockerImage.
+func (s *OrderDeviceReq) SetDockerImage(val string) {
+	s.DockerImage = val
+}
+
+// SetDurationHours sets the value of DurationHours.
+func (s *OrderDeviceReq) SetDurationHours(val float64) {
+	s.DurationHours = val
+}
+
 type RegisterBadRequestApplicationJSON string
 
 func (*RegisterBadRequestApplicationJSON) registerRes() {}
@@ -601,6 +759,69 @@ func (s *RegisterReq) SetUsername(val string) {
 // SetPassword sets the value of Password.
 func (s *RegisterReq) SetPassword(val string) {
 	s.Password = val
+}
+
+// Ref: #
+type RentalStatus string
+
+const (
+	RentalStatusWAITINGFORSTART RentalStatus = "WAITING_FOR_START"
+	RentalStatusRUNNING         RentalStatus = "RUNNING"
+	RentalStatusCOMPLETED       RentalStatus = "COMPLETED"
+	RentalStatusSUSPENDED       RentalStatus = "SUSPENDED"
+	RentalStatusFAILURE         RentalStatus = "FAILURE"
+)
+
+// AllValues returns all RentalStatus values.
+func (RentalStatus) AllValues() []RentalStatus {
+	return []RentalStatus{
+		RentalStatusWAITINGFORSTART,
+		RentalStatusRUNNING,
+		RentalStatusCOMPLETED,
+		RentalStatusSUSPENDED,
+		RentalStatusFAILURE,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s RentalStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case RentalStatusWAITINGFORSTART:
+		return []byte(s), nil
+	case RentalStatusRUNNING:
+		return []byte(s), nil
+	case RentalStatusCOMPLETED:
+		return []byte(s), nil
+	case RentalStatusSUSPENDED:
+		return []byte(s), nil
+	case RentalStatusFAILURE:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *RentalStatus) UnmarshalText(data []byte) error {
+	switch RentalStatus(data) {
+	case RentalStatusWAITINGFORSTART:
+		*s = RentalStatusWAITINGFORSTART
+		return nil
+	case RentalStatusRUNNING:
+		*s = RentalStatusRUNNING
+		return nil
+	case RentalStatusCOMPLETED:
+		*s = RentalStatusCOMPLETED
+		return nil
+	case RentalStatusSUSPENDED:
+		*s = RentalStatusSUSPENDED
+		return nil
+	case RentalStatusFAILURE:
+		*s = RentalStatusFAILURE
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #

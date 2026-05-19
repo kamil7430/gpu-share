@@ -28,8 +28,15 @@ func encodeAddDeviceResponse(response AddDeviceRes, w http.ResponseWriter, span 
 		return nil
 
 	case *AddDeviceBadRequest:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
 
 		return nil
 
@@ -111,8 +118,15 @@ func encodeGetDevicesResponse(response GetDevicesRes, w http.ResponseWriter, spa
 		return nil
 
 	case *GetDevicesBadRequest:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
 
 		return nil
 
@@ -158,6 +172,38 @@ func encodeLoginResponse(response LoginRes, w http.ResponseWriter, span trace.Sp
 	case *LoginNotFound:
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeOrderDeviceResponse(response OrderDeviceRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *OrderDeviceCreated:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(201)
+		span.SetStatus(codes.Ok, http.StatusText(201))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *OrderDeviceBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	case *OrderDevicePaymentRequired:
+		w.WriteHeader(402)
+		span.SetStatus(codes.Error, http.StatusText(402))
 
 		return nil
 

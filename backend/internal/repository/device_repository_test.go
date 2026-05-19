@@ -21,7 +21,7 @@ func TestDatabaseDeviceRepository(t *testing.T) {
 	deviceId := "2137"
 
 	resetDbContent := func() {
-		tx.Exec("TRUNCATE TABLE devices;")
+		tx.Exec("TRUNCATE TABLE users, orders, devices;")
 		tx.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state) " +
 			"VALUES ('" + deviceId + "', 'TestCard', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'UNAVAILABLE');")
 	}

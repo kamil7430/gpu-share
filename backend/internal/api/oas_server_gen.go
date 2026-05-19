@@ -28,7 +28,8 @@ type Handler interface {
 	GetDeviceStatus(ctx context.Context, params GetDeviceStatusParams) (GetDeviceStatusRes, error)
 	// GetDevices implements getDevices operation.
 	//
-	// Get list of devices that match the provided filters.
+	// Get list of devices that match the provided filters. If an auth token is provided, it returns only
+	// the devices owned by the authenticated user.
 	//
 	// GET /api/devices
 	GetDevices(ctx context.Context, params GetDevicesParams) (GetDevicesRes, error)
@@ -45,6 +46,12 @@ type Handler interface {
 	//
 	// POST /api/users/login
 	Login(ctx context.Context, req *LoginReq) (LoginRes, error)
+	// OrderDevice implements orderDevice operation.
+	//
+	// Initialize a device rental.
+	//
+	// POST /api/orders
+	OrderDevice(ctx context.Context, req *OrderDeviceReq) (OrderDeviceRes, error)
 	// Register implements register operation.
 	//
 	// Register a user.

@@ -42,7 +42,8 @@ func (UnimplementedHandler) GetDeviceStatus(ctx context.Context, params GetDevic
 
 // GetDevices implements getDevices operation.
 //
-// Get list of devices that match the provided filters.
+// Get list of devices that match the provided filters. If an auth token is provided, it returns only
+// the devices owned by the authenticated user.
 //
 // GET /api/devices
 func (UnimplementedHandler) GetDevices(ctx context.Context, params GetDevicesParams) (r GetDevicesRes, _ error) {
@@ -65,6 +66,15 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 //
 // POST /api/users/login
 func (UnimplementedHandler) Login(ctx context.Context, req *LoginReq) (r LoginRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// OrderDevice implements orderDevice operation.
+//
+// Initialize a device rental.
+//
+// POST /api/orders
+func (UnimplementedHandler) OrderDevice(ctx context.Context, req *OrderDeviceReq) (r OrderDeviceRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

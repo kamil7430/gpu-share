@@ -24,6 +24,7 @@ const (
 type AgentMessage struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	AgentId string                 `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	Token   string                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 	// Types that are valid to be assigned to Payload:
 	//
 	//	*AgentMessage_Heartbeat
@@ -70,6 +71,13 @@ func (x *AgentMessage) GetAgentId() string {
 	return ""
 }
 
+func (x *AgentMessage) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
 func (x *AgentMessage) GetPayload() isAgentMessage_Payload {
 	if x != nil {
 		return x.Payload
@@ -100,11 +108,11 @@ type isAgentMessage_Payload interface {
 }
 
 type AgentMessage_Heartbeat struct {
-	Heartbeat *Heartbeat `protobuf:"bytes,2,opt,name=heartbeat,proto3,oneof"`
+	Heartbeat *Heartbeat `protobuf:"bytes,3,opt,name=heartbeat,proto3,oneof"`
 }
 
 type AgentMessage_TaskUpdate struct {
-	TaskUpdate *TaskUpdate `protobuf:"bytes,3,opt,name=task_update,json=taskUpdate,proto3,oneof"`
+	TaskUpdate *TaskUpdate `protobuf:"bytes,4,opt,name=task_update,json=taskUpdate,proto3,oneof"`
 }
 
 func (*AgentMessage_Heartbeat) isAgentMessage_Payload() {}
@@ -405,11 +413,12 @@ var File_proto_agent_proto protoreflect.FileDescriptor
 
 const file_proto_agent_proto_rawDesc = "" +
 	"\n" +
-	"\x11proto/agent.proto\x12\x05agent\"\x9c\x01\n" +
+	"\x11proto/agent.proto\x12\x05agent\"\xb2\x01\n" +
 	"\fAgentMessage\x12\x19\n" +
-	"\bagent_id\x18\x01 \x01(\tR\aagentId\x120\n" +
-	"\theartbeat\x18\x02 \x01(\v2\x10.agent.HeartbeatH\x00R\theartbeat\x124\n" +
-	"\vtask_update\x18\x03 \x01(\v2\x11.agent.TaskUpdateH\x00R\n" +
+	"\bagent_id\x18\x01 \x01(\tR\aagentId\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\x120\n" +
+	"\theartbeat\x18\x03 \x01(\v2\x10.agent.HeartbeatH\x00R\theartbeat\x124\n" +
+	"\vtask_update\x18\x04 \x01(\v2\x11.agent.TaskUpdateH\x00R\n" +
 	"taskUpdateB\t\n" +
 	"\apayload\"k\n" +
 	"\x12CoordinatorMessage\x12!\n" +

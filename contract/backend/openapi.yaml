@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   version: 0.0.1
   title: GPU Share API
-  description: TODO
+  description: Allows for managing users and devices
 
 paths:
   /health:
@@ -12,6 +12,8 @@ paths:
     $ref: "./paths/api/devices/devices.yaml"
   /api/devices/{deviceId}/status:
     $ref: "./paths/api/devices/status.yaml"
+  /api/orders:
+    $ref: "./paths/api/orders/orders.yaml"
   /api/users/changePassword:
     $ref: "./paths/api/users/changePassword.yaml"
   /api/users/login:

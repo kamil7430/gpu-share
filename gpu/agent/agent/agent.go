@@ -26,13 +26,14 @@ func StartGrpcClient(ctx context.Context, url string) (Stream, error) {
 	return client.Connect(ctx)
 }
 
-func SendHelloMessage(stream Stream, agentId string) error {
+func SendHelloMessage(stream Stream, agentId string, token string) error {
 	return stream.Send(&proto.AgentMessage{
 		AgentId: agentId,
+		Token: token,
 	})
 }
 
-func SendHeartbeats(ctx context.Context, stream Stream, agentId string) error {
+func SendHeartbeats(ctx context.Context, stream Stream, agentId string, token string) error {
 	ticker := time.NewTicker(2 * time.Second)
 	defer ticker.Stop()
 
@@ -44,6 +45,7 @@ func SendHeartbeats(ctx context.Context, stream Stream, agentId string) error {
 		case <-ticker.C:
 			err := stream.Send(&proto.AgentMessage{
 				AgentId: agentId,
+				Token: token,
 				Payload: &proto.AgentMessage_Heartbeat{
 					Heartbeat: &proto.Heartbeat{
 						GpuUtil: rand.Float32(),

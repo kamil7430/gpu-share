@@ -20,7 +20,11 @@ func performMigration(db *gorm.DB) error {
 	// tree first. In other words, if the dependency tree looks like this:
 	//     C <- B1 <- A -> B2,
 	// we should migrate C before B1, and B1 together with B2 before A.
-	return db.AutoMigrate(&model.User{}, &model.Device{})
+	return db.AutoMigrate(
+		&model.User{},
+		&model.Device{},
+		&model.Order{},
+	)
 }
 
 func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
