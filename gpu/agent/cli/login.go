@@ -16,7 +16,9 @@ func LoginCmd(args []string) {
 	username := fs.String("u", "", "username")
 	password := fs.String("p", "", "password")
 	addr := fs.String("addr", backendIp()+":"+backendPort, "backend addr")
-	fs.Parse(args)
+	if err := fs.Parse(args); err != nil {
+		return
+	}
 
 	reader := bufio.NewReader(os.Stdin)
 
