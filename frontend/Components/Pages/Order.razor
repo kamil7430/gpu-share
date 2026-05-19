@@ -1,96 +1,96 @@
 @page "/order/{OrderId:int}"
 
 @using MudBlazor
+@using MudBlazor.Charts
 @implements IDisposable
 @inject IJSRuntime JS
 
-<div class="order-page">
-
-    <!-- Header -->
-    <div class="order-header">
-        <div>
-            <div class="order-subtitle">Order #@OrderId</div>
-            <h1 class="order-title">RTX 4090 • Workstation Alpha</h1>
-        </div>
-
-        <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">
-            Active Session
-        </MudChip>
-
+<div class="cards-container">
+    <div class="page-top" style="margin-bottom: 8px;">
+        <NavLink href="/profile" class="back-link">&lt; Back to Profile</NavLink>
     </div>
 
-    <!-- Live Stats -->
-    <div class="stats-grid">
-        <!-- Countdown -->
-        <MudPaper Class="stat-card" Elevation="0">
-            <div class="stat-label">Remaining Time</div>
-            <div class="countdown-value">@RemainingTime.ToString(@"hh\:mm\:ss")</div>
-            <div class="stat-hint">Session ends at @EndTime.ToString("HH:mm:ss")</div>
-        </MudPaper>
-
-        <!-- Cost -->
-        <MudPaper Class="stat-card" Elevation="0">
-            <div class="stat-label">Live Cost</div>
-            <div class="cost-value">$@CurrentCost.ToString("0.00")</div>
-            <div class="stat-hint">$2.40 / hour</div>
-        </MudPaper>
-
-        <!-- Heartbeat -->
-        <MudPaper Class="stat-card" Elevation="0">
-            <div class="stat-label">Agent Status</div>
-            <div class="heartbeat-row">
-                <div class="heartbeat-dot"></div>
-                <span>Connected</span>
+    <div class="card">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <div class="page-subtitle">Order #@OrderId</div>
+                <h1 style="margin: 0;">RTX 4090 • Workstation Alpha</h1>
             </div>
-            <div class="stat-hint">Last heartbeat 4s ago</div>
-        </MudPaper>
+
+            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">
+                Active Session
+            </MudChip>
+        </div>
+
+        <!-- Live Stats -->
+        <div class="stats-grid">
+            <!-- Countdown -->
+            <div class="spec-box">
+                <div class="label">Remaining Time</div>
+                <div class="value">@RemainingTime.ToString(@"hh\:mm\:ss")</div>
+                <div class="hint">Session ends at @EndTime.ToString("HH:mm:ss")</div>
+            </div>
+
+            <!-- Cost -->
+            <div class="spec-box">
+                <div class="label">Live Cost</div>
+                <div class="value">$@CurrentCost.ToString("0.00")</div>
+                <div class="hint">$2.40 / hour</div>
+            </div>
+
+            <!-- Heartbeat -->
+            <div class="spec-box">
+                <div class="label">Agent Status</div>
+                <div class="heartbeat-row">
+                    <div class="heartbeat-dot"></div>
+                    <span class="value">Connected</span>
+                </div>
+                <div class="hint">Last heartbeat 4s ago</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex-row" style="justify-content: space-between;">
+            <button class="btn-danger" @onclick='() => ShowEndModal = true'>
+                <MudIcon Icon="@Icons.Material.Filled.StopCircle" Style="margin-right: 4px;" />End Session
+            </button>
+
+            @if (CanOpenDispute)
+            {
+                <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
+            }
+        </div>
     </div>
 
     <!-- Telemetry -->
-    <MudPaper Class="telemetry-card" Elevation="0">
+    <div class="card">
         <div class="telemetry-header">
-            <MudText Typo="Typo.h6">Live GPU Telemetry</MudText>
+            <h3>Live GPU Telemetry</h3>
             <MudChip T="string" Color="Color.Info"Variant="Variant.Outlined">SSE Stream</MudChip>
         </div>
 
-        <MudChart T="double" ChartType="ChartType.Line" Labels="ChartLabels" Data="ChartSeries" Width="100%" Height="360px" />
-
-        <div class="telemetry-legend">
-            <div class="legend-item">
-                <div class="legend-dot gpu"></div>
-                GPU %
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot memory"></div>
-                VRAM %
-            </div>
-            <div class="legend-item">
-                <div class="legend-dot temp"></div>
-                Temp °C
-            </div>
-        </div>
-    </MudPaper>
+        <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@ChartLabels" ChartSeries="@ChartSeries" Width="100%" Height="360px" MatchBoundsToSize=true ChartOptions="@options"/>
+    </div>
 
     <!-- Connection -->
-    <MudPaper Class="connection-card" Elevation="0">
-        <div class="telemetry-header">
-            <MudText Typo="Typo.h6"> Connection Details</MudText>
-        </div>
+    <div class="card">
+        <h3> Connection Details</h3>
 
-        <div class="connection-grid">
-            <div class="connection-item">
-                <div class="connection-label">Host</div>
-                <div class="connection-value">gpu-12.gpushare.io</div>
+        <div class="stats-grid mt-2">
+            <div class="spec-box">
+                <div class="label">Host</div>
+                <div class="value" style="height: 100%; font-size: large;">gpu-12.gpushare.io</div>
             </div>
 
-            <div class="connection-item">
-                <div class="connection-label">Port</div>
-                <div class="connection-value">443</div>
+            <div class="spec-box">
+                <div class="label">Port</div>
+                <div class="value">443</div>
             </div>
 
-            <div class="connection-item">
-                <div class="connection-label">Protocol</div>
-                <div class="connection-value">WSS</div>
+            <div class="spec-box">
+                <div class="label">Protocol</div>
+                <div class="value">WSS</div>
             </div>
 
         </div>
@@ -98,24 +98,12 @@
         <div class="connection-command">
             <code>wss://gpu-12.gpushare.io/connect/session_x82A</code>
 
-            <MudButton Variant="Variant.Filled" Size="Size.Small" OnClick="CopyConnectionString">
-                Copy
-            </MudButton>
+            <button class="btn-dark" @onclick='CopyConnectionString'>
+                <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="width: 16px; height: 16px;" />
+            </button>
         </div>
-
-    </MudPaper>
-
-    <!-- Actions -->
-    <div class="actions-row">
-        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.StopCircle" OnClick="@(() => ShowEndModal = true)">
-            End Session
-        </MudButton>
-
-        @if (CanOpenDispute)
-        {
-            <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
-        }
     </div>
+
 </div>
 
 <!-- End Session Modal -->
@@ -124,24 +112,22 @@
 {
     <BaseModal IsVisible="true" Title="End Session" OnClose="CloseEndModal" SizeClass="small">
         <ChildContent>
-        <div class="end-session-modal">
-            <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" />
-            <p>Are you sure you want to terminate this GPU session?</p>
-            <div class="modal-warning">
-                Running workloads may be interrupted immediately.
+            <div class="end-session-modal">
+                @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" /> *@
+                Are you sure you want to terminate this GPU session?
+                <div class="modal-warning">
+                    Running workloads may be interrupted immediately.
+                </div>
             </div>
-
-        </div>
         </ChildContent>
         <FooterContent>
-            <MudButton Variant="Variant.Text" OnClick="CloseEndModal">
+            <button class="btn-cancel" @onclick="CloseEndModal">
                 Cancel
-            </MudButton>
+            </button>
 
-            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="EndSession">
+            <button class="btn-danger" @onclick="EndSession">
                 End Session
-            </MudButton>
-
+            </button>
         </FooterContent>
     </BaseModal>
 }
@@ -173,15 +159,31 @@
         "0m", "5m", "10m", "15m", "20m", "25m", "30m"
     };
 
-    private double[][] ChartSeries =
+    private List<ChartSeries<double>> ChartSeries = new()
     {
-        new double[] { 20, 45, 60, 88, 72, 64, 58 },
-        new double[] { 15, 30, 52, 70, 68, 60, 55 },
-        new double[] { 48, 55, 60, 78, 81, 75, 71 }
+        new ChartSeries<double> { Name = "GPU Usage", Data = new double[] { 20, 45, 60, 88, 72, 64, 58 } },
+        new ChartSeries<double> { Name = "Memory Usage", Data = new double[] { 15, 30, 52, 70, 68, 60, 55 } },
+        new ChartSeries<double> { Name = "Temperature", Data = new double[] { 48, 55, 60, 78, 81, 75, 71 } }
     };
+
+    private LineChartOptions options = new(){};
 
     protected override void OnInitialized()
     {
+        options.SeriesDisplayOverrides = new Dictionary<IChartSeries, SeriesDisplayOverride>()
+        {
+            { ChartSeries[0], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } },
+            { ChartSeries[1], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } },
+            { ChartSeries[2], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } }
+        };
+        options.ShowDataMarkers = true;
+
         UpdateLiveMetrics();
 
         Timer = new System.Timers.Timer(1000);

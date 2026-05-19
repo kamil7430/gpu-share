@@ -1,17 +1,5 @@
-.device-card {
-    background: white;
-    border: 1px solid #d1e3f8;
-    border-radius: 16px;
-    padding: 40px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin-bottom: 24px;
-}
-
 .wrapper {
-    display: flex;
-    flex-direction: row;
     justify-content: space-between;
-    width: 100%;
     margin-bottom: 10px;
 }
 
@@ -34,38 +22,6 @@
 
 .online { background: #e6ffed; color: #22863a; }
 .offline { background: #ffeef0; color: #cf222e; }
-
-.spec-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-top: 30px;
-}
-
-.spec-box {
-    background: #f8fbff;
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.spec-box-long {
-    grid-column-start: 2;
-    grid-column-end: 4;
-}
-
-.spec-box .label {
-    display: block;
-    font-size: 0.8rem;
-    color: #5c7ebf;
-    margin-bottom: 5px;
-}
-
-.spec-box .value {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #0a1a33;
-}
 
 /* calendar */
 
@@ -209,28 +165,4 @@
 
 .legend-color.available {
     background: #4caf50;
-}
-
-@media (max-width: 1200px) {
-    .spec-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .spec-box-long {
-        grid-column-start: 1;
-        grid-column-end: 3;
-    }   
-}
-
-@media (max-width: 675px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    .full-width { grid-column: span 1; }
-    .spec-grid {
-        grid-template-columns: repeat(1, 1fr);
-    }
-    .spec-box-long {
-        grid-column-start: 1;
-        grid-column-end: 2;
-    }       
 }

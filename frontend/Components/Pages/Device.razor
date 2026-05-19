@@ -2,21 +2,18 @@
 @using MudBlazor.Charts
 
 @* what happens when the reserved time run out but the job is not finished 
-TO-DO:
--availability switch
--click on gpu name to go to device page
+
 *@
 
 <div class="cards-container">
     <div class="page-header" style="margin-bottom: 8px;">
-        <NavLink href="/profile" class="back-link">&lt;- Back to Profile</NavLink>
+        <NavLink href="/profile" class="back-link">&lt; Back to Profile</NavLink>
     </div>
 
     @* Info card *@
     @if (Mode != "add") {
-        <div class="device-card">
-            <div class="view-layout">
-                <div class="wrapper"> 
+        <div class="card">
+            <div class="wrapper flex-row"> 
                     <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
                         @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
                     </div>
@@ -60,7 +57,6 @@ TO-DO:
                         <span class="value">@(string.Join(", ", @gpu.Frameworks))</span>
                     </div>
                 </div>
-            </div>
         </div>
     }
 

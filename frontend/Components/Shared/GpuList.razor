@@ -1,0 +1,90 @@
+@rendermode InteractiveServer
+
+@if (PagedGpus.Count == 0)
+{
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No devices added yet.</p>
+}
+else
+{
+    <div class="results-container">
+        @foreach (var gpu in PagedGpus)
+        {
+            @if (!IsLoading) {
+                <GpuCard gpu="@gpu" authorized="@authorized" />
+            }
+             else 
+            {
+                <div class="gpu-card loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            }
+        }
+
+        <div class="pagination">
+            <button @onclick="PrevPage" disabled="@(_page == 1)">Prev</button>
+
+            <span>Page @_page / @_totalPages</span>
+
+            <button @onclick="NextPage" disabled="@(_page == _totalPages)">Next</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool authorized { get; set; } = false;
+    private static List<Gpu> _allGpus = Enumerable.Range(1, 10).Select(i => new Gpu
+        {
+            Id = i,
+            Name = $"GPU {i}",
+            IsAvailable = i % 2 == 0,
+            VramMb = 24567,
+            CudaCores = 16384,
+            DriverVersion = "535.104",
+            Frameworks = ["PyTorch", "Tensorflow"],
+            PricePerHour = 5
+        }).ToList();
+
+    private List<Gpu> PagedGpus = _allGpus.Take(5).ToList(); // Initial page load
+    private int _page = 1;
+    private int _pageSize = 5;
+    private int _totalPages;
+    private bool isCurrentUser = true; // Mocked login state, replace with actual auth logic
+    private bool IsLoading = true;
+
+    protected override void OnInitialized()
+    {
+        // mock data
+        //_allGpus = [];
+
+        _totalPages = (int)Math.Ceiling(_allGpus.Count / (double)_pageSize);
+
+        LoadPage();
+    }
+
+    private void LoadPage()
+    {
+        PagedGpus = _allGpus
+            .Skip((_page - 1) * _pageSize)
+            .Take(_pageSize)
+            .ToList();
+        IsLoading = false;
+    }
+
+    private void NextPage()
+    {
+        if (_page < _totalPages)
+        {
+            _page++;
+            LoadPage();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_page > 1)
+        {
+            _page--;
+            LoadPage();
+        }
+    }
+}

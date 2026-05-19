@@ -19,6 +19,10 @@ hr {
     margin: 24px 0;
 }
 
+code {
+    color: #f8fbff;
+}
+
 a:hover {
     color: #3b5a8a;
 }
@@ -33,6 +37,10 @@ a:hover {
 
 h1:focus {
     outline: none;
+}
+
+h1 {
+    color: #0a1128;
 }
 
 h3 {
@@ -132,6 +140,7 @@ input, select {
     color: #4C6EB2;
     cursor: pointer;
     text-transform: none;
+    font-size: medium;
 }
 
 .btn-secondary:hover {
@@ -145,6 +154,7 @@ input, select {
     border-radius: 12px;
     padding: 8px 16px;
     cursor: pointer;
+    font-size: medium;
 }
 
 .btn-primary:hover {
@@ -162,8 +172,9 @@ input, select {
     color: white;
     border: none;
     border-radius: 12px;
-    padding: 6px 12px;
+    padding: 8px 16px;
     cursor: pointer;
+    font-size: medium;
 }
 
 .btn-cancel:hover {
@@ -176,23 +187,26 @@ input, select {
     background: none;
     border: none;
     font-size: 1.5rem;
+    padding: 8px 16px;
     cursor: pointer;
     color: #0a1128;
+    font-size: medium;
 }
 
 .btn-close:hover {
     opacity: 1;
 }
 
-/* Close button */
+/* Danger button */
 .btn-danger {
     background-color: #B63939;
     color: white;
     border: none;
     border-radius: 12px;
-    padding: 6px 12px;
+    padding: 8px 16px;
     cursor: pointer;
     width: fit-content;
+    font-size: medium;
 }
 
 .btn-danger:hover {
@@ -200,6 +214,22 @@ input, select {
     color: white;
 }
 
+/* Dark button */
+.btn-dark {
+    background-color: #0f172a;
+    color: #f8fbff;
+    border: none;
+    padding: 8px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: medium;
+}   
+
+.btn-dark:hover {
+    background-color: #1e293b;
+}
+
+/* Badge */
 .badge {
     font-size: 0.8rem;
     padding: 0.5rem 0.75rem;
@@ -210,6 +240,46 @@ input, select {
 .hint {
     font-size: 0.85rem;
     color: #666;
+}
+
+/* Specification Boxes */
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.spec-box {
+    background: #f8fbff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #e7f0ff;
+}
+
+.spec-box-long {
+    grid-column-start: 2;
+    grid-column-end: 4;
+}
+
+.spec-box .label {
+    display: block;
+    font-size: 0.9rem;
+    color: #5c7ebf;
+    margin-bottom: 8px;
+}
+
+.spec-box .value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0a1a33;
+}
+
+.spec-box .hint {
+    margin-top: 10px;
+    color: #777;
+    font-size: 0.8rem;
 }
 
 /* Checkbox list */
@@ -272,5 +342,30 @@ input, select {
 .custom-checkbox:hover .checkmark {
     border-color: #2f4f9f;
 }
+
+@media (max-width: 1200px) {
+    .spec-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .spec-box-long {
+        grid-column-start: 1;
+        grid-column-end: 3;
+    }   
+}
+
+@media (max-width: 675px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .full-width { grid-column: span 1; }
+    .spec-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .spec-box-long {
+        grid-column-start: 1;
+        grid-column-end: 2;
+    }       
+}
+
 
 

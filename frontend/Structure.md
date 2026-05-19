@@ -40,12 +40,12 @@
 
 ### /rentals/:rentalId (/orders/:orderId)
 
-- [ ] CountdownTimer - Pozostały czas wypożyczenia (odliczanie do sekundy)
-- [ ] CostMeter - Narastający koszt sesji w czasie rzeczywistym
-- [ ] TelemetryChart - Wykresy: GPU util %, temp °C, pamięć — WebSocket/SSE stream
-- [ ] ConnectionDetails - Host, port, protokół (WSS), przycisk kopiowania
-- [ ] EndSessionButton - Przycisk zakończenia sesji z potwierdzeniem (modal)
-- [ ] DisputeButton - Link „Zgłoś niezgodność" widoczny po 5 min od startu
+- [x] CountdownTimer - Pozostały czas wypożyczenia (odliczanie do sekundy)
+- [x] CostMeter - Narastający koszt sesji w czasie rzeczywistym
+- [x] TelemetryChart - Wykresy: GPU util %, temp °C, pamięć — WebSocket/SSE stream
+- [x] ConnectionDetails - Host, port, protokół (WSS), przycisk kopiowania
+- [x] EndSessionButton - Przycisk zakończenia sesji z potwierdzeniem (modal)
+- [x] DisputeButton - Link „Zgłoś niezgodność" widoczny po 5 min od startu
 
 ### /rentals (/orders)
 
@@ -64,11 +64,11 @@
 
 ### /disputes/new
 
-- [ ] RentalReference - Automatyczne powiązanie z aktywnym lub ostatnim wypożyczeniem
-- [ ] ReasonSelector - Typ niezgodności: sprzęt niezgodny z ofertą / awaria / problem z rozliczeniem
-- [ ] DetailsTextarea - Opis problemu (min. 50 znaków)
-- [ ] EvidenceUpload - Upload zrzutów ekranu lub logów (maks. 3 pliki, 5MB każdy)
-- [ ] DisputeStatusTracker - Widok postępu sporu po zgłoszeniu (oś czasu stanów)
+- [x] RentalReference - Automatyczne powiązanie z aktywnym lub ostatnim wypożyczeniem
+- [x] ReasonSelector - Typ niezgodności: sprzęt niezgodny z ofertą / awaria / problem z rozliczeniem
+- [x] DetailsTextarea - Opis problemu (min. 50 znaków)
+- [x] EvidenceUpload - Upload zrzutów ekranu lub logów (maks. 3 pliki, 5MB każdy)
+- [x] DisputeStatusTracker - Widok postępu sporu po zgłoszeniu (oś czasu stanów)
 
 ### /profile (own)
 

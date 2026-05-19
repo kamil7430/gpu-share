@@ -183,9 +183,7 @@
 
 .metric-title {
     color: #666;
-
     margin-bottom: 8px;
-
     font-size: 0.9rem;
 }
 
@@ -194,6 +192,9 @@
 
     font-weight: 700;
 }
+
+
+
 
 @media (max-width: 1100px) {
 
