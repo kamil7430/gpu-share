@@ -8,6 +8,8 @@ to buy a gpu themselves.
 
 - `Docker`
 - `Docker Compose`
+- `go v1.26`
+- `.NET v10.0`
 
 ## Usage
 
@@ -33,19 +35,24 @@ the other.
 docker compose down -v
 ```
 
-### Server
+### Running the app
 
 ```bash
 cd docker
 docker compose up --build
 ```
 
-### Tests
+### Running the tests
 
 ```bash
 cd docker/test
 docker compose up --build --abort-on-container-exit
 ```
+
+### Using the REST API
+
+For REST API usage see the [gpu.http](gpu.http) file.
+You can run it using [httpyac](https://httpyac.github.io) or any Jetbrains IDE.
 
 ## Architecture
 
@@ -142,12 +149,11 @@ frontend/                    # Blazor ASP.NET Core frontend
 
 1. Describe the use case and add an Issue.
 2. Describe important decisions in the ADR directory.
-3. Create a new feature branch.
-4. If changing the API, first change the openapi yaml specification and run
-codegen using `cd backend && go generate ./...`
+3. Create a new branch.
+4. For specific development workflow usage see README files in
+backend, frontend or gpu folders.
 5. Add unit and integration tests.
-6. Develop production code.
-7. When the feature is ready, create a pull request.
+6. When the feature is ready, create a pull request.
 
 ## Authors
 
