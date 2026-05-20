@@ -1,0 +1,31 @@
+.form-card {
+    margin-top: 12px;
+}
+
+.upload-hint {
+    margin-top: 12px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.uploaded-files {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.uploaded-file {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

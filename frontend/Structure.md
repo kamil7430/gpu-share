@@ -135,6 +135,5 @@
 
 ### Do ogarnięcia wizualnie:
 - wallet
-- telemetry
 - orders table
-- order
+- badge/chip

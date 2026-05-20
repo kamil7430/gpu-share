@@ -1,0 +1,53 @@
+<div class="card">
+            <div class="flex-row mb-2" style="justify-content: space-between;"> 
+                    <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
+                        @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
+                    </div>
+                    @if (isAuthorized) {
+                        <button class="btn-primary btn-edit" @onclick='() => Mode = "edit"'>
+                            Edit Device
+                        </button>
+                    }
+                </div>
+                
+                <div class="gpu-header">
+                    <h1 style="margin-bottom: 0px;">@gpu.Name</h1>
+                    @if (!isAuthorized) {
+                        <h2 style="margin: 0 20px;">|</h2>
+                        <NavLink href="@($"/profile/{Username}")" class="profile-link">
+                            @Username
+                        </NavLink>
+                    }
+                </div>
+                <p class="model-sub">@gpu.Model</p>
+
+                <div class="spec-grid">
+                    <div class="spec-box">
+                        <span class="label">VRAM</span>
+                        <span class="value">@gpu.VramMb MB</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Cores</span>
+                        <span class="value">@gpu.CudaCores</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Driver</span>
+                        <span class="value">@gpu.DriverVersion</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Price per hour</span>
+                        <span class="value">@gpu.PricePerHour $</span>
+                    </div>
+                    <div class="spec-box spec-box-long">
+                        <span class="label">Supported Frameworks</span>
+                        <span class="value">@(string.Join(", ", @gpu.Frameworks))</span>
+                    </div>
+                </div>
+        </div>
+
+@code {
+    [Parameter] public string? Username { get; set; }
+    [Parameter] public Gpu gpu { get; set; } = new();
+    private string Mode = "view"; // "view", "edit"
+    private bool isAuthorized = true;
+}

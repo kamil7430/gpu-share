@@ -1,0 +1,83 @@
+@page "/device/{Mode}/{Id:int?}"
+@using MudBlazor.Charts
+
+@* what happens when the reserved time run out but the job is not finished 
+
+*@
+
+<div class="cards-container">
+    <div class="page-header" style="margin-bottom: 8px;">
+        <NavLink href="/profile" class="back-link">&lt; Back to Profile</NavLink>
+    </div>
+
+    <!-- Info card -->
+    @if (Mode != "add") {
+        <DeviceInfo Gpu="@gpu" Username="@Username"></DeviceInfo>
+    }
+
+    
+    <!--  Edit form -->
+    @if ((Mode == "edit" || Mode == "add") && isAuthorized)
+    {
+        <EditDeviceForm Gpu="@gpu" Mode="@Mode"></EditDeviceForm>
+    }
+
+    @if (Mode != "add" && isAuthorized) {  
+        //<!-- Telemetry -->
+        <TelemetryCard></TelemetryCard>
+
+        //<!-- Reservation Calendar -->
+        <Calendar></Calendar>
+    }
+
+    @if (Mode != "add" && !isAuthorized) {
+        //<!-- Opinions -->
+        <div class="card">
+            <h4 style="margin-bottom: 16px;">Owner rating: 4.5 </h4>
+            <h4 style="margin-bottom: 24px;">Opinions about this gpu:</h4>
+            <OpinionsList></OpinionsList>
+        </div>
+
+        //<!-- Order form -->
+        <GpuOrderForm></GpuOrderForm>
+    }
+
+</div>
+
+@code {
+    [Parameter] public string Mode { get; set; } = "view"; // "view", "edit"
+    [Parameter] public int? Id { get; set; }
+
+    [Inject] public NavigationManager Navigation { get; set; } = default!;
+
+    private Gpu gpu = new();
+    private bool isAuthorized = true;
+    private string Username = "user1";
+    
+    protected override void OnInitialized()
+    {
+        if (Id.HasValue)
+        {
+            gpu = new Gpu
+            {
+                Name = "Workstation-Alpha",
+                Model = "RTX 4090",
+                VramMb = 24576,
+                CudaCores = 16384,
+                DriverVersion = "535.xx",
+                Frameworks = new() { "CUDA", "TensorRT" },
+                IsAvailable = true
+            };
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        /*if (Id.HasValue)
+        {
+            // Mock: Load existing device data
+            gpu = new Gpu { Name = "Workstation-Alpha", Model = "RTX 4090", VramMb = 24576, CudaCores = 16384 };
+        }*/
+    }
+
+}

@@ -1,0 +1,200 @@
+<div class="card">
+            <div class="calendar-toolbar">
+                <button Class="btn-secondary" @onclick="PreviousWeek">
+                    Previous
+                </button>
+
+                <MudText Typo="Typo.h6">
+                    @(WeekStart.ToString("dd.MM.yyyy")) - @(WeekStart.AddDays(6).ToString("dd.MM.yyyy"))
+                </MudText>
+
+                <button Class="btn-secondary" @onclick="NextWeek">
+                    Next
+                </button>
+            </div>
+
+            <div class="week-calendar">
+                <div class="calendar-header"></div>
+
+                @foreach (var day in WeekDays)
+                {
+                    <div class="calendar-header-cell">
+                        <div>@day.ToString("ddd")</div>
+                        <div class="date">@day.Day</div>
+                    </div>
+                }
+
+                @foreach (var hour in Hours)
+                {
+                    <div class="time-label">
+                        @($"{hour:00}:00")
+                    </div>
+
+                    @foreach (var day in WeekDays)
+                    {
+                        <div class="calendar-cell">
+                            @foreach (var reservation in GetReservationsForSlot(day, hour))
+                            {
+                                <div class="reservation-block"
+                                    style="@GetReservationStyle(reservation)"
+                                    title="@reservation.Title">
+                                    <div class="reservation-title">
+                                        @reservation.Title
+                                    </div>
+
+                                    <div class="reservation-time">
+                                        @reservation.Start.ToString("HH:mm") - @reservation.End.ToString("HH:mm")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="calendar-legend">
+
+                <div class="legend-item">
+                    <div class="legend-color reserved"></div>
+                    <span>Reserved</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color in-use"></div>
+                    <span>In Use</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color completed"></div>
+                    <span>Completed</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>Available</span>
+                </div>
+
+            </div>
+        </div>
+
+@code {
+
+    private DateTime WeekStart =
+        DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+
+    private List<int> Hours =
+        Enumerable.Range(0, 24).ToList();
+
+    private List<DateTime> WeekDays =>
+        Enumerable.Range(0, 7)
+            .Select(i => WeekStart.AddDays(i))
+            .ToList();
+
+    private List<Reservation> reservations = new();
+
+    private const int DayHeightPx = 1440; // or scaled version
+    private const double PxPerMinute = 80.0/60.0; // tweak this
+
+    public class Reservation
+    {
+        public string Title { get; set; } = "";
+        public string Status { get; set; } = "";
+
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        GenerateMockReservations();
+    }
+
+    // ===== MOCK DATA =====
+    private void GenerateMockReservations()
+    {
+        reservations = new()
+        {
+            new Reservation
+            {
+                Title = "LLM Training",
+                Status = "In Use",
+                Start = WeekStart.AddDays(1).AddHours(9).AddMinutes(30),
+                End = WeekStart.AddDays(1).AddHours(13)
+            },
+
+            new Reservation
+            {
+                Title = "Stable Diffusion",
+                Status = "Reserved",
+                Start = WeekStart.AddDays(2).AddHours(14),
+                End = WeekStart.AddDays(2).AddHours(18)
+            },
+
+            new Reservation
+            {
+                Title = "CUDA Rendering",
+                Status = "Reserved",
+                Start = WeekStart.AddDays(4).AddHours(8),
+                End = WeekStart.AddDays(4).AddHours(11)
+            },
+
+            new Reservation
+            {
+                Title = "Fine-Tuning",
+                Status = "In Use",
+                Start = WeekStart.AddDays(5).AddHours(16),
+                End = WeekStart.AddDays(5).AddHours(22)
+            }
+        };
+    }
+
+    // ===== HELPERS =====
+    private IEnumerable<Reservation> GetReservationsForSlot(DateTime day, int hour)
+    {
+        return reservations.Where(r =>
+            r.Start.Date == day.Date &&
+            r.Start.Hour == hour);
+    }
+
+    private string GetReservationStyle(Reservation r)
+{
+    var startMinutes = r.Start.Minute;
+    var durationMinutes = (r.End - r.Start).TotalMinutes;
+    
+    var top = startMinutes * PxPerMinute + 4; // +4 for some padding from the top of the cell
+    var height = durationMinutes * PxPerMinute - 8; // -8 for some padding from the bottom of the cell
+
+    return $@"
+        position: absolute;
+        top: {top}px;
+        height: {height}px; 
+        left: 4px;
+        right: 4px;
+        background: {GetColor(r.Status)};
+    ";
+}
+
+    private string GetColor(string status) => status switch
+    {
+        "Reserved" => "#ff9800",
+        "In Use" => "#f44336",
+        "Completed" => "#2196f3",
+        _ => "#4caf50"
+    };
+
+    // =========================
+    // NAVIGATION
+    // =========================
+
+    private void NextWeek()
+    {
+        WeekStart = WeekStart.AddDays(7);
+        GenerateMockReservations();
+    }
+
+    private void PreviousWeek()
+    {
+        WeekStart = WeekStart.AddDays(-7);
+        GenerateMockReservations();
+    }
+}

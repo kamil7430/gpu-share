@@ -1,18 +1,12 @@
 .wallet-layout {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 24px;
-
-    margin-top: 24px;
 }
 
 .wallet-card {
     padding: 24px;
-
     border-radius: 18px;
-
     border: 1px solid #dce7ff;
 }
 

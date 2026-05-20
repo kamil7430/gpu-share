@@ -1,0 +1,21 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    margin-bottom: 32px;
+}
+
+.page-subtitle {
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.dispute-link {
+    color: #B63939;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dispute-link:hover {
+    color: #8a2222;
+}

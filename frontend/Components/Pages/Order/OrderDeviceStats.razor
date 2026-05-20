@@ -1,0 +1,69 @@
+<div class="stats-grid">
+            <!-- Countdown -->
+            <div class="spec-box">
+                <div class="label">Remaining Time</div>
+                <div class="value">@RemainingTime.ToString(@"hh\:mm\:ss")</div>
+                <div class="hint">Session ends at @EndTime.ToString("HH:mm:ss")</div>
+            </div>
+
+            <!-- Cost -->
+            <div class="spec-box">
+                <div class="label">Live Cost</div>
+                <div class="value">$@CurrentCost.ToString("0.00")</div>
+                <div class="hint">$2.40 / hour</div>
+            </div>
+
+            <!-- Heartbeat -->
+            <div class="spec-box">
+                <div class="label">Agent Status</div>
+                <div class="heartbeat-row">
+                    <div class="heartbeat-dot"></div>
+                    <span class="value">Connected</span>
+                </div>
+                <div class="hint">Last heartbeat 4s ago</div>
+            </div>
+        </div>
+
+@code {
+    private TimeSpan RemainingTime;
+    private DateTime StartTime = DateTime.UtcNow.AddMinutes(-12);
+    private DateTime EndTime = DateTime.Now.AddHours(2);
+    private decimal CurrentCost = 0.00m;
+    private decimal HourlyRate = 2.40m;
+    private System.Timers.Timer? Timer;
+
+    protected override void OnInitialized()
+    {
+        UpdateLiveMetrics();
+
+        Timer = new System.Timers.Timer(1000);
+
+        Timer.Elapsed += (_, _) =>
+        {
+            InvokeAsync(() =>
+            {
+                UpdateLiveMetrics();
+
+                StateHasChanged();
+            });
+        };
+
+        Timer.Start();
+    }
+
+    private void UpdateLiveMetrics()
+    {
+        RemainingTime = EndTime - DateTime.UtcNow;
+
+        if (RemainingTime < TimeSpan.Zero)
+        {
+            RemainingTime = TimeSpan.Zero;
+        }
+
+        var elapsedHours =
+            (decimal)(DateTime.UtcNow - StartTime).TotalHours;
+
+        CurrentCost = elapsedHours * HourlyRate;
+    }
+
+}

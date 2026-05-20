@@ -1,0 +1,41 @@
+@inject IJSRuntime JS
+
+<div class="card">
+        <h3> Connection Details</h3>
+
+        <div class="stats-grid mt-2">
+            <div class="spec-box">
+                <div class="label">Host</div>
+                <div class="value" style="height: 100%; font-size: large;">gpu-12.gpushare.io</div>
+            </div>
+
+            <div class="spec-box">
+                <div class="label">Port</div>
+                <div class="value">443</div>
+            </div>
+
+            <div class="spec-box">
+                <div class="label">Protocol</div>
+                <div class="value">WSS</div>
+            </div>
+
+        </div>
+
+        <div class="connection-command">
+            <code>wss://gpu-12.gpushare.io/connect/session_x82A</code>
+
+            <button class="btn-dark" @onclick='CopyConnectionString'>
+                <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="width: 16px; height: 16px;" />
+            </button>
+        </div>
+    </div>
+
+@code {
+    private async Task CopyConnectionString()
+    {
+        await JS.InvokeVoidAsync(
+            "navigator.clipboard.writeText",
+            "wss://gpu-12.gpushare.io/connect/session_x82A");
+    }
+
+}

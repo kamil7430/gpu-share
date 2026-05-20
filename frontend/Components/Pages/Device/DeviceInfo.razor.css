@@ -1,0 +1,18 @@
+.gpu-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.status-banner {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.online { background: #e6ffed; color: #22863a; }
+.offline { background: #ffeef0; color: #cf222e; }

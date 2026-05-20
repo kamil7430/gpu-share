@@ -1,0 +1,39 @@
+@if (ShowEndModal)
+{
+    <BaseModal IsVisible="true" Title="End Session" OnClose="CloseEndModal" SizeClass="small">
+        <ChildContent>
+            <div class="end-session-modal">
+                @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" /> *@
+                Are you sure you want to terminate this GPU session?
+                <div class="modal-warning">
+                    Running workloads may be interrupted immediately.
+                </div>
+            </div>
+        </ChildContent>
+        <FooterContent>
+            <button class="btn-cancel" @onclick="CloseEndModal">
+                Cancel
+            </button>
+
+            <button class="btn-danger" @onclick="EndSession">
+                End Session
+            </button>
+        </FooterContent>
+    </BaseModal>
+}
+
+@code {
+    [Parameter] public bool ShowEndModal { get; set; }
+
+    private void CloseEndModal()
+    {
+        ShowEndModal = false;
+    }
+
+    private void EndSession()
+    {
+        Console.WriteLine("Session terminated");
+
+        ShowEndModal = false;
+    }
+}

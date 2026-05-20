@@ -1,0 +1,11 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    margin-bottom: 32px;
+}
+
+.page-subtitle {
+    color: #666;
+    margin-bottom: 6px;
+}
