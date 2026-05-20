@@ -26,57 +26,86 @@ A modern, interactive web frontend for GPU resource sharing and management built
 ```
 frontend/
 ├── Components/
-│   ├── App.razor                # Root HTML shell and component mount
-│   ├── Routes.razor             # Router configuration
-│   ├── _Imports.razor           # Shared imports for components
+│   ├── App.razor
+│   ├── Routes.razor
+│   ├── _Imports.razor
 │   ├── Layout/
 │   │   ├── MainLayout.razor
 │   │   ├── MainLayout.razor.css
 │   │   ├── ReconnectModal.razor
 │   │   └── ReconnectModal.razor.css
+│   ├── Modals/
+│   │   ├── BaseModal.razor
+│   │   ├── BaseModal.razor.css
+│   │   ├── ChangePasswordModal.razor
+│   │   ├── ChangePasswordModal.razor.css
+│   │   ├── EndSessionModal.razor
+│   │   ├── EndSessionModal.razor.css
+│   │   ├── FilterModal.razor
+│   │   ├── FilterModal.razor.css
+│   │   ├── LoginModal.razor
+│   │   ├── LoginModal.razor.css
+│   │   ├── RemoveDeviceModal.razor
+│   │   └── RemoveDeviceModal.css
 │   ├── Pages/
-│   │   ├── Device.razor
-│   │   ├── Device.razor.css
-│   │   ├── Devices.razor
-│   │   ├── Devices.razor.css
-│   │   ├── Dispute.razor
-│   │   ├── Dispute.razor.css
-│   │   ├── Error.razor
-│   │   ├── NotFound.razor
-│   │   ├── Order.razor
-│   │   ├── Order.razor.css
-│   │   ├── Profile.razor
-│   │   └── Profile.razor.css
+│   │   ├── Device/
+│   │   │   ├── Device.razor
+│   │   │   ├── Device.razor.css
+│   │   │   ├── Calendar.razor
+│   │   │   ├── Calendar.razor.css
+│   │   │   ├── DeviceInfo.razor
+│   │   │   ├── DeviceInfo.razor.css
+│   │   │   ├── EditDeviceForm.razor
+│   │   │   ├── EditDeviceForm.razor.css
+│   │   │   ├── TelemetryCard.razor
+│   │   │   └── TelemetryCard.razor.css
+│   │   ├── Devices/
+│   │   │   ├── Devices.razor
+│   │   │   ├── Devices.razor.css
+│   │   │   ├── SearchBar.razor
+│   │   │   └── SearchBar.razor.css
+│   │   ├── Dispute/
+│   │   │   ├── Dispute.razor
+│   │   │   ├── Dispute.razor.css
+│   │   │   ├── DisputeForm.razor
+│   │   │   ├── DisputeForm.razor.css
+│   │   │   ├── Timeline.razor
+│   │   │   └── Timeline.razor.css
+│   │   ├── Order/
+│   │   │   ├── Order.razor
+│   │   │   ├── Order.razor.css
+│   │   │   ├── OrderConnection.razor
+│   │   │   ├── OrderConnection.razor.css
+│   │   │   ├── OrderDeviceStats.razor
+│   │   │   ├── OrderDeviceStats.razor.css
+│   │   │   ├── OrderTelemetry.razor
+│   │   │   └── OrderTelemetry.razor.css
+│   │   └── Profile/
+│   │       ├── Profile.razor
+│   │       ├── Profile.razor.css
+│   │       ├── ProfileCard.razor
+│   │       ├── ProfileCard.razor.css
+│   │       ├── OrderTable.razor
+│   │       ├── OrderTable.razor.css
+│   │       ├── WalletCard.razor
+│   │       └── WalletCard.razor.css
 │   └── Shared/
-│       ├── ChangePasswordModal.razor
 │       ├── CheckBoxList.razor
-│       ├── EditDeviceForm.razor
-│       ├── EditDeviceForm.razor.css
-│       ├── FilterModal.razor
-│       ├── FilterModal.razor.css
 │       ├── GpuCard.razor
 │       ├── GpuCard.razor.css
 │       ├── GpuList.razor
 │       ├── GpuList.razor.css
 │       ├── GpuOrderForm.razor
 │       ├── GpuOrderForm.razor.css
-│       ├── LoginModal.razor
-│       ├── LoginModal.razor.css
-│       ├── OpinionsCard.razor
-│       ├── OpinionsCard.razor.css
-│       ├── OrderTable.razor
-│       ├── OrderTable.razor.css
-│       ├── TelemetryCard.razor
-│       ├── TelemetryCard.razor.css
-│       ├── WalletCard.razor
-│       └── WalletCard.razor.css
+│       ├── OpinionsList.razor
+│       └── OpinionsList.razor.css
 ├── Models/
 │   ├── Gpu.cs
 │   ├── Opinion.cs
 │   ├── Order.cs
 │   ├── SearchFilter.cs
 │   └── User.cs
-├── Services/                    # Business logic and API service implementations
+├── Services/
 ├── Properties/
 │   └── launchSettings.json
 ├── wwwroot/
@@ -91,23 +120,27 @@ frontend/
 ## Key Features
 
 ### Pages
-- **Devices** - Browse available GPU resources
-- **Device** - Detailed GPU device and availability view
-- **Order** - Place and manage GPU rental orders
-- **Profile** - User profile and account details
-- **Dispute** - Dispute management workflow
-- **Error / NotFound** - Friendly error handling pages
+- **Devices** - Browse and filter available GPU resources
+- **Device** - View device details, telemetry, and calendar availability
+- **Order** - Manage orders with connection info, device statistics, and telemetry
+- **Profile** - Manage user account details and order history
+- **Dispute** - Track dispute workflow with timeline and form support
+- **Error / NotFound** - Friendly error handling pages for invalid routes
 
 ### Shared Components
 - **GpuCard** - GPU specification and availability card
 - **GpuList** - GPU catalog listing
-- **GpuOrderForm** - Order checkout form
+- **GpuOrderForm** - Order creation and checkout UI
 - **OrderTable** - Order history and transaction display
-- **OpinionsCard** - Review and rating component
-- **WalletCard** / **TelemetryCard** - Wallet and telemetry summaries
-- **EditDeviceForm** - Device editing UI
-- **Modal dialogs** - Login, filtering, password changes, reconnect handling
-- **CheckBoxList** - Multi-select filtering UI
+- **OpinionsList** - Reviews and ratings presentation
+- **CheckBoxList** - Multi-select filter interface
+- **WalletCard** / **TelemetryCard** - Account and telemetry summaries
+
+### Page-specific UI
+- **Device page** includes calendar, telemetry, and editable device details
+- **Order page** includes connection and device stats panels
+- **Profile page** includes profile summary, orders, and wallet view
+- **Dispute page** includes dispute form and timeline tracking
 
 ### Architecture
 - **Component-based UI** for reusable, maintainable views
