@@ -2,20 +2,17 @@ package auth
 
 import (
 	"errors"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
+	"github.com/kamil7430/gpu-share/backend/internal/utils"
 )
 
 const tokenValidity = 10 * time.Minute
 
 var secretKey = func() []byte {
-	token := os.Getenv("JWT_SECRET_KEY")
-	if token == "" {
-		panic("JWT_SECRET_KEY not present or empty")
-	}
+	token := utils.GetenvOrDefault("JWT_SECRET_KEY", "test")
 	return []byte(token)
 }()
 

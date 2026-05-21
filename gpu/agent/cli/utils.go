@@ -17,7 +17,7 @@ const (
 func backendIp() string {
 	backIp := os.Getenv("BACKEND_IP")
 	if backIp == "" {
-		backIp = "10.5.0.2"
+		backIp = "127.0.0.1"
 	}
 	return backIp
 }
@@ -25,7 +25,7 @@ func backendIp() string {
 func gpuIp() string {
 	gpuIp := os.Getenv("GPU_IP")
 	if gpuIp == "" {
-		gpuIp = "10.5.0.3"
+		gpuIp = "127.0.0.1"
 	}
 	return gpuIp
 }
