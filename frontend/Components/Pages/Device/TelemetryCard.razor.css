@@ -1,0 +1,205 @@
+/* TELEMETRY */
+
+.telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.telemetry-card {
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid #4C6EB2;
+    background: white;
+}
+
+.telemetry-wide {
+    grid-column: span 2;
+}
+
+.telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.telemetry-title {
+    margin-bottom: 0px;
+    color: #0a1128;
+    font-size: 21px;
+}
+
+.temp-gauge-container {
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    height: 220px;
+}
+
+.temp-gauge {
+    width: 180px !important;
+    height: 180px !important;
+}
+
+.temp-center {
+    position: absolute;
+
+    text-align: center;
+}
+
+.temp-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0a1128;
+}
+
+.temp-label {
+    color: #666;
+
+    font-size: 0.9rem;
+}
+
+.temp-thresholds {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 12px;
+}
+
+.threshold {
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+}
+
+.threshold.safe {
+    background: #ebfbee;
+    color: #2b8a3e;
+}
+
+.threshold.warning {
+    background: #fff3bf;
+    color: #e67700;
+}
+
+.threshold.critical {
+    background: #ffe3e3;
+    color: #c92a2a;
+}
+
+.heartbeat-content {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.heartbeat-item {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.heartbeat-label {
+    color: #666;
+}
+
+.heartbeat-value {
+    font-weight: 600;
+}
+
+.chart-legend {
+    display: flex;
+
+    gap: 24px;
+
+    margin-top: 20px;
+}
+
+.legend-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+}
+
+.legend-dot.gpu {
+    background: #4c6ef5;
+}
+
+.legend-dot.vram {
+    background: #15aabf;
+}
+
+.metric-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.metrics-summary-grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 18px;
+}
+
+.metric-box {
+    padding: 20px;
+
+    border-radius: 14px;
+
+    background: #f8fbff;
+
+    border: 1px solid #e7f0ff;
+}
+
+.metric-title {
+    color: #666;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+
+    font-weight: 700;
+}
+
+
+
+
+@media (max-width: 1100px) {
+
+    .telemetry-wide {
+        grid-column: span 1;
+    }
+
+}

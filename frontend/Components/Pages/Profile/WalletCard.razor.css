@@ -1,0 +1,109 @@
+.wallet-layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.wallet-card {
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid #dce7ff;
+}
+
+.balance-card {
+    background:
+        linear-gradient(
+            135deg,
+            #4c6ef5,
+            #364fc7);
+
+    color: white;
+}
+
+.balance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balance-value {
+    font-size: 3rem;
+    font-weight: bold;
+
+    margin-top: 24px;
+}
+
+.balance-details {
+    margin-top: 24px;
+}
+
+.balance-row {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+    opacity: 0.95;
+}
+
+.transactions-card {
+    grid-column: span 2;
+}
+
+.reservation-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+.reservation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    background: #f8fbff;
+
+    border: 1px solid #e1ebff;
+
+    transition: 0.2s ease;
+}
+
+.reservation-item:hover {
+    background: #eef4ff;
+}
+
+.reservation-title {
+    font-weight: 600;
+    color: #222;
+}
+
+.reservation-date {
+    font-size: 0.85rem;
+    color: #666;
+
+    margin-top: 4px;
+}
+
+.reservation-amount {
+    font-weight: bold;
+    color: #d9480f;
+}
+
+@media (max-width: 900px) {
+
+    .wallet-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .transactions-card {
+        grid-column: span 1;
+    }
+
+}

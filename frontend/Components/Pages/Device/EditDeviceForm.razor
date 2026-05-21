@@ -1,0 +1,148 @@
+@inject IJSRuntime JS
+
+<div class="card">
+            <h3>@(Mode == "add" ? "Register New Device" : "Edit Device Specs")</h3>
+            <EditForm FormName="SaveSpec" Model="gpu" OnValidSubmit="HandleSave">
+                <DataAnnotationsValidator />
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Device Name</label>
+                        <InputText @bind-Value="gpu.Name" placeholder="e.g. My Beast Rig" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input list="models" @bind="gpu.Model" />
+                        <datalist id="models">
+                            <option value="NVIDIA RTX 4090" />
+                            <option value="NVIDIA A100" />
+                        </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label>VRAM</label>
+                        <InputSelect @bind-Value="gpu.VramMb">
+                            <option value="2048">2 GB</option>
+                            <option value="4096">4 GB</option>
+                            <option value="6144">6 GB</option>
+                            <option value="8192">8 GB</option>
+                            <option value="10240">10 GB</option>
+                            <option value="12288">12 GB</option>
+                            <option value="16384">16 GB</option>
+                            <option value="24576">24 GB</option>
+                            <option value="32768">32 GB</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cores</label>
+                        <InputNumber @bind-Value="gpu.CudaCores" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Driver Version</label>
+                        <InputText @bind-Value="gpu.DriverVersion" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Supported Frameworks</label>
+                        <CheckBoxList className="checkbox-list" TItem="string" Data="SupportedFrameworks" TextField="@(new Func<string, string>(c => c))" ValueField="@(new Func<string, string>(c => c))" SelectedValues="@SelectedFrameworks" />
+                    </div>
+
+                    <div class="form-group" style="flex-direction: row; align-items: center; height: fit-content;">
+                        <label>Price per hour</label>
+                        <InputNumber Min="0" style="width: 100px" @bind-Value="gpu.PricePerHour" />
+                        <label>$</label>
+                    </div>
+                </div>
+
+                <div class="availability-section">
+
+                    <div class="flex-row">
+                        <MudSwitch Style="font-size: 0.875rem" T="bool" @bind-Value="gpu.IsAvailable" Color="Color.Primary" Label="" />
+                        <label>Device available for orders</label>
+                    </div>
+
+                    <div class="hint mt-2">
+                        @(gpu.IsAvailable ? "Users can reserve and run workloads on this GPU." : "Device is hidden from scheduling and reservations.")
+                    </div>
+
+                </div>
+
+                @* validation errors *@
+                @if (validationErrors.Any())
+                {
+                    <div class="validation-summary">
+                        <div class="validation-summary-title">
+                            Please fix the following issues:
+                        </div>
+                        <ul>
+                            @foreach (var error in validationErrors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="agent-install-section">
+                    <div class="agent-header">
+                        <div>
+                            <h4>Node Agent Installation</h4>
+                            <p>
+                                Install the GPU Share node agent on your machine
+                                to enable monitoring, reservations, and workload execution.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="agent-command-container">
+                        <code class="agent-command">
+                            curl -sSL https://gpu-share.io/install.sh | bash -s -- --token @AgentToken
+                        </code>
+
+                        <button type="button" class="btn-primary" @onclick="CopyAgentToken">Copy</button>
+                    </div>
+
+                    <div class="hint mt-4">
+                        After installation, the node will automatically connect
+                        to your account and begin reporting GPU telemetry.
+                    </div>
+                </div>
+
+                <div class="form-footer" style="margin-top:8px">
+                    <button type="submit" class="btn-primary btn-save">Save Configuration</button>
+                </div>
+            </EditForm>
+        </div>
+
+@code {
+    [Parameter] public Gpu? gpu { get; set; }
+    [Parameter] public string Mode { get; set; } = "edit";
+
+    private List<string> SupportedFrameworks = new()
+    {
+        "TensorFlow", "PyTorch", "MXNet", "Keras", "Caffe"
+    };
+
+    private List<string> SelectedFrameworks = [];
+
+    private string AgentToken = "gpu_node_x7A92kLmP";
+
+    private List<string> validationErrors = new() {"Error1", "Error2 a bit longerrrrrrr rrrrrrrrr rrrrrrrrrrrrrrr rrrrrrrrrr rrrrrrrrrr rrrrrrrr rrrrrrrrrrr rrrrrrrrrrrrrrr"};
+
+    private async Task CopyAgentToken()
+    {
+        await JS.InvokeVoidAsync(
+            "navigator.clipboard.writeText",
+            $"curl -sSL https://gpu-share.io/install.sh | bash -s -- --token {AgentToken}");
+    }
+
+    private void HandleSave()
+    {
+        // Save to DB logic...
+        //Navigation.NavigateTo($"/device/view/{Id ?? 1}");
+        Mode = "view";
+    }
+}

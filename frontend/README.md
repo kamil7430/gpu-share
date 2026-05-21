@@ -1,162 +1,202 @@
 # GpuShare Frontend
 
-A modern, interactive web application for GPU resource sharing and management built with Blazor and .NET.
+A modern, interactive web frontend for GPU resource sharing and management built with Blazor and .NET.
 
 ## Tech Stack
 
 ### Framework & Runtime
-- **ASP.NET Core** (.NET 10.0) - High-performance web framework
-- **Blazor Interactive Server** - Interactive web UI with C# instead of JavaScript
-- **Razor Components** - Component-based architecture
+- **ASP.NET Core** (.NET 10.0)
+- **Blazor Interactive Server** - Interactive web UI with C# and server-side rendering
+- **Razor Components** - Component-based UI architecture
 
 ### UI & Styling
-- **Blazorise** (v2.1.0) - Rich component library for Blazor
-- **Bootstrap 5** - Responsive CSS framework
-- **FontAwesome Icons** - Icon library for UI elements
-- **CSS** - Custom styling for components
+- **Blazorise** (v2.1.0) - UI component library for Blazor
+- **MudBlazor** (v9.4.0) - Material-inspired UI components and services
+- **Bootstrap 5** - Responsive layout and utilities
+- **FontAwesome Icons** - Icon support for UI elements
+- **CSS** - Custom app styling
 
 ### Development
-- **C#** - Primary programming language
-- **Nullable Reference Types** - Type safety
-- **Implicit Using Statements** - Cleaner code
+- **C#** - Primary application language
+- **Nullable Reference Types** enabled
+- **Implicit Using Statements** enabled
 
 ## Project Structure
 
 ```
 frontend/
-├── Components/                 # Blazor components and pages
-│   ├── App.razor              # Root component
-│   ├── Routes.razor           # Route definitions
-│   ├── _Imports.razor         # Global imports
-│   │
-│   ├── Layout/                # Application layouts
-│   │   ├── MainLayout.razor   # Main layout component
+├── Components/
+│   ├── App.razor
+│   ├── Routes.razor
+│   ├── _Imports.razor
+│   ├── Layout/
+│   │   ├── MainLayout.razor
 │   │   ├── MainLayout.razor.css
 │   │   ├── ReconnectModal.razor
 │   │   └── ReconnectModal.razor.css
-│   │
-│   ├── Pages/                 # Page components
-│   │   ├── Device.razor       # GPU device details page
-│   │   ├── Device.razor.css
-│   │   ├── Profile.razor      # User profile page
-│   │   ├── Profile.razor.css
-│   │   ├── Search.razor       # GPU search page
-│   │   ├── Search.razor.css
-│   │   ├── Error.razor        # Error page
-│   │   └── NotFound.razor     # 404 page
-│   │
-│   └── Shared/                # Reusable UI components
-│       ├── ChangePasswordModal.razor
+│   ├── Modals/
+│   │   ├── BaseModal.razor
+│   │   ├── BaseModal.razor.css
+│   │   ├── ChangePasswordModal.razor
+│   │   ├── ChangePasswordModal.razor.css
+│   │   ├── EndSessionModal.razor
+│   │   ├── EndSessionModal.razor.css
+│   │   ├── FilterModal.razor
+│   │   ├── FilterModal.razor.css
+│   │   ├── LoginModal.razor
+│   │   ├── LoginModal.razor.css
+│   │   ├── RemoveDeviceModal.razor
+│   │   └── RemoveDeviceModal.css
+│   ├── Pages/
+│   │   ├── Device/
+│   │   │   ├── Device.razor
+│   │   │   ├── Device.razor.css
+│   │   │   ├── Calendar.razor
+│   │   │   ├── Calendar.razor.css
+│   │   │   ├── DeviceInfo.razor
+│   │   │   ├── DeviceInfo.razor.css
+│   │   │   ├── EditDeviceForm.razor
+│   │   │   ├── EditDeviceForm.razor.css
+│   │   │   ├── TelemetryCard.razor
+│   │   │   └── TelemetryCard.razor.css
+│   │   ├── Devices/
+│   │   │   ├── Devices.razor
+│   │   │   ├── Devices.razor.css
+│   │   │   ├── SearchBar.razor
+│   │   │   └── SearchBar.razor.css
+│   │   ├── Dispute/
+│   │   │   ├── Dispute.razor
+│   │   │   ├── Dispute.razor.css
+│   │   │   ├── DisputeForm.razor
+│   │   │   ├── DisputeForm.razor.css
+│   │   │   ├── Timeline.razor
+│   │   │   └── Timeline.razor.css
+│   │   ├── Order/
+│   │   │   ├── Order.razor
+│   │   │   ├── Order.razor.css
+│   │   │   ├── OrderConnection.razor
+│   │   │   ├── OrderConnection.razor.css
+│   │   │   ├── OrderDeviceStats.razor
+│   │   │   ├── OrderDeviceStats.razor.css
+│   │   │   ├── OrderTelemetry.razor
+│   │   │   └── OrderTelemetry.razor.css
+│   │   └── Profile/
+│   │       ├── Profile.razor
+│   │       ├── Profile.razor.css
+│   │       ├── ProfileCard.razor
+│   │       ├── ProfileCard.razor.css
+│   │       ├── OrderTable.razor
+│   │       ├── OrderTable.razor.css
+│   │       ├── WalletCard.razor
+│   │       └── WalletCard.razor.css
+│   └── Shared/
 │       ├── CheckBoxList.razor
-│       ├── FilterModal.razor
-│       ├── FilterModal.razor.css
-│       ├── GpuCard.razor      # GPU information card
+│       ├── GpuCard.razor
 │       ├── GpuCard.razor.css
-│       ├── LoginModal.razor
-│       ├── LoginModal.razor.css
-│       ├── OpinionsCard.razor # Opinion/review component
-│       ├── OpinionsCard.razor.css
-│       ├── OrderTable.razor   # Order list display
-│       └── OrderTable.razor.css
-│
-├── Models/                    # Data models (C#)
+│       ├── GpuList.razor
+│       ├── GpuList.razor.css
+│       ├── GpuOrderForm.razor
+│       ├── GpuOrderForm.razor.css
+│       ├── OpinionsList.razor
+│       └── OpinionsList.razor.css
+├── Models/
 │   ├── Gpu.cs
 │   ├── Opinion.cs
 │   ├── Order.cs
 │   ├── SearchFilter.cs
 │   └── User.cs
-│
-├── Services/                  # Business logic and API services
-│   └── [Service implementations]
-│
-├── Properties/               # Application properties
-│   └── launchSettings.json   # Run configurations
-│
-├── wwwroot/                  # Static files (CSS, images, scripts)
-│   ├── app.css              # Global styles
-│   └── lib/                 # Third-party libraries
-│       └── bootstrap/       # Bootstrap CSS framework
-│
-├── bin/                      # Build output
-├── obj/                      # Compiler output
-│
-├── Program.cs               # Application entry point & configuration
-├── GpuShare.Frontend.csproj  # Project configuration
-├── appsettings.json         # Application settings
-└── appsettings.Development.json # Development-specific settings
+├── Services/
+├── Properties/
+│   └── launchSettings.json
+├── wwwroot/
+│   ├── app.css
+│   └── lib/bootstrap/
+├── Program.cs
+├── GpuShare.Frontend.csproj
+├── appsettings.json
+└── appsettings.Development.json
 ```
 
 ## Key Features
 
 ### Pages
-- **Device Page** - View detailed GPU device information
-- **Profile Page** - User profile management
-- **Search Page** - Discover and filter available GPUs
+- **Devices** - Browse and filter available GPU resources
+- **Device** - View device details, telemetry, and calendar availability
+- **Order** - Manage orders with connection info, device statistics, and telemetry
+- **Profile** - Manage user account details and order history
+- **Dispute** - Track dispute workflow with timeline and form support
+- **Error / NotFound** - Friendly error handling pages for invalid routes
 
 ### Shared Components
-- **GpuCard** - Displays GPU specifications and availability
-- **OrderTable** - Shows user orders and transactions
-- **OpinionsCard** - User reviews and ratings
-- **Modals** - Login, password change, and filtering dialogs
+- **GpuCard** - GPU specification and availability card
+- **GpuList** - GPU catalog listing
+- **GpuOrderForm** - Order creation and checkout UI
+- **OrderTable** - Order history and transaction display
+- **OpinionsList** - Reviews and ratings presentation
 - **CheckBoxList** - Multi-select filter interface
+- **WalletCard** / **TelemetryCard** - Account and telemetry summaries
+
+### Page-specific UI
+- **Device page** includes calendar, telemetry, and editable device details
+- **Order page** includes connection and device stats panels
+- **Profile page** includes profile summary, orders, and wallet view
+- **Dispute page** includes dispute form and timeline tracking
 
 ### Architecture
-- **Component-Based UI** - Reusable, maintainable components
-- **Responsive Design** - Works on desktop and mobile
-- **Interactive Server Rendering** - Real-time updates without page refresh
+- **Component-based UI** for reusable, maintainable views
+- **Responsive design** for desktop and mobile experiences
+- **Interactive Server Rendering** with Blazor interactive server components
+- **Static assets** served from `wwwroot` and component libraries
 
 ## Getting Started
 
 ### Prerequisites
-- .NET 10.0 or later
-- Visual Studio or VS Code with C# extension
+- .NET 10.0 SDK or later
+- Visual Studio or VS Code with C# tooling
 
-### Development
+### Run locally
 
-1. **Navigate to the frontend directory:**
-   ```bash
-   cd frontend
-   ```
-
-2. **Restore dependencies:**
+1. Open a terminal in the project root
+2. Restore dependencies:
    ```bash
    dotnet restore
    ```
-
-3. **Run the application:**
+3. Start the app:
    ```bash
    dotnet run
    ```
+4. Open the browser at the URL shown in the terminal
 
-4. **Build for production:**
-   ```bash
-   dotnet build -c Release
-   ```
+### Build for production
+
+```bash
+dotnet build -c Release
+```
 
 ## Dependencies
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| Blazorise | 2.1.0 | UI Component Library |
-| Blazorise.Bootstrap | 2.1.0 | Bootstrap Integration |
-| Blazorise.Bootstrap5 | 2.1.0 | Bootstrap 5 Components |
-| Blazorise.Components | 2.1.0 | Additional Components |
-| Blazorise.Icons.FontAwesome | 2.1.0 | Icon Support |
+| Blazorise | 2.1.0 | Core Blazor UI components |
+| Blazorise.Bootstrap | 2.1.0 | Bootstrap provider for Blazorise |
+| Blazorise.Bootstrap5 | 2.1.0 | Bootstrap 5 styling integration |
+| Blazorise.Components | 2.1.0 | Additional Blazorise UI components |
+| Blazorise.Icons.FontAwesome | 2.1.0 | FontAwesome icon support |
+| MudBlazor | 9.4.0 | Material-style components and services |
 
 ## Configuration
 
 ### appsettings.json
-Contains production configuration settings.
+Production configuration values.
 
 ### appsettings.Development.json
-Contains development-specific configuration (debugging, logging, etc.).
+Development-specific configuration values.
 
 ### launchSettings.json
-Defines project launch profiles and environment variables.
+Launch profiles and environment settings.
 
-## Development Notes
+## Notes
 
-- **Nullable Reference Types** are enabled for better null safety
-- **Implicit Using Statements** are enabled to reduce boilerplate
-- The application disables HTTPS redirection for Docker containers
-- Custom navigation exceptions in Blazor are disabled
+- HTTPS redirect is disabled for Docker scenarios in `Program.cs`
+- `BlazorDisableThrowNavigationException` is enabled in project settings
+- The app uses `MapRazorComponents` / `AddInteractiveServerRenderMode` in `Program.cs`

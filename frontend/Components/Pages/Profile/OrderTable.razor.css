@@ -58,3 +58,103 @@
     color: #3b5a8a;
     text-decoration: none;
 }
+
+.table-controls {
+    margin-bottom: 20px;
+}
+
+.status-filters {
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    border: 1px solid #d0d7e2;
+
+    background: white;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    cursor: pointer;
+
+    transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+    border-color: #4c6ef5;
+}
+
+.filter-btn.active {
+    background: #4c6ef5;
+
+    border-color: #4c6ef5;
+
+    color: white;
+}
+
+.review-btn {
+    border: none;
+
+    background: #4c6ef5;
+
+    color: white;
+
+    padding: 6px 12px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 0.85rem;
+}
+
+.review-btn:hover {
+    background: #3b5bdb;
+}
+
+.status-badge {
+    display: inline-block;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+}
+
+.status-active {
+    background: #e3fafc;
+    color: #0c8599;
+}
+
+.status-completed {
+    background: #ebfbee;
+    color: #2b8a3e;
+}
+
+.status-cancelled {
+    background: #fff5f5;
+    color: #c92a2a;
+}
+
+.status-dispute {
+    background: #fff3bf;
+    color: #e67700;
+}
+
+.empty-state {
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-size: 0.9rem;
+
+    color: #6c757d;
+}

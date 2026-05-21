@@ -1,0 +1,167 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations;
+
+@* @if (IsVisible)
+{
+    <div class="modal-backdrop" @onclick="CloseModal">
+        <div class="modal-dialog">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>@(IsLoginMode ? "Login" : "Register")</h3>
+                <button class="btn-close" @onclick="CloseModal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                @if (IsLoginMode)
+                {
+                    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="loginModel.Username" />
+                        <input name="password" autocomplete="current-password" type="password" placeholder="Password" @bind-value="loginModel.Password" />
+                        <button class="action-btn btn-primary" type="submit">Sign In</button>
+                    </EditForm>
+                    <p class="error-banner">
+                        @ErrorMessage
+                    </p>
+                    <p style="margin-bottom: 0px; margin-top: 16px; font-size: smaller;">
+                        New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a>
+                    </p>
+                }
+                else
+                {
+                    <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> 
+                        <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="registerModel.Username" />
+                        <input name="password" autocomplete="new-password" type="password" placeholder="Password" @bind-value="registerModel.Password" />
+                        <input name="confirmPassword" type="password" placeholder="Confirm Password" @bind-value="registerModel.ConfirmPassword" />
+                        <label class="custom-checkbox" style="margin-top: 8px;margin-bottom: 8px;">
+                            <input type="checkbox" style="width: auto;" @bind-value="registerModel.AcceptTerms" />
+                            <span class="checkmark"></span>
+                            I accept<a href="/terms" target="_blank">Terms and Conditions</a>
+                        </label>
+                        <button class="action-btn btn-primary" type="submit">Create Account</button>
+                    </EditForm>
+                    <p class="error-banner">
+                        @ErrorMessage
+                    </p>
+                    <p style="margin-bottom: 0px; margin-top: 16px; font-size: smaller;">
+                        Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a>
+                    </p>
+                }
+            </div>
+        </div>
+        </div>
+    </div>
+} *@
+
+<BaseModal IsVisible="IsVisible" Title="@(CurrentMode == AuthMode.Login ? "Login" : "Register")" OnClose="CloseModal" SizeClass="small">
+
+    @if (CurrentMode == AuthMode.Login)
+    {
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="loginModel.Username" />
+            <input name="password" autocomplete="current-password" type="password" placeholder="Password" @bind-value="loginModel.Password" />
+            <button class="action-btn btn-primary" type="submit">Sign In</button>            
+
+        </EditForm>
+
+        <p class="error-banner">
+            @ErrorMessage
+        </p>
+        <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
+            New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a>
+        </p>
+    } else
+    {
+        <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> *@
+            <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="registerModel.Username" />
+            <input name="password" autocomplete="new-password" type="password" placeholder="Password" @bind-value="registerModel.Password" />
+            <input name="confirmPassword" type="password" placeholder="Confirm Password" @bind-value="registerModel.ConfirmPassword" />
+            <label class="custom-checkbox" style="margin-top: 8px;margin-bottom: 8px;">
+            <input type="checkbox" style="width: auto;" @bind-value="registerModel.AcceptTerms" />
+            <span class="checkmark"></span>
+                I accept<a href="/terms" target="_blank">Terms and Conditions</a>
+            </label>
+            <button class="action-btn btn-primary" type="submit">Create Account</button>
+        </EditForm>
+        <p class="error-banner">
+            @ErrorMessage
+        </p>
+        <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
+            Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a>
+        </p>
+    }
+</BaseModal>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private RegisterModel registerModel = new RegisterModel();
+    private string? ErrorMessage = "Error";
+
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private bool ShowModal = false;
+    private AuthMode CurrentMode = AuthMode.Login;
+
+    public enum AuthMode
+    {
+        Login,
+        Register
+    }
+
+    private void ToggleMode() 
+    {
+        if (CurrentMode == AuthMode.Login) CurrentMode = AuthMode.Register;
+        else CurrentMode = AuthMode.Login;
+
+        ErrorMessage = null;
+    }
+
+    private async Task CloseModal()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private void HandleLogin()
+    {
+        // This code runs when the user clicks 'Sign In' or hits 'Enter'
+        Console.WriteLine($"Logging in with {loginModel.Username}");
+    }
+
+    private void HandleRegister()
+    {
+        // This code runs when the user clicks 'Create Account' or hits 'Enter'
+        Console.WriteLine($"Registering {registerModel.Username} with email {registerModel.Email}");
+    }
+
+    public class LoginModel
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
+    public class RegisterModel
+    {
+        public string Email { get; set; } = "";
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string ConfirmPassword { get; set; } = "";
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the Terms and Conditions.")]
+        public bool AcceptTerms { get; set; }
+    }
+}

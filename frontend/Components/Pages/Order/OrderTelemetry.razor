@@ -1,0 +1,44 @@
+@using MudBlazor.Charts
+
+<div class="card">
+        <div class="telemetry-header">
+            <h3>Live GPU Telemetry</h3>
+            <MudChip T="string" Color="Color.Info"Variant="Variant.Outlined">SSE Stream</MudChip>
+        </div>
+
+        <MudChart T="double" ChartType="ChartType.Line" ChartLabels="@ChartLabels" ChartSeries="@ChartSeries" Width="100%" Height="360px" MatchBoundsToSize=true ChartOptions="@options"/>
+    </div>
+
+
+@code {
+    private string[] ChartLabels =
+    {
+        "0m", "5m", "10m", "15m", "20m", "25m", "30m"
+    };
+
+    private List<ChartSeries<double>> ChartSeries = new()
+    {
+        new ChartSeries<double> { Name = "GPU Usage", Data = new double[] { 20, 45, 60, 88, 72, 64, 58 } },
+        new ChartSeries<double> { Name = "Memory Usage", Data = new double[] { 15, 30, 52, 70, 68, 60, 55 } },
+        new ChartSeries<double> { Name = "Temperature", Data = new double[] { 48, 55, 60, 78, 81, 75, 71 } }
+    };
+
+    private LineChartOptions options = new(){};
+
+    protected override void OnInitialized()
+    {
+        options.SeriesDisplayOverrides = new Dictionary<IChartSeries, SeriesDisplayOverride>()
+        {
+            { ChartSeries[0], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } },
+            { ChartSeries[1], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } },
+            { ChartSeries[2], new SeriesDisplayOverride(){
+                LineDisplayType = LineDisplayType.Area,
+            } }
+        };
+        options.ShowDataMarkers = true;
+    }
+}

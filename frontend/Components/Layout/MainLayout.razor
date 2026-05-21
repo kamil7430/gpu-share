@@ -1,5 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using GpuShare.Frontend.Models
+@using MudBlazor
+
+<MudThemeProvider Theme="@GpuTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
 
 <div class="page">
     <header class="top-nav">
@@ -51,4 +57,18 @@
     }
     private void CloseModal() => ShowModal = false;
 
+    private MudTheme GpuTheme = new()
+{
+    PaletteLight = new PaletteLight()
+    {
+        Primary = "#4C6EB2",
+        Secondary = "#7c4dff",
+        Success = "#4caf50",
+        Info = "#2196f3",
+        Warning = "#ff9800",
+        Error = "#B63939",
+        Background = "#f5f7fb",
+        Surface = "#ffffff"
+    }
+};
 }

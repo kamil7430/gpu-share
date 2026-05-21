@@ -1,0 +1,44 @@
+.modal-body select {
+    margin-bottom: 12px;
+}
+
+.modal-body label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.modal-body div {
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+}
+
+/* Range Slider */
+::deep .form-group {
+    margin-top: 0.5rem;
+}
+
+/* ::deep .range-slider-range {
+    background-color: #4C6EB2 !important;
+} */
+
+::deep .range-slider-tooltip {
+    font-size: 0.9rem;
+    transform: translate(-50%, calc(-100% + 0.3rem)) !important;
+}
+
+
+/* Mobile optimization */
+@media (max-width: 576px) {
+    .modal-dialog {
+        max-width: 100%;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+}
+
+body.modal-open {
+    overflow: hidden;
+}

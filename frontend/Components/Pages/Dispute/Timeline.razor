@@ -1,0 +1,58 @@
+<div class="card">
+        <h3>Dispute Status</h3>
+
+        <div class="timeline">
+            @foreach (var step in TimelineSteps)
+            {
+                <div class="timeline-item">
+                    <div class="timeline-marker @(step.Completed ? "completed" : "")"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">@step.Title</div>
+                        <div class="timeline-date">@step.Date</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+@code {
+    private List<TimelineStep> TimelineSteps = new()
+    {
+        new()
+        {
+            Title = "Dispute Submitted",
+            Date = "2026-05-18 12:12",
+            Completed = true
+        },
+
+        new()
+        {
+            Title = "Evidence Verification",
+            Date = "Pending",
+            Completed = false
+        },
+
+        new()
+        {
+            Title = "Owner Response",
+            Date = "Pending",
+            Completed = false
+        },
+
+        new()
+        {
+            Title = "Final Resolution",
+            Date = "Pending",
+            Completed = false
+        }
+    };
+
+    public class TimelineStep
+    {
+        public string Title { get; set; } = "";
+
+        public string Date { get; set; } = "";
+
+        public bool Completed { get; set; }
+    }
+}

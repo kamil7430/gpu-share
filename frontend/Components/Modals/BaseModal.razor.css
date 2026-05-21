@@ -1,0 +1,98 @@
+/* Modal layout */
+
+/* Backdrop */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1040;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Dialog */
+.modal-dialog {
+    width: 100%;
+    max-width: 500px;
+    animation: slideIn 0.15s ease-out;
+}
+
+.modal-dialog.large {
+    max-width: 900px;
+}
+
+.modal-dialog.small {
+    max-width: 380px;
+}
+
+/* Content */
+.modal-content {
+    background: white;
+    padding: 0px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    max-height: 80vh;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+/* Header */
+.modal-header {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.modal-header h3 {
+    margin-block-start: 0.5em;
+    margin-block-end: 0em;
+}
+
+/* Body */
+.modal-body {
+    padding: 0.5rem 2rem;
+    overflow-y: auto;   /* enables scrolling */
+    flex: 1;            /* fills remaining space */
+}
+
+.modal-body.without-footer {
+    padding-bottom: 1.5rem;
+}
+
+/* Footer */
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #eee;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

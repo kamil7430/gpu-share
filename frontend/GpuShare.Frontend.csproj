@@ -13,6 +13,7 @@
     <PackageReference Include="Blazorise.Bootstrap5" Version="2.1.0" />
     <PackageReference Include="Blazorise.Components" Version="2.1.0" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="2.1.0" />
+    <PackageReference Include="MudBlazor" Version="9.4.0" />
   </ItemGroup>
 
 </Project>

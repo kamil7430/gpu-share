@@ -1,31 +1,12 @@
-﻿@page "/"
-@using GpuShare.Frontend.Components.Shared
-@using GpuShare.Frontend.Models
-
-@*
-TODO:
-- move sorting outside of filters
-- badges scrolling horizontally if too many
-- add "clear filters" button ?
-- removing filters with badges 
-- disable page buttons when no more pages
-- handle empty results
-- add loading state
-*@
-
-<PageTitle>Search for GPUs</PageTitle>
-
-<h1>Search for GPUs</h1>
-
 <div class="search-container">
 
     <input @bind="Filter.Term" placeholder="Search..." class="form-control" />
 
-    <button class="btn btn-outline-secondary" @onclick="OpenModal">
+    <button class="btn-secondary" @onclick="OpenModal">
         Filters
     </button>
 
-    <button class="btn btn-primary btn-search" @onclick="ApplySearch">
+    <button class="btn-primary btn-search" @onclick="ApplySearch">
         Search
     </button>
 
@@ -60,8 +41,6 @@ TODO:
     </div>
 </div>
 
-<GpuCard />
-
 <FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
 
 @code {
@@ -69,7 +48,6 @@ TODO:
 
     private SearchFilter Filter = new();
     private FilterModal Modal;
-
     private void OpenModal()
     {
         Modal?.Open(Filter);

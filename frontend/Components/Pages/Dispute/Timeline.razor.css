@@ -1,0 +1,43 @@
+.timeline {
+    margin-top: 28px;
+    position: relative;
+}
+
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 11px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dce7ff;
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.timeline-marker {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #d0d7e2;
+    z-index: 1;
+}
+
+.timeline-marker.completed {
+    background: #37b24d;
+}
+
+.timeline-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.timeline-date {
+    color: #666;
+    font-size: 0.9rem;
+}
