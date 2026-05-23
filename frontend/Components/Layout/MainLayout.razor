@@ -1,6 +1,8 @@
 ﻿@inherits LayoutComponentBase
+@using GpuShare.Frontend.Services
 @using GpuShare.Frontend.Models
 @using MudBlazor
+@inject AuthModalService AuthModal
 
 <MudThemeProvider Theme="@GpuTheme" />
 <MudDialogProvider />
@@ -39,15 +41,19 @@
     <span class="dismiss">🗙</span>
 </div>
 
-<LoginModal IsVisible="ShowModal" OnClose="CloseModal" />
+<LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
 
 @code {
-    private bool ShowModal = false;
     private User CurrentUser = new User("JKowalski", "password123");
     private bool IsLoggedIn = true;
 
+    protected override void OnInitialized()
+    {
+        AuthModal.OnChange += StateHasChanged;
+    }
+
     private void OpenLogin() { 
-        ShowModal = true; 
+        AuthModal.Open();
         Console.WriteLine("Login modal opened");
     }
 
@@ -55,7 +61,7 @@
         IsLoggedIn = false; 
         Console.WriteLine("User logged out");
     }
-    private void CloseModal() => ShowModal = false;
+    private void CloseModal() => AuthModal.Close();
 
     private MudTheme GpuTheme = new()
 {

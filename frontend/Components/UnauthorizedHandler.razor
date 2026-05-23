@@ -1,0 +1,12 @@
+@inject NavigationManager Navigation
+@inject AuthModalService AuthModal
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo("/", false);
+
+        AuthModal.Open();
+    }
+}

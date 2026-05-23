@@ -61,8 +61,7 @@ Project decisions:
     private bool authorized = false;
     private List<Device> devices = [];
 
-    private Device gpu;
-    private bool showRemoveModal = false;
+    private Device gpu = new();
 
     protected override void OnInitialized()
     {

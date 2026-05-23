@@ -22,22 +22,25 @@
             @* <input type="checkbox" checked=@Checked class="checkbox-list-item" 
                    @onchange="eventArgs => { CheckboxClicked(Value, eventArgs.Value); }" /> <br />   *@
         }  
-    }  
-    @ChildContent  
+    }
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </div>  
   
 @code {  
     //Data for the Checkbox
     [Parameter] public string? className { get; set; }   
-    [Parameter] public IEnumerable<TItem> Data { get; set; }
+    [Parameter] public IEnumerable<TItem>? Data { get; set; }
     // The field to be shown adjacent to checkbox  
-    [Parameter] public Func<TItem, string> TextField { get; set; }  
+    [Parameter] public Func<TItem, string>? TextField { get; set; }  
     // The Value which checkbox will return when checked   
-    [Parameter] public Func<TItem, object> ValueField { get; set; }  
+    [Parameter] public Func<TItem, object>? ValueField { get; set; }  
     // CSS Style for the Checkbox container   
     [Parameter] public string? Style { get; set; }  
     // Any childd content for the control (if needed)  
-    [Parameter] public RenderFragment ChildContent { get; set; }  
+    [Parameter] public RenderFragment? ChildContent { get; set; }  
     // The array which contains the list of selected checkboxs   
     [Parameter] public List<string> SelectedValues { get; set; } = new List<string>();  
   

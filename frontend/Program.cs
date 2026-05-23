@@ -3,6 +3,12 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using GpuShare.Frontend.Components;
 using MudBlazor.Services;
+using GpuShare.Frontend.Services;
+using GpuShare.Frontend.Models;
+using GpuShare.Frontend.State;
+using GpuShare.Frontend.Auth;
+using GpuShare.Frontend.Http;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +25,15 @@ builder.Services
     .AddFontAwesomeIcons();
 
 builder.Services.AddMudServices();
+
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<AuthModalService>();
+builder.Services.AddScoped<AuthState>();
+builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+
+
+builder.Services.AddApiInfrastructure();
 
 var app = builder.Build();
 

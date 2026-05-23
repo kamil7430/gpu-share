@@ -47,7 +47,7 @@
     [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
 
     private SearchFilter Filter = new();
-    private FilterModal Modal;
+    private FilterModal? Modal;
     private void OpenModal()
     {
         Modal?.Open(Filter);

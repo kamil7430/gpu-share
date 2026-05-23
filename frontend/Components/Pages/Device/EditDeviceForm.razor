@@ -118,7 +118,7 @@
         </div>
 
 @code {
-    [Parameter] public GpuShare.Frontend.Models.Device? gpu { get; set; }
+    [Parameter] public GpuShare.Frontend.Models.Device gpu { get; set; } = new();
     [Parameter] public string Mode { get; set; } = "edit";
 
     private List<string> SupportedFrameworks = new()

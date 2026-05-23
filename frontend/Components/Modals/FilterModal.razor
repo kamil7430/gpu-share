@@ -60,7 +60,7 @@ Decisions:
 
 @code {
     [Parameter] public EventCallback<SearchFilter> OnApply { get; set; }
-    [Parameter] public SearchFilter CurrentFilter { get; set; }
+    [Parameter] public SearchFilter CurrentFilter { get; set; } = new();
 
     private bool IsOpen;
     private SearchFilter TempFilter = new();

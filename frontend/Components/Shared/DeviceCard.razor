@@ -14,10 +14,10 @@ else
     <div class="gpu-body">
         <div class="left">
             <div class="gpu-header">
-                <h4><NavLink href="@($"/device/view/{gpu.Id}")">@gpu?.Name</NavLink></h4>
+                <h4><NavLink href="@($"/device/view/{gpu.Id}")">@gpu.Name</NavLink></h4>
             </div>
 
-            <div>Model: <span style="color: #0A1128;">@gpu?.Model</span></div>
+            <div>Model: <span style="color: #0A1128;">@gpu.Model</span></div>
             @if (!authorized){
                 <div>Owner name: User1</div>
             }
@@ -72,7 +72,7 @@ else
 
 @code {
     [Parameter] public bool authorized { get; set; } = false;
-    [Parameter] public Device? gpu { get; set; } = null;
+    [Parameter] public Device gpu { get; set; } = new();
     private bool showRemoveDeviceModal = false;
 
     public void OrderGpu(Device gpu)
