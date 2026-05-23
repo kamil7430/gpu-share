@@ -1,4 +1,4 @@
-namespace GpuShare.Frontend.Models;
+namespace GpuShare.Frontend.Models.Dtos;
 
 public class DeviceSearchFilters
 {

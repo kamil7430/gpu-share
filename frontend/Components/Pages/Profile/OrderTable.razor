@@ -44,8 +44,8 @@
                         <td>
                             <a class="order-link" href="@($"/order/{order.Id}")">#@order.Id</a>
                         </td>
-                        <td>@order.Device</td>
-                        <td><a class="profile-link" href="/profile/@order.Owner">@order.Owner</a></td>
+                        <td>@order.DeviceId</td>
+                        <td><a class="profile-link" href="/profile/@order.OwnerUsername">@order.OwnerUsername</a></td>
                         <td>@(order.StartDate == null || order.StartDate == DateTime.MinValue ? "-" : order.StartDate.ToString())</td>
                         <td>@(order.EndDate == null || order.EndDate == DateTime.MinValue ? "-" : order.EndDate.ToString())</td>
                         <td>@(order.Cost == 0 ? "-" : $"{order.Cost}$")</td>
@@ -92,8 +92,8 @@
         new()
         {
             Id = 1001,
-            Device = "GPU#69",
-            Owner = "User1",
+            DeviceId = 69,
+            OwnerUsername = "User1",
             StartDate = DateTime.Parse("2026-05-10 12:00"),
             EndDate = DateTime.Parse("2026-05-12 18:00"),
             Cost = 200,
@@ -103,8 +103,8 @@
         new()
         {
             Id = 1002,
-            Device = "GPU#67",
-            Owner = "User2",
+            DeviceId = 67,
+            OwnerUsername = "User2",
             StartDate = DateTime.Parse("2026-05-15 09:00"),
             Cost = 0,
             Status = "Active"
@@ -113,8 +113,8 @@
         new()
         {
             Id = 1003,
-            Device = "GPU#2137",
-            Owner = "User2137",
+            DeviceId = 2137,
+            OwnerUsername = "User2137",
             StartDate = DateTime.Parse("2026-05-20 18:00"),
             Cost = 120,
             Status = "Cancelled"
@@ -123,8 +123,8 @@
         new()
         {
             Id = 1004,
-            Device = "GPU#404",
-            Owner = "User404",
+            DeviceId = 404,
+            OwnerUsername = "User404",
             StartDate = DateTime.Parse("2026-05-17 11:00"),
             Cost = 350,
             Status = "Dispute"
