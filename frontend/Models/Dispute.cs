@@ -1,3 +1,5 @@
+namespace GpuShare.Frontend.Models;
+
 using System.ComponentModel.DataAnnotations;
 
 public class DisputeModel

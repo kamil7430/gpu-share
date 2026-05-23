@@ -1,3 +1,5 @@
+# GUI
+
 ## Autoryzacja
 
 ### /login (modal)
@@ -17,6 +19,8 @@
 - [ ] ~~RoleSelector - Wybór roli: Klient / Właściciel GPU (radio)~~
 - [x] TermsCheckbox - Akceptacja regulaminu
 - [ ] VerificationInfo - Informacja o wysłaniu e-maila weryfikacyjnego (do ustalenia)
+
+## Strony
 
 ### /search
 
@@ -137,3 +141,145 @@
 - wallet
 - orders table
 - badge/chip
+
+
+# Serwisy
+
+### authService (API)
+
+- [ ] login(email, password): Promise - POST /auth/login — zwraca JWT + refresh token
+- [ ] register(payload): Promise - POST /auth/register — tworzy konto, wysyła e-mail weryfikacyjny
+- [ ] refreshToken(): Promise - Ciche odświeżenie access tokena przed wygaśnięciem
+- [ ] logout(): void - Unieważnienie tokena, czyszczenie store'u
+- [ ] getMe(): Promise - GET /auth/me — profil zalogowanego użytkownika
+
+zależy od: apiClient tokenStore
+
+### deviceService (API)
+
+- [ ] searchDevices(filters): Promise> - GET /api/devices z parametrami filtrów i stronicowaniem
+- [ ] getDevice(deviceId): Promise - GET /api/devices/:id — szczegóły karty
+- [ ] getDeviceStatus(deviceId): Promise - GET /api/devices/:id/status — polling co 30s gdy brak SSE
+- [ ] registerDevice(cmd): Promise - POST /api/devices — rejestracja nowej karty przez właściciela
+- [ ] updateDevice(deviceId, cmd): Promise - PATCH /api/devices/:id — edycja parametrów i ceny
+- [ ] setAvailability(deviceId, available): Promise - PATCH /api/devices/:id/availability — toggle dostępności
+- [ ] removeDevice(deviceId): Promise - DELETE /api/devices/:id
+
+zależy od: apiClient
+
+### rentalService (API)
+
+- [ ] createRental(cmd): Promise - POST /api/orders — inicjuje wypożyczenie, zwraca connection_details
+- [ ] getRental(rentalId): Promise - GET /api/orders/:id — aktualny stan wypożyczenia
+- [ ] listRentals(params): Promise> - GET /api/orders — historia z filtrem statusu
+- [ ] endRental(rentalId): Promise - POST /api/orders/:id/end — przedwczesne zakończenie sesji
+
+zależy od: apiClient
+
+### disputeService (API)
+
+- [ ] openDispute(cmd): Promise - POST /api/disputes — zgłoszenie niezgodności
+- [ ] getDispute(disputeId): Promise - GET /api/disputes/:id — stan sporu
+- [ ] listDisputes(params): Promise> - GET /api/disputes — lista dla admina z filtrami
+- [ ] submitClarification(disputeId, payload): Promise - POST /api/disputes/:id/clarification — odpowiedź strony sporu
+- [ ] resolveDispute(disputeId, decision): Promise - POST /api/disputes/:id/resolve — tylko admin
+
+zależy od: apiClient
+
+### paymentService (API)
+
+- [ ] getBalance(): Promise - GET /api/wallet — saldo i zablokowane środki
+- [ ] topUp(amount, method): Promise - POST /api/wallet/topup — inicjuje płatność przez PSP
+- [ ] getTransactions(params): Promise> - GET /api/wallet/transactions — historia transakcji
+- [ ] getPayouts(ownerId): Promise> - GET /api/owner/payouts — historia wypłat właściciela
+
+zależy od: apiClient
+
+### reviewService (API)
+
+- [ ] createReview(rentalId, cmd): Promise - POST /api/orders/:id/review — jednorazowa ocena po sesji
+- [ ] getDeviceReviews(deviceId): Promise - GET /api/devices/:id/reviews — opinie dla strony szczegółów GPU
+
+zależy od: apiClient
+
+### adminService (API)
+
+- [ ] listUsers(params): Promise> - GET /api/admin/users z filtrem statusu i roli
+- [ ] verifyUser(userId, verdict): Promise - POST /api/admin/users/:id/verify — zatwierdź / odrzuć konto
+- [ ] blockUser(userId, reason): Promise - POST /api/admin/users/:id/block
+- [ ] getPlatformStats(): Promise - GET /api/admin/stats — KPI dla dashboardu admina
+- [ ] verifyDevice(deviceId, verdict): Promise - POST /api/admin/devices/:id/verify — losowa weryfikacja GPU
+
+zależy od: apiClient
+
+### authStore (Stan)
+
+- [ ] user: User | null - Zalogowany użytkownik (null gdy niezalogowany)
+- [ ] accessToken: string | null - JWT access token trzymany w pamięci (nie localStorage)
+- [ ] role: "client"|"owner"|"admin"|null - Aktywna rola — steruje routingiem i widocznością elementów
+- [ ] login(email, password): Promise - Wywołuje authService.login i zapisuje token w store
+- [ ] logout(): void - Czyści store i przekierowuje na /login
+
+zależy od: authService
+
+### rentalStore (Stan)
+
+- [ ] activeRental: Rental | null - Aktualnie trwające wypożyczenie bieżącego użytkownika
+- [ ] telemetry: TelemetrySnapshot[] - Bufor ostatnich N próbek dla wykresów w aktywnej sesji
+- [ ] startRental(cmd): Promise - Tworzy rental, podłącza SSE, aktualizuje activeRental
+- [ ] endRental(): Promise - Zamyka SSE, wysyła END, czyści activeRental
+
+zależy od: rentalService telemetryService
+
+### deviceStore (Stan)
+
+- [ ] myDevices: GPUDevice[] - Karty GPU zalogowanego właściciela
+- [ ] fetchMyDevices(): Promise - Ładuje listę i zapisuje w store
+- [ ] toggleAvailability(deviceId): Promise - Optimistic update toggle + PATCH do API
+
+ależy od: deviceService
+
+### telemetryService (Real-time)
+
+- [ ] subscribe(deviceId, onSnapshot): Unsubscribe - SSE /api/devices/:id/telemetry — stream metryk GPU
+- [ ] unsubscribe(deviceId): void - Zamknięcie EventSource po odmontowaniu komponentu
+- [ ] fallbackPoll(deviceId, interval): Unsubscribe - Polling GET /status co N ms gdy SSE niedostępne
+- [ ] onError(handler): void - Callback na utratę połączenia — wyświetla baner w UI
+
+zależy od: authStore
+
+### notificationService (Real-time)
+
+- [ ] connect(): void - Otwiera SSE /api/notifications po zalogowaniu
+- [ ] onNotification(handler): Unsubscribe - Subskrypcja powiadomień — nowe rezerwacje, spory, wypłaty
+- [ ] disconnect(): void - Zamknięcie połączenia przy wylogowaniu
+
+zależy od: authStore
+
+### apiClient (Narzędziowy)
+
+request(config): Promise - Axios/fetch wrapper — dołącza Bearer token, obsługuje 401 → refresh
+onError interceptor - Mapuje kody HTTP na czytelne błędy: 409 Conflict, 4xx, 5xx
+retry(n): void - Automatyczny retry dla 5xx z exponential backoff
+zależy od: authStore
+
+### routerGuard (Narzędziowy)
+
+requireAuth(to, next) - Redirect na /login gdy brak tokena
+requireRole(roles[])(to, next) - Redirect na /403 gdy rola użytkownika nie jest w liście
+redirectIfLoggedIn(to, next) - Redirect z /login na stronę główną gdy już zalogowany
+zależy od: authStore
+
+### formatters (Narzędziowy)
+
+formatUSD(amount): string - Intl.NumberFormat — "$0.45" bez rounding artefaktów
+formatDuration(seconds): string - "2h 34m 12s" — dla CountdownTimer i historii
+formatDateTime(iso): string - Locale-aware data i godzina ("6 sty 2026, 12:34")
+formatVRAM(mb): string - "24 GB" / "512 MB" — dla kart GPU w katalogu
+
+### validationSchemas (Narzędziowy)
+
+registerSchema - e-mail, hasło ≥8 znaków, wybór roli
+deviceSchema - model wymagany, vram_mb > 0, price_per_hour_usd > 0
+rentalSchema - device_id uuid, docker_image niepusty, duration_hours 1–720
+disputeSchema - reason enum, details min 50 znaków

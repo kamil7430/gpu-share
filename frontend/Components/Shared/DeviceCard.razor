@@ -72,23 +72,23 @@ else
 
 @code {
     [Parameter] public bool authorized { get; set; } = false;
-    [Parameter] public Gpu? gpu { get; set; } = null;
+    [Parameter] public Device? gpu { get; set; } = null;
     private bool showRemoveDeviceModal = false;
 
-    public void OrderGpu(Gpu gpu)
+    public void OrderGpu(Device gpu)
     {
         // Implement order logic here
         Console.WriteLine($"Ordering GPU: {gpu.Name}");
     }
 
-    public void EditGpu(Gpu gpu)
+    public void EditGpu(Device gpu)
     {
         // Implement edit logic here
         Console.WriteLine($"Editing GPU: {gpu.Name}");
         Navigation.NavigateTo($"/device/edit/{gpu.Id}");
     }
 
-    public void RemoveGpu(Gpu gpu)
+    public void RemoveGpu(Device gpu)
     {
         showRemoveDeviceModal = true;
         // Implement remove logic here

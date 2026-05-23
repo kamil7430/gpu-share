@@ -10,7 +10,7 @@ else
         @foreach (var gpu in PagedGpus)
         {
             @if (!IsLoading) {
-                <GpuCard gpu="@gpu" authorized="@authorized" />
+                <DeviceCard gpu="@gpu" authorized="@authorized" />
             }
              else 
             {
@@ -32,7 +32,7 @@ else
 
 @code {
     [Parameter] public bool authorized { get; set; } = false;
-    private static List<Gpu> _allGpus = Enumerable.Range(1, 10).Select(i => new Gpu
+    private static List<Device> _allGpus = Enumerable.Range(1, 10).Select(i => new Device
         {
             Id = i,
             Name = $"GPU {i}",
@@ -44,11 +44,10 @@ else
             PricePerHour = 5
         }).ToList();
 
-    private List<Gpu> PagedGpus = _allGpus.Take(5).ToList(); // Initial page load
+    private List<Device> PagedGpus = _allGpus.Take(5).ToList(); // Initial page load
     private int _page = 1;
     private int _pageSize = 5;
     private int _totalPages;
-    private bool isCurrentUser = true; // Mocked login state, replace with actual auth logic
     private bool IsLoading = true;
 
     protected override void OnInitialized()

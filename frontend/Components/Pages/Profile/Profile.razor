@@ -59,15 +59,15 @@ Project decisions:
 @code {
     [Parameter] public string? Username { get; set; }
     private bool authorized = false;
-    private List<Gpu> devices = [];
+    private List<Device> devices = [];
 
-    private Gpu gpu;
+    private Device gpu;
     private bool showRemoveModal = false;
 
     protected override void OnInitialized()
     {
         // mock data
-        devices = Enumerable.Range(1, 10).Select(i => new Gpu
+        devices = Enumerable.Range(1, 10).Select(i => new Device
         {
             Id = i,
             Name = $"GPU {i}",

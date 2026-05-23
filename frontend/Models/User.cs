@@ -7,6 +7,10 @@ public class User
     public string Password { get; set; } = "";
     public bool Admin { get; set; } = false;
 
+    public User()
+    {
+    }
+
     public User(string username, string password, bool admin = false)
     {
         Username = username;

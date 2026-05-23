@@ -12,14 +12,14 @@
 
     <!-- Info card -->
     @if (Mode != "add") {
-        <DeviceInfo Gpu="@gpu" Username="@Username"></DeviceInfo>
+        <DeviceInfo Device="@gpu" Username="@Username"></DeviceInfo>
     }
 
     
     <!--  Edit form -->
     @if ((Mode == "edit" || Mode == "add") && isAuthorized)
     {
-        <EditDeviceForm Gpu="@gpu" Mode="@Mode"></EditDeviceForm>
+        <EditDeviceForm Device="@gpu" Mode="@Mode"></EditDeviceForm>
     }
 
     @if (Mode != "add" && isAuthorized) {  
@@ -39,7 +39,7 @@
         </div>
 
         //<!-- Order form -->
-        <GpuOrderForm></GpuOrderForm>
+        <DeviceOrderForm></DeviceOrderForm>
     }
 
 </div>
@@ -50,7 +50,7 @@
 
     [Inject] public NavigationManager Navigation { get; set; } = default!;
 
-    private Gpu gpu = new();
+    private GpuShare.Frontend.Models.Device gpu = new();
     private bool isAuthorized = true;
     private string Username = "user1";
     
@@ -58,7 +58,7 @@
     {
         if (Id.HasValue)
         {
-            gpu = new Gpu
+            gpu = new GpuShare.Frontend.Models.Device
             {
                 Name = "Workstation-Alpha",
                 Model = "RTX 4090",
@@ -76,7 +76,7 @@
         /*if (Id.HasValue)
         {
             // Mock: Load existing device data
-            gpu = new Gpu { Name = "Workstation-Alpha", Model = "RTX 4090", VramMb = 24576, CudaCores = 16384 };
+            gpu = new Device { Name = "Workstation-Alpha", Model = "RTX 4090", VramMb = 24576, CudaCores = 16384 };
         }*/
     }
 
