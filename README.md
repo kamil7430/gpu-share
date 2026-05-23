@@ -101,6 +101,7 @@ flowchart LR
 - `ASP.NET Core` (.NET 10.0)
 - `Blazor Web App` - Interactive Server Components
 - `Blazorise` - Component library
+- `MudBlazor` - Component library
 - `Bootstrap 5` - Responsive CSS framework
 - `C#` - Primary language
 - `Razor Components` - Component-based architecture
