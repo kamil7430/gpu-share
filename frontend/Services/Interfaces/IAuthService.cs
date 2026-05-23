@@ -2,7 +2,6 @@ namespace GpuShare.Frontend.Services.Interfaces;
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
 
-// zależy od: apiClient tokenStore
 public interface IAuthService
 {
     /// <summary>
