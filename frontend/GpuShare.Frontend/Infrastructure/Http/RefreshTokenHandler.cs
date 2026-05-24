@@ -26,8 +26,8 @@ public class RefreshTokenHandler : DelegatingHandler
             {
                 var auth = await _authService.RefreshTokenAsync();
                 var user = await _authService.GetMeAsync();
-                _authState.SetAuth(user, auth.AccessToken);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
+                _authState.SetAuth(user, auth.Token);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.Token);
 
                 response = await base.SendAsync(request, cancellationToken);
             }

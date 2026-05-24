@@ -2,6 +2,7 @@ namespace GpuShare.Frontend.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using GpuShare.Frontend.Models;
+using System.Net;
 
 public class ApiClient : IApiClient
 {
@@ -14,50 +15,68 @@ public class ApiClient : IApiClient
 
     public async Task<T?> GetAsync<T>(string url)
     {
-        var response = await _http.GetAsync(url);
+        return await ExecuteRequest(async () =>
+        {   
+            var response = await _http.GetAsync(url);
 
-        await EnsureSuccess(response);
+            await EnsureSuccess(response);
 
-        return await response.Content.ReadFromJsonAsync<T>();
+            return await response.Content.ReadFromJsonAsync<T>();
+        });
     }
 
     public async Task<TResponse?> PostAsync<TRequest, TResponse>(string url, TRequest data)
     {
-        var response = await _http.PostAsJsonAsync(url, data);
+        return await ExecuteRequest(async () =>
+        {   
+            var response = await _http.PostAsJsonAsync(url, data);
 
-        await EnsureSuccess(response);
+            await EnsureSuccess(response);
 
-        return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await response.Content.ReadFromJsonAsync<TResponse>();
+        });
     }
 
     public async Task PostAsync<TRequest>(string url, TRequest data)
     {
-        var response = await _http.PostAsJsonAsync(url, data);
+        await ExecuteRequest(async () =>
+        {   
+            var response = await _http.PostAsJsonAsync(url, data);
 
-        await EnsureSuccess(response);
+            await EnsureSuccess(response);
+        });
     }
 
     public async Task<TResponse?> PostAsync<TResponse>(string url)
     {
-        var response = await _http.PostAsync(url, null);
+        return await ExecuteRequest(async () =>
+        {   
+            var response = await _http.PostAsync(url, null);
 
-        await EnsureSuccess(response);
+            await EnsureSuccess(response);
 
-        return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await response.Content.ReadFromJsonAsync<TResponse>();
+        });
     }
 
     public async Task PatchAsync<TRequest>(string url, TRequest data)
     {
-        var response = await _http.PatchAsJsonAsync(url, data);
+        await ExecuteRequest(async () =>
+        {   
+            var response = await _http.PatchAsJsonAsync(url, data);
 
-        await EnsureSuccess(response);
+            await EnsureSuccess(response);
+        });
     }
 
     public async Task DeleteAsync(string url)
     {
-        var response = await _http.DeleteAsync(url);
+        await ExecuteRequest(async () =>
+        {   
+            var response = await _http.DeleteAsync(url);
 
-        await EnsureSuccess(response);
+            await EnsureSuccess(response);
+        });
     }
 
     private static async Task EnsureSuccess(HttpResponseMessage response)
@@ -67,6 +86,38 @@ public class ApiClient : IApiClient
 
         var content = await response.Content.ReadAsStringAsync();
 
-        throw new ApiException(content, (int)response.StatusCode);
+        throw new ApiException(content, response.StatusCode);
+    }
+
+    private static async Task<T> ExecuteRequest<T>(Func<Task<T>> action)
+    {
+        try
+        {
+            return await action();
+        }
+        catch (TaskCanceledException)
+        {
+            throw new ApiException("Request timed out.", HttpStatusCode.RequestTimeout);
+        }
+        catch (HttpRequestException)
+        {
+            throw new ApiException("Cannot connect to server.", HttpStatusCode.ServiceUnavailable);
+        }
+    }
+
+    private static async Task ExecuteRequest(Func<Task> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (TaskCanceledException)
+        {
+            throw new ApiException("Request timed out.", HttpStatusCode.RequestTimeout);
+        }
+        catch (HttpRequestException)
+        {
+            throw new ApiException("Cannot connect to server.", HttpStatusCode.ServiceUnavailable);
+        }
     }
 }

@@ -44,7 +44,7 @@
 <LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
 
 @code {
-    private User CurrentUser = new User("JKowalski", "password123");
+    private User CurrentUser = new User("JKowalski");
     private bool IsLoggedIn = true;
 
     protected override void OnInitialized()

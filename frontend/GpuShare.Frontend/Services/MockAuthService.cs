@@ -10,8 +10,7 @@ public class MockAuthService : IAuthService
         // Simulate successful login with dummy tokens
         var response = new AuthResponse
         {
-            AccessToken = "mock_access_token",
-            RefreshToken = "mock_refresh_token",
+            Token = "mock_access_token",
             ExpiresAt = DateTime.UtcNow.AddSeconds(3600),
             User = new User
             {
@@ -33,8 +32,7 @@ public class MockAuthService : IAuthService
         // Simulate token refresh with new dummy tokens
         var response = new AuthResponse
         {
-            AccessToken = "new_mock_access_token",
-            RefreshToken = "new_mock_refresh_token",
+            Token = "new_mock_access_token",
             ExpiresAt = DateTime.UtcNow.AddSeconds(3600)
         };
         return Task.FromResult(response);

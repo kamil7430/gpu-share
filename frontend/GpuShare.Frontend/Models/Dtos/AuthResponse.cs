@@ -6,9 +6,7 @@ public class AuthResponse
 {
     public User User { get; set; } = new User();
 
-    public string AccessToken { get; set; } = string.Empty;
-
-    public string RefreshToken { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
 
     public DateTime ExpiresAt { get; set; }
 }
