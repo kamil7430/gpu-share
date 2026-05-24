@@ -5,7 +5,7 @@ using GpuShare.Frontend.Services.Interfaces;
 
 public class MockAuthService : IAuthService
 {
-    public Task<AuthResponse> LoginAsync(AuthRequest payload)
+    public Task LoginAsync(AuthRequest payload)
     {
         // Simulate successful login with dummy tokens
         var response = new AuthResponse
@@ -27,7 +27,7 @@ public class MockAuthService : IAuthService
         return Task.CompletedTask;
     }
 
-    public Task<AuthResponse> RefreshTokenAsync()
+    public Task RefreshTokenAsync()
     {
         // Simulate token refresh with new dummy tokens
         var response = new AuthResponse

@@ -31,37 +31,6 @@ main {
     color: #0a1128;
 }
 
-/* Flex container for the links on the right */
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 20px; /* Spacing between 'About' and 'Contact' */
-    color: #0a1128;
-}
-
-.nav-links ::deep a {
-    text-decoration: none;
-    color: inherit;
-    font-weight: inherit;
-    font-size: inherit;
-}
-
-.nav-links button {
-    text-decoration: none;
-    color: inherit;
-    font-weight: inherit;
-    font-size: inherit;
-    background: none;
-    border: 1px solid #0a1128;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.nav-links button:hover {
-    background-color: #30568f;
-}
-
 /* Ensures the page content starts below the header */
 .content-area {
     padding: 2rem;

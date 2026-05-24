@@ -8,7 +8,7 @@ public interface IAuthService
     /// POST /auth/login
     /// Returns JWT access token and refresh token.
     /// </summary>
-    Task<AuthResponse> LoginAsync(AuthRequest payload);
+    Task LoginAsync(AuthRequest payload);
 
     /// <summary>
     /// POST /auth/register
@@ -19,7 +19,7 @@ public interface IAuthService
     /// <summary>
     /// Silently refreshes access token before expiration.
     /// </summary>
-    Task<AuthResponse> RefreshTokenAsync();
+    Task RefreshTokenAsync();
 
     /// <summary>
     /// Invalidates tokens and clears local auth state.

@@ -4,7 +4,7 @@ using GpuShare.Frontend.Models.Dtos;
 
 namespace GpuShare.Frontend.State;
 
-public class AuthState
+public class AuthState : IAuthState
 {
     public User? User { get; private set; }
     public string? AccessToken { get; private set; }

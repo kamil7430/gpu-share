@@ -20,7 +20,7 @@ public class AuthService : IAuthService
         _jwtHelper = jwtHelper;
     }
 
-    public async Task<AuthResponse> LoginAsync(AuthRequest payload)
+    public async Task LoginAsync(AuthRequest payload)
     {
         var token = await _api.PostAsync<AuthRequest, string>("/users/login", payload);
         if (token != null) {
@@ -30,12 +30,11 @@ public class AuthService : IAuthService
                 ExpiresAt = _jwtHelper.GetExpiration(token)
             };  
             _authState.SetAuth(response);
-            return response;
         }
         throw new InvalidOperationException("Failed to login");
     }
 
-    public async Task<AuthResponse> RefreshTokenAsync()
+    public async Task RefreshTokenAsync()
     {
         var token = await _api.PostAsync<string>("/users/refresh");
         if (token != null) {
@@ -45,7 +44,6 @@ public class AuthService : IAuthService
                 ExpiresAt = _jwtHelper.GetExpiration(token)
             };
             _authState.SetAuth(response);
-            return response;
         }
         throw new InvalidOperationException("Failed to refresh token");
     }

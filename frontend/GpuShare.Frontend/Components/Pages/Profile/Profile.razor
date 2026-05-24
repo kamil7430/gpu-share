@@ -1,5 +1,9 @@
 @page "/profile"
 @page "/profile/{Username}"
+@using GpuShare.Frontend.Services
+@using GpuShare.Frontend.Models
+@using GpuShare.Frontend.State
+@inject IAuthState AuthState
 
 @* 
 Project decisions:
@@ -30,11 +34,11 @@ Project decisions:
             }
         </div>
 
-        <GpuList authorized="@authorized" />
+        <GpuList authorized="@AuthState.IsAuthenticated" />
     </div>
 
     <!-- Orders -->
-    @if (string.IsNullOrEmpty(Username))
+    @if (AuthState.IsAuthenticated)
     {
         <div class="card">
             <div class="header-main-row">

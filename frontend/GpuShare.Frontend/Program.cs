@@ -30,10 +30,10 @@ builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<IJwtHelper, JwtHelper>();
-builder.Services.AddScoped<AuthState>();
+builder.Services.AddScoped<IAuthState, AuthState>();
 builder.Services.AddApiInfrastructure();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<AuthModalService>();
+builder.Services.AddScoped<IAuthModalService, AuthModalService>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 
 var app = builder.Build();

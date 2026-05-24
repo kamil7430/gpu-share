@@ -1,7 +1,8 @@
-@page "/order/{OrderId:int}"
-
+@using Microsoft.AspNetCore.Authorization
 @using MudBlazor
-@using MudBlazor.Charts
+
+@page "/order/{OrderId:int}"
+@attribute [Authorize]
 
 <div class="cards-container">
     <div class="page-top" style="margin-bottom: 8px;">

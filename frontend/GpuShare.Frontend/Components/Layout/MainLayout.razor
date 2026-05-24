@@ -1,11 +1,5 @@
 ﻿@inherits LayoutComponentBase
-@using GpuShare.Frontend.Services
-@using GpuShare.Frontend.Models
-@using GpuShare.Frontend.State
 @using MudBlazor
-@inject AuthModalService AuthModal
-@inject IAuthService AuthService
-@inject AuthState AuthState
 
 <MudThemeProvider Theme="@GpuTheme" />
 <MudDialogProvider />
@@ -17,18 +11,7 @@
         <div class="nav-container">
             <div class="brand">GPUSHARE</div>
 
-            <nav class="nav-links">
-                <NavLink href="/">Search</NavLink>
-                @if (AuthState.IsAuthenticated)
-                {
-                    <NavLink href="/profile">@AuthState.User!.Username</NavLink>
-                    <button class="login-btn" @onclick="Logout">Logout</button>
-                }
-                else
-                {
-                    <button class="login-btn" @onclick="OpenLogin">Login</button>
-                }
-            </nav>
+            <TopNav />
         </div>
     </header>
     <main>
@@ -44,28 +27,9 @@
     <span class="dismiss">🗙</span>
 </div>
 
-<LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
+
 
 @code {
-    protected override void OnInitialized()
-    {
-        AuthModal.OnChange += StateHasChanged;
-    }
-
-    private void OpenLogin() 
-    { 
-        AuthModal.Open();
-        Console.WriteLine("Login modal opened");
-    }
-
-    private async Task Logout() 
-    {
-        await AuthService.LogoutAsync();
-        Console.WriteLine("User logged out");
-    }
-
-    private void CloseModal() => AuthModal.Close();
-
     private MudTheme GpuTheme = new()
     {
         PaletteLight = new PaletteLight()

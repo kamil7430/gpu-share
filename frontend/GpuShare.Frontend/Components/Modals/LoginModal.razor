@@ -10,17 +10,19 @@
     {
         <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
-            <ValidationSummary />
 
             <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="loginModel.Username" />
             <input name="password" autocomplete="current-password" type="password" placeholder="Password" @bind-value="loginModel.Password" />
+            
+            <ValidationSummary />
+            
             <button class="action-btn btn-primary" type="submit">Sign In</button>  
             
         </EditForm>
 
-        @* <p class="error-banner">
+        <p class="error-banner">
             @ErrorMessage
-        </p> *@
+        </p>
         <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
             New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a>
         </p>
@@ -28,7 +30,6 @@
     {
         <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
             <DataAnnotationsValidator />
-            <ValidationSummary />
 
             @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> *@
             <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="registerModel.Username" />
@@ -39,12 +40,15 @@
             <span class="checkmark"></span>
                 I accept<a href="/terms" target="_blank">Terms and Conditions</a>
             </label>
+
+            <ValidationSummary />
+
             <button class="action-btn btn-primary" type="submit">Create Account</button>
         </EditForm>
 
-        @* <p class="error-banner">
+        <p class="error-banner">
             @ErrorMessage
-        </p> *@
+        </p>
         <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
             Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a>
         </p>
@@ -54,7 +58,7 @@
 @code {
     private LoginModel loginModel = new LoginModel();
     private RegisterModel registerModel = new RegisterModel();
-    private string? ErrorMessage = "Error";
+    private string? ErrorMessage = null;
 
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
@@ -89,7 +93,15 @@
         };
         
         Console.WriteLine($"Logging in with {loginModel.Username}");
-        var result = await AuthService.LoginAsync(request);
+        try {
+            await AuthService.LoginAsync(request);
+            await CloseModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Login failed: {ex.Message}");
+            ErrorMessage = "Login failed. Please check your credentials and try again.";
+        }
     }
 
     private async Task HandleRegister()
@@ -101,6 +113,15 @@
         };
 
         Console.WriteLine($"Registering {registerModel.Username}");
-        await AuthService.RegisterAsync(request);
+
+        try {
+            await AuthService.RegisterAsync(request);
+            await CloseModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Registration failed: {ex.Message}");
+            ErrorMessage = "Registration failed. Please check your input and try again.";
+        }
     }
 }

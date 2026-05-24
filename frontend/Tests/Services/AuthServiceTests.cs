@@ -28,7 +28,7 @@ public class AuthServiceTests
         _httpClient = _mockHttp.ToHttpClient();
         _httpClient.BaseAddress = new Uri("https://localhost:5001");
         _apiClient = new ApiClient(_httpClient);
-        _authState = new AuthState();
+        _authState = new AuthState(new MockJwtHelper());
         _sut = new AuthService(_apiClient, _authState, new MockJwtHelper());
     }
 
@@ -54,12 +54,12 @@ public class AuthServiceTests
             .Respond("application/json", JsonSerializer.Serialize(expected.Token));
 
         // Act
-        var result = await _sut.LoginAsync(payload);
+        await _sut.LoginAsync(payload);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Token.Should().Be("jwt-token");
-        result.User.Username.Should().Be("john");
+        _authState.User.Should().NotBeNull();
+        _authState.AccessToken.Should().Be("jwt-token");
+        _authState.User.Username.Should().Be("john");
     }
 
     [Fact]
@@ -141,10 +141,10 @@ public class AuthServiceTests
             .Respond("application/json", JsonSerializer.Serialize(expected.Token));
 
         // Act
-        var result = await _sut.RefreshTokenAsync();
+        await _sut.RefreshTokenAsync();
 
         // Assert
-        result.Token.Should().Be("new-jwt");
+        _authState.AccessToken.Should().Be("new-jwt");
     }
 
     [Fact]

@@ -1,6 +1,8 @@
+using GpuShare.Frontend.Services.Interfaces;
+
 namespace GpuShare.Frontend.Services;
 
-public class AuthModalService
+public class AuthModalService : IAuthModalService
 {
     public bool IsOpen { get; private set; }
 

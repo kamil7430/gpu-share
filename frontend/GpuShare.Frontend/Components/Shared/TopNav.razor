@@ -1,0 +1,42 @@
+﻿@using GpuShare.Frontend.Services
+@using GpuShare.Frontend.Models
+@using GpuShare.Frontend.State
+@inject IAuthModalService AuthModal
+@inject IAuthService AuthService
+@inject IAuthState AuthState
+
+<nav class="nav-links">
+    <NavLink href="/">Search</NavLink>
+    @if (AuthState.IsAuthenticated)
+    {
+        <NavLink href="/profile">@AuthState.User!.Username</NavLink>
+        <button class="login-btn" @onclick="Logout">Logout</button>
+    }
+    else
+    {
+        <button class="login-btn" @onclick="OpenLogin">Login</button>
+    }
+</nav>
+
+<LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
+
+@code { 
+    protected override void OnInitialized()
+    {
+        AuthModal.OnChange += StateHasChanged;
+    }
+
+    private void CloseModal() => AuthModal.Close();
+
+    private void OpenLogin()
+    {
+        AuthModal.Open();
+        Console.WriteLine("Login modal opened");
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Console.WriteLine("User logged out");
+    }
+}
