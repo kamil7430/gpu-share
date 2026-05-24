@@ -1,9 +1,9 @@
 namespace GpuShare.Frontend.Auth;
 using System.IdentityModel.Tokens.Jwt;
 
-public static class JwtHelper
+public class JwtHelper : IJwtHelper
 {
-    public static DateTime GetExpiration(string jwt)
+    public DateTime GetExpiration(string jwt)
     {
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadJwtToken(jwt);

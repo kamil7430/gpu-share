@@ -1,8 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using GpuShare.Frontend.Services
 @using GpuShare.Frontend.Models
+@using GpuShare.Frontend.State
 @using MudBlazor
 @inject AuthModalService AuthModal
+@inject IAuthService AuthService
+@inject AuthState AuthState
 
 <MudThemeProvider Theme="@GpuTheme" />
 <MudDialogProvider />
@@ -16,9 +19,9 @@
 
             <nav class="nav-links">
                 <NavLink href="/">Search</NavLink>
-                @if (IsLoggedIn)
+                @if (AuthState.IsAuthenticated)
                 {
-                    <NavLink href="/profile">@CurrentUser.Username</NavLink>
+                    <NavLink href="/profile">@AuthState.User!.Username</NavLink>
                     <button class="login-btn" @onclick="Logout">Logout</button>
                 }
                 else
@@ -44,37 +47,37 @@
 <LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
 
 @code {
-    private User CurrentUser = new User("JKowalski");
-    private bool IsLoggedIn = true;
-
     protected override void OnInitialized()
     {
         AuthModal.OnChange += StateHasChanged;
     }
 
-    private void OpenLogin() { 
+    private void OpenLogin() 
+    { 
         AuthModal.Open();
         Console.WriteLine("Login modal opened");
     }
 
-    private void Logout() { 
-        IsLoggedIn = false; 
+    private async Task Logout() 
+    {
+        await AuthService.LogoutAsync();
         Console.WriteLine("User logged out");
     }
+
     private void CloseModal() => AuthModal.Close();
 
     private MudTheme GpuTheme = new()
-{
-    PaletteLight = new PaletteLight()
     {
-        Primary = "#4C6EB2",
-        Secondary = "#7c4dff",
-        Success = "#4caf50",
-        Info = "#2196f3",
-        Warning = "#ff9800",
-        Error = "#B63939",
-        Background = "#f5f7fb",
-        Surface = "#ffffff"
-    }
-};
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#4C6EB2",
+            Secondary = "#7c4dff",
+            Success = "#4caf50",
+            Info = "#2196f3",
+            Warning = "#ff9800",
+            Error = "#B63939",
+            Background = "#f5f7fb",
+            Surface = "#ffffff"
+        }
+    };
 }

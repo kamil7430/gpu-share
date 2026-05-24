@@ -12,12 +12,19 @@ public class AuthState
     public bool Admin => User?.Admin ?? false;
     public bool IsAuthenticated => !string.IsNullOrWhiteSpace(AccessToken) && AccessTokenExpiresAt > DateTime.UtcNow;
     public event Action? OnChange;
+    
+    private readonly IJwtHelper _jwtHelper;
+
+    public AuthState(IJwtHelper jwtHelper)
+    {
+        _jwtHelper = jwtHelper;
+    }
 
     public void SetAuth(User user, string token)
     {
         User = user;
         AccessToken = token;
-        AccessTokenExpiresAt = JwtHelper.GetExpiration(token);
+        AccessTokenExpiresAt = _jwtHelper.GetExpiration(token);
         NotifyStateChanged();
     }
 

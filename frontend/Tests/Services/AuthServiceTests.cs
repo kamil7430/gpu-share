@@ -111,7 +111,6 @@ public class AuthServiceTests
 
         var payload = new RegisterRequest
         {
-            Email = "taken@example.com",
             Username = "john",
             Password = "password123"
         };

@@ -12,6 +12,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ApiClientHandler>();
 
+        // A plain http client used by the refresh handler to call auth endpoints without
+        // going through the ApiClient pipeline (avoids circular DI dependencies).
+        services.AddHttpClient("auth", client =>
+        {
+            client.BaseAddress = new Uri("https://localhost:5001");
+        });
+
         services.AddScoped<RefreshTokenHandler>();
 
         services.AddHttpClient<IApiClient, ApiClient>(
