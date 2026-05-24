@@ -5,14 +5,19 @@ using GpuShare.Frontend.Services.Interfaces;
 
 public class MockAuthService : IAuthService
 {
-    public Task<AuthResponse> LoginAsync(string username, string password)
+    public Task<AuthResponse> LoginAsync(AuthRequest payload)
     {
         // Simulate successful login with dummy tokens
         var response = new AuthResponse
         {
             AccessToken = "mock_access_token",
             RefreshToken = "mock_refresh_token",
-            ExpiresAt = DateTime.UtcNow.AddSeconds(3600)
+            ExpiresAt = DateTime.UtcNow.AddSeconds(3600),
+            User = new User
+            {
+                Id = int.Parse(Guid.NewGuid().ToString().Replace("-", "")),
+                Username = payload.Username,
+            }
         };
         return Task.FromResult(response);
     }

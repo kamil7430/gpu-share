@@ -8,7 +8,7 @@ public interface IAuthService
     /// POST /auth/login
     /// Returns JWT access token and refresh token.
     /// </summary>
-    Task<AuthResponse> LoginAsync(string username, string password);
+    Task<AuthResponse> LoginAsync(AuthRequest payload);
 
     /// <summary>
     /// POST /auth/register

@@ -37,6 +37,15 @@ public class ApiClient : IApiClient
         await EnsureSuccess(response);
     }
 
+    public async Task<TResponse?> PostAsync<TResponse>(string url)
+    {
+        var response = await _http.PostAsync(url, null);
+
+        await EnsureSuccess(response);
+
+        return await response.Content.ReadFromJsonAsync<TResponse>();
+    }
+
     public async Task PatchAsync<TRequest>(string url, TRequest data)
     {
         var response = await _http.PatchAsJsonAsync(url, data);
