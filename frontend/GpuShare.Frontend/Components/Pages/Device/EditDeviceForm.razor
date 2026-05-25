@@ -1,7 +1,8 @@
+@using GpuShare.Frontend.Components.Pages.Device
 @inject IJSRuntime JS
 
 <div class="card">
-            <h3>@(Mode == "add" ? "Register New Device" : "Edit Device Specs")</h3>
+            <h3>@(Mode == DevicePageMode.Add ? "Register New Device" : "Edit Device Specs")</h3>
             <EditForm FormName="SaveSpec" Model="gpu" OnValidSubmit="HandleSave">
                 <DataAnnotationsValidator />
 
@@ -119,7 +120,7 @@
 
 @code {
     [Parameter] public GpuShare.Frontend.Models.Device gpu { get; set; } = new();
-    [Parameter] public string Mode { get; set; } = "edit";
+    [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.Edit;
 
     private List<string> SupportedFrameworks = new()
     {
@@ -142,7 +143,6 @@
     private void HandleSave()
     {
         // Save to DB logic...
-        //Navigation.NavigateTo($"/device/view/{Id ?? 1}");
-        Mode = "view";
+        Mode = DevicePageMode.View;
     }
 }

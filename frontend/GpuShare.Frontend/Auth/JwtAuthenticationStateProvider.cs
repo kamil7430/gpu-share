@@ -7,9 +7,9 @@ using GpuShare.Frontend.Models;
 
 public class JwtAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly AuthState _authState;
+    private readonly IAuthState _authState;
 
-    public JwtAuthenticationStateProvider(AuthState authState)
+    public JwtAuthenticationStateProvider(IAuthState authState)
     {
         _authState = authState;
 

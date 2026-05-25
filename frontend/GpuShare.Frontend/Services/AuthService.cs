@@ -10,10 +10,10 @@ namespace GpuShare.Frontend.Services;
 public class AuthService : IAuthService
 {
     private readonly IApiClient _api;
-    private readonly AuthState _authState;
+    private readonly IAuthState _authState;
     private readonly IJwtHelper _jwtHelper;
 
-    public AuthService(IApiClient api, AuthState authState, IJwtHelper jwtHelper)
+    public AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHelper)
     {
         _api = api;
         _authState = authState;
@@ -31,7 +31,8 @@ public class AuthService : IAuthService
             };  
             _authState.SetAuth(response);
         }
-        throw new InvalidOperationException("Failed to login");
+        else 
+            throw new InvalidOperationException("Failed to login");
     }
 
     public async Task RefreshTokenAsync()
@@ -45,7 +46,8 @@ public class AuthService : IAuthService
             };
             _authState.SetAuth(response);
         }
-        throw new InvalidOperationException("Failed to refresh token");
+        else
+            throw new InvalidOperationException("Failed to refresh token");
     }
 
     public async Task RegisterAsync(RegisterRequest payload)

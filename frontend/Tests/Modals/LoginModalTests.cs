@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 
-namespace GpuShare.Frontend.Tests.Components
+namespace GpuShare.Frontend.Tests.Modals
 {
     public class LoginModalTests : BunitContext
     {

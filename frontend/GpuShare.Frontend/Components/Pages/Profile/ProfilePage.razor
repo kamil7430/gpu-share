@@ -1,4 +1,3 @@
-@page "/profile"
 @page "/profile/{Username}"
 @using GpuShare.Frontend.Services
 @using GpuShare.Frontend.Models
@@ -17,13 +16,16 @@ Project decisions:
     <!-- Profile Info -->
     <ProfileCard Username="@Username" />
 
-    <!-- Wallet -->
-    <WalletCard />
+    @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
+    {
+        <!-- Wallet -->
+        <WalletCard />
+    }
 
     <!-- GPUs -->
     <div class="card">
         <div class="flex-row" style="justify-content: space-between;">
-            @if (string.IsNullOrEmpty(Username))
+            @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
             {
                 <h3>My GPUs</h3>
                 <button class="btn-add-device btn-primary" @onclick="AddDevice">Add GPU</button>
@@ -38,7 +40,7 @@ Project decisions:
     </div>
 
     <!-- Orders -->
-    @if (AuthState.IsAuthenticated)
+    @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
     {
         <div class="card">
             <div class="header-main-row">
@@ -61,8 +63,7 @@ Project decisions:
 </div>
 
 @code {
-    [Parameter] public string? Username { get; set; }
-    private bool authorized = false;
+    [Parameter] public string Username { get; set; } = string.Empty;
     private List<Device> devices = [];
 
     private Device gpu = new();
@@ -87,16 +88,7 @@ Project decisions:
     
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrEmpty(Username))
-        {
-            // Logic: Load the current logged-in user's data
-            authorized = true; // Mocked authorization, replace with actual auth logic
-        }
-        else
-        {
-            // Logic: Load data for the specific "Username"
-            authorized = false; // Mocked authorization, replace with actual auth logic
-        }
+
     }
 
     private void AddDevice()

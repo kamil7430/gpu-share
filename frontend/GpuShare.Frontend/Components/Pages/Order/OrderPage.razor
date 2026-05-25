@@ -1,0 +1,80 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
+
+@page "/order/{OrderId:int}"
+@attribute [Authorize]
+
+<div class="cards-container">
+    <div class="page-top" style="margin-bottom: 8px;">
+        <NavLink href="/profile" class="back-link">&lt; Back to Profile</NavLink>
+    </div>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="card">
+                <!-- Header -->
+                <div class="page-header">
+                    <div>
+                        <div class="page-subtitle">Order #@OrderId</div>
+                        <h1 style="margin: 0;">RTX 4090 • Workstation Alpha</h1>
+                    </div>
+
+                    <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">
+                        Active Session
+                    </MudChip>
+                </div>
+
+                <!-- Live Stats -->
+                <DeviceStatsCard />
+
+                <!-- Actions -->
+                <div class="flex-row" style="justify-content: space-between;">
+                    <button class="btn-danger" @onclick='OpenEndModal'>
+                        <MudIcon Icon="@Icons.Material.Filled.StopCircle" Style="margin-right: 4px;" />End Session
+                    </button>
+
+                    @if (CanOpenDispute)
+                    {
+                        <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
+                    }
+                </div>
+            </div>
+
+            <!-- Telemetry -->
+            <OrderTelemetryCard />
+
+            <!-- Connection -->
+            <ConnectionCard />
+        </Authorized>
+        <NotAuthorized>
+            <div class="card">
+                <h3>You are not authorized to view this order.</h3>
+                <p>Please log in to access your orders and sessions.</p>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+<!-- End Session Modal -->
+<EndSessionModal ShowEndModal="@ShowEndModal" />
+
+
+@code {
+
+    [Parameter]
+    public int OrderId { get; set; }
+
+    private DateTime StartTime = DateTime.UtcNow.AddMinutes(-12);
+
+    private bool ShowEndModal;
+
+    private bool CanOpenDispute =>
+        DateTime.UtcNow - StartTime > TimeSpan.FromMinutes(5);
+
+    private void OpenEndModal()
+    {
+        ShowEndModal = true;
+        Console.WriteLine($"Open End Session Modal: ShowEndModal={ShowEndModal}");
+    }
+}

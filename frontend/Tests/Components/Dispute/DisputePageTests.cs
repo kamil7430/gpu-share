@@ -1,30 +1,18 @@
 ﻿using Bunit;
-using Bunit.TestDoubles;
 using FluentAssertions;
-using GpuShare.Frontend.Components.Pages.Order;
-using GpuShare.Frontend.Services.Interfaces;
+using GpuShare.Frontend.Components.Pages.Dispute;
 using GpuShare.Frontend.State;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Components.Routing;
 using Moq;
 using MudBlazor.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace GpuShare.Frontend.Tests.Components
+namespace GpuShare.Frontend.Tests.Components.Dispute
 {
-    //TO-DO: Wrap with <AuthorizeView> instead of attribute
-    public class OrderPageTests : BunitContext, Xunit.IAsyncLifetime
+    public class DisputePageTests : BunitContext, Xunit.IAsyncLifetime
     {
         private Mock<IAuthState> _authStateMock;
 
-        public OrderPageTests()
+        public DisputePageTests()
         {
             _authStateMock = new Mock<IAuthState>();
             Services.AddAuthorizationCore();
@@ -50,14 +38,12 @@ namespace GpuShare.Frontend.Tests.Components
             // Arrange
             var authContext = AddAuthorization();
             authContext.SetAuthorized("john");
-            //ComponentFactories.AddStub<OrderDeviceStats>("ORDER_DEVICE_STATS_STUB");
-            //ComponentFactories.AddStub<OrderTelemetry>("ORDER_TELEMETRY_STUB");
 
             // Act
-            var cut = Render<Order>();
+            var cut = Render<DisputePage>();
 
             // Assert
-            cut.Markup.Contains("Order #");
+            cut.Markup.Contains("Report a Dispute");
         }
 
         [Fact]
@@ -67,14 +53,12 @@ namespace GpuShare.Frontend.Tests.Components
             var authContext = AddAuthorization();
             //authContext.SetAuthorized("TEST USER", AuthorizationState.Unauthorized);
             authContext.SetNotAuthorized();
-            //authContext.SetAuthorized("john");
 
             // Act
-            var cut = Render<Order>();
-            //var nav = Services.GetRequiredService<NavigationManager>(); nav.NavigateTo("/order/1"); // set the route you want to test
-            
+            var cut = Render<DisputePage>();
+
             // Assert
-            cut.Markup.Should().NotContain("Order #");
+            cut.Markup.Should().NotContain("Report a Dispute");
         }
     }
 }

@@ -1,0 +1,57 @@
+@page "/order/{OrderId:int}/dispute"
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+
+<div class="cards-container">
+    <div class="page-top" style="margin-bottom: 8px;">
+        <NavLink href="@orderPage" class="back-link">&lt; Back to Order</NavLink>
+    </div>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="card">
+                <!-- Header -->
+                <div class="page-header">
+                    <div>
+                        <div class="page-subtitle">Order #@OrderId</div>
+                        <h1 style="margin: 0;">Report a Dispute</h1>
+                    </div>
+
+                    <MudChip T="string" Color="Color.Warning" Variant="Variant.Filled">
+                        Under Review
+                    </MudChip>
+                </div>
+
+                <!-- Dispute Form -->
+                <DisputeForm OrderId="@OrderId" />
+            </div>
+
+            <!-- Timeline -->
+            <TimelineCard />
+        </Authorized>
+        <NotAuthorized>
+            <div class="card">
+                <h3>You are not authorized to view this dispute.</h3>
+                <p>Please log in to access your orders and disputes.</p>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+    
+    private string orderPage = null!;
+
+    protected override void OnParametersSet()
+    {
+        orderPage = $"/order/{OrderId}";
+    }
+
+    private void SubmitDispute()
+    {
+        Console.WriteLine("Dispute submitted");
+    }
+}

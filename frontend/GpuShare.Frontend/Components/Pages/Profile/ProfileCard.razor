@@ -1,3 +1,5 @@
+@inject IAuthState AuthState
+
 <div class="profile-card card">
     <div class="flex-row" style="justify-content: space-between; align-items: flex-start;">
         <div class="user-info">
@@ -17,7 +19,7 @@
             </div>
         </div>
 
-        @if (string.IsNullOrEmpty(Username))
+        @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
         {
             <button class="btn-secondary" @onclick="ChangePassword">
                 Change Password
@@ -26,7 +28,7 @@
     </div>
 </div>
 
-@if (string.IsNullOrEmpty(Username))
+@if (AuthState.IsAuthenticated)
 {
     <ChangePasswordModal IsVisible="@showChangePasswordModal" OnClose="@(() => showChangePasswordModal = false)" />
 }

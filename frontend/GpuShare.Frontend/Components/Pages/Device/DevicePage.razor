@@ -1,8 +1,10 @@
 @page "/device/{Mode}/{Id:int?}"
+@using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazor.Charts
 @using GpuShare.Frontend.Models
 @using GpuShare.Frontend.State
-@inject AuthState AuthState
+@inject IAuthState AuthState
+@inject NavigationManager Navigation
 
 @* what happens when the reserved time run out but the job is not finished 
 
@@ -14,49 +16,55 @@
     </div>
 
     <!-- Info card -->
-    @if (Mode != "add") {
-        <DeviceInfo Device="@gpu" Username="@Username"></DeviceInfo>
+    @if (Mode != DevicePageMode.Add) {
+        <DeviceInfoCard gpu="@gpu" Username="@Username"></DeviceInfoCard>
     }
 
     
     <!--  Edit form -->
-    @if ((Mode == "edit" || Mode == "add") && isAuthorized)
+    @if ((Mode == DevicePageMode.Edit || Mode == DevicePageMode.Add))
     {
-        <EditDeviceForm Device="@gpu" Mode="@Mode"></EditDeviceForm>
+        <AuthorizeView>
+            <Authorized>
+                <EditDeviceForm gpu="@gpu" Mode="@Mode"></EditDeviceForm>
+            </Authorized>
+        </AuthorizeView>
     }
 
-    @if (Mode != "add" && isAuthorized) {  
-        //<!-- Telemetry -->
-        <TelemetryCard></TelemetryCard>
+    @if (Mode != DevicePageMode.Add) {
+        <AuthorizeView>
+            <Authorized>
+                <!-- Telemetry -->
+                <TelemetryCard></TelemetryCard>
 
-        //<!-- Reservation Calendar -->
-        <Calendar></Calendar>
-    }
+                <!-- Reservation Calendar -->
+                <ReservationCalendar></ReservationCalendar>
+            </Authorized>
+            <NotAuthorized>
+                <!-- Opinions -->
+                <div class="card">
+                    <h4 style="margin-bottom: 16px;">Owner rating: 4.5 </h4>
+                    <h4 style="margin-bottom: 24px;">Opinions about this gpu:</h4>
+                    <OpinionsList></OpinionsList>
+                </div>
 
-    @if (Mode != "add" && !isAuthorized) {
-        //<!-- Opinions -->
-        <div class="card">
-            <h4 style="margin-bottom: 16px;">Owner rating: 4.5 </h4>
-            <h4 style="margin-bottom: 24px;">Opinions about this gpu:</h4>
-            <OpinionsList></OpinionsList>
-        </div>
-
-        //<!-- Order form -->
-        <DeviceOrderForm></DeviceOrderForm>
+                <!-- Order form -->
+                <DeviceOrderForm></DeviceOrderForm>
+            </NotAuthorized>
+        </AuthorizeView>
+        
     }
 
 </div>
 
 @code {
-    [Parameter] public string Mode { get; set; } = "view"; // "view", "edit"
+    [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.View;
     [Parameter] public int? Id { get; set; }
-
-    [Inject] public NavigationManager Navigation { get; set; } = default!;
 
     private GpuShare.Frontend.Models.Device gpu = new();
     private bool isAuthorized = true;
     private string Username = "user1";
-    
+
     protected override void OnInitialized()
     {
         if (Id.HasValue)
@@ -80,7 +88,8 @@
         {
             // Mock: Load existing device data
             gpu = new Device { Name = "Workstation-Alpha", Model = "RTX 4090", VramMb = 24576, CudaCores = 16384 };
-        }*/
+            }*/
     }
 
+    
 }

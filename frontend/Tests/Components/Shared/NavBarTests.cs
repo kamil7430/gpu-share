@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace GpuShare.Frontend.Tests.Components;
+namespace GpuShare.Frontend.Tests.Components.Shared;
 
 public class NavBarTests : BunitContext
 {

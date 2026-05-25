@@ -1,0 +1,81 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using GpuShare.Frontend.Models.Dtos
+@using GpuShare.Frontend.Models
+
+<BaseModal IsVisible="@IsVisible" Title="Leave a Review" OnClose="HandleClose" SizeClass="medium">
+
+    <EditForm Model="reviewModel" OnValidSubmit="SubmitReview">
+        <DataAnnotationsValidator />
+
+        <!-- Rating -->
+        <div class="review-section">
+            <label class="review-label">Rating</label>
+
+            <MudRating SelectedValue="@(reviewModel.Rating)" SelectedValueChanged="OnRatingChanged" MaxValue="5"
+                       Size="Size.Large" Color="Color.Primary" />
+
+            <div class="rating-value">
+                @reviewModel.Rating / 5
+            </div>
+
+            <ValidationMessage For="@(() => reviewModel.Rating)" />
+        </div>
+
+        <!-- Review text -->
+        <div class="review-section">
+            <label class="review-label">Your Review</label>
+
+            <textarea class="review-textarea" @bind="reviewModel.Comment"
+                      placeholder="Describe your experience with the device, owner, stability, performance, etc.">
+            </textarea>
+
+                <ValidationMessage For="@(() => reviewModel.Comment)" />
+        </div>
+
+        <!-- Actions -->
+        <div class="review-actions">
+            <button type="button" class="btn-secondary" @onclick="HandleClose">Cancel</button>
+            <button type="submit" class="btn-primary">Submit Review</button>
+        </div>
+    </EditForm>
+
+</BaseModal>
+
+@code {
+
+    [Parameter] public bool IsVisible { get; set; }
+
+    [Parameter] public int OrderId { get; set; }
+
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    [Parameter] public EventCallback<ReviewRequest> OnSubmit { get; set; }
+
+    private ReviewFormModel reviewModel = new();
+    
+    private void OnRatingChanged(int value)
+    {
+        reviewModel.Rating = value;
+    }
+
+    private async Task SubmitReview()
+    {
+        var request = new ReviewRequest
+        {
+            OrderId = OrderId,
+            Rating = reviewModel.Rating,
+            Comment = reviewModel.Comment
+        };
+
+        await OnSubmit.InvokeAsync(request);
+
+        reviewModel = new ReviewFormModel();
+
+        await HandleClose();
+    }
+
+    private async Task HandleClose()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

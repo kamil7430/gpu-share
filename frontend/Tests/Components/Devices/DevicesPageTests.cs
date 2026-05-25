@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace GpuShare.Frontend.Tests.Compontents
+namespace GpuShare.Frontend.Tests.Components.Devices
 {
-    public class DevicePageTests
+    public class DevicesPageTests
     {
     }
 }

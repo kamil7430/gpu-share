@@ -9,7 +9,7 @@
     <NavLink href="/">Search</NavLink>
     @if (AuthState.IsAuthenticated)
     {
-        <NavLink href="/profile">@AuthState.User!.Username</NavLink>
+        <NavLink href="@profileLink">@AuthState.User!.Username</NavLink>
         <button class="login-btn" @onclick="Logout">Logout</button>
     }
     else
@@ -20,9 +20,12 @@
 
 <LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
 
-@code { 
+@code {
+    private string profileLink = null!;
+
     protected override void OnInitialized()
     {
+        profileLink = $"/profile/{AuthState.User!.Username}";
         AuthModal.OnChange += StateHasChanged;
     }
 

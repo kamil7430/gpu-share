@@ -1,19 +1,15 @@
+@using GpuShare.Frontend.Components.Modals
+
 <div class="table-controls">
-
     <div class="status-filters">
-
         @foreach (var filter in StatusFilters)
         {
             <button class="filter-btn @(SelectedStatus == filter ? "active" : "")"
                     @onclick="@(() => SelectStatus(filter))">
-
                 @filter
-
             </button>
         }
-
     </div>
-
 </div>
 
 <div class="table-card">
@@ -75,8 +71,15 @@
     <a href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
 </div>
 
+<ReviewModal IsVisible="@showReviewModal"
+                   OrderId="@selectedOrderId"
+                   OnClose="@CloseReviewModal"
+                   OnSubmit="@HandleReviewSubmit" />
+
 @code {
     private string SelectedStatus = "All";
+    private bool showReviewModal;
+    private int selectedOrderId;
 
     private List<string> StatusFilters = new()
     {
@@ -87,8 +90,8 @@
         "Dispute"
     };
     
-    private List<Order> Orders = new()
-    {
+    private List<Order> Orders { get; set; } = [
+    
         new()
         {
             Id = 1001,
@@ -129,7 +132,7 @@
             Cost = 350,
             Status = "Dispute"
         }
-    };
+    ];
 
     private List<Order> FilteredOrders =>
         SelectedStatus == "All"
@@ -143,7 +146,27 @@
 
     private void LeaveReview(int orderId)
     {
-        Console.WriteLine($"Review order {orderId}");
+        selectedOrderId = orderId;
+        showReviewModal = true;
+    }
+
+    private Task CloseReviewModal()
+    {
+        showReviewModal = false;
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleReviewSubmit(ReviewRequest request)
+    {
+        // await ReviewService.CreateReviewAsync(
+        //     request.OrderId,
+        //     new CreateReviewRequest
+        //     {
+        //         Rating = request.Rating,
+        //         Comment = request.Comment
+        //     });
+
+        showReviewModal = false;
     }
 
     private void LoadMore()
