@@ -1,4 +1,4 @@
-@page "/device/{Mode}/{Id:int?}"
+@page "/device/{ModeString}/{Id:int}"
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazor.Charts
 @using GpuShare.Frontend.Models
@@ -58,28 +58,27 @@
 </div>
 
 @code {
-    [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.View;
-    [Parameter] public int? Id { get; set; }
+    [Parameter] public string ModeString { get; set; } = "view"; // "view", "edit", "add"
+    [Parameter] public int Id { get; set; }
 
+    private DevicePageMode Mode => Enum.TryParse<DevicePageMode>(ModeString, ignoreCase: true, out var mode)
+            ? mode : DevicePageMode.View;
     private GpuShare.Frontend.Models.Device gpu = new();
     private bool isAuthorized = true;
     private string Username = "user1";
 
     protected override void OnInitialized()
     {
-        if (Id.HasValue)
+        gpu = new Device
         {
-            gpu = new GpuShare.Frontend.Models.Device
-            {
-                Name = "Workstation-Alpha",
-                Model = "RTX 4090",
-                VramMb = 24576,
-                CudaCores = 16384,
-                DriverVersion = "535.xx",
-                Frameworks = new() { "CUDA", "TensorRT" },
-                IsAvailable = true
-            };
-        }
+            Name = "Workstation-Alpha",
+            Model = "RTX 4090",
+            VramMb = 24576,
+            CudaCores = 16384,
+            DriverVersion = "535.xx",
+            Frameworks = new() { "CUDA", "TensorRT" },
+            IsAvailable = true
+        };
     }
 
     protected override void OnParametersSet()

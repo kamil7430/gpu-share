@@ -53,13 +53,13 @@
         Modal?.Open(Filter);
     }
 
-    private async Task ApplySearch()
+    public async Task ApplySearch()
     {
         await OnSearch.InvokeAsync(Filter);
         Console.WriteLine($"Searching for '{Filter.Term}', price between {Filter.PricePerHour?.Start ?? 0} and {Filter.PricePerHour?.End ?? 0}, cores between {Filter.Cores?.Start ?? 0} and {Filter.Cores?.End ?? 0}, available only: {Filter.AvailableOnly}");
     }
 
-    private void OnFiltersApplied(SearchFilter updated)
+    public void OnFiltersApplied(SearchFilter updated)
     {
         Filter = updated;
     }

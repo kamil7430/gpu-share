@@ -3,6 +3,7 @@ namespace GpuShare.Frontend.Models;
 public class Device
 {
     public int Id { get; set; }
+    public string OwnerUsername { get; set; } = "";
     public string Name { get; set; } = "";
     public string Model { get; set; } = "";
     public bool IsAvailable { get; set; }

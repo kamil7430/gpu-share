@@ -52,7 +52,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
                     }
                 ],
                 TotalCount = 4,
-                PageSize = 10,
+                PageSize = 4,
                 Page = 1
             });
         }
@@ -325,9 +325,32 @@ namespace GpuShare.Frontend.Tests.Components.Profile
         }
 
         [Fact]
-        public async Task Load_More_Should_Request_Next_Page()
+        public async Task Load_More_Should_Request_More_Orders()
         {
+            // Arrange
+            var cut = Render<OrderTable>();
+            _orderServiceMock.Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>())).ReturnsAsync(new PagedResult<Models.Order>
+            {
+                Items =
+                [
+                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = "Active",
+                        StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1), Cost = 10.00m
+                    },
+                    new Models.Order { Id = 1002, DeviceId = 2, OwnerUsername = "user2", Status = "Completed",
+                        StartDate = DateTime.UtcNow.AddDays(-2), EndDate = DateTime.UtcNow.AddDays(-1), Cost = 20.00m
+                    },
+                ],
+                TotalCount = 2,
+                PageSize = 4,
+                Page = 2
+            });
 
+            // Act
+            cut.Find(".load-more-link").Click();
+            var orders = cut.FindAll(".order-link");
+
+            // Assert
+            orders.Should().HaveCountGreaterThan(4);
         }
     }
 }

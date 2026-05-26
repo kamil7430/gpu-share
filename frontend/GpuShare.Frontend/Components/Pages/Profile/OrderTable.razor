@@ -68,7 +68,7 @@
 </div>
 
 <div class="load-more-container">
-    <a href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
+    <a class="load-more-link" href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
 </div>
 
 <ReviewModal IsVisible="@showReviewModal"
@@ -80,6 +80,7 @@
     private string SelectedStatus = "All";
     private bool showReviewModal;
     private int selectedOrderId;
+    private int lastPage = 1; // last loaded page
 
     private List<string> StatusFilters = new()
     {

@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using GpuShare.Frontend.Components.Shared;
 
 namespace GpuShare.Frontend.Tests.Components.Profile
 {
@@ -35,6 +36,8 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             JSInterop.SetupModule(_ => true);
 
             ComponentFactories.AddStub<WalletCard>("WALLET_STUB");
+            ComponentFactories.AddStub<OpinionsList>("OPINIONS_LIST_STUB");
+            ComponentFactories.AddStub<OrderTable>("ORDER_TABLE_STUB");
         }
 
         public Task InitializeAsync() => Task.CompletedTask;
@@ -42,6 +45,20 @@ namespace GpuShare.Frontend.Tests.Components.Profile
         public async Task DisposeAsync()
         {
             await base.DisposeAsync();
+        }
+
+        [Fact]
+        public void Should_Render_Profile_Card_And_Opinions()
+        {
+            ComponentFactories.AddStub<ProfileCard>("PROFILE_CARD_STUB");
+
+            // Act
+            var popoverProvider = Render<MudPopoverProvider>();
+            var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
+
+            // Assert
+            cut.Markup.Should().Contain("PROFILE_CARD_STUB");
+            cut.Markup.Should().Contain("OPINIONS_LIST_STUB");
         }
 
         [Fact]
@@ -56,7 +73,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
 
             // Assert
-            cut.Markup.Should().Contain("My Orders");
+            cut.Markup.Should().Contain("ORDER_TABLE_STUB");
         }
 
         [Fact]
@@ -71,7 +88,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
 
             // Assert
-            cut.Markup.Should().NotContain("My Orders");
+            cut.Markup.Should().NotContain("ORDER_TABLE_STUB");
         }
 
         [Fact]
@@ -162,6 +179,32 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 
             // Assert
             cut.Markup.Should().Contain("john's GPUs");
+        }
+
+        [Fact]
+        public void Should_Pass_Username_To_ProfileCard()
+        {
+            // Act
+            var popoverProvider = Render<MudPopoverProvider>();
+            var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
+
+            // Assert
+            cut.FindComponent<ProfileCard>().Instance.Username.Should().Be("john");
+        }
+
+        [Fact]
+        public void Should_Pass_Authorized_True_To_GpuList()
+        {
+            // Arrange
+            _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(true);
+            _authStateMock.SetupGet(x => x.User).Returns(new User { Username = "john" });
+
+            // Act
+            var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
+
+            // Assert
+            var gpuList = cut.FindComponent<GpuList>();
+            gpuList.Instance.authorized.Should().BeTrue();
         }
     }
 }
