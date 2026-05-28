@@ -35,6 +35,8 @@ builder.Services.AddScoped<IAuthState, MockAuthState>(); // for testing purposes
 if (builder.Environment.IsDevelopment()) { builder.Services.AddScoped<IApiClient, MockApiClient>(); }
 else { builder.Services.AddApiInfrastructure(); }
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IDeviceService, MockDeviceService>();
+builder.Services.AddScoped<IOrderService, MockOrderService>();
 builder.Services.AddScoped<IAuthModalService, AuthModalService>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 

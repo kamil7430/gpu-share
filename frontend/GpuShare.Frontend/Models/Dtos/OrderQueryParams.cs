@@ -2,11 +2,15 @@ namespace GpuShare.Frontend.Models.Dtos;
 
 public class OrderQueryParams
 {
-    public string? Status { get; set; }
+    public int? DeviceId { get; set; } = null;
 
-    public DateTime? FromUtc { get; set; }
+    public string? OwnerUsername { get; set; } = null;
 
-    public DateTime? ToUtc { get; set; }
+    public DateTime? StartDate { get; set; } = null;
+
+    public DateTime? EndDate { get; set; } = null;
+
+    public string? Status { get; set; } = null;
 
     public int Page { get; set; } = 1;
 

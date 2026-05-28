@@ -26,7 +26,7 @@
     {
         <AuthorizeView>
             <Authorized>
-                <EditDeviceForm gpu="@gpu" Mode="@Mode"></EditDeviceForm>
+                <EditDeviceForm gpu="@gpu" Mode="@Mode" OnSave="HandleDeviceSaved"></EditDeviceForm>
             </Authorized>
         </AuthorizeView>
     }
@@ -38,7 +38,7 @@
                 <TelemetryCard></TelemetryCard>
 
                 <!-- Reservation Calendar -->
-                <ReservationCalendar></ReservationCalendar>
+                <ReservationCalendar DeviceId="@gpu.Id"></ReservationCalendar>
             </Authorized>
             <NotAuthorized>
                 <!-- Opinions -->
@@ -61,8 +61,7 @@
     [Parameter] public string ModeString { get; set; } = "view"; // "view", "edit", "add"
     [Parameter] public int Id { get; set; }
 
-    private DevicePageMode Mode => Enum.TryParse<DevicePageMode>(ModeString, ignoreCase: true, out var mode)
-            ? mode : DevicePageMode.View;
+    private DevicePageMode Mode { get; set; }
     private GpuShare.Frontend.Models.Device gpu = new();
     private bool isAuthorized = true;
     private string Username = "user1";
@@ -83,11 +82,18 @@
 
     protected override void OnParametersSet()
     {
+        Mode = Enum.TryParse<DevicePageMode>(ModeString, ignoreCase: true, out var mode) ? mode : DevicePageMode.View;
         /*if (Id.HasValue)
         {
             // Mock: Load existing device data
             gpu = new Device { Name = "Workstation-Alpha", Model = "RTX 4090", VramMb = 24576, CudaCores = 16384 };
             }*/
+    }
+
+    private void HandleDeviceSaved(Device savedGpu)
+    {
+        gpu = savedGpu;
+        Mode = DevicePageMode.View;
     }
 
     

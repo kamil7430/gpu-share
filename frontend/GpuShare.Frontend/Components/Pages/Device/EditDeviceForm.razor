@@ -121,6 +121,7 @@
 @code {
     [Parameter] public GpuShare.Frontend.Models.Device gpu { get; set; } = new();
     [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.Edit;
+    [Parameter] public EventCallback<GpuShare.Frontend.Models.Device> OnSave { get; set; }
 
     private List<string> SupportedFrameworks = new()
     {
@@ -140,9 +141,9 @@
             $"curl -sSL https://gpu-share.io/install.sh | bash -s -- --token {AgentToken}");
     }
 
-    private void HandleSave()
+    private async Task HandleSave()
     {
         // Save to DB logic...
-        Mode = DevicePageMode.View;
+        await OnSave.InvokeAsync(gpu);
     }
 }

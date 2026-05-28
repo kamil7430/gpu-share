@@ -1,5 +1,8 @@
 @using MudBlazor
 @using MudBlazor.Charts
+@using GpuShare.Frontend.Models
+@inject IDeviceService DeviceService
+
 
 <div class="card telemetry-grid">
 
@@ -9,7 +12,7 @@
             <h4 class="telemetry-title">GPU Temperature</h4>
 
             <MudChip T="string" Color="@TemperatureColor" Variant="Variant.Filled">
-                @($"{GpuTemperature}°C")
+                @($"{gpuStatus?.TemperatureCelsius ?? 0}°C")
             </MudChip>
         </div>
 
@@ -17,7 +20,7 @@
             <MudProgressCircular Color="@TemperatureColor" Style="height: 120px; width: 120px" Indeterminate="false" Value="@TemperaturePercent" Class="temp-gauge"> 
                 <ChildContent>
                     <div class="temp-center">
-                        <div class="temp-value">@GpuTemperature°</div>
+                        <div class="temp-value">@($"{gpuStatus?.TemperatureCelsius ?? 0}°C")</div>
                         <div class="temp-label">GPU Core</div>
                     </div>
                 </ChildContent>
@@ -36,15 +39,15 @@
     <div class="telemetry-card">
         <div class="telemetry-header">
             <h4 class="telemetry-title">Agent Heartbeat</h4>
-            <MudChip T="string" Color="@(AgentOnline ? Color.Success : Color.Error)" Variant="Variant.Filled">
-                @(AgentOnline ? "Online" : "Offline")
+            <MudChip T="string" Color="@(gpuStatus?.Online == true ? Color.Success : Color.Error)" Variant="Variant.Filled">
+                @(gpuStatus?.Online == true ? "Online" : "Offline")
             </MudChip>
         </div>
 
         <div class="heartbeat-content">
             <div class="heartbeat-item">
                 <div class="heartbeat-label">Last heartbeat</div>
-                <div class="heartbeat-value">@LastHeartbeat</div>
+                <div class="heartbeat-value">@gpuStatus?.LastHeartbeat.ToString("g")</div>
             </div>
 
             <div class="heartbeat-item">
@@ -138,18 +141,16 @@
 </div>
 
 @code {
-private int GpuTemperature = 72;
+    [Parameter] public Device gpu { get; set; } = null!;
 
-    private bool AgentOnline = true;
-
-    private string LastHeartbeat = "12 seconds ago";
+    private DeviceStatus? gpuStatus;
 
     private string SelectedRange = "24h";
 
-    private double TemperaturePercent => GpuTemperature;
+    private double TemperaturePercent => gpuStatus?.TemperatureCelsius ?? 0;
 
     private Color TemperatureColor =>
-        GpuTemperature switch
+        gpuStatus?.TemperatureCelsius switch
         {
             < 70 => Color.Success,
             < 85 => Color.Warning,
@@ -181,6 +182,14 @@ private int GpuTemperature = 72;
             } }
         };
         options.ShowDataMarkers = true;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (gpu != null)
+        {
+            gpuStatus = await DeviceService.GetDeviceStatusAsync(gpu.Id);
+        }
     }
 
     private void ExportCsv()

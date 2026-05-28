@@ -1,3 +1,6 @@
+@inject IOrderService OrderService
+@using GpuShare.Frontend.Models.Dtos
+
 <div class="card">
             <div class="calendar-toolbar">
                 <button Class="btn-secondary" @onclick="PreviousWeek">
@@ -33,17 +36,15 @@
                     @foreach (var day in WeekDays)
                     {
                         <div class="calendar-cell">
-                            @foreach (var reservation in GetReservationsForSlot(day, hour))
+                            @foreach (var order in GetOrdersForSlot(day, hour))
                             {
-                                <div class="reservation-block"
-                                    style="@GetReservationStyle(reservation)"
-                                    title="@reservation.Title">
+                                <div class="reservation-block" style="@GetOrderStyle(order)" title="@order.OwnerUsername">
                                     <div class="reservation-title">
-                                        @reservation.Title
+                                        @order.OwnerUsername
                                     </div>
 
                                     <div class="reservation-time">
-                                        @reservation.Start.ToString("HH:mm") - @reservation.End.ToString("HH:mm")
+                                        @order.StartDate?.ToString("HH:mm") - @order.EndDate?.ToString("HH:mm")
                                     </div>
                                 </div>
                             }
@@ -78,88 +79,60 @@
         </div>
 
 @code {
+    [Parameter] public int DeviceId { get; set; }
 
-    private DateTime WeekStart =
-        DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+    private DateTime WeekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
 
-    private List<int> Hours =
-        Enumerable.Range(0, 24).ToList();
+    private List<int> Hours = Enumerable.Range(0, 24).ToList();
 
-    private List<DateTime> WeekDays =>
-        Enumerable.Range(0, 7)
-            .Select(i => WeekStart.AddDays(i))
-            .ToList();
+    private List<DateTime> WeekDays => Enumerable.Range(0, 7).Select(i => WeekStart.AddDays(i)) .ToList();
 
-    private List<Reservation> reservations = new();
+    private List<Order> orders = new();
 
     private const int DayHeightPx = 1440; // or scaled version
     private const double PxPerMinute = 80.0/60.0; // tweak this
 
-    public class Reservation
-    {
-        public string Title { get; set; } = "";
-        public string Status { get; set; } = "";
+    // public class Reservation
+    // {
+    //     public string Title { get; set; } = "";
+    //     public string Status { get; set; } = "";
 
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
+    //     public DateTime Start { get; set; }
+    //     public DateTime End { get; set; }
+    // }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrdersForWeek();
     }
 
-    protected override void OnInitialized()
+    private async Task LoadOrdersForWeek()
     {
-        GenerateMockReservations();
-    }
-
-    // ===== MOCK DATA =====
-    private void GenerateMockReservations()
-    {
-        reservations = new()
+        // In a real implementation, you'd fetch orders from the backend based on the week range
+        // For example:
+        // orders = await OrderService.GetOrdersForDeviceAndWeek(deviceId, WeekStart);
+        var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams
         {
-            new Reservation
-            {
-                Title = "LLM Training",
-                Status = "In Use",
-                Start = WeekStart.AddDays(1).AddHours(9).AddMinutes(30),
-                End = WeekStart.AddDays(1).AddHours(13)
-            },
-
-            new Reservation
-            {
-                Title = "Stable Diffusion",
-                Status = "Reserved",
-                Start = WeekStart.AddDays(2).AddHours(14),
-                End = WeekStart.AddDays(2).AddHours(18)
-            },
-
-            new Reservation
-            {
-                Title = "CUDA Rendering",
-                Status = "Reserved",
-                Start = WeekStart.AddDays(4).AddHours(8),
-                End = WeekStart.AddDays(4).AddHours(11)
-            },
-
-            new Reservation
-            {
-                Title = "Fine-Tuning",
-                Status = "In Use",
-                Start = WeekStart.AddDays(5).AddHours(16),
-                End = WeekStart.AddDays(5).AddHours(22)
-            }
-        };
+            DeviceId = 1, // replace with actual device ID
+            StartDate = WeekStart,
+            EndDate = WeekStart.AddDays(7)
+        });
+        orders = pagedResult.Items.ToList();
     }
 
     // ===== HELPERS =====
-    private IEnumerable<Reservation> GetReservationsForSlot(DateTime day, int hour)
+    private IEnumerable<Order> GetOrdersForSlot(DateTime day, int hour)
     {
-        return reservations.Where(r =>
-            r.Start.Date == day.Date &&
-            r.Start.Hour == hour);
+
+        return orders.Where(r =>
+            r.StartDate != null && r.StartDate?.Date == day.Date &&
+            r.StartDate?.Hour == hour);
     }
 
-    private string GetReservationStyle(Reservation r)
+    private string GetOrderStyle(Order r)
 {
-    var startMinutes = r.Start.Minute;
-    var durationMinutes = (r.End - r.Start).TotalMinutes;
+    var startMinutes = r.StartDate?.Minute;
+    var durationMinutes = (r.EndDate - r.StartDate)?.TotalMinutes;
     
     var top = startMinutes * PxPerMinute + 4; // +4 for some padding from the top of the cell
     var height = durationMinutes * PxPerMinute - 8; // -8 for some padding from the bottom of the cell
@@ -186,15 +159,15 @@
     // NAVIGATION
     // =========================
 
-    private void NextWeek()
+    private async Task NextWeek()
     {
         WeekStart = WeekStart.AddDays(7);
-        GenerateMockReservations();
+        await LoadOrdersForWeek();
     }
 
-    private void PreviousWeek()
+    private async Task PreviousWeek()
     {
         WeekStart = WeekStart.AddDays(-7);
-        GenerateMockReservations();
+        await LoadOrdersForWeek();
     }
 }

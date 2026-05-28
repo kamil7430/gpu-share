@@ -1,9 +1,12 @@
+@using GpuShare.Frontend.Models;
+@inject IAuthState AuthState
+
 <div class="card">
             <div class="flex-row mb-2" style="justify-content: space-between;"> 
                     <div class="status-banner @(gpu.IsAvailable ? "online" : "offline")">
                         @(gpu.IsAvailable ? "Available for Rent" : "Currently Disabled")
                     </div>
-                    @if (isAuthorized) {
+                    @if (AuthState.IsAuthenticated) {
                         <button class="btn-primary btn-edit" @onclick='() => Mode = DevicePageMode.Edit'>
                             Edit Device
                         </button>
@@ -12,7 +15,7 @@
                 
                 <div class="gpu-header">
                     <h1 style="margin-bottom: 0px;">@gpu.Name</h1>
-                    @if (!isAuthorized) {
+                    @if (!AuthState.IsAuthenticated) {
                         <h2 style="margin: 0 20px;">|</h2>
                         <NavLink href="@($"/profile/{Username}")" class="profile-link">
                             @Username
@@ -47,7 +50,6 @@
 
 @code {
     [Parameter] public string? Username { get; set; }
-    [Parameter] public GpuShare.Frontend.Models.Device gpu { get; set; } = new();
+    [Parameter] public Models.Device gpu { get; set; } = null!;
     [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.View;
-    private bool isAuthorized = true;
 }
