@@ -1,69 +1,93 @@
+@inject IDeviceService DeviceService
+@inject IOrderService OrderService
+
 <div class="stats-grid">
             <!-- Countdown -->
             <div class="spec-box">
                 <div class="label">Remaining Time</div>
-                <div class="value">@RemainingTime.ToString(@"hh\:mm\:ss")</div>
-                <div class="hint">Session ends at @EndTime.ToString("HH:mm:ss")</div>
+                <div class="value">@_remainingTime.ToString(@"hh\:mm\:ss")</div>
+                <div class="hint">Session ends at @_order.EndDate?.ToString("HH:mm:ss")</div>
             </div>
 
             <!-- Cost -->
             <div class="spec-box">
                 <div class="label">Live Cost</div>
-                <div class="value">$@CurrentCost.ToString("0.00")</div>
-                <div class="hint">$2.40 / hour</div>
+                <div class="value">$@_currentCost.ToString("0.00")</div>
+                <div class="hint">$@_gpu.PricePerHour / hour</div>
             </div>
 
             <!-- Heartbeat -->
             <div class="spec-box">
                 <div class="label">Agent Status</div>
                 <div class="heartbeat-row">
-                    <div class="heartbeat-dot"></div>
-                    <span class="value">Connected</span>
+                    <div class="heartbeat-dot @DotBgClass()"></div>
+            <span class="value">@(_deviceStatus != null ? "Connected" : "Disconnected")</span>
                 </div>
-                <div class="hint">Last heartbeat 4s ago</div>
+        <div class="hint">Last heartbeat @(_deviceStatus != null ? $"{(DateTime.Now - _deviceStatus.LastHeartbeat).TotalSeconds}s ago" : "Unavailable")</div>
             </div>
         </div>
 
 @code {
-    private TimeSpan RemainingTime;
-    private DateTime StartTime = DateTime.UtcNow.AddMinutes(-12);
-    private DateTime EndTime = DateTime.Now.AddHours(2);
-    private decimal CurrentCost = 0.00m;
-    private decimal HourlyRate = 2.40m;
-    private System.Timers.Timer? Timer;
+    [Parameter] public int OrderId { get; set; }
+    [Parameter] public int DeviceId { get; set; }
+    private TimeSpan _remainingTime;
+    private decimal _currentCost = 0.00m;
+    private System.Timers.Timer? _timer;
+    private DeviceStatus? _deviceStatus = null;
+    private Device _gpu = null!;
+    private Order _order = null!;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        UpdateLiveMetrics();
+        _timer = new System.Timers.Timer(1000);
 
-        Timer = new System.Timers.Timer(1000);
-
-        Timer.Elapsed += (_, _) =>
+        _timer.Elapsed += (_, _) =>
         {
-            InvokeAsync(() =>
+            InvokeAsync(async () =>
             {
-                UpdateLiveMetrics();
+                await UpdateLiveMetrics();
 
                 StateHasChanged();
             });
         };
 
-        Timer.Start();
+        _timer.Start();
     }
 
-    private void UpdateLiveMetrics()
+    protected override async Task OnParametersSetAsync()
     {
-        RemainingTime = EndTime - DateTime.UtcNow;
+        _gpu = await DeviceService.GetDeviceAsync(DeviceId);
+        _order = await OrderService.GetOrderAsync(OrderId);
+        await UpdateLiveMetrics();
+    }
 
-        if (RemainingTime < TimeSpan.Zero)
+    private async Task UpdateLiveMetrics()
+    {
+        try
         {
-            RemainingTime = TimeSpan.Zero;
+            _deviceStatus = await DeviceService.GetDeviceStatusAsync(DeviceId);
+        }
+        catch (Exception)
+        {
+            _deviceStatus = null;
         }
 
-        var elapsedHours =
-            (decimal)(DateTime.UtcNow - StartTime).TotalHours;
+        if (_order == null)
+            throw new ArgumentNullException("_order", $"Order for ID {OrderId} not found");
+        _remainingTime = _order.EndDate!.Value - DateTime.UtcNow;
 
-        CurrentCost = elapsedHours * HourlyRate;
+        if (_remainingTime < TimeSpan.Zero)
+        {
+            _remainingTime = TimeSpan.Zero;
+        }
+
+        var elapsedHours = (decimal)(DateTime.UtcNow - _order.StartDate!.Value).TotalHours;
+
+        _currentCost = elapsedHours * _gpu.PricePerHour;
     }
 
+    private string DotBgClass()
+    {
+        return _deviceStatus != null ? "heartbeat-dot-green" : "heartbeat-dot-red";
+    }
 }

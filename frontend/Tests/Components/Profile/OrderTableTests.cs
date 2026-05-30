@@ -38,21 +38,24 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             {
                 Items =
                 [
-                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = "Active", 
+                    new Models.Order { Id = 1005, DeviceId = 5, OwnerUsername = "user0", Status = OrderStatus.WaitingForStart,
+                        StartDate = DateTime.UtcNow.AddDays(1).AddHours(8), EndDate = DateTime.UtcNow.AddDays(1).AddHours(14), Cost = 12.00m
+                    },
+                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = OrderStatus.Running, 
                         StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1), Cost = 10.00m
                     },
-                    new Models.Order { Id = 1002, DeviceId = 2, OwnerUsername = "user2", Status = "Completed", 
+                    new Models.Order { Id = 1002, DeviceId = 2, OwnerUsername = "user2", Status = OrderStatus.Completed, 
                         StartDate = DateTime.UtcNow.AddDays(-2), EndDate = DateTime.UtcNow.AddDays(-1), Cost = 20.00m 
                     },
-                    new Models.Order { Id = 1003, DeviceId = 3, OwnerUsername = "user3", Status = "Cancelled", 
+                    new Models.Order { Id = 1003, DeviceId = 3, OwnerUsername = "user3", Status = OrderStatus.Failure, 
                         StartDate = DateTime.UtcNow.AddDays(-3), EndDate = DateTime.UtcNow.AddDays(-2), Cost = 30.00m 
                     },
-                    new Models.Order { Id = 1004, DeviceId = 4, OwnerUsername = "user4", Status = "Dispute", 
+                    new Models.Order { Id = 1004, DeviceId = 4, OwnerUsername = "user4", Status = OrderStatus.Suspended, 
                         StartDate = DateTime.UtcNow.AddDays(-4), EndDate = DateTime.UtcNow.AddDays(-3), Cost = 40.00m 
                     }
                 ],
-                TotalCount = 4,
-                PageSize = 4,
+                TotalCount = 5,
+                PageSize = 5,
                 Page = 1
             });
         }
@@ -200,7 +203,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             _orderServiceMock.Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>())).ReturnsAsync(new PagedResult<Models.Order>
             {
                 Items = [
-                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = "Active",
+                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = OrderStatus.Running,
                         StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1), Cost = 10.00m
                     }],
                 TotalCount = 0,
@@ -224,7 +227,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             _orderServiceMock.Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>())).ReturnsAsync(new PagedResult<Models.Order>
             {
                 Items = [
-                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = "Active",
+                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = OrderStatus.Running,
                         StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1), Cost = 10.00m
                     }],
                 TotalCount = 0,
@@ -333,10 +336,10 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             {
                 Items =
                 [
-                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = "Active",
+                    new Models.Order { Id = 1001, DeviceId = 1, OwnerUsername = "user1", Status = OrderStatus.Running,
                         StartDate = DateTime.UtcNow.AddDays(-1), EndDate = DateTime.UtcNow.AddDays(1), Cost = 10.00m
                     },
-                    new Models.Order { Id = 1002, DeviceId = 2, OwnerUsername = "user2", Status = "Completed",
+                    new Models.Order { Id = 1002, DeviceId = 2, OwnerUsername = "user2", Status = OrderStatus.Completed,
                         StartDate = DateTime.UtcNow.AddDays(-2), EndDate = DateTime.UtcNow.AddDays(-1), Cost = 20.00m
                     },
                 ],

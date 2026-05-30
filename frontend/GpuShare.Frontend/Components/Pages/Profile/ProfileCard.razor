@@ -1,19 +1,16 @@
 @inject IAuthState AuthState
+@inject IReviewService ReviewService
 
 <div class="profile-card card">
     <div class="flex-row" style="justify-content: space-between; align-items: flex-start;">
         <div class="user-info">
-            <h3 style="font-weight: bold;">My Username/Email</h3>
+            <h3 style="font-weight: bold;">@Username</h3>
             
             <div class="stats-row">
-                @* <div class="stat-item">
-                    <span class="stat-label">Balance</span>
-                    <span class="stat-value">120$</span>
-                </div> *@
                 <div class="stat-item">
                     <span class="stat-label">Rating</span>
                     <span class="stat-value">
-                        4.56/5 <span class="rating-count">(21)</span>
+                        @(_userRating?.AverageRating ?? 0)/5 <span class="rating-count">(@(_userRating?.RatingCount ?? 0))</span>
                     </span>
                 </div>
             </div>
@@ -30,15 +27,25 @@
 
 @if (AuthState.IsAuthenticated)
 {
-    <ChangePasswordModal IsVisible="@showChangePasswordModal" OnClose="@(() => showChangePasswordModal = false)" />
+    <ChangePasswordModal IsVisible="@_showChangePasswordModal" OnClose="@(() => _showChangePasswordModal = false)" />
 }
 
 @code {
     [Parameter] public string? Username { get; set; }
-    private bool showChangePasswordModal = false;
+
+    private UserRatingDto? _userRating { get; set; }
+    private bool _showChangePasswordModal = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Username != null)
+        {
+            _userRating = await ReviewService.GetUserRatingAsync(Username);
+        }
+    }
 
     private void ChangePassword()
     {
-        showChangePasswordModal = true;
+        _showChangePasswordModal = true;
     }
 }

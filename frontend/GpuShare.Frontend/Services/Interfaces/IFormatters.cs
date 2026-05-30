@@ -1,3 +1,6 @@
+using GpuShare.Frontend.Models;
+
+namespace GpuShare.Frontend.Services.Interfaces;
 public interface IFormatters
 {
     string FormatUsd(decimal amount);
@@ -7,6 +10,8 @@ public interface IFormatters
     string FormatDateTime(DateTime dateTime);
 
     string FormatVram(int mb);
+
+    string FormatOrderStatus(OrderStatus status);
 }
 
 // FormatUsd(0.45m)

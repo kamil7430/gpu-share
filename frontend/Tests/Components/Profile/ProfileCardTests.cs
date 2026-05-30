@@ -78,7 +78,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
                 .ReturnsAsync(new UserRatingDto
                 {
                     AverageRating = 4.5m,
-                    ReviewCount = 21
+                    RatingCount = 21
                 });
 
             // Act
@@ -86,7 +86,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
                 .Add(x => x.Username, "john"));
 
             // Assert
-            cut.Markup.Should().Contain("4.5/5");
+            cut.Markup.Should().Contain("4,5/5");
             cut.Markup.Should().Contain("(21)");
         }
 

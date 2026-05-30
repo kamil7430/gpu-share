@@ -9,12 +9,12 @@ public class Order
     public DateTime? StartDate { get; set; } = null;
     public DateTime? EndDate { get; set; } = null;
     public decimal Cost { get; set; }
-    public string Status { get; set; } = string.Empty;
+    public OrderStatus Status { get; set; } = OrderStatus.WaitingForStart;
     public ConnectionDetailsDto? ConnectionDetails { get; set; }
 
     public Order(){}
     
-    public Order(int id, int deviceId, string ownerUsername, DateTime? startDate, DateTime? endDate, decimal cost, string status)
+    public Order(int id, int deviceId, string ownerUsername, DateTime? startDate, DateTime? endDate, decimal cost, OrderStatus status)
     {
         Id = id;
         DeviceId = deviceId;
@@ -25,3 +25,12 @@ public class Order
         Status = status;
     }
 };
+
+public enum OrderStatus
+{
+    WaitingForStart,
+    Running,
+    Completed,
+    Suspended,
+    Failure
+}

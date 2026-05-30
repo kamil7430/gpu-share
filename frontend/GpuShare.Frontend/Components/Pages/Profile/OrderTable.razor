@@ -1,10 +1,12 @@
 @using GpuShare.Frontend.Components.Modals
+@inject IOrderService OrderService
+@inject IFormatters Formatters
 
 <div class="table-controls">
     <div class="status-filters">
-        @foreach (var filter in StatusFilters)
+        @foreach (var filter in _statusFilters)
         {
-            <button class="filter-btn @(SelectedStatus == filter ? "active" : "")"
+            <button class="filter-btn @(_selectedStatus == filter ? "active" : "")"
                     @onclick="@(() => SelectStatus(filter))">
                 @filter
             </button>
@@ -13,7 +15,7 @@
 </div>
 
 <div class="table-card">
-    @if (Orders.Count == 0)
+    @if (_orders.Count == 0)
     {
         <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No orders yet.</p>
     }
@@ -33,7 +35,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var order in FilteredOrders)
+                @foreach (var order in _filteredOrders)
                 {
                     <tr>
                         @* <!-- Singular order page --> *@
@@ -54,7 +56,7 @@
                         <td>
                             <div class="order-actions">
                                 @* <a class="details-btn" href="@($"/orders/{order.Id}")">Details</a> *@
-                                @if (order.Status == "Completed") // && !order.HasReview
+                                @if (order.Status != OrderStatus.WaitingForStart) // && !order.HasReview
                                 {
                                     <button class="review-btn" @onclick="@(() => LeaveReview(order.Id))">Leave Review</button>
                                 }
@@ -71,118 +73,84 @@
     <a class="load-more-link" href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
 </div>
 
-<ReviewModal IsVisible="@showReviewModal"
-                   OrderId="@selectedOrderId"
-                   OnClose="@CloseReviewModal"
-                   OnSubmit="@HandleReviewSubmit" />
+<ReviewModal IsVisible="@_showReviewModal" OrderId="@_selectedOrderId" OnClose="@CloseReviewModal" OnSubmit="@HandleReviewSubmit" />
 
 @code {
-    private string SelectedStatus = "All";
-    private bool showReviewModal;
-    private int selectedOrderId;
-    private int lastPage = 1; // last loaded page
+    [Parameter] public string Username { get; set; } = null!;
 
-    private List<string> StatusFilters = new()
+    private string _selectedStatus = "All";
+    private bool _showReviewModal;
+    private int _selectedOrderId;
+    private int _lastPage = 1; // last loaded page
+
+    private List<string> _statusFilters = new()
     {
         "All",
-        "Active",
+        "Waiting for start",
+        "Running",
         "Completed",
-        "Cancelled",
-        "Dispute"
+        "Failure",
+        "Suspended"
     };
-    
-    private List<Order> Orders { get; set; } = [
-    
-        new()
-        {
-            Id = 1001,
-            DeviceId = 69,
-            OwnerUsername = "User1",
-            StartDate = DateTime.Parse("2026-05-10 12:00"),
-            EndDate = DateTime.Parse("2026-05-12 18:00"),
-            Cost = 200,
-            Status = "Completed"
-        },
 
-        new()
-        {
-            Id = 1002,
-            DeviceId = 67,
-            OwnerUsername = "User2",
-            StartDate = DateTime.Parse("2026-05-15 09:00"),
-            Cost = 0,
-            Status = "Active"
-        },
+    private List<Order> _orders { get; set; } = [];
 
-        new()
-        {
-            Id = 1003,
-            DeviceId = 2137,
-            OwnerUsername = "User2137",
-            StartDate = DateTime.Parse("2026-05-20 18:00"),
-            Cost = 120,
-            Status = "Cancelled"
-        },
+    private List<Order> _filteredOrders =>
+        _selectedStatus == "All" ? _orders : _orders.Where(x => Formatters.FormatOrderStatus(x.Status) == _selectedStatus).ToList();
 
-        new()
+    protected override async Task OnParametersSetAsync()
+    {
+        var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
         {
-            Id = 1004,
-            DeviceId = 404,
-            OwnerUsername = "User404",
-            StartDate = DateTime.Parse("2026-05-17 11:00"),
-            Cost = 350,
-            Status = "Dispute"
-        }
-    ];
-
-    private List<Order> FilteredOrders =>
-        SelectedStatus == "All"
-            ? Orders
-            : Orders.Where(x => x.Status == SelectedStatus).ToList();
+            OwnerUsername = Username,
+            Page = 1,
+            PageSize = 10
+        });
+        _orders.AddRange(pagedResult.Items);
+    }
 
     private void SelectStatus(string status)
     {
-        SelectedStatus = status;
+        _selectedStatus = status;
     }
 
     private void LeaveReview(int orderId)
     {
-        selectedOrderId = orderId;
-        showReviewModal = true;
+        _selectedOrderId = orderId;
+        _showReviewModal = true;
     }
 
     private Task CloseReviewModal()
     {
-        showReviewModal = false;
+        _showReviewModal = false;
         return Task.CompletedTask;
     }
 
     private async Task HandleReviewSubmit(ReviewRequest request)
     {
-        // await ReviewService.CreateReviewAsync(
-        //     request.OrderId,
-        //     new CreateReviewRequest
-        //     {
-        //         Rating = request.Rating,
-        //         Comment = request.Comment
-        //     });
-
-        showReviewModal = false;
+        _showReviewModal = false;
     }
 
-    private void LoadMore()
+    private async Task LoadMore()
     {
-        // fetch more
+        var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+        {
+            OwnerUsername = Username,
+            Page = _lastPage++,
+            PageSize = 10
+        });
+        _orders.AddRange(pagedResult.Items);
     }
 
-    private string GetStatusClass(string status)
+    private string GetStatusClass(OrderStatus status)
     {
         return status switch
         {
-            "Active" => "status-active",
-            "Completed" => "status-completed",
-            "Cancelled" => "status-cancelled",
-            "Dispute" => "status-dispute",
+            OrderStatus.WaitingForStart => "status-waiting",
+            OrderStatus.Running => "status-running",
+            OrderStatus.Completed => "status-completed",
+            OrderStatus.Failure => "status-failure",
+            OrderStatus.Suspended => "status-suspended",
             _ => ""
         };
     }

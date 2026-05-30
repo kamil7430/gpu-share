@@ -1,13 +1,16 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazor
+@inject IAuthState AuthState
+@inject IOrderService OrderService
+@inject IDeviceService DeviceService
 
 @page "/order/{OrderId:int}"
 @attribute [Authorize]
 
 <div class="cards-container">
     <div class="page-top" style="margin-bottom: 8px;">
-        <NavLink href="/profile" class="back-link">&lt; Back to Profile</NavLink>
+        <NavLink href=@_profileLink class="back-link">&lt; Back to Profile</NavLink>
     </div>
 
     <AuthorizeView>
@@ -17,11 +20,11 @@
                 <div class="page-header">
                     <div>
                         <div class="page-subtitle">Order #@OrderId</div>
-                        <h1 style="margin: 0;">RTX 4090 • Workstation Alpha</h1>
+                        <h1 style="margin: 0;">@_gpu.Model • @_gpu.Name</h1>
                     </div>
 
-                    <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">
-                        Active Session
+                    <MudChip T="string" Color="@GetChipColor(_order.Status)" Variant="Variant.Filled">
+                        @GetChipContent(_order.Status)
                     </MudChip>
                 </div>
 
@@ -57,24 +60,53 @@
 </div>
 
 <!-- End Session Modal -->
-<EndSessionModal ShowEndModal="@ShowEndModal" />
+<EndSessionModal ShowEndModal="@_showEndModal" />
 
 
 @code {
 
-    [Parameter]
-    public int OrderId { get; set; }
+    [Parameter] public int OrderId { get; set; }
 
-    private DateTime StartTime = DateTime.UtcNow.AddMinutes(-12);
+    private DateTime _startTime = DateTime.UtcNow.AddMinutes(-12);
+    private bool _showEndModal;
+    private string _profileLink;
+    private Order _order;
+    private Device _gpu;
+    private User _user;
 
-    private bool ShowEndModal;
+    private bool CanOpenDispute => DateTime.UtcNow - _startTime > TimeSpan.FromMinutes(5);
 
-    private bool CanOpenDispute =>
-        DateTime.UtcNow - StartTime > TimeSpan.FromMinutes(5);
+    protected override async Task OnParametersSetAsync()
+    {
+        _order = await OrderService.GetOrderAsync(OrderId);
+        _gpu = await DeviceService.GetDeviceAsync(_order.DeviceId);
+        _user = AuthState?.User;
+        _profileLink = $"/profile/{_user?.Username}";
+    }
+
+    private string GetChipContent(OrderStatus status) => status switch
+    {
+        OrderStatus.WaitingForStart => "Waiting for start",
+        OrderStatus.Running => "Running",
+        OrderStatus.Completed => "Completed",
+        OrderStatus.Suspended => "Suspended",
+        OrderStatus.Failure => "Failure",
+        _ => "Unknown status"
+    };
+
+    private Color GetChipColor(OrderStatus status) => status switch
+    {
+        OrderStatus.WaitingForStart => Color.Info,
+        OrderStatus.Running => Color.Success,
+        OrderStatus.Completed => Color.Success,
+        OrderStatus.Suspended => Color.Warning,
+        OrderStatus.Failure => Color.Error,
+        _ => Color.Error
+    };
 
     private void OpenEndModal()
     {
-        ShowEndModal = true;
-        Console.WriteLine($"Open End Session Modal: ShowEndModal={ShowEndModal}");
+        _showEndModal = true;
+        Console.WriteLine($"Open End Session Modal: _showEndModal={_showEndModal}");
     }
 }

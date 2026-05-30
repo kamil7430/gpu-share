@@ -30,12 +30,14 @@ builder.Services.AddMudServices();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<IJwtHelper, JwtHelper>();
+builder.Services.AddScoped<IFormatters, Formatters>();
 //builder.Services.AddScoped<IAuthState, AuthState>();
 builder.Services.AddScoped<IAuthState, MockAuthState>(); // for testing purposes, replace with real implementation later
 if (builder.Environment.IsDevelopment()) { builder.Services.AddScoped<IApiClient, MockApiClient>(); }
 else { builder.Services.AddApiInfrastructure(); }
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDeviceService, MockDeviceService>();
+builder.Services.AddScoped<IReviewService, MockReviewService>();
 builder.Services.AddScoped<IOrderService, MockOrderService>();
 builder.Services.AddScoped<IAuthModalService, AuthModalService>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();

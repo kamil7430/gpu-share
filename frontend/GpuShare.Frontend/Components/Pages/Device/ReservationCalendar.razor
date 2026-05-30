@@ -8,7 +8,7 @@
                 </button>
 
                 <MudText Typo="Typo.h6">
-                    @(WeekStart.ToString("dd.MM.yyyy")) - @(WeekStart.AddDays(6).ToString("dd.MM.yyyy"))
+                    @(_weekStart.ToString("dd.MM.yyyy")) - @(_weekStart.AddDays(6).ToString("dd.MM.yyyy"))
                 </MudText>
 
                 <button Class="btn-secondary" @onclick="NextWeek">
@@ -19,7 +19,7 @@
             <div class="week-calendar">
                 <div class="calendar-header"></div>
 
-                @foreach (var day in WeekDays)
+                @foreach (var day in _weekDays)
                 {
                     <div class="calendar-header-cell">
                         <div>@day.ToString("ddd")</div>
@@ -27,13 +27,13 @@
                     </div>
                 }
 
-                @foreach (var hour in Hours)
+                @foreach (var hour in _hours)
                 {
                     <div class="time-label">
                         @($"{hour:00}:00")
                     </div>
 
-                    @foreach (var day in WeekDays)
+                    @foreach (var day in _weekDays)
                     {
                         <div class="calendar-cell">
                             @foreach (var order in GetOrdersForSlot(day, hour))
@@ -81,25 +81,16 @@
 @code {
     [Parameter] public int DeviceId { get; set; }
 
-    private DateTime WeekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+    private DateTime _weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
 
-    private List<int> Hours = Enumerable.Range(0, 24).ToList();
+    private List<int> _hours = Enumerable.Range(0, 24).ToList();
 
-    private List<DateTime> WeekDays => Enumerable.Range(0, 7).Select(i => WeekStart.AddDays(i)) .ToList();
+    private List<DateTime> _weekDays => Enumerable.Range(0, 7).Select(i => _weekStart.AddDays(i)) .ToList();
 
-    private List<Order> orders = new();
+    private List<Order> _orders = new();
 
-    private const int DayHeightPx = 1440; // or scaled version
-    private const double PxPerMinute = 80.0/60.0; // tweak this
-
-    // public class Reservation
-    // {
-    //     public string Title { get; set; } = "";
-    //     public string Status { get; set; } = "";
-
-    //     public DateTime Start { get; set; }
-    //     public DateTime End { get; set; }
-    // }
+    private const int _dayHeightPx = 1440; // or scaled version
+    private const double _pxPerMinute = 80.0/60.0; // tweak this
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,50 +99,45 @@
 
     private async Task LoadOrdersForWeek()
     {
-        // In a real implementation, you'd fetch orders from the backend based on the week range
-        // For example:
-        // orders = await OrderService.GetOrdersForDeviceAndWeek(deviceId, WeekStart);
         var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams
         {
             DeviceId = 1, // replace with actual device ID
-            StartDate = WeekStart,
-            EndDate = WeekStart.AddDays(7)
+            StartDate = _weekStart,
+            EndDate = _weekStart.AddDays(7)
         });
-        orders = pagedResult.Items.ToList();
+        _orders = pagedResult.Items.ToList();
     }
 
     // ===== HELPERS =====
     private IEnumerable<Order> GetOrdersForSlot(DateTime day, int hour)
     {
 
-        return orders.Where(r =>
-            r.StartDate != null && r.StartDate?.Date == day.Date &&
-            r.StartDate?.Hour == hour);
+        return _orders.Where(r => r.StartDate != null && r.StartDate?.Date == day.Date && r.StartDate?.Hour == hour);
     }
 
     private string GetOrderStyle(Order r)
-{
-    var startMinutes = r.StartDate?.Minute;
-    var durationMinutes = (r.EndDate - r.StartDate)?.TotalMinutes;
-    
-    var top = startMinutes * PxPerMinute + 4; // +4 for some padding from the top of the cell
-    var height = durationMinutes * PxPerMinute - 8; // -8 for some padding from the bottom of the cell
-
-    return $@"
-        position: absolute;
-        top: {top}px;
-        height: {height}px; 
-        left: 4px;
-        right: 4px;
-        background: {GetColor(r.Status)};
-    ";
-}
-
-    private string GetColor(string status) => status switch
     {
-        "Reserved" => "#ff9800",
-        "In Use" => "#f44336",
-        "Completed" => "#2196f3",
+        var startMinutes = r.StartDate?.Minute;
+        var durationMinutes = (r.EndDate - r.StartDate)?.TotalMinutes;
+    
+        var top = startMinutes * _pxPerMinute + 4; // +4 for some padding from the top of the cell
+        var height = durationMinutes * _pxPerMinute - 8; // -8 for some padding from the bottom of the cell
+
+        return $@"
+            position: absolute;
+            top: {top}px;
+            height: {height}px; 
+            left: 4px;
+            right: 4px;
+            background: {GetColor(r.Status)};
+        ";
+    }
+
+    private string GetColor(OrderStatus status) => status switch
+    {
+        OrderStatus.WaitingForStart => "#ff9800",
+        OrderStatus.Running => "#f44336",
+        OrderStatus.Completed => "#2196f3",
         _ => "#4caf50"
     };
 
@@ -161,13 +147,13 @@
 
     private async Task NextWeek()
     {
-        WeekStart = WeekStart.AddDays(7);
+        _weekStart = _weekStart.AddDays(7);
         await LoadOrdersForWeek();
     }
 
     private async Task PreviousWeek()
     {
-        WeekStart = WeekStart.AddDays(-7);
+        _weekStart = _weekStart.AddDays(-7);
         await LoadOrdersForWeek();
     }
 }

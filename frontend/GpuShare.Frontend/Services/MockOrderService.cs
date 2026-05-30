@@ -7,19 +7,48 @@ namespace GpuShare.Frontend.Services
 {
     public class MockOrderService : IOrderService
     {
-        public Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest cmd)
+        public async Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest cmd)
         {
-            throw new NotImplementedException();
+            var conn = new ConnectionDetailsDto() { 
+                AccessToken = "token",
+                Host = "host",
+                Port = 420,
+                Protocol = "WSS"
+            };
+
+            return new CreateOrderResponse()
+            {
+                OrderId = 1,
+                ConnectionDetails = conn
+            };
         }
 
         public Task EndOrderAsync(int orderId)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
-        public Task<Order> GetOrderAsync(int orderId)
+        public async Task<Order> GetOrderAsync(int orderId)
         {
-            throw new NotImplementedException();
+            var conn = new ConnectionDetailsDto()
+            {
+                AccessToken = "token",
+                Host = "host",
+                Port = 420,
+                Protocol = "WSS"
+            };
+
+            return new Order()
+            {
+                Id = orderId,
+                DeviceId = 1,
+                Cost = 5,
+                OwnerUsername = "user",
+                EndDate = DateTime.Now.AddHours(12),
+                StartDate = DateTime.Now,
+                Status = OrderStatus.Running,
+                ConnectionDetails = conn 
+            };
         }
 
         public Task<PagedResult<Order>> ListOrdersAsync(OrderQueryParams parameters)
@@ -43,7 +72,7 @@ namespace GpuShare.Frontend.Services
             new Order
             {
                 OwnerUsername = "LLM Training",
-                Status = "In Use",
+                Status = OrderStatus.Running,
                 StartDate = weekStart.AddDays(1).AddHours(9).AddMinutes(30),
                 EndDate = weekStart.AddDays(1).AddHours(13)
             },
@@ -51,7 +80,7 @@ namespace GpuShare.Frontend.Services
             new Order
             {
                 OwnerUsername = "Stable Diffusion",
-                Status = "Reserved",
+                Status = OrderStatus.WaitingForStart,
                 StartDate = weekStart.AddDays(2).AddHours(14),
                 EndDate = weekStart.AddDays(2).AddHours(18)
             },
@@ -59,7 +88,7 @@ namespace GpuShare.Frontend.Services
             new Order
             {
                 OwnerUsername = "CUDA Rendering",
-                Status = "Reserved",
+                Status = OrderStatus.WaitingForStart,
                 StartDate = weekStart.AddDays(4).AddHours(8),
                 EndDate = weekStart.AddDays(4).AddHours(11)
             },
@@ -67,7 +96,7 @@ namespace GpuShare.Frontend.Services
             new Order
             {
                 OwnerUsername = "Fine-Tuning",
-                Status = "In Use",
+                Status = OrderStatus.Running,
                 StartDate = weekStart.AddDays(5).AddHours(16),
                 EndDate = weekStart.AddDays(5).AddHours(22)
             }

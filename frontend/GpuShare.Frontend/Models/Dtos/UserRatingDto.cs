@@ -3,6 +3,6 @@
     public class UserRatingDto
     {
         public decimal AverageRating { get; set; } = 0.0m;
-        public int ReviewCount { get; set; } = 0;
+        public int RatingCount { get; set; } = 0;
     }
 }

@@ -34,7 +34,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                             OwnerUsername = "john",
                             StartDate = now,
                             EndDate = now.AddHours(2),
-                            Status = "Reserved"
+                            Status = Models.OrderStatus.WaitingForStart
                         }
                     ]
                 });
@@ -159,7 +159,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                         OwnerUsername = "alice",
                         StartDate = now,
                         EndDate = now.AddHours(1),
-                        Status = "Reserved"
+                        Status = Models.OrderStatus.WaitingForStart
                     }
                     ]
                 });
@@ -225,7 +225,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                             OwnerUsername = "john",
                             StartDate = now,
                             EndDate = now.AddHours(1),
-                            Status = "Reserved"
+                            Status = Models.OrderStatus.WaitingForStart
                         },
                         new Models.Order
                         {
@@ -233,7 +233,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                             OwnerUsername = "alice",
                             StartDate = now.AddHours(2),
                             EndDate = now.AddHours(3),
-                            Status = "Completed"
+                            Status = Models.OrderStatus.Completed
                         }
                     ]
                 });
@@ -265,7 +265,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     OwnerUsername = "bob",
                     StartDate = now,
                     EndDate = now.AddHours(1),
-                    Status = "Completed"
+                    Status = Models.OrderStatus.Completed
                 }
                     ]
                 });
@@ -297,7 +297,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                             OwnerUsername = "correct-slot-user",
                             StartDate = now,
                             EndDate = now.AddHours(1),
-                            Status = "Reserved"
+                            Status = Models.OrderStatus.WaitingForStart
                         }
                     ]
                 });

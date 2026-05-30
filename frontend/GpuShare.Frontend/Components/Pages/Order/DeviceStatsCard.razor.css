@@ -21,6 +21,14 @@
     animation: pulse 1.5s infinite;
 }
 
+.heartbeat-dot-green {
+    background: #37b24d;
+}
+
+.heartbeat-dot-red {
+    background: #B63939;
+}
+
 @keyframes pulse {
 
     0% {
