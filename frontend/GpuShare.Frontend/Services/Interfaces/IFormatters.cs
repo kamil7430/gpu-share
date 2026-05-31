@@ -9,6 +9,8 @@ public interface IFormatters
 
     string FormatDateTime(DateTime dateTime);
 
+    string FormatDateTime(DateTime? dateTime);
+
     string FormatVram(int mb);
 
     string FormatOrderStatus(OrderStatus status);

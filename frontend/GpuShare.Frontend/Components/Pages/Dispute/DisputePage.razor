@@ -1,12 +1,14 @@
-@page "/order/{OrderId:int}/dispute"
+@page "/dispute/{DisputeId:int}"
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using MudBlazor
 
+@inject IDisputeService DisputeService
+
 <div class="cards-container">
     <div class="page-top" style="margin-bottom: 8px;">
-        <NavLink href="@orderPage" class="back-link">&lt; Back to Order</NavLink>
+        <NavLink href="@_orderPage" class="back-link">&lt; Back to Order</NavLink>
     </div>
 
     <AuthorizeView>
@@ -15,7 +17,7 @@
                 <!-- Header -->
                 <div class="page-header">
                     <div>
-                        <div class="page-subtitle">Order #@OrderId</div>
+                        <div class="page-subtitle">Order #@(_dispute.OrderId)</div>
                         <h1 style="margin: 0;">Report a Dispute</h1>
                     </div>
 
@@ -25,7 +27,7 @@
                 </div>
 
                 <!-- Dispute Form -->
-                <DisputeForm OrderId="@OrderId" />
+                <DisputeForm OrderId="@_dispute.OrderId" />
             </div>
 
             <!-- Timeline -->
@@ -41,13 +43,15 @@
 </div>
 
 @code {
-    [Parameter] public int OrderId { get; set; }
-    
-    private string orderPage = null!;
+    [Parameter] public int DisputeId { get; set; }
+    private Dispute _dispute = null!;
 
-    protected override void OnParametersSet()
+    private string _orderPage = "";
+
+    protected override async Task OnParametersSetAsync()
     {
-        orderPage = $"/order/{OrderId}";
+        _dispute = await DisputeService.GetDisputeAsync(DisputeId);
+        _orderPage = $"/order/{_dispute.OrderId}";
     }
 
     private void SubmitDispute()

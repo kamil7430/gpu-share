@@ -8,5 +8,7 @@ public class ConnectionDetailsDto
 
     public string Protocol { get; set; } = "WSS";
 
+    public string ConnectionString { get; set; } = "";
+
     public string AccessToken { get; set; } = string.Empty;
 }

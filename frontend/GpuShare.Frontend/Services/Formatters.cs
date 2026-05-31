@@ -7,7 +7,13 @@ namespace GpuShare.Frontend.Services
     {
         public string FormatDateTime(DateTime dateTime)
         {
-            throw new NotImplementedException();
+            return dateTime.ToString("dd.MM.yyyy H:mm");
+        }
+        public string FormatDateTime(DateTime? dateTime)
+        {
+            if (dateTime != null)
+                return dateTime.Value.ToString("dd.MM.yyyy H:mm");
+            else return "N/A";
         }
 
         public string FormatDuration(int totalSeconds)
