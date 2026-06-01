@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 	"crypto/subtle"
-	"errors"
 
 	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/api"
+	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type SecurityHandler struct {
@@ -21,7 +21,7 @@ func (s *SecurityHandler) HandleCoordinatorApiKey(ctx context.Context, operation
 	want := s.apiKey
 
 	if subtle.ConstantTimeCompare([]byte(got), []byte(want)) == 0 {
-		return ctx, errors.New("unauthorized")
+		return ctx, ogenerrors.ErrSecurityRequirementIsNotSatisfied
 	}
 
 	return ctx, nil
