@@ -27,6 +27,11 @@ public class MockAuthService : IAuthService
         return Task.CompletedTask;
     }
 
+    public Task ChangePasswordAsync(RegisterRequest payload)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task RefreshTokenAsync()
     {
         // Simulate token refresh with new dummy tokens

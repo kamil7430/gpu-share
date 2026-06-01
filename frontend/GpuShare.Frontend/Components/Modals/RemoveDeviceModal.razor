@@ -1,47 +1,61 @@
-<BaseModal IsVisible="IsVisible" Title="Remove Device" OnClose="Close">
+@inject IDeviceService DeviceService
 
-    <ChildContent>
-    @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber"
+@if (Device == null)
+{
+    <BaseModal TResult=string>
+        <ChildContent IsVisible="IsVisible" Title="Remove Device - error" OnClose="Close">
+            <p>Device data did not load correctly. Try again later.</p>
+        </ChildContent>
+    </BaseModal>
+}
+else
+{
+    <BaseModal TResult=string IsVisible="IsVisible" Title="Remove Device" OnClose="Close">
+
+        <ChildContent>
+            @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber"
                      Color="Color.Error"
                      Size="Size.Large"
                      Class="mb-4" />
 
             <MudText Typo="Typo.h5" GutterBottom="true">
-                
+
             </MudText> *@
 
-        <MudText Typo="Typo.body1" Class="mb-4">
-            Are you sure you want to permanently remove <b>@gpu.Name</b> from your device fleet?
-        </MudText>
+            <MudText Typo="Typo.body1" Class="mb-4">
+                Are you sure you want to permanently remove <b>@Device.Name</b> from your device fleet?
+            </MudText>
 
-        <MudAlert Severity="Severity.Warning" Dense="true" Variant="Variant.Outlined" Class="mb-4">
-            This action cannot be undone.
-            <ul class="modal-warning-list" style="margin-bottom: 0px;">
-                <li>All future reservations will be cancelled</li>
-                <li>Users will lose access to this GPU</li>
-                <li>Monitoring statistics and uptime history may be deleted</li>
-                <li>Active workloads may be interrupted</li>
-            </ul>
-        </MudAlert>
+            <MudAlert Severity="Severity.Warning" Dense="true" Variant="Variant.Outlined" Class="mb-4">
+                This action cannot be undone.
+                <ul class="modal-warning-list" style="margin-bottom: 0px;">
+                    <li>All future reservations will be cancelled</li>
+                    <li>Users will lose access to this GPU</li>
+                    <li>Monitoring statistics and uptime history may be deleted</li>
+                    <li>Active workloads may be interrupted</li>
+                </ul>
+            </MudAlert>
 
             @* @if (gpu.HasActiveReservations)
             {
-                
+
             } *@
 
-        <MudAlert Severity="Severity.Error" Dense="true" Variant="Variant.Filled">
-            This device currently has active reservations. Removing it may affect running workloads.
-        </MudAlert>
-    </ChildContent>
+            <MudAlert Severity="Severity.Error" Dense="true" Variant="Variant.Filled">
+                This device currently has active reservations. Removing it may affect running workloads.
+            </MudAlert>
 
-    <FooterContent>
-        <button class="btn btn-cancel" @onclick="Cancel">Cancel</button>
-        <button class="btn btn-danger" @onclick="ConfirmRemove">
-            <MudIcon Icon="@Icons.Material.Filled.Delete" />
-            Remove Device
-        </button>
+            <p>@_errorMessage</p>
+        </ChildContent>
 
-        @* <MudButton Variant="Variant.Filled"
+        <FooterContent>
+            <button class="btn btn-cancel" @onclick="Cancel">Cancel</button>
+            <button class="btn btn-danger" @onclick="ConfirmRemove">
+                <MudIcon Icon="@Icons.Material.Filled.Delete" />
+                Remove Device
+            </button>
+
+            @* <MudButton Variant="Variant.Filled"
                    Color="Color.Error"
                    StartIcon="@Icons.Material.Filled.Delete"
                    OnClick="ConfirmRemove">
@@ -49,27 +63,38 @@
             Remove Device
 
         </MudButton> *@
-</FooterContent>
+        </FooterContent>
 
-</BaseModal>
+    </BaseModal>
+}
 
 @code {
-    [Parameter] public GpuShare.Frontend.Models.Device gpu { get; set; } = new();
+    [Parameter] public GpuShare.Frontend.Models.Device? Device { get; set; } = null;
     [Parameter] public bool IsVisible { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<ModalResult<string>> OnClose { get; set; }
+    private string? _errorMessage = null;
 
-    private void Close()
+    private async Task Close()
     {
-        IsVisible = false;
+        await Cancel();
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
-        IsVisible = false;
+        await OnClose.InvokeAsync(ModalResult<string>.Cancel());
     }
 
-    private void ConfirmRemove()
+    private async Task ConfirmRemove()
     {
-        
+        try
+        {
+            await DeviceService.RemoveDeviceAsync(Device.Id);
+            await OnClose.InvokeAsync(ModalResult<string>.Ok($"Device #{Device.Id} removed successfully."));
+        }
+        catch (Models.ApiException e)
+        {
+            _errorMessage = $"Error occured while removing device: {e.StatusCode}, {e.Message}.";
+            await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
+        }
     }
 }

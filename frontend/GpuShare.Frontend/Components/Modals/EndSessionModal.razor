@@ -1,6 +1,6 @@
 @if (ShowEndModal)
 {
-    <BaseModal IsVisible="true" Title="End Session" OnClose="CloseEndModal" SizeClass="small">
+    <BaseModal TResult=string IsVisible="true" Title="End Session" OnClose="CloseEndModal" SizeClass="small">
         <ChildContent>
             <div class="end-session-modal">
                 @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" /> *@
@@ -24,16 +24,17 @@
 
 @code {
     [Parameter] public bool ShowEndModal { get; set; }
+    [Parameter] public EventCallback<ModalResult<string>> OnClose { get; set; }
 
-    private void CloseEndModal()
+    private async Task CloseEndModal()
     {
-        ShowEndModal = false;
+        await OnClose.InvokeAsync(ModalResult<string>.Cancel());
     }
 
-    private void EndSession()
+    private async Task EndSession()
     {
         Console.WriteLine("Session terminated");
-
-        ShowEndModal = false;
+        // call to end session
+        await OnClose.InvokeAsync(ModalResult<string>.Ok());
     }
 }

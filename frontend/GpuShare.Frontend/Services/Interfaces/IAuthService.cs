@@ -17,6 +17,12 @@ public interface IAuthService
     Task RegisterAsync(RegisterRequest payload);
 
     /// <summary>
+    /// POST /auth/register
+    /// Creates a new account and sends verification email.
+    /// </summary>
+    Task ChangePasswordAsync(ChangePasswordRequest payload);
+
+    /// <summary>
     /// Silently refreshes access token before expiration.
     /// </summary>
     Task RefreshTokenAsync();

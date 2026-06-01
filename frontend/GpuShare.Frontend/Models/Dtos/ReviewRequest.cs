@@ -1,6 +1,6 @@
 ﻿namespace GpuShare.Frontend.Models.Dtos
 {
-    public class ReviewRequest
+    public class CreateReviewRequest
     {
         public int OrderId { get; set; }
 

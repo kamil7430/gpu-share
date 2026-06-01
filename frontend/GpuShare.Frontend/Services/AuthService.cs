@@ -55,6 +55,11 @@ public class AuthService : IAuthService
         await _api.PostAsync("/users/register", payload);
     }
 
+    public async Task ChangePasswordAsync(ChangePasswordRequest payload)
+    {
+        await _api.PostAsync("/users/changepassword", payload);
+    }
+
     public async Task LogoutAsync()
     {
         // await _api.PostAsync("/users/logout", new { });

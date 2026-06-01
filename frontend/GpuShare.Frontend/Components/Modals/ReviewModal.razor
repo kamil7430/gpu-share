@@ -1,8 +1,9 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using GpuShare.Frontend.Models.Dtos
 @using GpuShare.Frontend.Models
+@inject IReviewService ReviewService
 
-<BaseModal IsVisible="@IsVisible" Title="Leave a Review" OnClose="HandleClose" SizeClass="medium">
+<BaseModal TResult=string IsVisible="@IsVisible" Title="Leave a Review" OnClose="HandleClose" SizeClass="medium">
 
     <EditForm Model="reviewModel" OnValidSubmit="SubmitReview">
         <DataAnnotationsValidator />
@@ -47,12 +48,10 @@
 
     [Parameter] public int OrderId { get; set; }
 
-    [Parameter] public EventCallback OnClose { get; set; }
-
-    [Parameter] public EventCallback<ReviewRequest> OnSubmit { get; set; }
+    [Parameter] public EventCallback<ModalResult<string>> OnSubmit { get; set; }
 
     private ReviewFormModel reviewModel = new();
-    
+
     private void OnRatingChanged(int value)
     {
         reviewModel.Rating = value;
@@ -60,22 +59,26 @@
 
     private async Task SubmitReview()
     {
-        var request = new ReviewRequest
+        var request = new CreateReviewRequest
         {
             OrderId = OrderId,
             Rating = reviewModel.Rating,
             Comment = reviewModel.Comment
         };
 
-        await OnSubmit.InvokeAsync(request);
-
-        reviewModel = new ReviewFormModel();
-
-        await HandleClose();
+        try
+        {
+            await ReviewService.CreateReviewAsync(OrderId, request);
+            await OnSubmit.InvokeAsync(ModalResult<string>.Ok());
+        }
+        catch (ApiException e)
+        {
+            await OnSubmit.InvokeAsync(ModalResult<string>.Fail($"Error occured while creating request, {e.StatusCode}: {e.Message}"));
+        }
     }
 
     private async Task HandleClose()
     {
-        await OnClose.InvokeAsync();
+        await OnSubmit.InvokeAsync(ModalResult<string>.Cancel());
     }
 }

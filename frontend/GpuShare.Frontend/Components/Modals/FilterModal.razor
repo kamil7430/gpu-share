@@ -16,7 +16,7 @@ Decisions:
     Add brand to model?
 *@
 
-<BaseModal IsVisible="IsOpen" Title="Filters" OnClose="Close">
+<BaseModal TResult=string IsVisible="IsOpen" Title="Filters" OnClose="Close">
     <ChildContent>
     <label>VRAM:</label>
     <CheckBoxList className="checkbox-list" TItem="int" Data="VRAMOptions" TextField="@((int c) => $"{c} GB")" ValueField="@((int c) => c.ToString())" SelectedValues="@TempFilter.VRAM_MB" />
@@ -60,6 +60,7 @@ Decisions:
 
 @code {
     [Parameter] public EventCallback<SearchFilter> OnApply { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public SearchFilter CurrentFilter { get; set; } = new();
 
     private bool IsOpen;
@@ -95,19 +96,16 @@ Decisions:
             AvailableOnly = existing.AvailableOnly,
             SortBy = existing.SortBy
         };
-
-        IsOpen = true;
         StateHasChanged();
     }
 
-    private void Close()
+    private async Task Close()
     {
-        IsOpen = false;
+        await OnClose.InvokeAsync();
     }
 
     private async Task Apply()
     {
-        IsOpen = false;
         await OnApply.InvokeAsync(TempFilter);
     }
 }

@@ -1,3 +1,6 @@
+@typeparam TResult
+@inherits BaseModalState<TResult>
+
 @if (IsVisible)
 {
     <div class="modal-backdrop" @onclick="HandleBackdropClick">
@@ -26,41 +29,5 @@
 }
 
 @code {
-
-    [Parameter]
-    public bool IsVisible { get; set; }
-
-    [Parameter]
-    public string Title { get; set; } = "";
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? FooterContent { get; set; }
-
-    [Parameter]
-    public EventCallback OnClose { get; set; }
-
-    [Parameter]
-    public bool CloseOnBackdrop { get; set; } = true;
-
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
-
-    [Parameter]
-    public string SizeClass { get; set; } = "";
-
-    private async Task HandleBackdropClick()
-    {
-        if (CloseOnBackdrop)
-        {
-            await Close();
-        }
-    }
-
-    private async Task Close()
-    {
-        await OnClose.InvokeAsync();
-    }
+    
 }

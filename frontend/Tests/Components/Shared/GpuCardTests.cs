@@ -8,16 +8,21 @@ using Moq;
 using MudBlazor.Services;
 using Xunit;
 using FluentAssertions;
+using AngleSharp.Dom;
+using GpuShare.Frontend.State;
 
 namespace GpuShare.Frontend.Tests.Components.Shared
 {
     public class GpuCardTests : BunitContext, Xunit.IAsyncLifetime
     {
+        private Mock<IAuthState> _authStateMock = new();
+
         private Models.Device gpu = new()
         {
             Id = 1,
             Name = "RTX 4090",
             Model = "NVIDIA",
+            OwnerUsername = "john",
             PricePerHour = 10,
             VramMb = 24000,
             CudaCores = 16000,
@@ -29,12 +34,16 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         public GpuCardTests()
         {
             Services.AddAuthorizationCore();
+            Services.AddSingleton(_authStateMock.Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
 
             JSInterop.SetupVoid(_ => true);
             JSInterop.SetupModule(_ => true);
+
+            _authStateMock.Setup(x => x.IsAuthenticated).Returns(true);
+            _authStateMock.Setup(x => x.User).Returns(new User() { Username = "john"});
         }
 
         public Task InitializeAsync() => Task.CompletedTask;
@@ -58,7 +67,8 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         [Fact]
         public void Unauthorized_User_Should_See_Order_Button()
         {
-            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Authorized, false));
+            _authStateMock.Setup(x => x.IsAuthenticated).Returns(false);
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
             cut.Markup.Should().Contain("Order");
         }
@@ -66,7 +76,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         [Fact]
         public void Authorized_User_Should_See_Edit_And_Remove_Buttons()
         {
-            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Authorized, true));
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
             cut.Markup.Should().Contain("Edit");
             cut.Markup.Should().Contain("Remove");
@@ -77,11 +87,11 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         {
             var nav = Services.GetRequiredService<NavigationManager>();
 
-            var gpu = new Models.Device() { Id = 5, Name = "Test GPU" };
+            var gpu = new Models.Device() { Id = 5, Name = "Test GPU", OwnerUsername = "john" };
 
-            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Authorized, true));
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
-            cut.Find("button.btn-primary").Click();
+            cut.Find(".edit-btn").Click();
 
             nav.Uri.Should().Contain("/device/edit/5");
         }
@@ -89,9 +99,9 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         [Fact]
         public void Remove_Button_Should_Open_Modal()
         {
-            var gpu = new Models.Device { Id = 1, Name = "RTX" };
+            var gpu = new Models.Device { Id = 1, Name = "RTX", OwnerUsername = "john" };
 
-            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Authorized, true));
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
             cut.Find("button.btn-danger").Click();
 
@@ -100,15 +110,60 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         }
 
         [Fact]
-        public void Order_Button_Should_Be_Disabled_When_Gpu_Unavailable() { }
+        public void Order_Button_Should_Be_Disabled_When_Gpu_Unavailable() 
+        {
+            _authStateMock.Setup(x => x.IsAuthenticated).Returns(false);
+            var gpu = new Models.Device { Id = 1, Name = "RTX", IsAvailable = false, };
+
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
+
+            var removeBtn = cut.Find(".order-btn");
+
+            removeBtn.IsDisabled().Should().BeTrue();
+        }
 
         [Fact]
-        public void Should_Render_All_Frameworks() { }
+        public void Should_Render_All_Frameworks() 
+        {
+            var gpu = new Models.Device { Id = 1, Name = "RTX", Frameworks = ["CUDA", "TensorFlow", "PyTorch"], };
+
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
+
+            cut.Markup.Should().Contain("CUDA");
+            cut.Markup.Should().Contain("TensorFlow");
+            cut.Markup.Should().Contain("PyTorch");
+        }
 
         [Fact]
-        public void Should_Show_Available_Badge_When_Gpu_Is_Available() { }
+        public void Should_Show_Available_Badge_When_Gpu_Is_Available() 
+        {
+            var gpu = new Models.Device { Id = 1, Name = "RTX", IsAvailable = true, };
+
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
+
+            var badge = cut.Find(".badge");
+            badge.ClassList.Should().Contain("available");
+        }
 
         [Fact]
-        public void Should_Navigate_To_Device_Page_On_Title_Click() { }
+        public void Should_Navigate_To_Device_Page_On_Title_Click() 
+        {
+            // Arrange
+            var gpu = new Models.Device
+            {
+                Id = 42,
+                Name = "RTX 4090"
+            };
+
+            _authStateMock.Setup(x => x.IsAuthenticated).Returns(false);
+
+            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
+
+            // Act
+            var navLink = cut.Find(".device-name");
+
+            // Assert
+            navLink.GetAttribute("href").Should().Be($"/device/view/{gpu.Id}");
+        }
     }
 }
