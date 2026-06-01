@@ -1,4 +1,7 @@
-@page "/dispute/{DisputeId:int}"
+@page "/dispute/{DisputeId:int}"  
+@page "/order/{OrderId:int}/dispute"
+@* existing dispute/create new dispute *@
+@* TO-DO: Add dispute view mode *@
 
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
@@ -7,51 +10,67 @@
 @inject IDisputeService DisputeService
 
 <div class="cards-container">
-    <div class="page-top" style="margin-bottom: 8px;">
-        <NavLink href="@_orderPage" class="back-link">&lt; Back to Order</NavLink>
-    </div>
+    @if (_dispute != null)
+    {
+        <div class="page-top" style="margin-bottom: 8px;">
+            <NavLink href="@_orderPage" class="back-link">&lt; Back to Order</NavLink>
+        </div>
 
-    <AuthorizeView>
-        <Authorized>
-            <div class="card">
-                <!-- Header -->
-                <div class="page-header">
-                    <div>
-                        <div class="page-subtitle">Order #@(_dispute.OrderId)</div>
-                        <h1 style="margin: 0;">Report a Dispute</h1>
+        <AuthorizeView>
+            <Authorized>
+                <div class="card">
+                    <!-- Header -->
+                    <div class="page-header">
+                        <div>
+                            <div class="page-subtitle">Order #@(_dispute.OrderId)</div>
+                            <h1 style="margin: 0;">Report a Dispute</h1>
+                        </div>
+
+                        <MudChip T="string" Color="Color.Warning" Variant="Variant.Filled">
+                            Under Review
+                        </MudChip>
                     </div>
 
-                    <MudChip T="string" Color="Color.Warning" Variant="Variant.Filled">
-                        Under Review
-                    </MudChip>
+                    <!-- Dispute Form -->
+                    <DisputeForm OrderId="@_dispute.OrderId" />
                 </div>
 
-                <!-- Dispute Form -->
-                <DisputeForm OrderId="@_dispute.OrderId" />
-            </div>
-
-            <!-- Timeline -->
-            <TimelineCard />
-        </Authorized>
-        <NotAuthorized>
-            <div class="card">
-                <h3>You are not authorized to view this dispute.</h3>
-                <p>Please log in to access your orders and disputes.</p>
-            </div>
-        </NotAuthorized>
-    </AuthorizeView>
+                <!-- Timeline -->
+                <TimelineCard />
+            </Authorized>
+            <NotAuthorized>
+                <div class="card">
+                    <h3>You are not authorized to view this dispute.</h3>
+                    <p>Please log in to access your orders and disputes.</p>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+    else
+    {
+        <p>Error loading dispute data. Try again later.</p>
+    }
 </div>
 
 @code {
-    [Parameter] public int DisputeId { get; set; }
-    private Dispute _dispute = null!;
+    [Parameter] public int? DisputeId { get; set; } = null;
+    [Parameter] public int? OrderId { get; set; } = null;
+    private Dispute? _dispute = null;
 
     private string _orderPage = "";
 
     protected override async Task OnParametersSetAsync()
     {
-        _dispute = await DisputeService.GetDisputeAsync(DisputeId);
-        _orderPage = $"/order/{_dispute.OrderId}";
+        if (DisputeId != null)
+        {
+            _dispute = await DisputeService.GetDisputeAsync(DisputeId.Value);
+            _orderPage = $"/order/{_dispute.OrderId}";
+        } 
+        else
+        {
+            _dispute = new();
+            _orderPage = $"/order/{_dispute.OrderId}";
+        }
     }
 
     private void SubmitDispute()

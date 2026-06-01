@@ -2,7 +2,7 @@
 @inject IOrderService OrderService
 @inject IFormatters Formatters
 
-@if (Dispute != null && _order != null && _gpu != null)
+@if (_order != null && _gpu != null)
 {
     <EditForm Model="Dispute" OnValidSubmit="SubmitDispute">
         <DataAnnotationsValidator />
@@ -119,6 +119,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (Dispute != null) OrderId = Dispute.OrderId;
+        else Dispute = new();
+
         try
         {
             _order = await OrderService.GetOrderAsync(OrderId);

@@ -2,6 +2,7 @@
 using Bunit.TestDoubles;
 using FluentAssertions;
 using GpuShare.Frontend.Components.Pages.Dispute;
+using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Services.Interfaces;
 using GpuShare.Frontend.State;
 using Microsoft.AspNetCore.Components.Forms;
@@ -133,7 +134,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         [Fact]
         public async Task Should_Limit_Uploads_To_Three_Files()
         {
-            var cut = Render<DisputeForm>();
+            var cut = Render<DisputeForm>(p => p.Add(x => x.Dispute, new Models.Dispute() { OrderId = 123 }));
 
             var files = Enumerable.Range(1, 5).Select(i => (IBrowserFile)new FakeBrowserFile
                 {
@@ -141,6 +142,8 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
                 }).ToList();
 
             await cut.InvokeAsync(() => cut.Instance.HandleFilesChanged(files));
+
+            cut.Render();
 
             Assert.Equal(3, cut.FindAll(".uploaded-file").Count);
         }

@@ -39,7 +39,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             // Stub heavy components
             ComponentFactories.AddStub<TelemetryCard>("TELEMETRY_CARD");
             ComponentFactories.AddStub<ReservationCalendar>("CALENDAR");
-            ComponentFactories.AddStub<OpinionsList>("OPINIONS");
+            ComponentFactories.AddStub<ReviewsList>("OPINIONS");
             ComponentFactories.AddStub<DeviceOrderForm>("ORDER_FORM");
 
             _deviceServiceMock.Setup(s => s.GetDeviceAsync(It.IsAny<int>()))

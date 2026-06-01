@@ -36,7 +36,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             JSInterop.SetupModule(_ => true);
 
             ComponentFactories.AddStub<WalletCard>("WALLET_STUB");
-            ComponentFactories.AddStub<OpinionsList>("OPINIONS_LIST_STUB");
+            ComponentFactories.AddStub<ReviewsList>("OPINIONS_LIST_STUB");
             ComponentFactories.AddStub<OrderTable>("ORDER_TABLE_STUB");
         }
 
@@ -203,7 +203,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
 
             // Assert
-            var gpuList = cut.FindComponent<GpuList>();
+            var gpuList = cut.FindComponent<DevicesList>();
             gpuList.Instance.authorized.Should().BeTrue();
         }
     }

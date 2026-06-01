@@ -21,12 +21,12 @@
 <LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
 
 @code {
-    private string profileLink = null!;
+    private string? profileLink = null;
 
     protected override void OnInitialized()
     {
-        profileLink = $"/profile/{AuthState.User!.Username}";
-        AuthModal.OnChange += StateHasChanged;
+        UpdateProfileLink();
+        AuthModal.OnChange += HandleAuthChanged;
     }
 
     private void CloseModal() => AuthModal.Close();
@@ -41,5 +41,18 @@
     {
         await AuthService.LogoutAsync();
         Console.WriteLine("User logged out");
+    }
+
+    private void UpdateProfileLink()
+    {
+        profileLink = AuthState.User != null
+            ? $"/profile/{AuthState.User.Username}"
+            : null;
+    }
+
+    private void HandleAuthChanged()
+    {
+        UpdateProfileLink();
+        InvokeAsync(StateHasChanged);
     }
 }

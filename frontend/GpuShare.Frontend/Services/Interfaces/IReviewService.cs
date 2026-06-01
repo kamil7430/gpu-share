@@ -18,8 +18,20 @@ public interface IReviewService
     /// Returns reviews for device details page.
     /// </summary>
     /// <param name="deviceId">The ID of the device.</param>
-    /// <returns>A list of <see cref="Review"/> objects for the specified device.</returns>
-    Task<List<Review>> GetDeviceReviewsAsync(int deviceId);
+    /// <param name="page">The number of page to fetch (default to 1).</param>
+    /// <param name="count">The number of items on the page (default to 10).</param>
+    /// <returns>A <see cref="PagedResult{T}"/> object of <see cref="Review"/> objects for the specified device.</returns>
+    Task<PagedResult<Review>> GetDeviceReviewsAsync(int deviceId, int page = 1, int count = 10);
+
+    /// <summary>
+    /// GET /api/users/{id}/reviews
+    /// Returns reviews for user profile page.
+    /// </summary>
+    /// <param name="username">The username of the user.</param>
+    /// <param name="page">The number of page to fetch (default to 1).</param>
+    /// <param name="count">The number of items on the page (default to 10).</param>
+    /// <returns>A <see cref="PagedResult{T}"/> object of <see cref="Review"/> objects for the specified user.</returns>
+    Task<PagedResult<Review>> GetUserReviewsAsync(string username, int page = 1, int count = 10);
 
     /// <summary>
     /// Returns the average rating and review count for a user, used in the profile page.

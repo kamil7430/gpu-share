@@ -19,19 +19,37 @@ namespace GpuShare.Frontend.Services
             });
         }
 
-        public Task<List<Review>> GetDeviceReviewsAsync(int deviceId)
+        public Task<PagedResult<Review>> GetDeviceReviewsAsync(int deviceId, int page = 1, int count = 10)
         {
-            return Task.FromResult(new List<Review>
+            return Task.FromResult(new PagedResult<Review>
             {
-                new Review
+                Items = new List<Review> {
+                    new Review
+                    {
+                        Id = 1,
+                        OrderId = deviceId,
+                        Rating = 4,
+                        Comment = "This is a mock review.",
+                        CreatedAt = DateTime.Now,
+                        AuthorUsername = "mockuser"
+                    } 
+                }
+            });
+        }
+
+        public Task<PagedResult<Review>> GetUserReviewsAsync(string username, int page = 1, int count = 10)
+        {
+            return Task.FromResult(new PagedResult<Review>
+            {
+                Items = [new Review
                 {
                     Id = 1,
-                    OrderId = deviceId,
+                    OrderId = 4,
                     Rating = 4,
                     Comment = "This is a mock review.",
                     CreatedAt = DateTime.Now,
                     AuthorUsername = "mockuser"
-                }
+                }]
             });
         }
 

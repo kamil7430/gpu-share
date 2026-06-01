@@ -92,7 +92,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             var cut = Render<DevicesPage>();
 
             // Assert
-            cut.FindComponent<GpuList>();
+            cut.FindComponent<DevicesList>();
         }
 
         [Fact]

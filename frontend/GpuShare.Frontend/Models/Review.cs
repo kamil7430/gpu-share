@@ -6,6 +6,8 @@ public class Review
 
     public int OrderId { get; set; }
 
+    public int DeviceId { get; set; }
+
     public string AuthorUsername { get; set; } = string.Empty;
 
     public int Rating { get; set; }

@@ -1,11 +1,12 @@
 @rendermode InteractiveServer
-@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+@inject NavigationManager Navigation
 
-@if(gpu == null)
+@if (Device == null)
 {
     <div class="gpu-card loading">
         <div class="loading-spinner"></div>
     </div>
+    <p>Error loading device data.</p>
 }
 else
 {
@@ -14,48 +15,49 @@ else
     <div class="gpu-body">
         <div class="left">
             <div class="gpu-header">
-                <h4><NavLink href="@($"/device/view/{gpu.Id}")">@gpu.Name</NavLink></h4>
+                    <h4><NavLink href="@($"/device/view/{Device.Id}")">@Device.Name</NavLink></h4>
             </div>
 
-            <div>Model: <span style="color: #0A1128;">@gpu.Model</span></div>
-            @if (!authorized){
-                <div>Owner name: User1</div>
+                <div>Model: <span style="color: #0A1128;">@Device.Model</span></div>
+                @if (!Authorized)
+                {
+                    <div>Owner name: @Device.OwnerUsername</div>
             }
 
             <div class="price">
-                Price per hour: @gpu.PricePerHour$
+                    Price per hour: @Device.PricePerHour$
             </div>
         </div>
 
         <div class="middle">
-            <div>VRAM MB: <span style="color: #0A1128;">@gpu.VramMb</span></div>
-            <div>CUDA cores: <span style="color: #0A1128;">@gpu.CudaCores</span></div>
-            <div>Driver version: <span style="color: #0A1128;">@gpu.DriverVersion</span></div>
+                <div>VRAM MB: <span style="color: #0A1128;">@Device.VramMb</span></div>
+                <div>CUDA cores: <span style="color: #0A1128;">@Device.CudaCores</span></div>
+                <div>Driver version: <span style="color: #0A1128;">@Device.DriverVersion</span></div>
             <div>
                 Supported frameworks:
-                <span style="color: #0A1128;">@string.Join(", ", gpu.Frameworks)</span>
+                    <span style="color: #0A1128;">@string.Join(", ", Device.Frameworks)</span>
             </div>
         </div>
 
         <div class="right">
-            <span class="badge @(gpu.IsAvailable ? "available" : "unavailable")">
-                @(gpu.IsAvailable ? "Available" : "Unavailable")
+                <span class="badge @(Device.IsAvailable ? "available" : "unavailable")">
+                    @(Device.IsAvailable ? "Available" : "Unavailable")
             </span>
-            @if (authorized)
+                @if (Authorized)
             {
                 <div class="buttons-wrapper">
-                    <button class="btn btn-primary" @onclick="() => EditGpu(gpu)">Edit</button>
-                    <button class="btn btn-danger" @onclick="() => RemoveGpu(gpu)">Remove</button>
+                    <button class="btn btn-primary" @onclick="() => EditGpu()">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => RemoveGpu()">Remove</button>
                 </div>
             }
             else 
             {
-                <button class="btn btn-primary" disabled=@(!gpu.IsAvailable) @onclick="() => OrderGpu(gpu)">Order</button>
+                    <button class="btn btn-primary" disabled=@(!Device.IsAvailable) @onclick="() => OrderGpu()">Order</button>
             }
         </div>
     </div>
 
-    @if(authorized)
+        @if (Authorized)
     {
         <MudDivider Class="my-2" style="border: 1px solid #3b5a8a" />
 
@@ -68,30 +70,37 @@ else
 </div>
 }
 
-<RemoveDeviceModal Gpu="@gpu" IsVisible="@showRemoveDeviceModal" OnClose="@(() => showRemoveDeviceModal = false)" />
+<RemoveDeviceModal Gpu="@Device" IsVisible="@showRemoveDeviceModal" OnClose="@(() => showRemoveDeviceModal = false)" />
 
 @code {
-    [Parameter] public bool authorized { get; set; } = false;
-    [Parameter] public Device gpu { get; set; } = new();
+    [Parameter] public bool Authorized { get; set; } = false;
+    [Parameter] public Device? Device { get; set; } = null;
     private bool showRemoveDeviceModal = false;
 
-    public void OrderGpu(Device gpu)
+    public void OrderGpu()
     {
+        if (Device == null) return;
+
         // Implement order logic here
-        Console.WriteLine($"Ordering GPU: {gpu.Name}");
+        Console.WriteLine($"Ordering GPU: {Device.Name}");
+        Navigation.NavigateTo($"/device/view/{Device.Id}");
     }
 
-    public void EditGpu(Device gpu)
+    public void EditGpu()
     {
+        if (Device == null) return;
+
         // Implement edit logic here
-        Console.WriteLine($"Editing GPU: {gpu.Name}");
-        Navigation.NavigateTo($"/device/edit/{gpu.Id}");
+        Console.WriteLine($"Editing GPU: {Device.Name}");
+        Navigation.NavigateTo($"/device/edit/{Device.Id}");
     }
 
-    public void RemoveGpu(Device gpu)
+    public void RemoveGpu()
     {
+        if (Device == null) return;
+
         showRemoveDeviceModal = true;
         // Implement remove logic here
-        Console.WriteLine($"Removing GPU: {gpu.Name}");
+        Console.WriteLine($"Removing GPU: {Device.Name}");
     }
 }

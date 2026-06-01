@@ -11,13 +11,13 @@ using Xunit;
 
 namespace GpuShare.Frontend.Tests.Components.Shared;
 
-public class NavBarTests : BunitContext
+public class TopNavTests : BunitContext
 {
     private Mock<IAuthModalService> _authModalServiceMock;
     private Mock<IAuthState> _authStateMock;
     private Mock<IAuthService> _authServiceMock;
 
-    public NavBarTests()
+    public TopNavTests()
     {
         _authModalServiceMock = new Mock<IAuthModalService>();
         _authStateMock = new Mock<IAuthState>();
@@ -57,7 +57,6 @@ public class NavBarTests : BunitContext
     {
         // Arrange
         _authStateMock.Setup(x => x.IsAuthenticated).Returns(false);
-        //_authModalServiceMock.Setup(x => x.IsOpen).Returns(false);
 
         var cut = Render<TopNav>();
 
