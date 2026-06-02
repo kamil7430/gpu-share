@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -32,6 +31,20 @@ const grpcPort = "2139"
 
 var restUrl string = fmt.Sprintf("http://%v:%v", ip, restPort)
 var grpcUrl string = fmt.Sprintf("%v:%v", ip, grpcPort)
+
+func newRequest(t *testing.T, method string, url string, body []byte) *http.Request {
+	req, err := http.NewRequestWithContext(
+		t.Context(),
+		method,
+		restUrl+url,
+		bytes.NewBuffer(body),
+	)
+	require.NoError(t, err)
+	req.Header.Set("Authorization", "test")
+	req.Header.Set("Content-Type", "application/json")
+
+	return req
+}
 
 func registerUser(t *testing.T) {
 	body, _ := json.Marshal(map[string]string{
@@ -80,10 +93,10 @@ func registerDevice(t *testing.T, token string) string {
 	require.Equal(t, http.StatusCreated, resp.StatusCode)
 
 	var result struct {
-		DeviceID       string `json:"deviceId"`
-		OwnerUsername  string `json:"ownerUsername"`
-		State          string `json:"state"`
-		CreatedAt      string `json:"createdAt"`
+		DeviceID      string `json:"deviceId"`
+		OwnerUsername string `json:"ownerUsername"`
+		State         string `json:"state"`
+		CreatedAt     string `json:"createdAt"`
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
@@ -120,8 +133,9 @@ func TestApi(t *testing.T) {
 	log.Println("Checking whether server is up...")
 	retries := 10
 	i := 0
+	req := newRequest(t, http.MethodGet, "/health", nil)
 	for ; i < retries; i += 1 {
-		resp, err := http.Get(restUrl + "/health")
+		resp, err := http.DefaultClient.Do(req)
 		if err == nil && resp.StatusCode == 200 {
 			break
 		}
@@ -139,8 +153,9 @@ func TestApi(t *testing.T) {
 
 	log.Println("Checking whether agent is connected...")
 	i = 0
+	req = newRequest(t, http.MethodGet, "/api/agents/"+agentId+"/status", nil)
 	for ; i < retries; i += 1 {
-		resp, err := http.Get(restUrl + "/api/agents/" + agentId + "/status")
+		resp, err := http.DefaultClient.Do(req)
 		if err == nil && resp.StatusCode == 200 {
 			break
 		}
@@ -157,9 +172,9 @@ func TestApi(t *testing.T) {
 				"vRamMb": 200
 			}
 		}`, agentId)
-		reader := strings.NewReader(payload)
 
-		resp, err := http.Post(restUrl+"/api/jobs", "application/json", reader)
+		req := newRequest(t, http.MethodPost, "/api/jobs", []byte(payload))
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusCreated, resp.StatusCode)
 		defer resp.Body.Close()
