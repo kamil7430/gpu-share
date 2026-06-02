@@ -1,0 +1,16 @@
+type: object
+required:
+  - orderId
+  - status
+  - connectionDetails
+  - totalReservedCostCents
+properties:
+  orderId:
+    type: string
+  status:
+    $ref: "./RentalStatus.yaml"
+  connectionDetails:
+    $ref: "./ConnectionDetails.yaml"
+  totalReservedCostCents:
+    type: integer
+    minimum: 1

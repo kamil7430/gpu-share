@@ -45,25 +45,32 @@ post:
       content:
         application/json:
           schema:
-            type: object
-            required:
-              - orderId
-              - status
-              - connectionDetails
-              - totalReservedCostCents
-            properties:
-              orderId:
-                type: string
-              status:
-                $ref: "../../../schemas/RentalStatus.yaml"
-              connectionDetails:
-                $ref: "../../../schemas/ConnectionDetails.yaml"
-              totalReservedCostCents:
-                type: integer
-                minimum: 1
+            $ref: "../../../schemas/Order.yaml"
     "400":
       description: Invalid request parameters
     "402":
       description: Insufficient amount in user's wallet
+    default:
+      $ref: "../../../responses/default.yaml"
+
+get:
+  summary: Get a list of user's orders
+  operationId: getOrder
+  security:
+    - bearerAuth:
+        - user
+  parameters:
+    - $ref: "../../../parameters/query/limit.yaml"
+  responses:
+    "200":
+      description: Any order found
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../../schemas/Order.yaml"
+    "400":
+      description: Invalid request parameters
     default:
       $ref: "../../../responses/default.yaml"
