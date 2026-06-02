@@ -329,7 +329,7 @@ func testAddDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 	    }`)
 		resp, err := http.Post(baseUrl+"/api/devices", "application/json", payloadReader)
 		require.NoError(t, err)
-		require.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
 	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
