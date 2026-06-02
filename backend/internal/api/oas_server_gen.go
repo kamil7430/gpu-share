@@ -39,6 +39,18 @@ type Handler interface {
 	//
 	// GET /health
 	GetHealth(ctx context.Context) error
+	// GetOrder implements getOrder operation.
+	//
+	// Get a list of user's orders.
+	//
+	// GET /api/orders
+	GetOrder(ctx context.Context, params GetOrderParams) (GetOrderRes, error)
+	// GetOrderById implements getOrderById operation.
+	//
+	// Get a user's order.
+	//
+	// GET /api/orders/{orderId}
+	GetOrderById(ctx context.Context, params GetOrderByIdParams) (GetOrderByIdRes, error)
 	// Login implements login operation.
 	//
 	// Log into an account. Returns a token to use in the Authorization header as a Bearer token for

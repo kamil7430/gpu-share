@@ -59,6 +59,24 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 	return ht.ErrNotImplemented
 }
 
+// GetOrder implements getOrder operation.
+//
+// Get a list of user's orders.
+//
+// GET /api/orders
+func (UnimplementedHandler) GetOrder(ctx context.Context, params GetOrderParams) (r GetOrderRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetOrderById implements getOrderById operation.
+//
+// Get a user's order.
+//
+// GET /api/orders/{orderId}
+func (UnimplementedHandler) GetOrderById(ctx context.Context, params GetOrderByIdParams) (r GetOrderByIdRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // Login implements login operation.
 //
 // Log into an account. Returns a token to use in the Authorization header as a Bearer token for

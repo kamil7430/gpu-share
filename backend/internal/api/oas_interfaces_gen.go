@@ -17,6 +17,14 @@ type GetDevicesRes interface {
 	getDevicesRes()
 }
 
+type GetOrderByIdRes interface {
+	getOrderByIdRes()
+}
+
+type GetOrderRes interface {
+	getOrderRes()
+}
+
 type LoginRes interface {
 	loginRes()
 }
