@@ -18,6 +18,8 @@ get:
         application/json:
           schema:
             $ref: "../../../schemas/Order.yaml"
+    "401":
+      description: Unauthorized to see the order
     "404":
       description: Order not found
     default:

@@ -617,6 +617,9 @@ func decodeGetOrderByIdResponse(resp *http.Response) (res GetOrderByIdRes, _ err
 		default:
 			return res, validate.InvalidContentType(ct)
 		}
+	case 401:
+		// Code 401.
+		return &GetOrderByIdUnauthorized{}, nil
 	case 404:
 		// Code 404.
 		return &GetOrderByIdNotFound{}, nil

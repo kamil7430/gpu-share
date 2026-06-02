@@ -189,6 +189,12 @@ func encodeGetOrderByIdResponse(response GetOrderByIdRes, w http.ResponseWriter,
 
 		return nil
 
+	case *GetOrderByIdUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		return nil
+
 	case *GetOrderByIdNotFound:
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))

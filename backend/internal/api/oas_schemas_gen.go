@@ -511,6 +511,11 @@ type GetOrderByIdNotFound struct{}
 
 func (*GetOrderByIdNotFound) getOrderByIdRes() {}
 
+// GetOrderByIdUnauthorized is response for GetOrderById operation.
+type GetOrderByIdUnauthorized struct{}
+
+func (*GetOrderByIdUnauthorized) getOrderByIdRes() {}
+
 type GetOrderOKApplicationJSON []Order
 
 func (*GetOrderOKApplicationJSON) getOrderRes() {}
