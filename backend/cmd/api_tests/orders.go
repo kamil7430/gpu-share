@@ -238,26 +238,50 @@ func testGetOrders(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	otherGuyToken := tokenObj.Token
 
+	type orderResponseStruct struct {
+		OrderId                string
+		ConnectionDetails      model.ConnectionDetails
+		TotalReservedCostCents int
+	}
+	var orderResponse orderResponseStruct
+
 	orderResp := sendOrderRequest(`{
 		"deviceId": "1",
 		"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
 		"durationHours": 2
 	}`, renterToken)
 	require.Equal(t, http.StatusCreated, orderResp.StatusCode)
+	body, err = io.ReadAll(orderResp.Body)
+	require.NoError(t, err)
+	err = json.Unmarshal(body, &orderResponse)
+	require.NoError(t, err)
+	firstOrderId := orderResponse.OrderId
 	orderResp.Body.Close()
+
 	orderResp = sendOrderRequest(`{
 		"deviceId": "2",
 		"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
 		"durationHours": 2
 	}`, renterToken)
 	require.Equal(t, http.StatusCreated, orderResp.StatusCode)
+	body, err = io.ReadAll(orderResp.Body)
+	require.NoError(t, err)
+	err = json.Unmarshal(body, &orderResponse)
+	require.NoError(t, err)
+	secondOrderId := orderResponse.OrderId
 	orderResp.Body.Close()
+
 	orderResp = sendOrderRequest(`{
 		"deviceId": "3",
 		"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
 		"durationHours": 2
 	}`, renterToken)
 	require.Equal(t, http.StatusCreated, orderResp.StatusCode)
+	body, err = io.ReadAll(orderResp.Body)
+	require.NoError(t, err)
+	err = json.Unmarshal(body, &orderResponse)
+	require.NoError(t, err)
+	thirdOrderId := orderResponse.OrderId
 	orderResp.Body.Close()
 
 	t.Run("get orders -- not logged in", func(t *testing.T) {
@@ -277,22 +301,57 @@ func testGetOrders(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	t.Run("get orders -- some devices on list", func(t *testing.T) {
+		resp := sendRequest("", renterToken)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
 
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var response []orderResponseStruct
+		err = json.Unmarshal(body, &response)
+		require.NoError(t, err)
+
+		require.Equal(t, 3, len(response))
+
+		ids := []string{firstOrderId, secondOrderId, thirdOrderId}
+		for _, elem := range response {
+			ids, err = remove(ids, elem.OrderId)
+			require.NoError(t, err)
+		}
 	})
 
 	t.Run("get order by id -- not logged in", func(t *testing.T) {
-
+		resp, err := http.Get(baseUrl + "/api/orders/" + firstOrderId)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+		resp.Body.Close()
 	})
 
 	t.Run("get order by id -- not user's order", func(t *testing.T) {
-
+		resp := sendRequest(firstOrderId, otherGuyToken)
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+		resp.Body.Close()
 	})
 
 	t.Run("get order by id -- invalid order id", func(t *testing.T) {
-
+		resp := sendRequest("696969", renterToken)
+		require.Equal(t, http.StatusNotFound, resp.StatusCode)
+		resp.Body.Close()
 	})
 
 	t.Run("get order by id -- correct case", func(t *testing.T) {
+		resp := sendRequest(firstOrderId, renterToken)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
 
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var response orderResponseStruct
+		err = json.Unmarshal(body, &response)
+		require.NoError(t, err)
+
+		require.Equal(t, firstOrderId, response.OrderId)
 	})
 }
