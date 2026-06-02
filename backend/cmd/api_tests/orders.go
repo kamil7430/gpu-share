@@ -162,3 +162,137 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.Equal(t, expectedStruct.TotalReservedCostCents, respStruct.TotalReservedCostCents)
 	})
 }
+
+func testGetOrders(t *testing.T, db *gorm.DB, baseUrl string) {
+	testUserPassword, err := auth.HashPassword("TestPassword")
+	require.NoError(t, err)
+
+	truncateTables(db)
+	db.Exec("INSERT INTO users(id, name, password, admin, wallet_balance_cents) VALUES (100, 'TestOwner', ?, 'false', 0);", testUserPassword)
+	db.Exec("INSERT INTO users(id, name, password, admin, wallet_balance_cents) VALUES (101, 'TestRentingUser1', ?, 'false', 10000);", testUserPassword)
+	db.Exec("INSERT INTO users(id, name, password, admin, wallet_balance_cents) VALUES (102, 'TestRentingUser2', ?, 'false', 10);", testUserPassword)
+	db.Exec("INSERT INTO devices(id, name, gpu_model, vram_mb, cuda_cores, price_per_hour_usd_cents, driver_version_major, driver_version_minor, state, user_id) " +
+		"VALUES ('1', 'TestCard1', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE', '100'), " +
+		"('2', 'TestCard2', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE', '100'), " +
+		"('3', 'TestCard3', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE', '100'), " +
+		"('4', 'TestCard4', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE', '100'), " +
+		"('5', 'TestCard5', 'NVIDIA GeForce RTX 3050', '8192', '2560', '1599', '595', '97', 'AVAILABLE', '100');")
+
+	sendOrderRequest := func(payload string, bearerToken string) *http.Response {
+		payloadReader := strings.NewReader(payload)
+		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/orders", payloadReader)
+		require.NoError(t, err)
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+bearerToken)
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		return resp
+	}
+
+	sendRequest := func(orderId string, bearerToken string) *http.Response {
+		address := baseUrl + "/api/orders"
+		if len(orderId) > 0 {
+			address = address + "/" + orderId
+		}
+		req, err := http.NewRequestWithContext(t.Context(), "GET", address, nil)
+		require.NoError(t, err)
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+bearerToken)
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		return resp
+	}
+
+	loginResp, err := http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+		"username": "TestRentingUser1",
+		"password": "TestPassword"
+	}`))
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, loginResp.StatusCode)
+	defer loginResp.Body.Close()
+
+	body, err := io.ReadAll(loginResp.Body)
+	require.NoError(t, err)
+
+	var tokenObj tokenResponse
+	err = json.Unmarshal(body, &tokenObj)
+	require.NoError(t, err)
+
+	renterToken := tokenObj.Token
+
+	loginResp, err = http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
+		"username": "TestRentingUser1",
+		"password": "TestPassword"
+	}`))
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, loginResp.StatusCode)
+	defer loginResp.Body.Close()
+
+	body, err = io.ReadAll(loginResp.Body)
+	require.NoError(t, err)
+
+	err = json.Unmarshal(body, &tokenObj)
+	require.NoError(t, err)
+
+	otherGuyToken := tokenObj.Token
+
+	orderResp := sendOrderRequest(`{
+		"deviceId": "1",
+		"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
+		"durationHours": 2
+	}`, renterToken)
+	require.Equal(t, http.StatusCreated, orderResp.StatusCode)
+	orderResp.Body.Close()
+	orderResp = sendOrderRequest(`{
+		"deviceId": "2",
+		"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
+		"durationHours": 2
+	}`, renterToken)
+	require.Equal(t, http.StatusCreated, orderResp.StatusCode)
+	orderResp.Body.Close()
+	orderResp = sendOrderRequest(`{
+		"deviceId": "3",
+		"dockerImage": "pytorch/pytorch:2.0-cuda11.7",
+		"durationHours": 2
+	}`, renterToken)
+	require.Equal(t, http.StatusCreated, orderResp.StatusCode)
+	orderResp.Body.Close()
+
+	t.Run("get orders -- not logged in", func(t *testing.T) {
+		resp, err := http.Get(baseUrl + "/api/orders")
+		require.NoError(t, err)
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+		resp.Body.Close()
+	})
+
+	t.Run("get orders -- empty order list", func(t *testing.T) {
+		resp := sendRequest("", otherGuyToken)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+		require.JSONEq(t, "[]", string(body))
+	})
+
+	t.Run("get orders -- some devices on list", func(t *testing.T) {
+
+	})
+
+	t.Run("get order by id -- not logged in", func(t *testing.T) {
+
+	})
+
+	t.Run("get order by id -- not user's order", func(t *testing.T) {
+
+	})
+
+	t.Run("get order by id -- invalid order id", func(t *testing.T) {
+
+	})
+
+	t.Run("get order by id -- correct case", func(t *testing.T) {
+
+	})
+}
