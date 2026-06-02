@@ -16,5 +16,5 @@ func LoadToken() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.Trim(string(data), "\r\n"), nil
+	return strings.TrimRight(string(data), "\r\n"), nil
 }
