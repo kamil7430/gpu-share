@@ -108,7 +108,7 @@ func (s *OrderService) OrderDevice(ctx context.Context, params *api.OrderDeviceR
 		addresses = &model.ConnectionDetails{}
 	}
 
-	return &api.OrderDeviceCreated{
+	return &api.Order{
 		OrderId: strconv.Itoa(int(order.ID)),
 		Status:  order.RentalStatus,
 		ConnectionDetails: api.ConnectionDetails{
@@ -118,4 +118,12 @@ func (s *OrderService) OrderDevice(ctx context.Context, params *api.OrderDeviceR
 		},
 		TotalReservedCostCents: order.RentalCostCents,
 	}, nil
+}
+
+func (s *OrderService) GetOrder(ctx context.Context, params api.GetOrderParams) (api.GetOrderRes, error) {
+	panic("unimplemented")
+}
+
+func (s *OrderService) GetOrderById(ctx context.Context, params api.GetOrderByIdParams) (api.GetOrderByIdRes, error) {
+	panic("unimplemented")
 }
