@@ -7,6 +7,12 @@ Okres: 06-01 -- 06-07
 
 ## Zakres sprintu
 
+### User story 0
+Dodanie brakującej funkcjonalności zamówień.
+
+- [ ] dodać endpoint GET /orders
+- [ ] dodać endpoint GET /orders/{id}
+
 ### User story 1
 Integracja frontendu z backendem.
 Jako użytkownik aplikacji webowej chcę móc:
