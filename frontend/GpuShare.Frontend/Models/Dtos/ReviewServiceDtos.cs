@@ -8,4 +8,10 @@
 
         public string Comment { get; set; } = "";
     }
+
+    public class UserRatingDto
+    {
+        public decimal AverageRating { get; set; } = 0.0m;
+        public int RatingCount { get; set; } = 0;
+    }
 }
