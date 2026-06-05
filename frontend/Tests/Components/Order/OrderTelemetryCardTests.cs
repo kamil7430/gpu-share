@@ -13,8 +13,8 @@ namespace GpuShare.Frontend.Tests.Components.Order
 {
     public class OrderTelemetryCardTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IOrderService> _orderServiceMock = new();
-        private Mock<IDeviceService> _deviceServiceMock = new();
+        private readonly Mock<IOrderService> _orderServiceMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
 
         public OrderTelemetryCardTests()
         {
@@ -39,7 +39,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
             var gpu = new Models.Device
             {
                 DeviceId = 10,
-                PricePerHour = 5
+                PricePerHourUsdCents = 500
             };
 
             _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(order);

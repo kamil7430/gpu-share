@@ -8,14 +8,14 @@ public class Device
     public string OwnerUsername { get; set; } = "";
     public string Name { get; set; } = "";
     public string GpuModel { get; set; } = "";
-    public DeviceState State { get; set; } = DeviceState.Available;
+    public DeviceState State { get; set; } = DeviceState.AVAILABLE;
     public int VramMb { get; set; }
     public int CudaCores { get; set; }
     public string DriverVersion { get; set; } = "";
     public List<string> Frameworks { get; set; } = [];
-    public decimal PricePerHour { get; set; }
+    public int PricePerHourUsdCents { get; set; }
 
-    public bool IsAvailable => State == DeviceState.Available;
+    public bool IsAvailable => State == DeviceState.AVAILABLE;
 }
 
 public enum DevicePageMode
@@ -28,14 +28,14 @@ public enum DevicePageMode
 public enum DeviceState
 {
     [Display(Name = "Available")]
-    Available,
+    AVAILABLE,
 
     [Display(Name = "Unavailable")]
-    Unavailable,
+    UNAVAILABLE,
 
     [Display(Name = "Rented")]
-    Rented,
+    RENTED,
 
     [Display(Name = "Reported")]
-    Reported
+    REPORTED
 }

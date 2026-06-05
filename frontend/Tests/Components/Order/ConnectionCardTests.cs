@@ -41,7 +41,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
             var gpu = new Models.Device
             {
                 DeviceId = 10,
-                PricePerHour = 5
+                PricePerHourUsdCents = 500
             };
 
             _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(order);

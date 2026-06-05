@@ -8,7 +8,7 @@ public class DeviceStatus
 
     public DeviceState State { get; set; }
 
-    public double GpuUtilizationPercent { get; set; }
+    public double UtilizationPercent { get; set; }
 
     public double MemoryUsedMb { get; set; }
 

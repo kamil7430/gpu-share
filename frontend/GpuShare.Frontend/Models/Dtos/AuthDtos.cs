@@ -6,3 +6,12 @@ public class AuthRequest
 
     public string Password { get; set; } = string.Empty;
 }
+
+public class AuthResponse
+{
+    public User User { get; set; } = new User();
+
+    public string Token { get; set; } = string.Empty;
+
+    public DateTime ExpiresAt { get; set; }
+}

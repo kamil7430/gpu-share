@@ -1,12 +1,26 @@
 namespace GpuShare.Frontend.Infrastructure.Http;
+using GpuShare.Frontend.Models;
+using Microsoft.Extensions.Options;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using GpuShare.Frontend.Models;
-using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-public class ApiClient(HttpClient http) : IApiClient
+public class ApiClient : IApiClient
 {
-    private readonly HttpClient _http = http;
+    private readonly HttpClient _http;
+    private readonly JsonSerializerOptions _options = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
+
+    public ApiClient(HttpClient http)
+    {
+        _http = http;
+        _options.Converters.Add(new JsonStringEnumConverter());
+    }
 
     public async Task<T?> GetAsync<T>(string url)
     {
@@ -16,7 +30,7 @@ public class ApiClient(HttpClient http) : IApiClient
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            return await response.Content.ReadFromJsonAsync<T>(_options);
         });
     }
 
@@ -24,11 +38,11 @@ public class ApiClient(HttpClient http) : IApiClient
     {
         return await ExecuteRequest(async () =>
         {   
-            var response = await _http.PostAsJsonAsync(url, data);
+            var response = await _http.PostAsJsonAsync(url, data, _options);
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await response.Content.ReadFromJsonAsync<TResponse>(_options);
         });
     }
 
@@ -36,7 +50,7 @@ public class ApiClient(HttpClient http) : IApiClient
     {
         await ExecuteRequest(async () =>
         {   
-            var response = await _http.PostAsJsonAsync(url, data);
+            var response = await _http.PostAsJsonAsync(url, data, _options);
 
             await EnsureSuccess(response);
         });
@@ -50,7 +64,7 @@ public class ApiClient(HttpClient http) : IApiClient
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await response.Content.ReadFromJsonAsync<TResponse>(_options);
         });
     }
 
@@ -58,11 +72,23 @@ public class ApiClient(HttpClient http) : IApiClient
     {
         await ExecuteRequest(async () =>
         {   
-            var response = await _http.PatchAsJsonAsync(url, data);
+            var response = await _http.PatchAsJsonAsync(url, data, _options);
 
             await EnsureSuccess(response);
         });
     }
+
+    //public async Task<TResponse?> PatchAsync<TRequest, TResponse>(string url, TRequest data)
+    //{
+    //    return await ExecuteRequest(async () =>
+    //    {
+    //        var response = await _http.PatchAsJsonAsync(url, data, _options);
+
+    //        await EnsureSuccess(response);
+
+    //        await response.Content.ReadFromJsonAsync<TResponse>();
+    //    });
+    //}
 
     public async Task DeleteAsync(string url)
     {

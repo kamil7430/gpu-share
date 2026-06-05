@@ -18,12 +18,12 @@ namespace GpuShare.Frontend.Tests.Components.Device
             DeviceId = 1,
             Name = "RTX 4090",
             GpuModel = "NVIDIA",
-            PricePerHour = 10,
+            PricePerHourUsdCents = 1000,
             VramMb = 24000,
             CudaCores = 16000,
             DriverVersion = "535",
             Frameworks = [ "CUDA" ],
-            IsAvailable = true
+            State = Models.DeviceState.AVAILABLE
         };
 
         public DeviceOrderFormTests()

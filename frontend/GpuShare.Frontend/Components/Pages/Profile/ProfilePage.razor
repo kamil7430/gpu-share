@@ -75,12 +75,12 @@ Project decisions:
         {
             DeviceId = i,
             Name = $"GPU {i}",
-            State = i % 2 == 0 ? DeviceState.Available : DeviceState.Unavailable,
+            State = i % 2 == 0 ? DeviceState.AVAILABLE : DeviceState.UNAVAILABLE,
             VramMb = 24567,
             CudaCores = 16384,
             DriverVersion = "535.104",
             Frameworks = ["PyTorch", "Tensorflow"],
-            PricePerHour = 5
+            PricePerHourUsdCents = 500
         }).ToList();
 
         gpu = devices[0];

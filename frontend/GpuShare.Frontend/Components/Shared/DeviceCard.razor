@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IAuthState AuthState
 @inject ISnackbar Snackbar
+@inject IFormatters Formatters
 
 @if (Device == null)
 {
@@ -27,7 +28,7 @@ else
                 }
 
             <div class="price">
-                    Price per hour: @Device.PricePerHour$
+                    Price per hour: @Formatters.FormatUsd(Device.PricePerHourUsdCents)
             </div>
         </div>
 

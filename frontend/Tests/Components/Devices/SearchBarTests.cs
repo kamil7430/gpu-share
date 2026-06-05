@@ -16,8 +16,8 @@ namespace GpuShare.Frontend.Tests.Components.Devices
 {
     public class SearchBarTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IDeviceService> _deviceServiceMock;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IDeviceService> _deviceServiceMock;
 
         public SearchBarTests()
         {
@@ -42,7 +42,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                     DeviceId = 123,
                     Name = "Workstation-Alpha",
                     OwnerUsername = "julie",
-                    State = DeviceState.Available
+                    State = DeviceState.AVAILABLE
                 });
 
             _deviceServiceMock.Setup(s => s.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
@@ -54,14 +54,14 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                         DeviceId = 123,
                         Name = "Workstation-Alpha",
                         OwnerUsername = "julie",
-                        State = DeviceState.Available
+                        State = DeviceState.AVAILABLE
                     },
                     new Models.Device
                     {
                         DeviceId = 456,
                         Name = "RenderNode-01",
                         OwnerUsername = "mark",
-                        State = DeviceState.Unavailable
+                        State = DeviceState.UNAVAILABLE
                     }],
                     TotalCount = 2,
                     Page = 1,

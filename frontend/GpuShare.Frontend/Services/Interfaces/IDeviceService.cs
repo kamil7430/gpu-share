@@ -32,11 +32,11 @@ public interface IDeviceService
     /// PATCH /api/devices/{id}
     /// Updates device configuration and pricing.
     /// </summary>
-    Task<Device> UpdateDeviceAsync(int deviceId, UpdateDeviceRequest cmd);
+    Task<Device> UpdateDeviceAsync(int deviceId, Device oldDevice, UpdateDeviceRequest cmd);
 
     /// <summary>
     /// DELETE /api/devices/{id}
     /// Removes device from catalog.
     /// </summary>
-    Task RemoveDeviceAsync(int deviceId);
+    Task DeleteDeviceAsync(int deviceId);
 }

@@ -95,7 +95,7 @@ else
 
         try
         {
-            await DeviceService.RemoveDeviceAsync(Device.DeviceId);
+            await DeviceService.DeleteDeviceAsync(Device.DeviceId);
             await OnClose.InvokeAsync(ModalResult<string>.Ok($"Device #{Device.DeviceId} removed successfully."));
         }
         catch (Models.ApiException e)

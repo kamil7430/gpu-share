@@ -1,5 +1,6 @@
 @inject IDeviceService DeviceService
 @inject IOrderService OrderService
+@inject IFormatters Formatters
 
 <div class="stats-grid">
             <!-- Countdown -->
@@ -12,8 +13,8 @@
             <!-- Cost -->
             <div class="spec-box">
                 <div class="label">Live Cost</div>
-                <div class="value">$@_currentCost.ToString("0.00")</div>
-                <div class="hint">$@_gpu.PricePerHour / hour</div>
+                <div class="value">@_currentCost.ToString("0.00")</div>
+                <div class="hint">@Formatters.FormatUsd(_gpu.PricePerHourUsdCents) / hour</div>
             </div>
 
             <!-- Heartbeat -->
@@ -83,7 +84,7 @@
 
         var elapsedHours = (decimal)(DateTime.UtcNow - _order.StartDate!.Value).TotalHours;
 
-        _currentCost = elapsedHours * _gpu.PricePerHour;
+        _currentCost = elapsedHours * _gpu.PricePerHourUsdCents / 100.0m;
     }
 
     private string DotBgClass()

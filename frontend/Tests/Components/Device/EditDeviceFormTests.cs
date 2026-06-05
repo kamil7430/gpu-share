@@ -13,7 +13,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class EditDeviceFormTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
+        private readonly Mock<IAuthState> _authStateMock;
 
         public EditDeviceFormTests()
         {
@@ -35,19 +35,19 @@ namespace GpuShare.Frontend.Tests.Components.Device
             await base.DisposeAsync();
         }
 
-        private Models.Device CreateGpu(bool isAvailable = true)
+        private static Models.Device CreateGpu(bool isAvailable = true)
         {
             return new Models.Device
             {
                 DeviceId = 123,
                 Name = "Workstation-Alpha",
                 OwnerUsername = "julie",
-                State = isAvailable ? DeviceState.Available : DeviceState.Unavailable,
+                State = isAvailable ? DeviceState.AVAILABLE : DeviceState.UNAVAILABLE,
                 GpuModel = "RTX 4090",
                 VramMb = 24576,
                 CudaCores = 16384,
                 DriverVersion = "535.xx",
-                PricePerHour = 4.5m,
+                PricePerHourUsdCents = 450,
                 Frameworks = ["CUDA", "PyTorch"]
             };
         }
@@ -110,7 +110,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Disabled_Device_Should_Show_Hidden_Text()
         {
             var gpu = CreateGpu();
-            gpu.State = DeviceState.Unavailable;
+            gpu.State = DeviceState.UNAVAILABLE;
 
             var cut = Render<EditDeviceForm>(p => p
                 .Add(x => x.Device, gpu));

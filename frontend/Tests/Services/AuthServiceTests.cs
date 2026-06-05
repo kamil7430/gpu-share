@@ -13,9 +13,9 @@ namespace GpuShare.Frontend.Tests.Services;
 
 public class AuthServiceTests
 {
-    private static readonly MockHttpMessageHandler _mockHttp = new();
-    private static readonly HttpClient _httpClient = _mockHttp.ToHttpClient();
-    private static readonly IApiClient _apiClient = new ApiClient(_httpClient);
+    private readonly MockHttpMessageHandler _mockHttp = new();
+    private readonly HttpClient _httpClient;
+    private readonly IApiClient _apiClient;
     private static readonly TestAuthState _authState = new();
     private readonly ILogger<AuthService> _logger;
     private readonly AuthService _sut;
@@ -54,21 +54,11 @@ public class AuthServiceTests
 
     public AuthServiceTests()
     {
+        _httpClient = _mockHttp.ToHttpClient();
         _httpClient.BaseAddress = new Uri("https://localhost:5001");
+        _apiClient = new ApiClient(_httpClient);
         _logger = NullLogger<AuthService>.Instance;
         _sut = new AuthService(_apiClient, _authState, new MockJwtHelper(), _logger);
-
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/login")
-            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
-
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/register")
-            .Respond(HttpStatusCode.Created);
-
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/refresh")
-            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
-
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
-            .Respond(HttpStatusCode.OK);
     }
 
     // =====================================================
@@ -78,6 +68,9 @@ public class AuthServiceTests
     [Fact]
     public async Task LoginAsync_Should_Send_Post_To_Correct_Endpoint()
     {
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/login")
+            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
+
         var act = async () => await _sut.LoginAsync(_loginRequest);
 
         _mockHttp.VerifyNoOutstandingExpectation();
@@ -89,7 +82,9 @@ public class AuthServiceTests
     public async Task LoginAsync_Should_Return_AuthResponse_When_Credentials_Are_Valid()
     {
         // Arrange
-        
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/login")
+            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
+
         // Act
         await _sut.LoginAsync(_loginRequest);
 
@@ -127,6 +122,9 @@ public class AuthServiceTests
     [Fact]
     public async Task RegisterAsync_Should_Send_Post_To_Correct_Endpoint()
     {
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/register")
+            .Respond(HttpStatusCode.Created);
+
         var act = async () => await _sut.RegisterAsync(_registerRequest);
 
         _mockHttp.VerifyNoOutstandingExpectation();
@@ -157,6 +155,8 @@ public class AuthServiceTests
     public async Task RefreshTokenAsync_Should_Send_Post_To_Correct_Endpoint()
     {
         // Arrange
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/refresh")
+            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
         _authState.SetAuth(_expectedLogin);
 
         // Act
@@ -172,6 +172,8 @@ public class AuthServiceTests
     public async Task RefreshTokenAsync_Should_Return_New_Tokens()
     {
         // Arrange
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/refresh")
+            .Respond("application/json", JsonSerializer.Serialize("new-jwt"));
         _authState.SetAuth(_expectedLogin);
 
         // Act
@@ -260,6 +262,9 @@ public class AuthServiceTests
     [Fact]
     public async Task ChangePasswordAsync_Should_Send_Post_To_Correct_Endpoint()
     {
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
+            .Respond(HttpStatusCode.OK);
+
         var act = async () => await _sut.ChangePasswordAsync(_changePasswordRequest);
 
         _mockHttp.VerifyNoOutstandingExpectation();
@@ -313,7 +318,8 @@ public class AuthServiceTests
     [Fact]
     public async Task ChangePasswordAsync_Should_Throw_When_New_Password_Is_Invalid()
     {
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword").Respond(HttpStatusCode.BadRequest);
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
+            .Respond(HttpStatusCode.BadRequest);
 
         var request = new ChangePasswordRequest
         {

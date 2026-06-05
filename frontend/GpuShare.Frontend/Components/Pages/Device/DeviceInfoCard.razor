@@ -1,5 +1,6 @@
 @using GpuShare.Frontend.Models;
 @inject IAuthState AuthState
+@inject IFormatters Formatters
 
 @if (Device != null)
 {
@@ -43,7 +44,7 @@
             </div>
             <div class="spec-box">
                 <span class="label">Price per hour</span>
-                <span class="value">@Device.PricePerHour $</span>
+                <span class="value">@Formatters.FormatUsd(Device.PricePerHourUsdCents) $</span>
             </div>
             <div class="spec-box spec-box-long">
                 <span class="label">Supported Frameworks</span>

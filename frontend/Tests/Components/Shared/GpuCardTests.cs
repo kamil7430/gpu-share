@@ -15,20 +15,20 @@ namespace GpuShare.Frontend.Tests.Components.Shared
 {
     public class GpuCardTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock = new();
+        private readonly Mock<IAuthState> _authStateMock = new();
 
-        private Models.Device gpu = new()
+        private readonly Models.Device gpu = new()
         {
             DeviceId = 1,
             Name = "RTX 4090",
             GpuModel = "NVIDIA",
             OwnerUsername = "john",
-            PricePerHour = 10,
+            PricePerHourUsdCents = 1000,
             VramMb = 24000,
             CudaCores = 16000,
             DriverVersion = "535",
-            Frameworks = new() { "CUDA" },
-            IsAvailable = true
+            Frameworks = [ "CUDA" ],
+            State = DeviceState.AVAILABLE
         };
 
         public GpuCardTests()
@@ -87,7 +87,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         {
             var nav = Services.GetRequiredService<NavigationManager>();
 
-            var gpu = new Models.Device() { Id = 5, Name = "Test GPU", OwnerUsername = "john" };
+            var gpu = new Models.Device() { DeviceId = 5, Name = "Test GPU", OwnerUsername = "john" };
 
             var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
@@ -99,7 +99,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         [Fact]
         public void Remove_Button_Should_Open_Modal()
         {
-            var gpu = new Models.Device { Id = 1, Name = "RTX", OwnerUsername = "john" };
+            var gpu = new Models.Device { DeviceId = 1, Name = "RTX", OwnerUsername = "john" };
 
             var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
@@ -113,7 +113,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         public void Order_Button_Should_Be_Disabled_When_Gpu_Unavailable() 
         {
             _authStateMock.Setup(x => x.IsAuthenticated).Returns(false);
-            var gpu = new Models.Device { Id = 1, Name = "RTX", IsAvailable = false, };
+            var gpu = new Models.Device { DeviceId = 1, Name = "RTX", State = DeviceState.UNAVAILABLE, };
 
             var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
@@ -125,7 +125,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         [Fact]
         public void Should_Render_All_Frameworks() 
         {
-            var gpu = new Models.Device { Id = 1, Name = "RTX", Frameworks = ["CUDA", "TensorFlow", "PyTorch"], };
+            var gpu = new Models.Device { DeviceId = 1, Name = "RTX", Frameworks = ["CUDA", "TensorFlow", "PyTorch"], };
 
             var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
@@ -137,7 +137,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         [Fact]
         public void Should_Show_Available_Badge_When_Gpu_Is_Available() 
         {
-            var gpu = new Models.Device { Id = 1, Name = "RTX", IsAvailable = true, };
+            var gpu = new Models.Device { DeviceId = 1, Name = "RTX", State = DeviceState.AVAILABLE, };
 
             var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
 
@@ -151,7 +151,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
             // Arrange
             var gpu = new Models.Device
             {
-                Id = 42,
+                DeviceId = 42,
                 Name = "RTX 4090"
             };
 
@@ -163,7 +163,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
             var navLink = cut.Find(".device-name");
 
             // Assert
-            navLink.GetAttribute("href").Should().Be($"/device/view/{gpu.Id}");
+            navLink.GetAttribute("href").Should().Be($"/device/view/{gpu.DeviceId}");
         }
     }
 }

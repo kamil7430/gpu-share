@@ -15,12 +15,11 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
 {
     public class DisputeFormTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IFormatters> _formattersMock = new();
-        private Mock<IOrderService> _orderServiceMock = new();
-        private Mock<IDeviceService> _deviceServiceMock = new();
-        private DateTime? _startDate = DateTime.Now.AddHours(-1);
-        private DateTime? _endDate = DateTime.Now.AddHours(-2);
-
+        private readonly Mock<IFormatters> _formattersMock = new();
+        private readonly Mock<IOrderService> _orderServiceMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
+        private readonly DateTime? _startDate = DateTime.Now.AddHours(-1);
+        private readonly DateTime? _endDate = DateTime.Now.AddHours(-2);
         public DisputeFormTests()
         {
             Services.AddAuthorizationCore();
@@ -159,7 +158,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
                 Name = "evidence.png"
             };
 
-            await cut.InvokeAsync(() => cut.Instance.HandleFilesChanged(new[] { file }));
+            await cut.InvokeAsync(() => cut.Instance.HandleFilesChanged([ file ]));
 
             cut.Render();
 
@@ -177,7 +176,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
                 Name = "evidence.png"
             };
 
-            await cut.InvokeAsync(() => cut.Instance.HandleFilesChanged(new[] { file }));
+            await cut.InvokeAsync(() => cut.Instance.HandleFilesChanged([ file ]));
 
             cut.Render();
 

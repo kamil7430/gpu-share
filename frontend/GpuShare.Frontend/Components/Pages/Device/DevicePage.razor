@@ -112,13 +112,13 @@
             VramMb = savedGpu.VramMb != _device.VramMb ? savedGpu.VramMb : null,
             CudaCores = savedGpu.CudaCores != _device.CudaCores ? savedGpu.CudaCores : null,
             DriverVersion = savedGpu.DriverVersion != _device.DriverVersion ? savedGpu.DriverVersion : null,
-            PricePerHour = savedGpu.PricePerHour != _device.PricePerHour ? savedGpu.PricePerHour : null,
+            PricePerHourUsdCents = savedGpu.PricePerHourUsdCents != _device.PricePerHourUsdCents ? savedGpu.PricePerHourUsdCents : null,
             Frameworks = savedGpu.Frameworks != _device.Frameworks ? savedGpu.Frameworks : null
         };
 
         try
         {
-            var device = await DeviceService.UpdateDeviceAsync(DeviceId, request);
+            var device = await DeviceService.UpdateDeviceAsync(DeviceId, _device, request);
             _device = device;
         }
         catch (Exception)

@@ -55,7 +55,7 @@
 
                 <div class="form-group" style="flex-direction: row; align-items: center; height: fit-content;">
                     <label>Price per hour</label>
-                    <InputNumber Min="0" style="width: 100px" @bind-Value="Device.PricePerHour" />
+                    <InputNumber Min="0" style="width: 100px" @bind-Value="PricePerHourUsd" />
                     <label>$</label>
                 </div>
             </div>
@@ -65,14 +65,14 @@
                 <div class="flex-row">
                     <label>Device availability</label>
                     <MudSelect Style="font-size: 0.875rem" T="DeviceState" @bind-Value="Device.State" Dense="true"> 
-                        <MudSelectItem Value="DeviceState.Available">Available</MudSelectItem>
-                        <MudSelectItem Value="DeviceState.Unavailable">Unavailable</MudSelectItem>
+                        <MudSelectItem Value="DeviceState.AVAILABLE">Available</MudSelectItem>
+                        <MudSelectItem Value="DeviceState.UNAVAILABLE">Unavailable</MudSelectItem>
                     </MudSelect>
                     
                 </div>
 
                 <div class="hint mt-2">
-                    @(Device.State == DeviceState.Available ? "Users can reserve and run workloads on this GPU." : "Device is hidden from scheduling and reservations.")
+                    @(Device.State == DeviceState.AVAILABLE ? "Users can reserve and run workloads on this GPU." : "Device is hidden from scheduling and reservations.")
                 </div>
 
             </div>
@@ -129,6 +129,18 @@
     [Parameter] public Device? Device { get; set; } = null;
     [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.Edit;
     [Parameter] public EventCallback<Device> OnSave { get; set; }
+
+    private decimal PricePerHourUsd
+    {
+        get => Device != null ? Device.PricePerHourUsdCents / 100m : 0;
+        set
+        {
+            if (Device != null)
+            {
+                Device.PricePerHourUsdCents = (int)(value * 100);
+            }
+        }
+    }
 
     private List<string> SupportedFrameworks = new()
     {

@@ -28,5 +28,7 @@ public interface IApiClient
 
     Task PatchAsync<TRequest>(string url, TRequest data);
 
+    //Task<TResponse?> PatchAsync<TRequest, TResponse>(string url, TRequest data);
+
     Task DeleteAsync(string url);
 }

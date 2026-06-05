@@ -3,7 +3,7 @@ using GpuShare.Frontend.Models;
 namespace GpuShare.Frontend.Services.Interfaces;
 public interface IFormatters
 {
-    string FormatUsd(decimal amount);
+    string FormatUsd(int amountInCents);
 
     string FormatDuration(int totalSeconds);
 

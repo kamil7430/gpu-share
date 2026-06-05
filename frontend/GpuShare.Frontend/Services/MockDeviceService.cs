@@ -21,7 +21,7 @@ namespace GpuShare.Frontend.Services
             throw new NotImplementedException();
         }
 
-        public Task RemoveDeviceAsync(int deviceId)
+        public Task DeleteDeviceAsync(int deviceId)
         {
             throw new NotImplementedException();
         }
@@ -36,7 +36,7 @@ namespace GpuShare.Frontend.Services
             throw new NotImplementedException();
         }
 
-        public Task<Device> UpdateDeviceAsync(int deviceId, UpdateDeviceRequest cmd)
+        public Task<Device> UpdateDeviceAsync(int deviceId, Device oldDevice, UpdateDeviceRequest cmd)
         {
             throw new NotImplementedException();
         }

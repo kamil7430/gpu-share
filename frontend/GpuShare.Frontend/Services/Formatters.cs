@@ -34,9 +34,9 @@ namespace GpuShare.Frontend.Services
             };
         }
 
-        public string FormatUsd(decimal amount)
+        public string FormatUsd(int amountInCents)
         {
-            throw new NotImplementedException();
+            return $"${amountInCents / 100.0:0.00}";
         }
 
         public string FormatVram(int mb)

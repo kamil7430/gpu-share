@@ -1,6 +1,7 @@
 @using System.ComponentModel.DataAnnotations
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Forms;
+@inject IFormatters Formatters
 
 @* 
 For GPU workloads, uploading files is usually better than typing Docker image names because users can provide:
@@ -94,7 +95,7 @@ which is what most cloud GPU platforms end up doing.
 
                 <div class="cost-row">
                     <span>GPU Price</span>
-                    <span>$@Device.PricePerHour.ToString("0.00") / hour</span>
+                    <span>$@Formatters.FormatUsd(Device.PricePerHourUsdCents) / hour</span>
                 </div>
 
                 <div class="cost-row">
@@ -139,7 +140,7 @@ which is what most cloud GPU platforms end up doing.
     };
 
     private decimal EstimatedCost =>
-        Device!.PricePerHour * orderModel.DurationHours;
+        Device!.PricePerHourUsdCents / 100.0m * orderModel.DurationHours;
 
     public class OrderModel
     {

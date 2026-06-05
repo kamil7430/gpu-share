@@ -48,7 +48,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     DeviceId = 123,
                     Name = "Workstation-Alpha",
                     OwnerUsername = "julie",
-                    State = DeviceState.Available
+                    State = DeviceState.AVAILABLE
                 });
         }
 
