@@ -48,6 +48,18 @@ Ryzyka:
 
 Story points: 5
 
+## User story 3
+
+Wyszukiwanie GPU językiem naturalnym.
+
+Zadania:
+- [ ] implementacja seedowania bazy danych kartami z pliku csv
+- [ ] setup dockera z pythonowym serwerem REST
+- [ ] definicje OpenAPI
+- [ ] połączenie z frontendem
+
+Story points: 8
+
 ## Kryteria realizacji
 
 - Kod znajduje się na `main`
