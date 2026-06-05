@@ -17,8 +17,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class DevicePageTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IDeviceService> _deviceServiceMock;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IDeviceService> _deviceServiceMock;
 
         public DevicePageTests()
         {
@@ -45,16 +45,16 @@ namespace GpuShare.Frontend.Tests.Components.Device
             _deviceServiceMock.Setup(s => s.GetDeviceAsync(It.IsAny<int>()))
                 .ReturnsAsync(new Models.Device
                 {
-                    Id = 123,
+                    DeviceId = 123,
                     Name = "Workstation-Alpha",
                     OwnerUsername = "julie",
-                    IsAvailable = true
+                    State = DeviceState.Available
                 });
         }
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -73,7 +73,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             // Act
             // var popoverProvider = Render<MudPopoverProvider>()
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "view").Add(x => x.Id, 1));
+            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "view").Add(x => x.DeviceId, 1));
 
             // Assert
             cut.Markup.Should().Contain("DEVICE_INFO");
@@ -93,7 +93,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             auth.SetNotAuthorized();
 
             // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "view").Add(x => x.Id, 1));
+            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "view").Add(x => x.DeviceId, 1));
 
             // Assert
             cut.Markup.Should().Contain("DEVICE_INFO");
@@ -119,7 +119,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             auth.SetAuthorized("john");
 
             // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "edit").Add(x => x.Id, 1));
+            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "edit").Add(x => x.DeviceId, 1));
 
             // Assert
             cut.Markup.Should().Contain("DEVICE_INFO");
@@ -136,7 +136,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             auth.SetNotAuthorized();
 
             // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "edit").Add(x => x.Id, 1));
+            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "edit").Add(x => x.DeviceId, 1));
 
             // Assert
             cut.Markup.Should().Contain("DEVICE_INFO");
@@ -202,7 +202,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             auth.SetAuthorized("john");
 
             // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "view").Add(x => x.Id, 123));
+            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "view").Add(x => x.DeviceId, 123));
 
             // Assert
             cut.Markup.Should().Contain("DEVICE_INFO");
@@ -235,7 +235,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var info = cut.FindComponent<DeviceInfoCard>();
 
             // Assert
-            info.Instance.gpu.Name.Should().Be("Workstation-Alpha");
+            info.Instance.Device!.Name.Should().Be("Workstation-Alpha");
         }
 
         [Fact]
@@ -265,7 +265,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var info = cut.FindComponent<DeviceInfoCard>();
 
             // Assert
-            info.Instance.gpu.Name.Should().Be("Workstation-Alpha");
+            info.Instance.Device!.Name.Should().Be("Workstation-Alpha");
         }
 
         [Fact]

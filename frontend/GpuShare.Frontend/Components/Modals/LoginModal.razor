@@ -4,7 +4,7 @@
 @using GpuShare.Frontend.Models
 @inject IAuthService AuthService
 
-<BaseModal TResult=string IsVisible="IsVisible" Title="@(_currentMode == AuthMode.Login ? "Login" : "Register")" OnClose="CloseModal" SizeClass="small">
+<BaseModal TResult="string" IsVisible="@IsVisible" Title="@(_currentMode == AuthMode.Login ? "Login" : "Register")" OnClose="@CloseModal" SizeClass="small">
     <ChildContent>
     @if (_currentMode == AuthMode.Login)
     {
@@ -108,10 +108,10 @@
 
     private async Task HandleRegister()
     {
-        var request = new RegisterRequest
+        var request = new AuthRequest
         {
-            Username = _loginModel.Username,
-            Password = _loginModel.Password
+            Username = _registerModel.Username,
+            Password = _registerModel.Password
         };
 
         Console.WriteLine($"Registering {_registerModel.Username}");
@@ -125,5 +125,38 @@
             Console.WriteLine($"Registration failed: {ex.Message}");
             _errorMessage = "Registration failed. Please check your input and try again.";
         }
+    }
+
+    private class LoginModel
+    {
+        [Required]
+        public string Username { get; set; } = "";
+
+        [Required]
+        public string Password { get; set; } = "";
+    }
+
+    private class RegisterModel
+    {
+        //[Required]
+        //[EmailAddress(ErrorMessage = "Invalid email format")]
+        //public string Email { get; set; } = "";
+
+        [Required]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        [MaxLength(20, ErrorMessage = "Username too long")]
+        public string Username { get; set; } = "";
+
+        [Required]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+        [PasswordComplexity(ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one digit")]
+        public string Password { get; set; } = "";
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = "";
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the Terms and Conditions.")]
+        public bool AcceptTerms { get; set; }
     }
 }

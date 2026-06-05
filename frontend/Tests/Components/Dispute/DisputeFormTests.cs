@@ -36,9 +36,9 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
 
             _deviceServiceMock.Setup(x => x.GetDeviceAsync(67)).ReturnsAsync(new Models.Device()
             {
-                Id = 67,
+                DeviceId = 67,
                 Name = "My GPU",
-                Model = "RTX 4090",
+                GpuModel = "RTX 4090",
                 OwnerUsername = "john",
             });
 
@@ -56,7 +56,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }

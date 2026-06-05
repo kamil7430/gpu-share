@@ -73,9 +73,9 @@ Project decisions:
         // mock data
         devices = Enumerable.Range(1, 10).Select(i => new Device
         {
-            Id = i,
+            DeviceId = i,
             Name = $"GPU {i}",
-            IsAvailable = i % 2 == 0,
+            State = i % 2 == 0 ? DeviceState.Available : DeviceState.Unavailable,
             VramMb = 24567,
             CudaCores = 16384,
             DriverVersion = "535.104",

@@ -30,7 +30,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -39,11 +39,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
         {
             return new Models.Device
             {
-                Id = 123,
+                DeviceId = 123,
                 Name = "Workstation-Alpha",
                 OwnerUsername = "julie",
-                IsAvailable = isAvailable,
-                Model = "RTX 4090",
+                State = isAvailable ? DeviceState.Available : DeviceState.Unavailable,
+                GpuModel = "RTX 4090",
                 VramMb = 24576,
                 CudaCores = 16384,
                 DriverVersion = "535.xx",
@@ -61,7 +61,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu();
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu).Add(x => x.Username, "julie"));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Username, "julie"));
 
             // Assert
             cut.Markup.Should().Contain("Workstation-Alpha");
@@ -87,7 +87,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu(true);
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu));
 
             // Assert
             var banner = cut.Find(".status-banner");
@@ -106,7 +106,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu(false);
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu));
 
             // Assert
             var banner = cut.Find(".status-banner");
@@ -125,7 +125,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu();
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu));
 
             // Assert
             cut.Markup.Should().Contain("Edit Device");
@@ -140,7 +140,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu();
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu));
 
             // Assert
             cut.Markup.Should().NotContain("Edit Device");
@@ -155,7 +155,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu();
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu).Add(x => x.Username, "julie"));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Username, "julie"));
 
             // Assert
             var profileLink = cut.Find(".profile-link");
@@ -174,7 +174,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu();
 
             // Act
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu).Add(x => x.Username, "julie"));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Username, "julie"));
 
             // Assert
             cut.FindAll(".profile-link").Should().BeEmpty();
@@ -188,7 +188,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             var gpu = CreateGpu();
 
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.gpu, gpu).Add(x => x.Mode, DevicePageMode.View));
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Mode, DevicePageMode.View));
 
             // Act
             cut.Find(".btn-edit").Click();

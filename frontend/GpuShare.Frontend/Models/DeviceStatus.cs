@@ -16,11 +16,3 @@ public class DeviceStatus
 
     public DateTime LastHeartbeat { get; set; }
 }
-
-public enum DeviceState
-{
-    Available,
-    Unavailable,
-    Rented,
-    Reported
-}

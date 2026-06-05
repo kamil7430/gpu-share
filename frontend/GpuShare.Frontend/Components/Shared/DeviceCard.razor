@@ -17,10 +17,10 @@ else
     <div class="gpu-body">
         <div class="left">
             <div class="gpu-header">
-                    <h4><NavLink class="device-name" href="@($"/device/view/{Device.Id}")">@Device.Name</NavLink></h4>
+                    <h4><NavLink class="device-name" href="@($"/device/view/{Device.DeviceId}")">@Device.Name</NavLink></h4>
             </div>
 
-                <div>Model: <span style="color: #0A1128;">@Device.Model</span></div>
+                <div>Model: <span style="color: #0A1128;">@Device.GpuModel</span></div>
                 @if (!AuthState.IsAuthenticated || Device.OwnerUsername != AuthState.User!.Username)
                 {
                     <div>Owner name: @Device.OwnerUsername</div>
@@ -84,7 +84,7 @@ else
 
         // Implement order logic here
         Console.WriteLine($"Ordering GPU: {Device.Name}");
-        Navigation.NavigateTo($"/device/view/{Device.Id}");
+        Navigation.NavigateTo($"/device/view/{Device.DeviceId}");
     }
 
     public void EditGpu()
@@ -93,7 +93,7 @@ else
 
         // Implement edit logic here
         Console.WriteLine($"Editing GPU: {Device.Name}");
-        Navigation.NavigateTo($"/device/edit/{Device.Id}");
+        Navigation.NavigateTo($"/device/edit/{Device.DeviceId}");
     }
 
     public void RemoveGpu()

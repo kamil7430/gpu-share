@@ -1,6 +1,7 @@
 @using GpuShare.Frontend.Components.Modals
 @inject IOrderService OrderService
 @inject IFormatters Formatters
+@inject ISnackbar Snackbar
 
 <div class="table-controls">
     <div class="status-filters">
@@ -73,7 +74,7 @@
     <a class="load-more-link" href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
 </div>
 
-<ReviewModal IsVisible="@_showReviewModal" OrderId="@_selectedOrderId" OnClose="@CloseReviewModal" OnSubmit="@HandleReviewSubmit" />
+<ReviewModal IsVisible="@_showReviewModal" OrderId="@_selectedOrderId" OnSubmit="@HandleReviewSubmit" />
 
 @code {
     [Parameter] public string Username { get; set; } = null!;
@@ -120,15 +121,18 @@
         _showReviewModal = true;
     }
 
-    private Task CloseReviewModal()
+    private void CloseReviewModal()
     {
         _showReviewModal = false;
-        return Task.CompletedTask;
     }
 
-    private async Task HandleReviewSubmit(ReviewRequest request)
+    private async Task HandleReviewSubmit(ModalResult<string> result)
     {
         _showReviewModal = false;
+        if (result.Status == ModalResultStatus.Success)
+            Snackbar.Add("Review created successfully.", Severity.Success);
+        else if (result.Status == ModalResultStatus.Failed)
+            Snackbar.Add("Creating review failed.", Severity.Error);
     }
 
     private async Task LoadMore()

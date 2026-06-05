@@ -1,4 +1,4 @@
-namespace GpuShare.Frontend.Http;
+namespace GpuShare.Frontend.Infrastructure.Http;
 using Polly;
 using Polly.Extensions.Http;
 

@@ -21,14 +21,9 @@ public class MockAuthService : IAuthService
         return Task.FromResult(response);
     }
 
-    public Task RegisterAsync(RegisterRequest payload)
+    public Task RegisterAsync(AuthRequest payload)
     {
         // Simulate successful registration
-        return Task.CompletedTask;
-    }
-
-    public Task ChangePasswordAsync(RegisterRequest payload)
-    {
         return Task.CompletedTask;
     }
 
@@ -58,5 +53,10 @@ public class MockAuthService : IAuthService
             Username = "mockuser",
         };
         return Task.FromResult(user);
+    }
+
+    public Task ChangePasswordAsync(ChangePasswordRequest payload)
+    {
+        throw new NotImplementedException();
     }
 }

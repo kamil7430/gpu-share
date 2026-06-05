@@ -16,7 +16,7 @@ Decisions:
     Add brand to model?
 *@
 
-<BaseModal TResult=string IsVisible="IsOpen" Title="Filters" OnClose="Close">
+<BaseModal TResult="string" IsVisible="IsVisible" Title="Filters" OnClose="Close">
     <ChildContent>
     <label>VRAM:</label>
     <CheckBoxList className="checkbox-list" TItem="int" Data="VRAMOptions" TextField="@((int c) => $"{c} GB")" ValueField="@((int c) => c.ToString())" SelectedValues="@TempFilter.VRAM_MB" />
@@ -63,7 +63,7 @@ Decisions:
     [Parameter] public EventCallback OnClose { get; set; }
     [Parameter] public SearchFilter CurrentFilter { get; set; } = new();
 
-    private bool IsOpen;
+    private bool IsVisible = true;
     private SearchFilter TempFilter = new();
     private RangeSliderValue<decimal> PricePerHour = new RangeSliderValue<decimal>(0, 100);
     private RangeSliderValue<int> Cores = new RangeSliderValue<int>(1000, 30000);

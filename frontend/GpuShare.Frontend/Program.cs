@@ -8,10 +8,16 @@ using GpuShare.Frontend.Services.Interfaces;
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.State;
 using GpuShare.Frontend.Auth;
-using GpuShare.Frontend.Http;
+using GpuShare.Frontend.Extensions;
+using GpuShare.Frontend.Infrastructure.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

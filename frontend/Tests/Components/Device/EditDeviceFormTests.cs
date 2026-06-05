@@ -30,7 +30,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -39,11 +39,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
         {
             return new Models.Device
             {
-                Id = 123,
+                DeviceId = 123,
                 Name = "Workstation-Alpha",
                 OwnerUsername = "julie",
-                IsAvailable = isAvailable,
-                Model = "RTX 4090",
+                State = isAvailable ? DeviceState.Available : DeviceState.Unavailable,
+                GpuModel = "RTX 4090",
                 VramMb = 24576,
                 CudaCores = 16384,
                 DriverVersion = "535.xx",
@@ -61,7 +61,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         {
             var cut = Render<EditDeviceForm>(p => p
                 .Add(x => x.Mode, DevicePageMode.Add)
-                .Add(x => x.gpu, CreateGpu()));
+                .Add(x => x.Device, CreateGpu()));
 
             cut.Markup.Should().Contain("Register New Device");
         }
@@ -71,7 +71,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         {
             var cut = Render<EditDeviceForm>(p => p
                 .Add(x => x.Mode, DevicePageMode.Edit)
-                .Add(x => x.gpu, CreateGpu()));
+                .Add(x => x.Device, CreateGpu()));
 
             cut.Markup.Should().Contain("Edit Device Specs");
         }
@@ -86,7 +86,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var gpu = CreateGpu();
 
             var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.gpu, gpu));
+                .Add(x => x.Device, gpu));
 
             cut.Find("input").Change("New GPU Name");
 
@@ -101,7 +101,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Available_Device_Should_Show_Available_Text()
         {
             var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.gpu, CreateGpu()));
+                .Add(x => x.Device, CreateGpu()));
 
             cut.Markup.Should().Contain("Users can reserve and run workloads");
         }
@@ -110,10 +110,10 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Disabled_Device_Should_Show_Hidden_Text()
         {
             var gpu = CreateGpu();
-            gpu.IsAvailable = false;
+            gpu.State = DeviceState.Unavailable;
 
             var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.gpu, gpu));
+                .Add(x => x.Device, gpu));
 
             cut.Markup.Should().Contain("Device is hidden");
         }
@@ -126,7 +126,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Validation_Errors_Should_Render_When_Present()
         {
             var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.gpu, CreateGpu()));
+                .Add(x => x.Device, CreateGpu()));
 
             cut.Markup.Should().Contain("Please fix the following issues");
             cut.Markup.Should().Contain("Error1");
@@ -142,7 +142,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             JSInterop.SetupVoid("navigator.clipboard.writeText");
 
             var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.gpu, CreateGpu()));
+                .Add(x => x.Device, CreateGpu()));
 
             cut.Find(".agent-command-container button").Click();
 
@@ -161,10 +161,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             bool invoked = false;
 
             var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.OnSave,
-                    EventCallback.Factory.Create<Models.Device>(
-                        this,
-                        _ => invoked = true)));
+                .Add(x => x.OnSave, EventCallback.Factory.Create<Models.Device>( this, _ => invoked = true)));
 
             cut.Find("form").Submit();
 

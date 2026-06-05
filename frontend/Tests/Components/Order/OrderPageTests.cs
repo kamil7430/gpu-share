@@ -14,10 +14,10 @@ namespace GpuShare.Frontend.Tests.Components.Order
     public class OrderPageTests : BunitContext, Xunit.IAsyncLifetime
     {
         //private Mock<IFormatters> _formattersMock = new();
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IOrderService> _orderServiceMock = new();
-        private Mock<IDeviceService> _deviceServiceMock = new();
-        private Bunit.TestDoubles.BunitAuthorizationContext? authContext;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IOrderService> _orderServiceMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
+        private readonly Bunit.TestDoubles.BunitAuthorizationContext? authContext;
 
         public OrderPageTests()
         {
@@ -53,7 +53,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -146,7 +146,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
                 .ReturnsAsync(new Models.Device
                 {
                     Name = "Workstation-Alpha",
-                    Model = "RTX 4090"
+                    GpuModel = "RTX 4090"
                 });
 
             var cut = Render<OrderPage>(p => p.Add(x => x.OrderId, 1));

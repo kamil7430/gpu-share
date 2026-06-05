@@ -3,7 +3,7 @@
 @using GpuShare.Frontend.Models
 @inject IReviewService ReviewService
 
-<BaseModal TResult=string IsVisible="@IsVisible" Title="Leave a Review" OnClose="HandleClose" SizeClass="medium">
+<BaseModal TResult="string" IsVisible="@IsVisible" Title="Leave a Review" OnClose="HandleClose" SizeClass="medium">
 
     <EditForm Model="reviewModel" OnValidSubmit="SubmitReview">
         <DataAnnotationsValidator />
@@ -80,5 +80,16 @@
     private async Task HandleClose()
     {
         await OnSubmit.InvokeAsync(ModalResult<string>.Cancel());
+    }
+
+    private class ReviewFormModel
+    {
+        [Range(1, 5, ErrorMessage = "Please select a rating.")]
+        public int Rating { get; set; } = 5;
+
+        [Required(ErrorMessage = "Review text is required.")]
+        [MinLength(10, ErrorMessage = "Review must contain at least 10 characters.")]
+        [MaxLength(5000, ErrorMessage = "Review is too long.")]
+        public string Comment { get; set; } = "";
     }
 }

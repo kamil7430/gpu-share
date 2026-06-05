@@ -13,50 +13,59 @@
         <NavLink href=@_profileLink class="back-link">&lt; Back to Profile</NavLink>
     </div>
 
-    <AuthorizeView>
-        <Authorized>
-            <div class="card">
-                <!-- Header -->
-                <div class="page-header">
-                    <div>
-                        <div class="page-subtitle">Order #@OrderId</div>
-                        <h1 style="margin: 0;">@_gpu.Model • @_gpu.Name</h1>
+@if (_order == null || _gpu == null)
+    {
+        <div class="card">
+            <h3>Loading order details...</h3>
+        </div>
+    }
+    else
+    {
+        <AuthorizeView>
+            <Authorized>
+                <div class="card">
+                    <!-- Header -->
+                    <div class="page-header">
+                        <div>
+                            <div class="page-subtitle">Order #@OrderId</div>
+                            <h1 style="margin: 0;">@_gpu.GpuModel • @_gpu.Name</h1>
+                        </div>
+
+                        <MudChip T="string" Color="@GetChipColor(_order.Status)" Variant="Variant.Filled">
+                            @GetChipContent(_order.Status)
+                        </MudChip>
                     </div>
 
-                    <MudChip T="string" Color="@GetChipColor(_order.Status)" Variant="Variant.Filled">
-                        @GetChipContent(_order.Status)
-                    </MudChip>
+                    <!-- Live Stats -->
+                    <DeviceStatsCard />
+
+                    <!-- Actions -->
+                    <div class="flex-row" style="justify-content: space-between;">
+                        <button class="btn-danger" @onclick='OpenEndModal'>
+                            <MudIcon Icon="@Icons.Material.Filled.StopCircle" Style="margin-right: 4px;" />End Session
+                        </button>
+
+                        @if (CanOpenDispute)
+                        {
+                            <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
+                        }
+                    </div>
                 </div>
 
-                <!-- Live Stats -->
-                <DeviceStatsCard />
+                <!-- Telemetry -->
+                <OrderTelemetryCard />
 
-                <!-- Actions -->
-                <div class="flex-row" style="justify-content: space-between;">
-                    <button class="btn-danger" @onclick='OpenEndModal'>
-                        <MudIcon Icon="@Icons.Material.Filled.StopCircle" Style="margin-right: 4px;" />End Session
-                    </button>
-
-                    @if (CanOpenDispute)
-                    {
-                        <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
-                    }
+                <!-- Connection -->
+                <ConnectionCard />
+            </Authorized>
+            <NotAuthorized>
+                <div class="card">
+                    <h3>You are not authorized to view this order.</h3>
+                    <p>Please log in to access your orders and sessions.</p>
                 </div>
-            </div>
-
-            <!-- Telemetry -->
-            <OrderTelemetryCard />
-
-            <!-- Connection -->
-            <ConnectionCard />
-        </Authorized>
-        <NotAuthorized>
-            <div class="card">
-                <h3>You are not authorized to view this order.</h3>
-                <p>Please log in to access your orders and sessions.</p>
-            </div>
-        </NotAuthorized>
-    </AuthorizeView>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
 </div>
 
 <!-- End Session Modal -->
@@ -69,10 +78,10 @@
 
     private DateTime _startTime = DateTime.UtcNow.AddMinutes(-12);
     private bool _showEndModal;
-    private string _profileLink;
-    private Order _order;
-    private Device _gpu;
-    private User _user;
+    private string _profileLink = string.Empty;
+    private Order? _order;
+    private Device? _gpu;
+    private User? _user;
 
     private bool CanOpenDispute => DateTime.UtcNow - _startTime > TimeSpan.FromMinutes(5);
 

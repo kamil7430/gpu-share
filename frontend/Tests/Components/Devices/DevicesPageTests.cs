@@ -15,8 +15,8 @@ namespace GpuShare.Frontend.Tests.Components.Devices
 {
     public class DevicesPageTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IDeviceService> _deviceServiceMock;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IDeviceService> _deviceServiceMock;
 
         public DevicesPageTests()
         {
@@ -38,10 +38,10 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             _deviceServiceMock.Setup(s => s.GetDeviceAsync(It.IsAny<int>()))
                 .ReturnsAsync(new Models.Device
                 {
-                    Id = 123,
+                    DeviceId = 123,
                     Name = "Workstation-Alpha",
                     OwnerUsername = "julie",
-                    IsAvailable = true
+                    State = DeviceState.Available,
                 });
 
             _deviceServiceMock.Setup(s => s.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
@@ -50,17 +50,17 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                     Items = [
                     new Models.Device
                     {
-                        Id = 123,
+                        DeviceId = 123,
                         Name = "Workstation-Alpha",
                         OwnerUsername = "julie",
-                        IsAvailable = true
+                        State = DeviceState.Available,
                     },
                     new Models.Device
                     {
-                        Id = 456,
+                        DeviceId = 456,
                         Name = "RenderNode-01",
                         OwnerUsername = "mark",
-                        IsAvailable = false
+                        State = DeviceState.Unavailable
                     }],
                     TotalCount = 2,
                     Page = 1,
@@ -70,7 +70,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }

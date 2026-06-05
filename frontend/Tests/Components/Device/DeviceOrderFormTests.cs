@@ -13,16 +13,16 @@ namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class DeviceOrderFormTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Models.Device gpu = new()
+        private readonly Models.Device gpu = new()
         {
-            Id = 1,
+            DeviceId = 1,
             Name = "RTX 4090",
-            Model = "NVIDIA",
+            GpuModel = "NVIDIA",
             PricePerHour = 10,
             VramMb = 24000,
             CudaCores = 16000,
             DriverVersion = "535",
-            Frameworks = new() { "CUDA" },
+            Frameworks = [ "CUDA" ],
             IsAvailable = true
         };
 
@@ -39,7 +39,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -75,7 +75,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             cut.InvokeAsync(() => cut.Instance.GetType()
                     .GetMethod("OnFileSelected", BindingFlags.NonPublic | BindingFlags.Instance)!
-                    .Invoke(cut.Instance, new object[] { file.Object })
+                    .Invoke(cut.Instance, [ file.Object ])
             );
 
             cut.Render();
@@ -92,7 +92,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             cut.InvokeAsync(() =>  cut.Instance.GetType()
                     .GetMethod("OnFileSelected", BindingFlags.NonPublic | BindingFlags.Instance)!
-                    .Invoke(cut.Instance, new object[] { file })
+                    .Invoke(cut.Instance, [ file ])
             );
 
             cut.Instance.GetType().GetField("selectedFile", BindingFlags.NonPublic | BindingFlags.Instance)!

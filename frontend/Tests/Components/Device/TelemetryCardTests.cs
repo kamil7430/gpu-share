@@ -14,7 +14,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
     public class TelemetryCardTests : BunitContext, Xunit.IAsyncLifetime
     {
         private readonly Mock<IDeviceService> _deviceServiceMock = new();
-
         public TelemetryCardTests()
         {
             Services.AddSingleton(_deviceServiceMock.Object);
@@ -35,9 +34,10 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
         }
 
+        private readonly Models.Device _device = new() { DeviceId = 1 };
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -46,7 +46,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public async Task Should_Load_Device_Status()
         {
             // Act
-            Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             _deviceServiceMock.Verify(x => x.GetDeviceStatusAsync(1), Times.Once);
@@ -56,7 +56,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Should_Render_Temperature()
         {
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("65°C");
@@ -74,7 +74,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
 
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("Online");
@@ -90,7 +90,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
             
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("Offline");
@@ -106,7 +106,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
 
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("mud-chip-color-success");
@@ -122,8 +122,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
 
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters
-                .Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("mud-chip-color-warning");
@@ -139,7 +138,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
 
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("mud-chip-color-error");
@@ -149,7 +148,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Utilization_Chart_Should_Render()
         {
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.FindComponent<MudChart<double>>();
@@ -159,7 +158,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Should_Render_Chart_Legends()
         {
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("GPU Usage");
@@ -170,7 +169,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Should_Render_Metric_Summary()
         {
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain("Avg GPU Usage");
@@ -183,7 +182,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Export_Button_Should_Render()
         {
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.FindAll("button").Any(x => x.TextContent.Contains("Export CSV")).Should().BeTrue();
@@ -193,7 +192,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Should_Render_Range_Selector()
         {
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             var select = cut.Find("select");
@@ -209,7 +208,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Null_Status_Should_Not_Crash()
         {
             // Act
-            var act = () => Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var act = () => Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             act.Should().NotThrow();
@@ -231,7 +230,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
 
             // Act
-            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.gpu, new Models.Device { Id = 1 }));
+            var cut = Render<TelemetryCard>(parameters => parameters.Add(p => p.Device, _device));
 
             // Assert
             cut.Markup.Should().Contain($"mud-chip-color-{expectedClass}");

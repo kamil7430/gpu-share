@@ -5,24 +5,25 @@ using GpuShare.Frontend.Models.Dtos;
 public interface IAuthService
 {
     /// <summary>
-    /// POST /auth/login
+    /// POST /users/login
     /// Returns JWT access token and refresh token.
     /// </summary>
     Task LoginAsync(AuthRequest payload);
 
     /// <summary>
-    /// POST /auth/register
+    /// POST /users/register
     /// Creates a new account and sends verification email.
     /// </summary>
-    Task RegisterAsync(RegisterRequest payload);
+    Task RegisterAsync(AuthRequest payload);
 
     /// <summary>
-    /// POST /auth/register
+    /// POST /users/changePassword
     /// Creates a new account and sends verification email.
     /// </summary>
     Task ChangePasswordAsync(ChangePasswordRequest payload);
 
     /// <summary>
+    /// POST /users/refresh
     /// Silently refreshes access token before expiration.
     /// </summary>
     Task RefreshTokenAsync();
@@ -33,7 +34,6 @@ public interface IAuthService
     Task LogoutAsync();
 
     /// <summary>
-    /// GET /auth/me
     /// Returns currently authenticated user profile.
     /// </summary>
     Task<User> GetMeAsync();

@@ -19,9 +19,9 @@ namespace GpuShare.Frontend.Tests.Components.Shared
 
         private Models.Device gpu = new()
         {
-            Id = 1,
+            DeviceId = 1,
             Name = "RTX 4090",
-            Model = "NVIDIA",
+            GpuModel = "NVIDIA",
             OwnerUsername = "john",
             PricePerHour = 10,
             VramMb = 24000,
@@ -48,7 +48,7 @@ namespace GpuShare.Frontend.Tests.Components.Shared
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }

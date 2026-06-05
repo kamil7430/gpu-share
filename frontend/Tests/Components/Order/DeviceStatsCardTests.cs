@@ -35,7 +35,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
             var gpu = new Models.Device
             {
-                Id = 10,
+                DeviceId = 10,
                 PricePerHour = 5
             }; 
             
@@ -51,7 +51,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }

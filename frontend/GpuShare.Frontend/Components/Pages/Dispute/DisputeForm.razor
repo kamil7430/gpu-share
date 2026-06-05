@@ -2,7 +2,7 @@
 @inject IOrderService OrderService
 @inject IFormatters Formatters
 
-@if (_order != null && _gpu != null)
+@if (_order != null && _gpu != null && Dispute != null)
 {
     <EditForm Model="Dispute" OnValidSubmit="SubmitDispute">
         <DataAnnotationsValidator />
@@ -20,7 +20,7 @@
 
                 <div class="spec-box">
                     <div class="label">Device</div>
-                    <div class="value">@_gpu.Model • @_gpu.Name</div>
+                    <div class="value">@_gpu.GpuModel • @_gpu.Name</div>
                 </div>
 
                 <div class="spec-box">

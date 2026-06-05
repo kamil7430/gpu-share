@@ -1,4 +1,4 @@
-﻿namespace GpuShare.Frontend.Http
+﻿namespace GpuShare.Frontend.Infrastructure.Http
 {
     public class MockApiClient : IApiClient
     {

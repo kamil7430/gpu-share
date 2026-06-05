@@ -22,11 +22,10 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 {
     public class ProfilePageTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
+        private readonly Mock<IAuthState> _authStateMock = new();
 
         public ProfilePageTests()
         {
-            _authStateMock = new Mock<IAuthState>();
             Services.AddSingleton(_authStateMock.Object);
             Services.AddMudServices();
 
@@ -42,7 +41,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }

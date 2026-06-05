@@ -18,8 +18,8 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 {
     public class OrderTableTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IOrderService> _orderServiceMock;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IOrderService> _orderServiceMock;
 
         public OrderTableTests()
         {
@@ -62,7 +62,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
@@ -307,7 +307,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             var cut = Render<OrderTable>();
 
             // Act
-            var btn = cut.FindAll(".filter-btn").First();
+            var btn = cut.FindAll(".filter-btn")[0];
             btn.Click();
 
             // Assert

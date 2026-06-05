@@ -35,12 +35,6 @@ public interface IDeviceService
     Task<Device> UpdateDeviceAsync(int deviceId, UpdateDeviceRequest cmd);
 
     /// <summary>
-    /// PATCH /api/devices/{id}/availability
-    /// Toggles device availability.
-    /// </summary>
-    Task SetAvailabilityAsync(int deviceId, bool available);
-
-    /// <summary>
     /// DELETE /api/devices/{id}
     /// Removes device from catalog.
     /// </summary>

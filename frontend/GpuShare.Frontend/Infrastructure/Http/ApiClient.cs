@@ -1,17 +1,12 @@
-namespace GpuShare.Frontend.Http;
+namespace GpuShare.Frontend.Infrastructure.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using GpuShare.Frontend.Models;
 using System.Net;
 
-public class ApiClient : IApiClient
+public class ApiClient(HttpClient http) : IApiClient
 {
-    private readonly HttpClient _http;
-
-    public ApiClient(HttpClient http)
-    {
-        _http = http;
-    }
+    private readonly HttpClient _http = http;
 
     public async Task<T?> GetAsync<T>(string url)
     {

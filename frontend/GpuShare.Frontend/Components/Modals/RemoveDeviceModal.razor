@@ -2,15 +2,15 @@
 
 @if (Device == null)
 {
-    <BaseModal TResult=string>
-        <ChildContent IsVisible="IsVisible" Title="Remove Device - error" OnClose="Close">
+    <BaseModal TResult="string" IsVisible="@IsVisible" Title="Remove Device - error" OnClose="@Close">
+        <ChildContent>
             <p>Device data did not load correctly. Try again later.</p>
         </ChildContent>
     </BaseModal>
 }
 else
 {
-    <BaseModal TResult=string IsVisible="IsVisible" Title="Remove Device" OnClose="Close">
+    <BaseModal TResult="string" IsVisible="@IsVisible" Title="Remove Device" OnClose="@Close">
 
         <ChildContent>
             @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber"
@@ -86,10 +86,17 @@ else
 
     private async Task ConfirmRemove()
     {
+        if (Device == null)
+        {
+            _errorMessage = "Device data is not available.";
+            await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
+            return;
+        }
+
         try
         {
-            await DeviceService.RemoveDeviceAsync(Device.Id);
-            await OnClose.InvokeAsync(ModalResult<string>.Ok($"Device #{Device.Id} removed successfully."));
+            await DeviceService.RemoveDeviceAsync(Device.DeviceId);
+            await OnClose.InvokeAsync(ModalResult<string>.Ok($"Device #{Device.DeviceId} removed successfully."));
         }
         catch (Models.ApiException e)
         {

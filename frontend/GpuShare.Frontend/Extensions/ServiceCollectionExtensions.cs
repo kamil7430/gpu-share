@@ -1,10 +1,6 @@
-namespace GpuShare.Frontend.Http;
-using Polly;
-using Polly.Extensions.Http;
-using Microsoft.Extensions.Http;
+namespace GpuShare.Frontend.Extensions;
+using GpuShare.Frontend.Infrastructure.Http;
 using Microsoft.Extensions.DependencyInjection;
-using GpuShare.Frontend.Services;
-using GpuShare.Frontend.Services.Interfaces;
 
 public static class ServiceCollectionExtensions
 {

@@ -19,9 +19,9 @@ namespace GpuShare.Frontend.Tests.Modals
 {
     public class LoginModalTests : BunitContext
     {
-        private Mock<IAuthModalService> _authModalServiceMock;
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IAuthService> _authServiceMock;
+        private readonly Mock<IAuthModalService> _authModalServiceMock;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IAuthService> _authServiceMock;
 
         public LoginModalTests()
         {
@@ -107,7 +107,7 @@ namespace GpuShare.Frontend.Tests.Modals
         public void Register_Form_Should_Call_Register_Service()
         {
             // Arrange
-            _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<RegisterRequest>())).Returns(Task.CompletedTask);
+            _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<AuthRequest>())).Returns(Task.CompletedTask);
 
             var cut = Render<LoginModal>(parameters => parameters.Add(x => x.IsVisible, true));
 
@@ -124,7 +124,7 @@ namespace GpuShare.Frontend.Tests.Modals
             cut.Find("button[type='submit']").Click();
 
             // Assert
-            _authServiceMock.Verify(x => x.RegisterAsync(It.Is<RegisterRequest>(r =>
+            _authServiceMock.Verify(x => x.RegisterAsync(It.Is<AuthRequest>(r =>
                         r.Username == "john" && r.Password == "Password123")), Times.Once);
         }
 
@@ -149,7 +149,7 @@ namespace GpuShare.Frontend.Tests.Modals
             // Assert
             cut.Markup.Should().Contain("Passwords do not match");
 
-            _authServiceMock.Verify(x => x.RegisterAsync(It.IsAny<RegisterRequest>()), Times.Never);
+            _authServiceMock.Verify(x => x.RegisterAsync(It.IsAny<AuthRequest>()), Times.Never);
         }
 
         [Fact]
@@ -172,14 +172,14 @@ namespace GpuShare.Frontend.Tests.Modals
             // Assert
             cut.Markup.Should().Contain("You must accept the Terms and Conditions");
 
-            _authServiceMock.Verify(x => x.RegisterAsync(It.IsAny<RegisterRequest>()), Times.Never);
+            _authServiceMock.Verify(x => x.RegisterAsync(It.IsAny<AuthRequest>()), Times.Never);
         }
 
         [Fact]
         public void Register_Should_Show_Error_Banner_When_Service_Throws()
         {
             // Arrange
-            _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<RegisterRequest>()))
+            _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<AuthRequest>()))
                 .ThrowsAsync(new Exception("Registration failed"));
 
             var cut = Render<LoginModal>(parameters => parameters.Add(x => x.IsVisible, true));
@@ -204,7 +204,7 @@ namespace GpuShare.Frontend.Tests.Modals
         public void Successful_Register_Should_Close_Modal()
         {
             // Arrange
-            _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<RegisterRequest>())).Returns(Task.CompletedTask);
+            _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<AuthRequest>())).Returns(Task.CompletedTask);
 
             var closed = false;
 

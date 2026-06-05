@@ -1,4 +1,4 @@
-namespace GpuShare.Frontend.Http;
+namespace GpuShare.Frontend.Infrastructure.Http;
 using GpuShare.Frontend.State;
 using System.Net;
 using System.Net.Http.Headers;
@@ -6,16 +6,10 @@ using System.Net.Http.Json;
 using GpuShare.Frontend.Models;
 using Microsoft.Extensions.Http;
 
-public class RefreshTokenHandler : DelegatingHandler
+public class RefreshTokenHandler(AuthState authState, IHttpClientFactory httpFactory) : DelegatingHandler
 {
-    private readonly AuthState _authState;
-    private readonly IHttpClientFactory _httpFactory;
-
-    public RefreshTokenHandler(AuthState authState, IHttpClientFactory httpFactory)
-    {
-        _authState = authState;
-        _httpFactory = httpFactory;
-    }
+    private readonly AuthState _authState = authState;
+    private readonly IHttpClientFactory _httpFactory = httpFactory;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -34,6 +28,10 @@ public class RefreshTokenHandler : DelegatingHandler
 
                 var newToken = await tokenResponse.Content.ReadFromJsonAsync<string>(cancellationToken: cancellationToken);
 
+                if (string.IsNullOrEmpty(newToken))
+                {
+                    throw new InvalidOperationException("Failed to refresh token: empty response");
+                }
                 // Try to get current user info
                 //var userResponse = await client.GetAsync("/users/me", cancellationToken);
                 //userResponse.EnsureSuccessStatusCode();

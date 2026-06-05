@@ -15,8 +15,8 @@ namespace GpuShare.Frontend.Tests.Components.Order
 {
     public class ConnectionCardTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IOrderService> _orderServiceMock = new();
-        private Mock<IDeviceService> _deviceServiceMock = new();
+        private readonly Mock<IOrderService> _orderServiceMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
 
         public ConnectionCardTests()
         {
@@ -40,7 +40,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
             var gpu = new Models.Device
             {
-                Id = 10,
+                DeviceId = 10,
                 PricePerHour = 5
             };
 
@@ -54,7 +54,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
                 });
         }
 
-        private ConnectionDetailsDto connectionDetails = new ConnectionDetailsDto()
+        private readonly ConnectionDetailsDto connectionDetails = new()
         {
             Host = "gpu-12.gpushare.io",
             Port = 443,
@@ -64,7 +64,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }

@@ -25,12 +25,14 @@ namespace GpuShare.Frontend.State
         {
             User = user;
             AccessToken = token;
+            OnChange?.Invoke();
         }
 
         public void SetAuth(AuthResponse authResponse)
         {
             User = authResponse.User;
             AccessToken = authResponse.Token;
+            OnChange?.Invoke();
         }
     }
 }

@@ -4,7 +4,7 @@ using GpuShare.Frontend.Models.Dtos;
 
 namespace GpuShare.Frontend.State;
 
-public class AuthState : IAuthState
+public class AuthState(IJwtHelper jwtHelper) : IAuthState
 {
     public User? User { get; private set; }
     public string? AccessToken { get; private set; }
@@ -13,12 +13,7 @@ public class AuthState : IAuthState
     public bool IsAuthenticated => !string.IsNullOrWhiteSpace(AccessToken) && AccessTokenExpiresAt > DateTime.UtcNow;
     public event Action? OnChange;
     
-    private readonly IJwtHelper _jwtHelper;
-
-    public AuthState(IJwtHelper jwtHelper)
-    {
-        _jwtHelper = jwtHelper;
-    }
+    private readonly IJwtHelper _jwtHelper = jwtHelper;
 
     public void SetAuth(User user, string token)
     {

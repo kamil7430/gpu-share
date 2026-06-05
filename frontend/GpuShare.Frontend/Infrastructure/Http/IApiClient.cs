@@ -1,4 +1,4 @@
-namespace GpuShare.Frontend.Http;
+namespace GpuShare.Frontend.Infrastructure.Http;
 
 /// <summary>
 /// Interface for API client, defines methods for making HTTP requests to the backend API.

@@ -1,6 +1,6 @@
 @if (ShowEndModal)
 {
-    <BaseModal TResult=string IsVisible="true" Title="End Session" OnClose="CloseEndModal" SizeClass="small">
+    <BaseModal TResult="string" IsVisible="@ShowEndModal" Title="End Session" OnClose="@CloseEndModal" SizeClass="small">
         <ChildContent>
             <div class="end-session-modal">
                 @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" /> *@

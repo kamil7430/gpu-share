@@ -42,7 +42,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
         public Task InitializeAsync() => Task.CompletedTask;
 
-        public async Task DisposeAsync()
+        public new async Task DisposeAsync()
         {
             await base.DisposeAsync();
         }
