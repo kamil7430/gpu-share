@@ -9,7 +9,7 @@ const (
 func backendIp() string {
 	backIp := os.Getenv("BACKEND_IP")
 	if backIp == "" {
-		backIp = "10.5.0.2"
+		backIp = "127.0.0.1"
 	}
 	return backIp
 }

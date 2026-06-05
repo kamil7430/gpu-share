@@ -10,6 +10,31 @@ func (s *DefaultStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+type CoordinatorApiKey struct {
+	APIKey string
+	Roles  []string
+}
+
+// GetAPIKey returns the value of APIKey.
+func (s *CoordinatorApiKey) GetAPIKey() string {
+	return s.APIKey
+}
+
+// GetRoles returns the value of Roles.
+func (s *CoordinatorApiKey) GetRoles() []string {
+	return s.Roles
+}
+
+// SetAPIKey sets the value of APIKey.
+func (s *CoordinatorApiKey) SetAPIKey(val string) {
+	s.APIKey = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *CoordinatorApiKey) SetRoles(val []string) {
+	s.Roles = val
+}
+
 // DefaultStatusCode wraps Error with StatusCode.
 type DefaultStatusCode struct {
 	StatusCode int

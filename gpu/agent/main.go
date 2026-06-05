@@ -45,7 +45,7 @@ func main() {
 	case "login":
 		cli.LoginCmd(args)
 	case "devices":
-		cli.ListDevices()
+		cli.ListDevices(args)
 	case "connect":
 		cli.ConnectCmd(args)
 	default:

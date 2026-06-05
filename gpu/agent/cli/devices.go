@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -23,13 +24,19 @@ type errorResponse struct {
 	ErrorMessage string `json:"errorMessage"`
 }
 
-func ListDevices() ([]Device, error) {
+func ListDevices(args []string) ([]Device, error) {
+	fs := flag.NewFlagSet("devices", flag.ContinueOnError)
+	addr := fs.String("addr", backendIp()+":"+backendPort, "backend addr")
+	if err := fs.Parse(args); err != nil {
+		return nil, err
+	}
+
 	token, err := LoadToken()
 	if err != nil {
 		log.Fatal("not logged in")
 	}
 
-	url := "http://" + backendIp() + ":" + backendPort + "/api/devices"
+	url := "http://" + *addr + "/api/devices"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

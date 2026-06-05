@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/api"
 	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/handler"
@@ -20,8 +21,18 @@ func InitializeSystem(ctx context.Context, restUrl string, grpcUrl string) {
 	StartGrpcServer(ctx, grpcUrl, as)
 }
 
+func GetenvOrDefault(key string, def string) string {
+	val := os.Getenv(key)
+	if val == "" {
+		val = def
+		log.Printf("%v not present or empty, using default value '%v'\n", key, val)
+	}
+	return val
+}
+
 func StartRestServer(addr string, as *service.AgentService) {
-	srv, err := api.NewServer(handler.NewRestHandler(as))
+	apiKey := GetenvOrDefault("COORDINATOR_SECRET_KEY", "test")
+	srv, err := api.NewServer(handler.NewRestHandler(as), handler.NewSecurityHandler(apiKey))
 	if err != nil {
 		log.Fatal(err)
 	}

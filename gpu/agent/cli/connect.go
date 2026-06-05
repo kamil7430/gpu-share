@@ -20,19 +20,24 @@ func ConnectCmd(args []string) {
 
 	backend := fs.String("backend", backendIp()+":"+backendPort, "backend addr")
 	coord := fs.String("coord", gpuIp()+":"+coordinatorGrpcPort, "coordinator addr")
-	fs.Parse(args)
+	if err := fs.Parse(args); err != nil {
+		return
+	}
 
 	token, err := LoadToken()
 	if err != nil {
-		panic("not logged in")
+		log.Fatal("not logged in")
 	}
 
 	reader := bufio.NewReader(os.Stdin)
 
 	if *deviceID == "" {
-		devices, err := ListDevices()
+		devices, err := ListDevices(args)
 		if err != nil {
 			log.Fatal(err)
+		}
+		if len(devices) == 0 {
+			return
 		}
 
 		deviceIndex := 0

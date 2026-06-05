@@ -1,5 +1,7 @@
 ## Usage
 
+To use the agent, the backend and coordinator should be active:
+
 ```bash
 # run the backend and coordinator through docker
 cd docker && docker compose up --build
@@ -8,17 +10,14 @@ cd docker && docker compose up --build
 Run the agent. If you don't provide an ip and have a valid `.env` file, it will
 use the value of the `GPU_IP` variable.
 ```bash
-go run agent/main.go [--ip] [--port]
+go run agent/main.go [login|devices|connect]
 ```
 
-You might want to register a test account and register a device:
-```bash
-curl -v -X POST http://localhost:2137/api/users/register -H "Content-Type: application/json" -d '{"username": "test", "password": "maklowicz"}'
-
-curl -v -X POST http://localhost:2137/api/devices -H "Content-Type: application/json" -H "Authorization: Bearer $(cat .agent_token)" -d '{"name":"GPU_Maklowicza1","gpuModel":"RTX 5090","vramMb":32000,"cudaCores":21760,"pricePerHourUsdCents":2000, "driverVersion": "596.36"}'
-```
+To register a user or send job requests see [gpu.http](../gpu.http).
 
 ## Building protobuf
+
+After changing the definitions in [gpu/proto](proto):
 
 ```bash
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
@@ -30,6 +29,10 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 ```
 
 This will generate `./proto/*.pb.go`.
+
+## Building openapi
+
+See [contract/README.md](../contract/README.md)
 
 ## Useful links
 

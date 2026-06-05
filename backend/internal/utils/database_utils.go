@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"log"
-	"os"
 	"sync"
 
 	"github.com/kamil7430/gpu-share/backend/internal/model"
@@ -31,10 +30,10 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 	if verbose {
 		log.Println("Loading environment variables...")
 	}
-	dbUser := os.Getenv("POSTGRES_USER")
-	dbPassword := os.Getenv("POSTGRES_PASSWORD")
-	dbDb := os.Getenv("POSTGRES_DB")
-	dbPort := os.Getenv("POSTGRES_DB_PORT")
+	dbUser := GetenvOrDefault("POSTGRES_USER", "user")
+	dbPassword := GetenvOrDefault("POSTGRES_PASSWORD", "pass")
+	dbDb := GetenvOrDefault("POSTGRES_DB", "db")
+	dbPort := GetenvOrDefault("POSTGRES_DB_PORT", "5432")
 
 	if verbose {
 		log.Println("Connecting to the database...")

@@ -2,10 +2,11 @@ package handler
 
 import (
 	"context"
-	"log"
+	"net/http"
 
 	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/api"
 	"github.com/kamil7430/gpu-share/gpu/coordinator/internal/service"
+	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type RestHandler struct {
@@ -23,9 +24,13 @@ func (*RestHandler) GetHealth(ctx context.Context) error {
 }
 
 func (*RestHandler) NewError(ctx context.Context, err error) *api.DefaultStatusCode {
-	log.Println(err)
+	code := http.StatusInternalServerError
+	if e, ok := err.(ogenerrors.Error); ok {
+		code = e.Code()
+	}
+
 	return &api.DefaultStatusCode{
-		StatusCode: 500,
+		StatusCode: code,
 		Response:   api.Error(err.Error()),
 	}
 }

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"os"
+	"strings"
 )
 
 const tokenFile = ".agent_token"
@@ -15,5 +16,5 @@ func LoadToken() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(data), nil
+	return strings.TrimRight(string(data), "\r\n"), nil
 }

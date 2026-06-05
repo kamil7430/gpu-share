@@ -12,3 +12,14 @@ paths:
     $ref: "./paths/api/jobs/jobs.yaml"
   /api/agents/{agentId}/status:
     $ref: "./paths/api/agents/status.yaml"
+
+components:
+  securitySchemes:
+    CoordinatorApiKey:
+      description: Secret key used only for backend -> coordinator communication
+      type: apiKey
+      in: header
+      name: Authorization
+
+security:
+  - CoordinatorApiKey: []

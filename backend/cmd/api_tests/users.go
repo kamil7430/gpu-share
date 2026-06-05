@@ -206,7 +206,7 @@ func testChangePassword(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	t.Run("change password -- not logged in", func(t *testing.T) {
 		resp := changePasswordTestCase("TestUserPassword", "NewPassword", nil)
-		require.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
 	t.Run("change password -- valid request", func(t *testing.T) {
