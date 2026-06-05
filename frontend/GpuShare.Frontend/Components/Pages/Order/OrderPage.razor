@@ -95,21 +95,21 @@
 
     private string GetChipContent(OrderStatus status) => status switch
     {
-        OrderStatus.WaitingForStart => "Waiting for start",
-        OrderStatus.Running => "Running",
-        OrderStatus.Completed => "Completed",
-        OrderStatus.Suspended => "Suspended",
-        OrderStatus.Failure => "Failure",
+        OrderStatus.WAITING_FOR_START => "Waiting for start",
+        OrderStatus.RUNNING => "Running",
+        OrderStatus.COMPLETED => "Completed",
+        OrderStatus.SUSPENDED => "Suspended",
+        OrderStatus.FAILURE => "Failure",
         _ => "Unknown status"
     };
 
     private Color GetChipColor(OrderStatus status) => status switch
     {
-        OrderStatus.WaitingForStart => Color.Info,
-        OrderStatus.Running => Color.Success,
-        OrderStatus.Completed => Color.Success,
-        OrderStatus.Suspended => Color.Warning,
-        OrderStatus.Failure => Color.Error,
+        OrderStatus.WAITING_FOR_START => Color.Info,
+        OrderStatus.RUNNING => Color.Success,
+        OrderStatus.COMPLETED => Color.Success,
+        OrderStatus.SUSPENDED => Color.Warning,
+        OrderStatus.FAILURE => Color.Error,
         _ => Color.Error
     };
 

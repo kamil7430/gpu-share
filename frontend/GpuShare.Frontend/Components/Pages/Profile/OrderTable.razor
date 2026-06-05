@@ -41,13 +41,13 @@
                     <tr>
                         @* <!-- Singular order page --> *@
                         <td>
-                            <a class="order-link" href="@($"/order/{order.Id}")">#@order.Id</a>
+                            <a class="order-link" href="@($"/order/{order.OrderId}")">#@order.OrderId</a>
                         </td>
                         <td>@order.DeviceId</td>
-                        <td><a class="profile-link" href="/profile/@order.OwnerUsername">@order.OwnerUsername</a></td>
+                        <td><a class="profile-link" href="/profile/@order.Username">@order.Username</a></td>
                         <td>@(order.StartDate == null || order.StartDate == DateTime.MinValue ? "-" : order.StartDate.ToString())</td>
                         <td>@(order.EndDate == null || order.EndDate == DateTime.MinValue ? "-" : order.EndDate.ToString())</td>
-                        <td>@(order.Cost == 0 ? "-" : $"{order.Cost}$")</td>
+                        <td>@(order.TotalReservedCostCents == 0 ? "-" : $"{order.TotalReservedCostCents / 100.0:C}")</td>
                         <td>
                             <span class="status-badge @GetStatusClass(order.Status)">
                                 @order.Status
@@ -57,9 +57,9 @@
                         <td>
                             <div class="order-actions">
                                 @* <a class="details-btn" href="@($"/orders/{order.Id}")">Details</a> *@
-                                @if (order.Status != OrderStatus.WaitingForStart) // && !order.HasReview
+                                @if (order.Status != OrderStatus.WAITING_FOR_START) // && !order.HasReview
                                 {
-                                    <button class="review-btn" @onclick="@(() => LeaveReview(order.Id))">Leave Review</button>
+                                    <button class="review-btn" @onclick="@(() => LeaveReview(order.OrderId))">Leave Review</button>
                                 }
                             </div>
                         </td>
@@ -103,9 +103,8 @@
     {
         var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
         {
-            OwnerUsername = Username,
-            Page = 1,
-            PageSize = 10
+            Username = Username,
+            Limit = 10,
         });
         _orders.AddRange(pagedResult.Items);
     }
@@ -139,22 +138,22 @@
     {
         var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
         {
-            OwnerUsername = Username,
-            Page = _lastPage++,
-            PageSize = 10
+            Username = Username,
+            Limit = 10 * ++_lastPage,
+            // Page = _lastPage++
         });
-        _orders.AddRange(pagedResult.Items);
+        _orders.AddRange(pagedResult.Items.TakeLast(pagedResult.TotalCount == pagedResult.PageSize ? 10 : (pagedResult.TotalCount % 10)));
     }
 
     private string GetStatusClass(OrderStatus status)
     {
         return status switch
         {
-            OrderStatus.WaitingForStart => "status-waiting",
-            OrderStatus.Running => "status-running",
-            OrderStatus.Completed => "status-completed",
-            OrderStatus.Failure => "status-failure",
-            OrderStatus.Suspended => "status-suspended",
+            OrderStatus.WAITING_FOR_START => "status-waiting",
+            OrderStatus.RUNNING => "status-running",
+            OrderStatus.COMPLETED => "status-completed",
+            OrderStatus.FAILURE => "status-failure",
+            OrderStatus.SUSPENDED => "status-suspended",
             _ => ""
         };
     }

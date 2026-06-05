@@ -43,7 +43,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
 
             _orderServiceMock.Setup(x => x.GetOrderAsync(123)).ReturnsAsync(new Models.Order()
             {
-                Id = 123,
+                OrderId = 123,
                 DeviceId = 67,
                 StartDate = _startDate,
                 EndDate = _endDate

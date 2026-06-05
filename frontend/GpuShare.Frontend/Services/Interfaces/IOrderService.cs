@@ -8,7 +8,7 @@ public interface IOrderService
     /// POST /api/orders
     /// Creates a new GPU order and returns connection details.
     /// </summary>
-    Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest cmd);
+    Task<Order> CreateOrderAsync(CreateOrderRequest cmd);
 
     /// <summary>
     /// GET /api/orders/{id}

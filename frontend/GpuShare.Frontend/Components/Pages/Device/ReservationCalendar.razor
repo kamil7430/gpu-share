@@ -38,9 +38,9 @@
                         <div class="calendar-cell">
                             @foreach (var order in GetOrdersForSlot(day, hour))
                             {
-                                <div class="reservation-block" style="@GetOrderStyle(order)" title="@order.OwnerUsername">
+                                <div class="reservation-block" style="@GetOrderStyle(order)" title="@order.Username">
                                     <div class="reservation-title">
-                                        @order.OwnerUsername
+                                        @order.Username
                                     </div>
 
                                     <div class="reservation-time">
@@ -135,9 +135,9 @@
 
     private string GetColor(OrderStatus status) => status switch
     {
-        OrderStatus.WaitingForStart => "#ff9800",
-        OrderStatus.Running => "#f44336",
-        OrderStatus.Completed => "#2196f3",
+        OrderStatus.WAITING_FOR_START => "#ff9800",
+        OrderStatus.RUNNING => "#f44336",
+        OrderStatus.COMPLETED => "#2196f3",
         _ => "#4caf50"
     };
 

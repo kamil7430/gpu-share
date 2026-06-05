@@ -7,16 +7,15 @@ namespace GpuShare.Frontend.Services
 {
     public class MockOrderService : IOrderService
     {
-        public async Task<CreateOrderResponse> CreateOrderAsync(CreateOrderRequest cmd)
+        public async Task<Order> CreateOrderAsync(CreateOrderRequest cmd)
         {
             var conn = new ConnectionDetailsDto() { 
-                AccessToken = "token",
                 Host = "host",
                 Port = 420,
                 Protocol = "WSS"
             };
 
-            return new CreateOrderResponse()
+            return new Order()
             {
                 OrderId = 1,
                 ConnectionDetails = conn
@@ -32,7 +31,6 @@ namespace GpuShare.Frontend.Services
         {
             var conn = new ConnectionDetailsDto()
             {
-                AccessToken = "token",
                 Host = "host",
                 Port = 420,
                 Protocol = "WSS"
@@ -40,13 +38,13 @@ namespace GpuShare.Frontend.Services
 
             return new Order()
             {
-                Id = orderId,
+                OrderId = orderId,
                 DeviceId = 1,
-                Cost = 5,
-                OwnerUsername = "user",
+                TotalReservedCostCents = 5,
+                Username = "user",
                 EndDate = DateTime.Now.AddHours(12),
                 StartDate = DateTime.Now,
-                Status = OrderStatus.Running,
+                Status = OrderStatus.RUNNING,
                 ConnectionDetails = conn 
             };
         }
@@ -56,51 +54,50 @@ namespace GpuShare.Frontend.Services
             var orders = GenerateMockOrders(parameters.StartDate ?? DateTime.Today);
             var pagedResult = new PagedResult<Order>
             {
-                Items = orders.Take(parameters.PageSize).ToList(),
+                Items = [.. orders.Take(parameters.Limit)],
                 TotalCount = orders.Count,
-                PageSize = parameters.PageSize,
-                Page = parameters.Page,
+                PageSize = parameters.Limit,
             };
             return Task.FromResult(pagedResult);
         }
 
         // ===== MOCK DATA =====
-        private List<Order> GenerateMockOrders(DateTime weekStart)
+        private static List<Order> GenerateMockOrders(DateTime weekStart)
         {
-            return new()
-        {
+            return [
+        
             new Order
             {
-                OwnerUsername = "LLM Training",
-                Status = OrderStatus.Running,
+                Username = "LLM Training",
+                Status = OrderStatus.RUNNING,
                 StartDate = weekStart.AddDays(1).AddHours(9).AddMinutes(30),
                 EndDate = weekStart.AddDays(1).AddHours(13)
             },
 
             new Order
             {
-                OwnerUsername = "Stable Diffusion",
-                Status = OrderStatus.WaitingForStart,
+                Username = "Stable Diffusion",
+                Status = OrderStatus.WAITING_FOR_START,
                 StartDate = weekStart.AddDays(2).AddHours(14),
                 EndDate = weekStart.AddDays(2).AddHours(18)
             },
 
             new Order
             {
-                OwnerUsername = "CUDA Rendering",
-                Status = OrderStatus.WaitingForStart,
+                Username = "CUDA Rendering",
+                Status = OrderStatus.WAITING_FOR_START,
                 StartDate = weekStart.AddDays(4).AddHours(8),
                 EndDate = weekStart.AddDays(4).AddHours(11)
             },
 
             new Order
             {
-                OwnerUsername = "Fine-Tuning",
-                Status = OrderStatus.Running,
+                Username = "Fine-Tuning",
+                Status = OrderStatus.RUNNING,
                 StartDate = weekStart.AddDays(5).AddHours(16),
                 EndDate = weekStart.AddDays(5).AddHours(22)
             }
-        };
+        ];
         }
     }
 }

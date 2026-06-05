@@ -23,7 +23,6 @@ namespace GpuShare.Frontend.Tests.Services
         private readonly MockHttpMessageHandler _mockHttp;
         private readonly HttpClient _httpClient;
         private readonly IApiClient _apiClient;
-        private static readonly TestAuthState _authState = new();
         private readonly ILogger<DeviceService> _logger;
         private readonly DeviceService _sut;
 

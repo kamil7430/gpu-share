@@ -25,11 +25,11 @@ namespace GpuShare.Frontend.Services
         {
             return status switch
             {
-                OrderStatus.WaitingForStart => "Waiting for start",
-                OrderStatus.Running => "Running",
-                OrderStatus.Completed => "Completed",
-                OrderStatus.Failure => "Failure",
-                OrderStatus.Suspended => "Suspended",
+                OrderStatus.WAITING_FOR_START => "Waiting for start",
+                OrderStatus.RUNNING => "Running",
+                OrderStatus.COMPLETED => "Completed",
+                OrderStatus.FAILURE => "Failure",
+                OrderStatus.SUSPENDED => "Suspended",
                 _ => ""
             };
         }

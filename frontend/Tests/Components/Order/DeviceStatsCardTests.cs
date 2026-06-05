@@ -28,7 +28,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
             // Arrange
             var order = new Models.Order
             {
-                Id = 1,
+                OrderId = 1,
                 StartDate = DateTime.UtcNow.AddHours(-2),
                 EndDate = DateTime.UtcNow.AddHours(1)
             };

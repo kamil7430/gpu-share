@@ -30,11 +30,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     Items = [
                         new Models.Order
                         {
-                            Id = 1,
-                            OwnerUsername = "john",
+                            OrderId = 1,
+                            Username = "john",
                             StartDate = now,
                             EndDate = now.AddHours(2),
-                            Status = Models.OrderStatus.WaitingForStart
+                            Status = Models.OrderStatus.WAITING_FOR_START
                         }
                     ]
                 });
@@ -68,9 +68,9 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var reservation = cut.Find(".reservation-block");
 
             // Assert
-            reservation.Children.First().TextContent.Should().Contain("john");
-            reservation.Children.Last().TextContent.Should().Contain("10:00");
-            reservation.Children.Last().TextContent.Should().Contain("12:00");
+            reservation.Children[0].TextContent.Should().Contain("john");
+            reservation.Children[2].TextContent.Should().Contain("10:00");
+            reservation.Children[2].TextContent.Should().Contain("12:00");
         }
 
         [Fact]
@@ -155,11 +155,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     [
                         new Models.Order
                     {
-                        Id = 1,
-                        OwnerUsername = "alice",
+                        OrderId = 1,
+                        Username = "alice",
                         StartDate = now,
                         EndDate = now.AddHours(1),
-                        Status = Models.OrderStatus.WaitingForStart
+                        Status = Models.OrderStatus.WAITING_FOR_START
                     }
                     ]
                 });
@@ -221,19 +221,19 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     [
                         new Models.Order
                         {
-                            Id = 1,
-                            OwnerUsername = "john",
+                            OrderId = 1,
+                            Username = "john",
                             StartDate = now,
                             EndDate = now.AddHours(1),
-                            Status = Models.OrderStatus.WaitingForStart
+                            Status = Models.OrderStatus.WAITING_FOR_START
                         },
                         new Models.Order
                         {
-                            Id = 2,
-                            OwnerUsername = "alice",
+                            OrderId = 2,
+                            Username = "alice",
                             StartDate = now.AddHours(2),
                             EndDate = now.AddHours(3),
-                            Status = Models.OrderStatus.Completed
+                            Status = Models.OrderStatus.COMPLETED
                         }
                     ]
                 });
@@ -261,11 +261,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     [
                         new Models.Order
                 {
-                    Id = 1,
-                    OwnerUsername = "bob",
+                    OrderId = 1,
+                    Username = "bob",
                     StartDate = now,
                     EndDate = now.AddHours(1),
-                    Status = Models.OrderStatus.Completed
+                    Status = Models.OrderStatus.COMPLETED
                 }
                     ]
                 });
@@ -293,11 +293,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     [
                         new Models.Order
                         {
-                            Id = 1,
-                            OwnerUsername = "correct-slot-user",
+                            OrderId = 1,
+                            Username = "correct-slot-user",
                             StartDate = now,
                             EndDate = now.AddHours(1),
-                            Status = Models.OrderStatus.WaitingForStart
+                            Status = Models.OrderStatus.WAITING_FOR_START
                         }
                     ]
                 });

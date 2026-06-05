@@ -33,7 +33,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
             // Arrange
             var order = new Models.Order
             {
-                Id = 1,
+                OrderId = 1,
                 StartDate = DateTime.UtcNow.AddHours(-2),
                 EndDate = DateTime.UtcNow.AddHours(1)
             };
@@ -58,8 +58,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
         {
             Host = "gpu-12.gpushare.io",
             Port = 443,
-            Protocol = "WSS",
-            ConnectionString = "wss://gpu-12.gpushare.io/connect/session_x82A"
+            Protocol = "WSS"
         };
 
         public Task InitializeAsync() => Task.CompletedTask;

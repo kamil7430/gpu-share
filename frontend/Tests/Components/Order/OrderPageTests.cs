@@ -42,7 +42,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
             // Arrange
             _authStateMock.SetupGet(x => x.User).Returns(new User() { Username = "john"});
 
-            var order = new Models.Order { Id = 1, DeviceId = 10, Status = OrderStatus.Running };
+            var order = new Models.Order { OrderId = 1, DeviceId = 10, Status = OrderStatus.RUNNING };
             _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(order);
 
             _deviceServiceMock.Setup(x => x.GetDeviceAsync(10)).ReturnsAsync(new Models.Device());
@@ -83,12 +83,12 @@ namespace GpuShare.Frontend.Tests.Components.Order
         }
 
         [Theory]
-        [InlineData(OrderStatus.Running, "Running")]
-        [InlineData(OrderStatus.Completed, "Completed")]
-        [InlineData(OrderStatus.Suspended, "Suspended")]
+        [InlineData(OrderStatus.RUNNING, "Running")]
+        [InlineData(OrderStatus.COMPLETED, "Completed")]
+        [InlineData(OrderStatus.SUSPENDED, "Suspended")]
         public void Should_Render_Correct_Status_Text(OrderStatus status, string expected)
         {
-            _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(new Models.Order { Id = 1, Status = status, DeviceId = 10 });
+            _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(new Models.Order { OrderId = 1, Status = status, DeviceId = 10 });
 
             var cut = Render<OrderPage>(p => p.Add(x => x.OrderId, 1));
 
@@ -125,7 +125,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
         public void Should_Load_Order_And_Device_On_Init()
         {
             // Arrange
-            var order = new Models.Order { Id = 1, DeviceId = 42, Status = OrderStatus.Running };
+            var order = new Models.Order { OrderId = 1, DeviceId = 42, Status = OrderStatus.RUNNING };
 
             _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(order);
 
@@ -168,9 +168,9 @@ namespace GpuShare.Frontend.Tests.Components.Order
         {
             var order = new Models.Order
             {
-                Id = 1,
+                OrderId = 1,
                 DeviceId = 10,
-                Status = OrderStatus.Running
+                Status = OrderStatus.RUNNING
             };
 
             _orderServiceMock.Setup(x => x.GetOrderAsync(1)).ReturnsAsync(order);
