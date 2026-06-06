@@ -10,19 +10,61 @@ namespace GpuShare.Frontend.Services
         private readonly IApiClient _api = api;
         private readonly ILogger<PaymentService> _logger = logger;
 
-        public Task<WalletBalance> GetBalanceAsync()
+        public async Task<PayoutAccount> GetPayoutAccountAsync()
         {
-            throw new NotImplementedException();
+            var account = await _api.GetAsync<PayoutAccount>($"/wallet/payout-account");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got account information with bank name {name}", account!.BankName);
+
+            return account!;
         }
 
-        public Task<PagedResult<Transaction>> GetTransactionsAsync(TransactionQueryParams parameters)
+        public async Task<PagedResult<Transaction>> GetTransactionsAsync(TransactionQueryParams parameters)
         {
-            throw new NotImplementedException();
+            var transactions = await _api.GetAsync<List<Transaction>>($"/wallet/transactions", parameters);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got transactions.");
+
+            return new PagedResult<Transaction>
+            {
+                Items = transactions!,
+                TotalCount = transactions!.Count,
+                Page = parameters.Page,
+                PageSize = parameters.PageSize
+            };
         }
 
-        public Task<TransferResponse> TransferAsync(decimal amount, PaymentMethod method)
+        public async Task<WalletBalance> GetWalletBalanceAsync()
         {
-            throw new NotImplementedException();
+            var wallet = await _api.GetAsync<WalletBalance>($"/wallet");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got wallet information with total USD cents {total} and locked USD cents {locked}", 
+                    wallet!.TotalUsdCents, wallet!.LockedUsdCents);
+
+            return wallet!;
+        }
+
+        public async Task SavePayoutAccountAsync(PayoutAccount request)
+        {
+            await _api.PostAsync($"/wallet/payout-account", request);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sent payout account information with bank name {name}.", request.BankName);
+        }
+
+        public async Task<TransferResponse> TopUpAsync(TopUpRequest request)
+        {
+            var response = await _api.PostAsync<TransferRequest, TransferResponse>($"/wallet/transfer", (TransferRequest)request);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sent top-up request with amount {amount}.", request.AmountUsdCents);
+            return response!;
+        }
+
+        public async Task<TransferResponse> WithdrawAsync(WithdrawRequest request)
+        {
+            var response = await _api.PostAsync<TransferRequest, TransferResponse>($"/wallet/transfer", (TransferRequest)request);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sent withdraw request with amount {amount}.", request.AmountUsdCents);
+            return response!;
         }
     }
 }

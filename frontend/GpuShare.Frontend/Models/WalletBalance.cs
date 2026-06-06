@@ -2,7 +2,9 @@ namespace GpuShare.Frontend.Models;
 
 public class WalletBalance
 {
-    public decimal AvailableBalance { get; set; }
+    public int TotalUsdCents { get; set; }
 
-    public decimal LockedFunds { get; set; }
+    public int LockedUsdCents { get; set; }
+
+    public int AvailableUsdCents => TotalUsdCents - LockedUsdCents;
 }

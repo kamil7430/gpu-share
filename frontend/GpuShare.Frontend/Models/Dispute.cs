@@ -1,11 +1,12 @@
 namespace GpuShare.Frontend.Models;
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using GpuShare.Frontend.Models.Dtos;
 
 public class Dispute
 {
-    public int Id { get; set; }
+    public int DisputeId { get; set; }
 
     public int OrderId { get; set; }
 
@@ -15,14 +16,26 @@ public class Dispute
 
     public string Reason { get; set; } = "";
 
-    public string Status { get; set; } = string.Empty;
+    public DisputeStatus Status { get; set; } = DisputeStatus.OPEN;
 
     [MinLength(50)]
-    public string Details { get; set; } = "";
+    public string Description { get; set; } = "";
 
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public List<DisputeMessageDto> Messages { get; set; } = new();
+    //public List<DisputeMessageDto> Messages { get; set; } = [];
 
-    public List<DisputeAttachmentDto> Attachments { get; set; } = new();
+    public List<DisputeAttachmentDto> Attachments { get; set; } = [];
+}
+
+public enum DisputeStatus
+{
+    [Description("Open")]
+    OPEN,
+    [Description("Under Review")]
+    UNDER_REVIEW,
+    [Description("Resolved")]
+    RESOLVED,
+    [Description("Rejected")]
+    REJECTED
 }

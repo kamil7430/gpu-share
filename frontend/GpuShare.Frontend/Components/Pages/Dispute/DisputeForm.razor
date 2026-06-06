@@ -57,7 +57,7 @@
         <!-- Details -->
         <div class="form-card">
             <h4>Problem Details</h4>
-            <MudTextField T="string" @bind-Value="Dispute.Details" Variant="Variant.Outlined" Lines="6" Counter="5000" Immediate="true" Placeholder="Describe the issue in detail..." HelperText="Minimum 50 characters required." Class="details-input" />
+            <MudTextField T="string" @bind-Value="Dispute.Description" Variant="Variant.Outlined" Lines="6" Counter="5000" Immediate="true" Placeholder="Describe the issue in detail..." HelperText="Minimum 50 characters required." Class="details-input" />
         </div>
 
         <!-- Evidence Upload -->
@@ -115,7 +115,7 @@
     public List<IBrowserFile> UploadedFiles = new();
 
     private bool CanSubmit => Dispute == null? false : !string.IsNullOrWhiteSpace(Dispute.Reason) 
-        && !string.IsNullOrWhiteSpace(Dispute.Details) && Dispute.Details.Length >= 50;
+        && !string.IsNullOrWhiteSpace(Dispute.Description) && Dispute.Description.Length >= 50;
 
     protected override async Task OnParametersSetAsync()
     {

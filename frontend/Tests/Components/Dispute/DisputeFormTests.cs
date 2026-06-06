@@ -85,7 +85,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         {
             var dispute = new Models.Dispute
             {
-                Details = new string('A', 100)
+                Description = new string('A', 100)
             };
 
             var cut = Render<DisputeForm>(p => p.Add(x => x.OrderId, 123).Add(x => x.Dispute, dispute));
@@ -101,7 +101,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             var dispute = new Models.Dispute
             {
                 Reason = "Hardware mismatch",
-                Details = "too short"
+                Description = "too short"
             };
 
             var cut = Render<DisputeForm>(p => p.Add(x => x.OrderId, 123).Add(x => x.Dispute, dispute));
@@ -117,7 +117,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             var dispute = new Models.Dispute
             {
                 Reason = "Hardware mismatch",
-                Details = new string('A', 100)
+                Description = new string('A', 100)
             };
 
             var cut = Render<DisputeForm>(p => p.Add(x => x.OrderId, 123).Add(x => x.Dispute, dispute));

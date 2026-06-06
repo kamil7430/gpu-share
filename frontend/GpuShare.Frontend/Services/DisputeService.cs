@@ -1,34 +1,72 @@
-﻿using GpuShare.Frontend.Models;
+﻿using GpuShare.Frontend.Infrastructure.Http;
+using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services.Interfaces;
 
 namespace GpuShare.Frontend.Services
 {
-    public class DisputeService : IDisputeService
+    public class DisputeService(IApiClient api, ILogger<DisputeService> logger) : IDisputeService
     {
-        public Task<Dispute> GetDisputeAsync(int disputeId)
+        private readonly IApiClient _api = api;
+        private readonly ILogger<DisputeService> _logger = logger;
+
+        public async Task<Dispute> GetDisputeAsync(int disputeId)
         {
-            throw new NotImplementedException();
+            var dispute = await _api.GetAsync<Dispute>($"/disputes/{disputeId}");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got dispute with id {Id}", disputeId);
+
+            return dispute!;
         }
 
-        public Task<PagedResult<Dispute>> ListDisputesAsync(DisputeQueryParams parameters)
+        public async Task<PagedResult<Dispute>> ListDisputesAsync(DisputeQueryParams parameters)
         {
-            throw new NotImplementedException();
+            var disputes = await _api.GetAsync<List<Dispute>>($"/disputes", parameters);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got {num} disputes.", disputes!.Count);
+
+            return new PagedResult<Dispute>
+            {
+                Items = disputes!,
+                TotalCount = disputes!.Count,
+                Page = 1,
+                PageSize = parameters.PageSize
+            };
         }
 
-        public Task<Dispute> OpenDisputeAsync(OpenDisputeRequest cmd)
+        public async Task<Dispute> OpenDisputeAsync(OpenDisputeRequest cmd)
         {
-            throw new NotImplementedException();
+            var response = await _api.PostAsync<OpenDisputeRequest, OpenDisputeResponse>($"/disputes", cmd);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Created dispute for order {orderId}. Got ID {disputeId} for it.",
+                    cmd.OrderId, response!.DisputeId);
+
+            return new Dispute
+            {
+                DisputeId = response!.DisputeId,
+                OrderId = cmd.OrderId,
+                Status = response.Status,
+                Attachments = cmd.Attachments,
+                CreatedAt = response.CreatedAt ?? DateTime.UtcNow,
+                Description = cmd.Description,
+                CustomerUsername = response.CustomerUsername,
+                OwnerUsername = response.OwnerUsername,
+                Reason = cmd.Reason
+            };
         }
 
-        public Task ResolveDisputeAsync(int disputeId, ResolveDisputeRequest decision)
+        public async Task ResolveDisputeAsync(int disputeId, ResolveDisputeRequest decision)
         {
-            throw new NotImplementedException();
+            await _api.PostAsync($"/disputes/{disputeId}/resolve", decision);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Resolved dispute with ID {id}.", disputeId);
         }
 
-        public Task SubmitClarificationAsync(int disputeId, SubmitClarificationRequest payload)
+        public async Task SubmitClarificationAsync(int disputeId, SubmitClarificationRequest payload)
         {
-            throw new NotImplementedException();
+            await _api.PostAsync($"/disputes/{disputeId}/clarification", payload);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Submitted clarification for dispute with ID {id}.", disputeId);
         }
     }
 }

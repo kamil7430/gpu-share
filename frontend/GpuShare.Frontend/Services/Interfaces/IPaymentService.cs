@@ -8,18 +8,38 @@ public interface IPaymentService
     /// GET /api/wallet
     /// Returns current wallet balance and locked funds.
     /// </summary>
-    Task<WalletBalance> GetBalanceAsync();
+    Task<WalletBalance> GetWalletBalanceAsync();
 
     /// <summary>
     /// POST /api/wallet/transfer
-    /// Initiates wallet transfer via payment provider.
+    /// Initiates wallet topup via payment provider.
     /// </summary>
-    Task<TransferResponse> TransferAsync(decimal amount, PaymentMethod method);
+    Task<TransferResponse> TopUpAsync(TopUpRequest request);
+
+    /// <summary>
+    /// POST /api/wallet/transfer
+    /// Initiates wallet withdrawal via payment provider.
+    /// </summary>
+    Task<TransferResponse> WithdrawAsync(WithdrawRequest request);
 
     /// <summary>
     /// GET /api/wallet/transactions
     /// Returns paginated transaction history.
     /// </summary>
-    Task<PagedResult<Transaction>> GetTransactionsAsync(TransactionQueryParams parameters);
+    Task<PagedResult<Transaction>> GetTransactionsAsync(TransactionQueryParams query);
+
+    /// <summary>
+    /// GET /api/wallet/payout-account
+    /// Returns the user's payout account information.
+    /// </summary>
+    /// <returns></returns>
+    Task<PayoutAccount> GetPayoutAccountAsync();
+
+    /// <summary>
+    /// POST /api/wallet/payout-account
+    /// Saves the user's payout account information.
+    /// </summary>
+    /// <returns></returns>
+    Task SavePayoutAccountAsync(PayoutAccount request);
 
 }

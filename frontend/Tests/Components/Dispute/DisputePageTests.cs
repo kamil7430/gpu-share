@@ -12,9 +12,9 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
 {
     public class DisputePageTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private Mock<IAuthState> _authStateMock;
-        private Mock<IDisputeService> _disputeServiceMock = new();
-        private Bunit.TestDoubles.BunitAuthorizationContext? _authContext;
+        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IDisputeService> _disputeServiceMock = new();
+        private readonly BunitAuthorizationContext? _authContext;
 
         public DisputePageTests()
         {
@@ -33,7 +33,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             _authContext.SetAuthorized("john");
 
             _disputeServiceMock.Setup(x => x.GetDisputeAsync(It.IsAny<int>())).ReturnsAsync(new Models.Dispute() {
-                Id = 15,
+                DisputeId = 15,
                 OrderId = 10,
             });
         }

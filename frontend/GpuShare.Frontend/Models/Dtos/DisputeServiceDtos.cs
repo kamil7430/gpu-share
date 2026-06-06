@@ -7,17 +7,34 @@
         public string Reason { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
+
+        public List<DisputeAttachmentDto> Attachments { get; set; } = [];
+    }
+
+    public class OpenDisputeResponse
+    {
+        public int DisputeId { get; set; }
+
+        public DisputeStatus Status { get; set; } = DisputeStatus.OPEN;
+
+        public string Description { get; set; } = string.Empty;
+
+        public string OwnerUsername { get; set; } = string.Empty;
+
+        public string CustomerUsername { get; set; } = string.Empty;
+
+        public DateTime? CreatedAt { get; set; }
     }
 
     public class DisputeQueryParams
     {
-        public string? Status { get; set; }
+        public DisputeStatus? Status { get; set; }
 
         public string? Search { get; set; }
 
-        public DateTime? FromUtc { get; set; }
+        public DateTime? From { get; set; }
 
-        public DateTime? ToUtc { get; set; }
+        public DateTime? To { get; set; }
 
         public int Page { get; set; } = 1;
 
@@ -28,7 +45,7 @@
     {
         public string Message { get; set; } = string.Empty;
 
-        public List<string> AttachmentUrls { get; set; } = [];
+        public List<DisputeAttachmentDto> Attachments { get; set; } = [];
     }
 
     public class ResolveDisputeRequest
@@ -38,7 +55,7 @@
 
         public string Justification { get; set; } = string.Empty;
 
-        public decimal? RefundAmount { get; set; }
+        public int? RefundAmountUsdCents { get; set; }
     }
 
     public class DisputeAttachmentDto
@@ -54,6 +71,6 @@
 
         public string Content { get; set; } = string.Empty;
 
-        public DateTime SentAtUtc { get; set; }
+        public DateTime SentAt { get; set; }
     }
 }

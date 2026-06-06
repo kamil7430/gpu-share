@@ -1,35 +1,46 @@
-namespace GpuShare.Frontend.Models;
+using System.ComponentModel;
 
-public class Transaction
+namespace GpuShare.Frontend.Models
 {
-    public Guid Id { get; set; }
 
-    public TransactionType Type { get; set; } = TransactionType.TopUp;
+    public class Transaction
+    {
+        public int TransactionId { get; set; }
 
-    public decimal Amount { get; set; }
+        public TransactionType Type { get; set; } = TransactionType.TOPUP;
 
-    public string Currency { get; set; } = "USD";
+        public int AmountUsdCents { get; set; }
 
-    public TransactionStatus Status { get; set; } = TransactionStatus.Pending;
+        public TransactionStatus Status { get; set; } = TransactionStatus.PENDING;
 
-    public DateTime CreatedAtUtc { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
 
-    public string? Description { get; set; }
-}
+        public string? Description { get; set; }
+    }
 
-public enum TransactionType
-{
-    TopUp,
-    Reservation,
-    Settlement,
-    Refund,
-    Withdrawal
-}
+    public enum TransactionType
+    {
+        [Description("Top Up")]
+        TOPUP,
+        [Description("Reservation")]
+        RESERVATION,
+        [Description("Settlement")]
+        SETTLEMENT,
+        [Description("Refund")]
+        REFUND,
+        [Description("Withdrawal")]
+        WITHDRAWAL
+    }
 
-public enum TransactionStatus
-{
-    Pending,
-    Completed,
-    Failed,
-    Cancelled
+    public enum TransactionStatus
+    {
+        [Description("Pending")]
+        PENDING,
+        [Description("Completed")]
+        COMPLETED,
+        [Description("Failed")]
+        FAILED,
+        [Description("Cancelled")]
+        CANCELLED
+    }
 }

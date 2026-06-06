@@ -14,6 +14,7 @@ namespace GpuShare.Frontend.Tests
     {
         private readonly MockHttpMessageHandler _mock;
         private readonly Func<Task<TResult>> _action;
+        private readonly Func<Task> _actionVoid;
 
         private HttpMethod _method = HttpMethod.Get;
         private string _url = "*";
@@ -33,12 +34,29 @@ namespace GpuShare.Frontend.Tests
         {
             _mock = mock;
             _action = action;
+            _actionVoid = null!;
+        }
+
+        private ApiContract(MockHttpMessageHandler mock, Func<Task> action)
+        {
+            _mock = mock;
+            _actionVoid = action;
+            _action = null!;
         }
 
         public static ApiContract<TRequest, TResult> Post(MockHttpMessageHandler mock,
             Func<Task<TResult>> action)
         {
             return new ApiContract<TRequest, TResult>(mock, action)
+            {
+                _method = HttpMethod.Post
+            };
+        }
+
+        public static ApiContract<TRequest, TResult> Post(MockHttpMessageHandler mock,
+            Func<Task> actionVoid)
+        {
+            return new ApiContract<TRequest, TResult>(mock, actionVoid)
             {
                 _method = HttpMethod.Post
             };
@@ -80,6 +98,19 @@ namespace GpuShare.Frontend.Tests
             return this;
         }
 
+        public ApiContract<TRequest, TResult> NoReturn()
+        {
+            _mock.When(_method, _url)
+                .Respond(req =>
+                {
+                    _captured = req;
+
+                    return new HttpResponseMessage(_expectedStatus){};
+                });
+
+            return this;
+        }
+
         public ApiContract<TRequest, TResult> WithBody(TRequest body)
         {
             _expectedBody = body;
@@ -89,6 +120,56 @@ namespace GpuShare.Frontend.Tests
         public async Task ShouldSendBody(Action<TRequest> bodyAssert)
         {
             await _action();
+
+            _captured.Should().NotBeNull();
+
+            // ======================
+            // METHOD CHECK
+            // ======================
+            _captured!.Method.Should().Be(_method);
+
+            // ======================
+            // URL + QUERY CHECK
+            // ======================
+            var uri = _captured.RequestUri!.ToString();
+
+            uri.Should().Contain(_url);
+
+            var query = System.Web.HttpUtility.ParseQueryString(_captured.RequestUri!.Query);
+
+            foreach (var expected in _expectedQuery)
+            {
+                query[expected.Key].Should().Be(expected.Value);
+            }
+
+            // ======================
+            // HEADER CHECK
+            // ======================
+            foreach (var expectedHeader in _expectedHeaders)
+            {
+                _captured.Headers.TryGetValues(expectedHeader.Key, out var values)
+                    .Should().BeTrue($"Header {expectedHeader.Key} should exist");
+
+                values!.First().Should().Be(expectedHeader.Value);
+            }
+
+            // ======================
+            // BODY CHECK
+            // ======================
+            if (_expectedBody is not null)
+            {
+                var json = await _captured.Content!.ReadAsStringAsync();
+
+                var actual = JsonSerializer.Deserialize<TRequest>(json, _jsonOptions);
+
+                actual.Should().NotBeNull();
+                bodyAssert(actual!);
+            }
+        }
+
+        public async Task ShouldSendBodyVoid(Action<TRequest> bodyAssert)
+        {
+            await _actionVoid();
 
             _captured.Should().NotBeNull();
 
@@ -202,6 +283,11 @@ namespace GpuShare.Frontend.Tests
         public async Task ExecuteAction()
         {
             await _action();
+        }
+
+        public async Task ExecuteVoidAction()
+        {
+            await _actionVoid();
         }
     }
 
