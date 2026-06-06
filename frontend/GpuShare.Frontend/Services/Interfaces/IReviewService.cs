@@ -5,7 +5,7 @@ using GpuShare.Frontend.Models.Dtos;
 public interface IReviewService
 {
     /// <summary>
-    /// POST /api/orders/{id}/review
+    /// POST /api/orders/{orderId}/review
     /// Creates a one-time review after completed session.
     /// </summary>
     /// <param name="cmd">The review creation request containing rating and comment.</param>
@@ -14,7 +14,7 @@ public interface IReviewService
     Task<Review> CreateReviewAsync(int orderId, CreateReviewRequest cmd);
 
     /// <summary>
-    /// GET /api/devices/{id}/reviews
+    /// GET /api/devices/{deviceId}/reviews
     /// Returns reviews for device details page.
     /// </summary>
     /// <param name="deviceId">The ID of the device.</param>
@@ -24,7 +24,7 @@ public interface IReviewService
     Task<PagedResult<Review>> GetDeviceReviewsAsync(int deviceId, int page = 1, int count = 10);
 
     /// <summary>
-    /// GET /api/users/{id}/reviews
+    /// GET /api/users/{username}/reviews
     /// Returns reviews for user profile page.
     /// </summary>
     /// <param name="username">The username of the user.</param>
@@ -34,6 +34,7 @@ public interface IReviewService
     Task<PagedResult<Review>> GetUserReviewsAsync(string username, int page = 1, int count = 10);
 
     /// <summary>
+    /// GET /api/users/{username}/rating
     /// Returns the average rating and review count for a user, used in the profile page.
     /// </summary>
     /// <param name="username">The username of the user.</param>

@@ -2,11 +2,11 @@ namespace GpuShare.Frontend.Models;
 
 public class Review
 {
-    public int Id { get; set; }
+    public int ReviewId { get; set; }
 
     public int OrderId { get; set; }
 
-    public int DeviceId { get; set; }
+    //public int DeviceId { get; set; }
 
     public string AuthorUsername { get; set; } = string.Empty;
 

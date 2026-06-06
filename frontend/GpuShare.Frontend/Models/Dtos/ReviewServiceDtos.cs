@@ -9,9 +9,18 @@
         public string Comment { get; set; } = "";
     }
 
+    public class CreateReviewResponse
+    {
+        public int ReviewId { get; set; }
+
+        public DateTime? CreatedAt { get; set; } = null;
+
+        public string AuthorUsername { get; set; } = "";
+    }
+
     public class UserRatingDto
     {
-        public decimal AverageRating { get; set; } = 0.0m;
+        public double AverageRating { get; set; } = 0.0;
         public int RatingCount { get; set; } = 0;
     }
 }

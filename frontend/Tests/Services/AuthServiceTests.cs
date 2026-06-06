@@ -56,7 +56,7 @@ public class AuthServiceTests
     {
         _httpClient = _mockHttp.ToHttpClient();
         _httpClient.BaseAddress = new Uri("https://localhost:5001");
-        _apiClient = new ApiClient(_httpClient);
+        _apiClient = new ApiClient(_httpClient, NullLogger<ApiClient>.Instance);
         _logger = NullLogger<AuthService>.Instance;
         _sut = new AuthService(_apiClient, _authState, new MockJwtHelper(), _logger);
     }

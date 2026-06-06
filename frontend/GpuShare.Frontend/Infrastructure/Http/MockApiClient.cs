@@ -12,6 +12,11 @@
             return Task.FromResult<T?>(default);
         }
 
+        public Task<T?> GetAsync<T>(string url, object query)
+        {
+            return Task.FromResult<T?>(default);
+        }
+
         public Task PatchAsync<TRequest>(string url, TRequest data)
         {
             return Task.CompletedTask;

@@ -31,7 +31,7 @@ namespace GpuShare.Frontend.Tests.Services
             _mockHttp = new();
             _httpClient = _mockHttp.ToHttpClient();
             _httpClient.BaseAddress = new Uri("https://localhost:5001");
-            _apiClient = new ApiClient(_httpClient);
+            _apiClient = new ApiClient(_httpClient, NullLogger<ApiClient>.Instance);
             _logger = NullLogger<DeviceService>.Instance;
             _sut = new DeviceService(_apiClient, _logger);
         }
@@ -198,10 +198,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SearchDevicesAsync_Should_Convert_Filters_To_Query_Parameters()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices")
-                .Respond("application/json", _devicesJson);
-
-            ApiContract<object, PagedResult<Device>>
+            await ApiContract<object, PagedResult<Device>>
                 .Get(_mockHttp, () => _sut.SearchDevicesAsync(_filters))
                 .To("/devices")
                 .Returns("[]")
@@ -222,7 +219,7 @@ namespace GpuShare.Frontend.Tests.Services
 
                     q["minDriverVersion"].Should().Be("535.00");
                     q["maxDriverVersion"].Should().Be("536.00");
-                });
+                }).ExecuteAction();
         }
 
         [Fact]

@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
+using GpuShare.Frontend.Models;
 using RichardSzalay.MockHttp;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Net;
-using System.Collections.Specialized;
 
 namespace GpuShare.Frontend.Tests
 {
@@ -196,6 +197,23 @@ namespace GpuShare.Frontend.Tests
                         ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromDays(30)))
                     .WhenTypeIs<DateTime>()
             );
+        }
+
+        public async Task ExecuteAction()
+        {
+            await _action();
+        }
+    }
+
+    public static class ApiErrorAssertions
+    {
+        public static async Task<ApiException> ShouldFailWith(Func<Task> action, HttpStatusCode status)
+        {
+            var ex = await Assert.ThrowsAsync<ApiException>(action);
+
+            ex.StatusCode.Should().Be(status);
+
+            return ex;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace GpuShare.Frontend.Services
         {
             return Task.FromResult(new Review
             {
-                Id = 1,
+                ReviewId = 1,
                 OrderId = orderId,
                 Rating = cmd.Rating,
                 Comment = cmd.Comment,
@@ -23,17 +23,17 @@ namespace GpuShare.Frontend.Services
         {
             return Task.FromResult(new PagedResult<Review>
             {
-                Items = new List<Review> {
-                    new Review
+                Items = [
+                    new()
                     {
-                        Id = 1,
+                        ReviewId = 1,
                         OrderId = deviceId,
                         Rating = 4,
                         Comment = "This is a mock review.",
                         CreatedAt = DateTime.Now,
                         AuthorUsername = "mockuser"
                     } 
-                }
+                ]
             });
         }
 
@@ -41,9 +41,9 @@ namespace GpuShare.Frontend.Services
         {
             return Task.FromResult(new PagedResult<Review>
             {
-                Items = [new Review
+                Items = [new()
                 {
-                    Id = 1,
+                    ReviewId = 1,
                     OrderId = 4,
                     Rating = 4,
                     Comment = "This is a mock review.",
@@ -57,7 +57,7 @@ namespace GpuShare.Frontend.Services
         {
             return Task.FromResult(new UserRatingDto
             {
-                AverageRating = 4.5m,
+                AverageRating = 4.5,
                 RatingCount = 21
             });
         }

@@ -49,14 +49,16 @@ namespace GpuShare.Frontend.Services
             var order = await _api.GetAsync<Order>($"/orders/{orderId}");
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got order with id {Id}", orderId);
+
             return order!;
         }
 
         public async Task<PagedResult<Order>> ListOrdersAsync(OrderQueryParams parameters)
         {
-            var orders = await _api.GetAsync<List<Order>>($"/orders");
+            var orders = await _api.GetAsync<List<Order>>($"/orders", parameters);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got orders.");
+
             return new PagedResult<Order>
             {
                 Items = orders!,

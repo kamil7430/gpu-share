@@ -26,8 +26,9 @@
 
     public enum PaymentMethod
     {
-        Card,
-        BankTransfer,
-        PayPal
+        CARD,
+        BANK_TRANSFER,
+        PAYPAL,
+        BLIK
     }
 }

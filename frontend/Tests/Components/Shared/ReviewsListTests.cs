@@ -16,19 +16,19 @@ namespace GpuShare.Frontend.Tests.Components.Shared
     public class ReviewsListTests : BunitContext, Xunit.IAsyncLifetime
     {
         private readonly Mock<IReviewService> _reviewServiceMock = new();
-        private readonly Review review1 = new Review()
+        private readonly Review review1 = new()
         {
-            Id = 1,
-            DeviceId = 123,
+            ReviewId = 1,
+            OrderId = 123,
             AuthorUsername = "User1",
             Rating = 4,
             Comment = "Great GPU, I needed exaxtly this",
             CreatedAt = DateTime.Now.AddDays(-1)
         };
-        private readonly Review review2 = new Review()
+        private readonly Review review2 = new()
         {
-            Id = 3,
-            DeviceId = 123,
+            ReviewId = 3,
+            OrderId = 123,
             AuthorUsername = "Ileavelongreviews",
             Rating = 5,
             Comment = "I rented this GPU for a machine learning project and overall the experience was excellent. "
@@ -39,19 +39,19 @@ namespace GpuShare.Frontend.Tests.Components.Shared
                 + "for future workloads and would recommend it to anyone looking for reliable GPU resources.",
             CreatedAt = DateTime.Now.AddDays(-2)
         };
-        private readonly Review review3 = new Review()
+        private readonly Review review3 = new()
         {
-            Id = 3,
-            DeviceId = 123,
+            ReviewId = 3,
+            OrderId = 123,
             AuthorUsername = "jonh",
             Rating = 1,
             Comment = "I am just a hater lol",
             CreatedAt = DateTime.Now.AddHours(-5)
         };
-        private readonly Review newReview = new Review()
+        private readonly Review newReview = new()
         {
-            Id = 4,
-            DeviceId = 123,
+            ReviewId = 4,
+            OrderId = 123,
             AuthorUsername = "newUser",
             Rating = 1,
             Comment = "This is a brand new review just added",

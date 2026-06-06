@@ -6,27 +6,36 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
-public class ApiClient : IApiClient
+public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 {
-    private readonly HttpClient _http;
+    private readonly HttpClient _http = http;
+    private readonly ILogger<ApiClient> _logger = logger;
     private readonly JsonSerializerOptions _options = new()
     {
         PropertyNameCaseInsensitive = true,
-        NumberHandling = JsonNumberHandling.AllowReadingFromString
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        Converters = { new JsonStringEnumConverter() }
     };
-
-    public ApiClient(HttpClient http)
-    {
-        _http = http;
-        _options.Converters.Add(new JsonStringEnumConverter());
-    }
 
     public async Task<T?> GetAsync<T>(string url)
     {
         return await ExecuteRequest(async () =>
         {   
             var response = await _http.GetAsync(url);
+
+            await EnsureSuccess(response);
+
+            return await response.Content.ReadFromJsonAsync<T>(_options);
+        });
+    }
+
+    public async Task<T?> GetAsync<T>(string url, object query)
+    {
+        return await ExecuteRequest(async () =>
+        {
+            var response = await _http.GetAsync(QueryStringBuilder.Build(url, query));
 
             await EnsureSuccess(response);
 
@@ -78,18 +87,6 @@ public class ApiClient : IApiClient
         });
     }
 
-    //public async Task<TResponse?> PatchAsync<TRequest, TResponse>(string url, TRequest data)
-    //{
-    //    return await ExecuteRequest(async () =>
-    //    {
-    //        var response = await _http.PatchAsJsonAsync(url, data, _options);
-
-    //        await EnsureSuccess(response);
-
-    //        await response.Content.ReadFromJsonAsync<TResponse>();
-    //    });
-    //}
-
     public async Task DeleteAsync(string url)
     {
         await ExecuteRequest(async () =>
@@ -100,17 +97,19 @@ public class ApiClient : IApiClient
         });
     }
 
-    private static async Task EnsureSuccess(HttpResponseMessage response)
+    private async Task EnsureSuccess(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode)
             return;
 
         var content = await response.Content.ReadAsStringAsync();
 
+        _logger.LogError("API call did not succeed. Error message: {message}. Http code: {code}.", 
+            content, response.StatusCode);
         throw new ApiException(content, response.StatusCode);
     }
 
-    private static async Task<T> ExecuteRequest<T>(Func<Task<T>> action)
+    private async Task<T> ExecuteRequest<T>(Func<Task<T>> action)
     {
         try
         {
@@ -118,15 +117,17 @@ public class ApiClient : IApiClient
         }
         catch (TaskCanceledException)
         {
-            throw new ApiException("Request timed out.", HttpStatusCode.RequestTimeout);
+            _logger.LogError("Request timed out. Http code: {code}.", HttpStatusCode.RequestTimeout);
+            throw new ApiException("Request timed out. ", HttpStatusCode.RequestTimeout);
         }
         catch (HttpRequestException)
         {
+            _logger.LogError("Cannot connect to server. Http code: {code}.", HttpStatusCode.ServiceUnavailable);
             throw new ApiException("Cannot connect to server.", HttpStatusCode.ServiceUnavailable);
         }
     }
 
-    private static async Task ExecuteRequest(Func<Task> action)
+    private async Task ExecuteRequest(Func<Task> action)
     {
         try
         {
@@ -134,10 +135,12 @@ public class ApiClient : IApiClient
         }
         catch (TaskCanceledException)
         {
+            _logger.LogError("Request timed out. Http code: {code}.", HttpStatusCode.RequestTimeout);
             throw new ApiException("Request timed out.", HttpStatusCode.RequestTimeout);
         }
         catch (HttpRequestException)
         {
+            _logger.LogError("Cannot connect to server. Http code: {code}.", HttpStatusCode.ServiceUnavailable);
             throw new ApiException("Cannot connect to server.", HttpStatusCode.ServiceUnavailable);
         }
     }

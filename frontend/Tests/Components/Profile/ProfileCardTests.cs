@@ -77,7 +77,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
                 .Setup(x => x.GetUserRatingAsync("john"))
                 .ReturnsAsync(new UserRatingDto
                 {
-                    AverageRating = 4.5m,
+                    AverageRating = 4.5,
                     RatingCount = 21
                 });
 

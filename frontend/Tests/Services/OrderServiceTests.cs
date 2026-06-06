@@ -29,7 +29,7 @@ namespace GpuShare.Frontend.Tests.Services
             _http.BaseAddress = new Uri("https://localhost:5001");
             _logger = NullLogger<OrderService>.Instance;
 
-            _apiClient = new ApiClient(_http);
+            _apiClient = new ApiClient(_http, NullLogger<ApiClient>.Instance);
             _sut = new OrderService(_apiClient, _logger);
         }
 
@@ -283,20 +283,17 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListOrdersAsync_Should_Convert_Filters_To_Query_Parameters()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices")
-                .Respond("application/json", _ordersJson);
-
-            ApiContract<object, PagedResult<Order>>
+            await ApiContract<object, PagedResult<Order>>
                 .Get(_mockHttp, () => _sut.ListOrdersAsync(_filters))
                 .To("/orders")
-                .Returns("[]")
+                .Returns(_ordersJson)
                 .ExpectQuery(q =>
                 {
                     q["limit"].Should().Be("25");
                     q["deviceId"].Should().Be("123");
                     q["Status"].Should().Be("WAITING_FOR_START");
                     q["username"].Should().Be("john");
-                });
+                }).ExecuteAction();
         }
 
         [Fact]

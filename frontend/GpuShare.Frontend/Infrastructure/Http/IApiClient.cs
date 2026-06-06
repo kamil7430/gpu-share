@@ -20,6 +20,8 @@ public interface IApiClient
 {
     Task<T?> GetAsync<T>(string url);
 
+    Task<T?> GetAsync<T>(string url, object query);
+
     Task<TResponse?> PostAsync<TRequest, TResponse>(string url, TRequest data);
 
     Task PostAsync<TRequest>(string url, TRequest data);

@@ -55,7 +55,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters)
         {
-            var devices = await _api.GetAsync<List<Device>>($"/devices");
+            var devices = await _api.GetAsync<List<Device>>($"/devices", filters);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got devices.");
             return new PagedResult<Device>
