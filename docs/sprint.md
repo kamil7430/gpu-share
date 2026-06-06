@@ -1,66 +1,176 @@
-User story 1
-Jako użytkownik aplikacji webowej chcę móc zakładać konto i logować się
+## Sprint Goal
 
-Zadania:
-[ ] logowanie
-[ ] rejestracja
+Replace frontend mock data with real backend API communication and deliver an end-to-end functional MVP.
 
-SP: 1
+## Epic 1: Authentication Integration
 
-User story 2
-Jako użytkownik aplikacji webowej chcę móc zarejestrować swoje karty graficzne
+### User Stories
+- [ ] Integrate login endpoint
+- [ ] Integrate logout endpoint
+- [ ] Persist JWT/token
+- [ ] Restore session after page refresh
+- [ ] Protect authorized pages
 
-Zadania:
-[ ] tworzenie nowej karty
-[ ] zmiana parametrów/statusu karty
-[ ] usuwanie karty
+### Tasks
+- [ ] Create AuthApiClient
+- [ ] Implement login request
+- [ ] Implement logout request
+- [ ] Store token
+- [ ] Configure HttpClient authorization handler
+- [ ] Connect AuthState
+- [ ] Remove authentication mocks
+- [ ] Test authorized/unauthorized flows
 
-SP: 1
+### Definition of Done
+- [ ] User can log in
+- [ ] User can log out
+- [ ] Session survives refresh
+- [ ] Protected pages work correctly
 
-User story 3
-Jako użytkownik aplikacji webowej chcę móc szukać dostępnych kart odpowiadających moim wymaganiom
+## Epic 2: Device Management Integration
 
-Zadania:
-[ ] wyszukiwanie kart
-[ ] filtrowanie wyników
+### User Stories
+- [ ] User can view devices
+- [ ] User can add device
+- [ ] User can edit device
+- [ ] User can remove device
 
-SP: 1
+### Tasks
+- [ ] Create DeviceApiClient
+- [ ] Integrate GpuList
+- [ ] Integrate DeviceCard
+- [ ] Integrate DevicePage
+- [ ] Integrate EditDeviceForm
+- [ ] Integrate remove modal
+- [ ] Replace mock telemetry retrieval
 
-User story 4
-Jako użytkownik aplikacji webowej chcę móc wypożyczać karty graficzne
+### Definition of Done
+- [ ] Device CRUD works against backend
+- [ ] No device mocks remain
 
-Zadania:
-[ ] wypożyczanie kart graficznych
-[ ] podgląd aktualnego statusu wypożyczenia
-[ ] przerwanie wypożyczenia
+## Epic 3: Search Integration
 
-SP: 1
+### User Stories
+- [ ] User can search GPUs
+- [ ] User can filter GPUs
 
-User story 5
-Jako użytkownik aplikacji webowej chcę móc zarządzać swoim portfelem
+### Tasks
+- [ ] Connect SearchBar
+- [ ] Convert filters into API query parameters
+- [ ] Integrate pagination
+- [ ] Integrate sorting
 
-Zadania:
-[ ] doładowanie konta
-[ ] wypłacenie z konta
+### Definition of Done
+- [ ] Search results come from backend
+- [ ] Filters affect API results
 
-SP: 3
+## Epic 4: Order Integration
 
-User story 6
-Jako użytkownik aplikacji webowej chcę móc wystawić opinię dotyczącą wypożyczenia
+### User Stories
+- [ ] User can create order
+- [ ] User can view order
+- [ ] User can finish order
 
-Zadania:
-[ ] utworzenie opinii
+### Tasks
+- [ ] Connect DeviceOrderForm
+- [ ] Connect reservation validation
+- [ ] Connect OrderPage
+- [ ] Connect DeviceStatsCard
+- [ ] Connect ConnectionCard
+- [ ] Connect session ending flow
 
-SP: 1
+### Definition of Done
+- [ ] Complete ordering flow works
+- [ ] User can start and finish session
 
-User story 7
-Jako użytkownik aplikacji webowej chcę móc zgłosić skargę
+## Epic 5: Reservation Calendar Integration
 
-Zadania:
-[ ] zgłoszenie skargi
-[ ] podgląd statusu skargi
+### User Stories
+- [ ] User can see real reservations
 
-SP: 1
+### Tasks
+- [ ] Connect ReservationCalendar
+- [ ] Implement week navigation API calls
+- [ ] Handle empty weeks
+- [ ] Handle overlapping reservations
 
+### Definition of Done
+- [ ] Calendar displays real order data
 
-Definition of Done:
+## Epic 6: Reviews Integration
+
+### User Stories
+- [ ] User can view reviews
+- [ ] User can create reviews
+
+### Tasks
+- [ ] Connect ReviewsList
+- [ ] Connect review modal
+- [ ] Implement paging
+- [ ] Implement load more
+
+### Definition of Done
+- [ ] Reviews are fully backend-driven
+
+## Epic 7: Dispute System Integration
+
+- [ ] User Stories
+- [ ] User can submit dispute
+- [ ] User can upload evidence
+
+### Tasks
+- [ ] Connect DisputeForm
+- [ ] Implement file upload API
+- [ ] Connect dispute submission
+- [ ] Connect dispute history
+
+### Definition of Done
+- [ ] Disputes are persisted in backend
+
+## Epic 8: Telemetry Integration
+
+### User Stories
+- [ ] User can view real telemetry
+
+### Tasks
+- [ ] Connect TelemetryCard
+- [ ] Connect OrderTelemetryCard
+- [ ] Implement polling/SSE/WebSocket
+- [ ] Implement CSV export
+
+### Definition of Done
+- [ ] Telemetry displays live backend data
+
+## Technical Tasks
+
+### API Infrastructure
+- [ ] Create typed API clients
+- [ ] Add global exception handling
+- [ ] Add loading states
+- [ ] Add retry policies
+- [ ] Add notification system (success/error toasts)
+
+### Logging
+- [ ] Add service-level logging
+- [ ] Add API failure logging
+- [ ] Add telemetry error logging
+
+### Testing
+- [ ] Replace mocks with API mocks
+- [ ] Add integration tests
+- [ ] Verify end-to-end flows
+
+## Sprint Deliverable
+
+By the end of the sprint, a user should be able to:
+
+1. Register/Login
+2. Add a GPU
+3. Search available GPUs
+4. Reserve a GPU
+5. View live session information
+6. Leave a review
+7. Open a dispute
+8. View telemetry
+
+with all data coming from the backend and no frontend mock data remaining.
