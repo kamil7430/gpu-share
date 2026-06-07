@@ -7,20 +7,11 @@ Okres: 06-01 -- 06-07
 
 ## Zakres sprintu
 
-### User story 0
+### User story 1
 Dodanie brakującej funkcjonalności zamówień.
 
 - [x] dodać endpoint GET /orders
 - [x] dodać endpoint GET /orders/{id}
-
-### User story 1
-Integracja frontendu z backendem.
-Jako użytkownik aplikacji webowej chcę móc:
-
-- [ ] zarejestrować swoje karty graficzne
-- [ ] szukać dostępne karty
-- [ ] zakładać konto i logować się
-
 
 ### User story 2
 Jako atakujący mam dostęp do wewnętrznego REST API (api <-> coordinator).

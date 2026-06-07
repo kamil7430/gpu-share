@@ -1,12 +1,12 @@
 ### Status realizacji sprintu (część wykonana)
 
-W tym sprincie skupiono się głównie na poprawie bezpieczeństwa (User Story 2) oraz na rozbudowie API zamówień (User Story 0). Z opisu wynika, że cele w tych obszarach zostały w pełni dowiezione.
+W tym sprincie skupiono się głównie na poprawie bezpieczeństwa (User Story 2) oraz na rozbudowie API zamówień (User Story 1). Z opisu wynika, że cele w tych obszarach zostały w pełni dowiezione.
 
 ---
 
 ### Szczegółowa ocena wykonanych punktów
 
-#### User story 0: Dodanie brakującej funkcjonalności zamówień
+#### User story 1: Dodanie brakującej funkcjonalności zamówień
 
 * **Wykonane:** Dodano endpointy `GET /orders` oraz `GET /orders/{id}`.
 * **Ocena:** Kluczowe punkty biznesowe z tej historyjki zostały zrealizowane. Pozwoli to na przeglądanie listy zamówień oraz szczegółów konkretnego zamówienia.
