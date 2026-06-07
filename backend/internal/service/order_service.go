@@ -150,5 +150,38 @@ func (s *OrderService) GetOrders(ctx context.Context, params api.GetOrdersParams
 }
 
 func (s *OrderService) GetOrderById(ctx context.Context, params api.GetOrderByIdParams) (api.GetOrderByIdRes, error) {
-	panic("unimplemented")
+	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
+	if !ok {
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.store.Users().GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	order, err := s.store.Orders().GetOrderById(ctx, params.OrderId)
+	if err != nil {
+		return &api.GetOrderByIdNotFound{}, nil
+	}
+
+	if order.UserID != user.ID {
+		return &api.GetOrderByIdUnauthorized{}, nil
+	}
+
+	conn, err := s.store.Gpus().GetConnectionDetailsById(ctx, strconv.Itoa(int(order.DeviceID)))
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.Order{
+		OrderId: strconv.Itoa(int(order.ID)),
+		Status:  order.RentalStatus,
+		ConnectionDetails: api.ConnectionDetails{
+			Host:     conn.Host,
+			Port:     conn.Port,
+			Protocol: conn.Protocol,
+		},
+		TotalReservedCostCents: order.RentalCostCents,
+	}, nil
 }

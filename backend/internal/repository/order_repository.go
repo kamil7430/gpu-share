@@ -10,6 +10,7 @@ import (
 type OrderRepository interface {
 	AddOrder(ctx context.Context, order *model.Order) error
 	GetOrdersByUserId(ctx context.Context, userId uint, limit int) ([]model.Order, error)
+	GetOrderById(ctx context.Context, id string) (model.Order, error)
 }
 
 type orderRepository struct {
@@ -22,4 +23,8 @@ func (r *orderRepository) AddOrder(ctx context.Context, order *model.Order) erro
 
 func (r *orderRepository) GetOrdersByUserId(ctx context.Context, userId uint, limit int) ([]model.Order, error) {
 	return gorm.G[model.Order](r.db).Where("user_id = ?", userId).Limit(limit).Find(ctx)
+}
+
+func (r *orderRepository) GetOrderById(ctx context.Context, id string) (model.Order, error) {
+	return gorm.G[model.Order](r.db).Where("id = ?", id).First(ctx)
 }
