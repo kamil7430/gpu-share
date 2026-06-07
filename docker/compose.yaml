@@ -23,6 +23,16 @@ services:
     networks:
       network:
         ipv4_address: ${GPU_IP}
+  search:
+    build:
+      context: ..
+      dockerfile: docker/search.Dockerfile
+    env_file: ../.env
+    ports:
+      - "2140:2140"
+    networks:
+      network:
+        ipv4_address: ${BACKEND_IP}
   db:
     image: postgres
     restart: always
