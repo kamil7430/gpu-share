@@ -933,13 +933,79 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// GetOrderParams is parameters of getOrder operation.
-type GetOrderParams struct {
+// GetOrderByIdParams is parameters of getOrderById operation.
+type GetOrderByIdParams struct {
+	// The id of order to retrieve.
+	OrderId string
+}
+
+func unpackGetOrderByIdParams(packed middleware.Parameters) (params GetOrderByIdParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "orderId",
+			In:   "path",
+		}
+		params.OrderId = packed[key].(string)
+	}
+	return params
+}
+
+func decodeGetOrderByIdParams(args [1]string, argsEscaped bool, r *http.Request) (params GetOrderByIdParams, _ error) {
+	// Decode path: orderId.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "orderId",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.OrderId = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "orderId",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
+// GetOrdersParams is parameters of getOrders operation.
+type GetOrdersParams struct {
 	// Maximum number of elements to retrieve.
 	Limit OptInt `json:",omitempty,omitzero"`
 }
 
-func unpackGetOrderParams(packed middleware.Parameters) (params GetOrderParams) {
+func unpackGetOrdersParams(packed middleware.Parameters) (params GetOrdersParams) {
 	{
 		key := middleware.ParameterKey{
 			Name: "limit",
@@ -952,7 +1018,7 @@ func unpackGetOrderParams(packed middleware.Parameters) (params GetOrderParams) 
 	return params
 }
 
-func decodeGetOrderParams(args [0]string, argsEscaped bool, r *http.Request) (params GetOrderParams, _ error) {
+func decodeGetOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (params GetOrdersParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
 	// Set default value for query: limit.
 	{
@@ -1022,72 +1088,6 @@ func decodeGetOrderParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 		return params, &ogenerrors.DecodeParamError{
 			Name: "limit",
 			In:   "query",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
-// GetOrderByIdParams is parameters of getOrderById operation.
-type GetOrderByIdParams struct {
-	// The id of order to retrieve.
-	OrderId string
-}
-
-func unpackGetOrderByIdParams(packed middleware.Parameters) (params GetOrderByIdParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "orderId",
-			In:   "path",
-		}
-		params.OrderId = packed[key].(string)
-	}
-	return params
-}
-
-func decodeGetOrderByIdParams(args [1]string, argsEscaped bool, r *http.Request) (params GetOrderByIdParams, _ error) {
-	// Decode path: orderId.
-	if err := func() error {
-		param := args[0]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "orderId",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.OrderId = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "orderId",
-			In:   "path",
 			Err:  err,
 		}
 	}

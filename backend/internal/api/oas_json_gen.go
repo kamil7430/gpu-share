@@ -1351,8 +1351,8 @@ func (s *GetDevicesOKApplicationJSON) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes GetOrderOKApplicationJSON as json.
-func (s GetOrderOKApplicationJSON) Encode(e *jx.Encoder) {
+// Encode encodes GetOrdersOKApplicationJSON as json.
+func (s GetOrdersOKApplicationJSON) Encode(e *jx.Encoder) {
 	unwrapped := []Order(s)
 
 	e.ArrStart()
@@ -1362,10 +1362,10 @@ func (s GetOrderOKApplicationJSON) Encode(e *jx.Encoder) {
 	e.ArrEnd()
 }
 
-// Decode decodes GetOrderOKApplicationJSON from json.
-func (s *GetOrderOKApplicationJSON) Decode(d *jx.Decoder) error {
+// Decode decodes GetOrdersOKApplicationJSON from json.
+func (s *GetOrdersOKApplicationJSON) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode GetOrderOKApplicationJSON to nil")
+		return errors.New("invalid: unable to decode GetOrdersOKApplicationJSON to nil")
 	}
 	var unwrapped []Order
 	if err := func() error {
@@ -1384,19 +1384,19 @@ func (s *GetOrderOKApplicationJSON) Decode(d *jx.Decoder) error {
 	}(); err != nil {
 		return errors.Wrap(err, "alias")
 	}
-	*s = GetOrderOKApplicationJSON(unwrapped)
+	*s = GetOrdersOKApplicationJSON(unwrapped)
 	return nil
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s GetOrderOKApplicationJSON) MarshalJSON() ([]byte, error) {
+func (s GetOrdersOKApplicationJSON) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *GetOrderOKApplicationJSON) UnmarshalJSON(data []byte) error {
+func (s *GetOrdersOKApplicationJSON) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

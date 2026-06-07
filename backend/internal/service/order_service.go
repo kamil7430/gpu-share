@@ -120,8 +120,33 @@ func (s *OrderService) OrderDevice(ctx context.Context, params *api.OrderDeviceR
 	}, nil
 }
 
-func (s *OrderService) GetOrder(ctx context.Context, params api.GetOrderParams) (api.GetOrderRes, error) {
-	panic("unimplemented")
+func (s *OrderService) GetOrders(ctx context.Context, params api.GetOrdersParams) (api.GetOrdersRes, error) {
+	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
+	if !ok {
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.store.Users().GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	orders, err := s.store.Orders().GetOrdersByUserId(ctx, user.ID, params.Limit.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(api.GetOrdersOKApplicationJSON, len(orders))
+	for i, order := range orders {
+		result[i] = api.Order{
+			OrderId:                strconv.Itoa(int(order.ID)),
+			Status:                 order.RentalStatus,
+			ConnectionDetails:      api.ConnectionDetails{},
+			TotalReservedCostCents: order.RentalCostCents,
+		}
+	}
+
+	return &result, nil
 }
 
 func (s *OrderService) GetOrderById(ctx context.Context, params api.GetOrderByIdParams) (api.GetOrderByIdRes, error) {

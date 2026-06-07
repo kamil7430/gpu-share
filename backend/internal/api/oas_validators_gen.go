@@ -262,7 +262,7 @@ func (s GetDevicesOKApplicationJSON) Validate() error {
 	return nil
 }
 
-func (s GetOrderOKApplicationJSON) Validate() error {
+func (s GetOrdersOKApplicationJSON) Validate() error {
 	alias := ([]Order)(s)
 	if alias == nil {
 		return errors.New("nil is invalid value")

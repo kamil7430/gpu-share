@@ -15,11 +15,11 @@ var (
 		"GET":  "Authorization",
 		"POST": "Authorization,Content-Type",
 	}
-	rn9AllowedHeaders = map[string]string{
+	rn11AllowedHeaders = map[string]string{
 		"GET":  "Authorization",
 		"POST": "Authorization,Content-Type",
 	}
-	rn11AllowedHeaders = map[string]string{
+	rn10AllowedHeaders = map[string]string{
 		"GET": "Authorization",
 	}
 	rn3AllowedHeaders = map[string]string{
@@ -185,13 +185,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					if len(elem) == 0 {
 						switch r.Method {
 						case "GET":
-							s.handleGetOrderRequest([0]string{}, elemIsEscaped, w, r)
+							s.handleGetOrdersRequest([0]string{}, elemIsEscaped, w, r)
 						case "POST":
 							s.handleOrderDeviceRequest([0]string{}, elemIsEscaped, w, r)
 						default:
 							s.notAllowed(w, r, notAllowedParams{
 								allowedMethods: "GET,POST",
-								allowedHeaders: rn9AllowedHeaders,
+								allowedHeaders: rn11AllowedHeaders,
 								acceptPost:     "application/json",
 								acceptPatch:    "",
 							})
@@ -227,7 +227,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							default:
 								s.notAllowed(w, r, notAllowedParams{
 									allowedMethods: "GET",
-									allowedHeaders: rn11AllowedHeaders,
+									allowedHeaders: rn10AllowedHeaders,
 									acceptPost:     "",
 									acceptPatch:    "",
 								})
@@ -560,9 +560,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					if len(elem) == 0 {
 						switch method {
 						case "GET":
-							r.name = GetOrderOperation
+							r.name = GetOrdersOperation
 							r.summary = "Get a list of user's orders"
-							r.operationID = "getOrder"
+							r.operationID = "getOrders"
 							r.operationGroup = ""
 							r.pathPattern = "/api/orders"
 							r.args = args

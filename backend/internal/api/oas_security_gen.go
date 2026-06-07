@@ -43,10 +43,10 @@ var operationRolesBearerAuth = map[string][]string{
 	GetDevicesOperation: []string{
 		"user",
 	},
-	GetOrderOperation: []string{
+	GetOrderByIdOperation: []string{
 		"user",
 	},
-	GetOrderByIdOperation: []string{
+	GetOrdersOperation: []string{
 		"user",
 	},
 	OrderDeviceOperation: []string{

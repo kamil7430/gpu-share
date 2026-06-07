@@ -223,7 +223,7 @@ func testGetOrders(t *testing.T, db *gorm.DB, baseUrl string) {
 	renterToken := tokenObj.Token
 
 	loginResp, err = http.Post(baseUrl+"/api/users/login", "application/json", strings.NewReader(`{
-		"username": "TestRentingUser1",
+		"username": "TestRentingUser2",
 		"password": "TestPassword"
 	}`))
 	require.NoError(t, err)
@@ -300,7 +300,7 @@ func testGetOrders(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.JSONEq(t, "[]", string(body))
 	})
 
-	t.Run("get orders -- some devices on list", func(t *testing.T) {
+	t.Run("get orders -- some orders on list", func(t *testing.T) {
 		resp := sendRequest("", renterToken)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		defer resp.Body.Close()

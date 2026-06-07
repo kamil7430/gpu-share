@@ -55,7 +55,7 @@ post:
 
 get:
   summary: Get a list of user's orders
-  operationId: getOrder
+  operationId: getOrders
   security:
     - bearerAuth:
         - user
@@ -72,5 +72,7 @@ get:
               $ref: "../../../schemas/Order.yaml"
     "400":
       description: Invalid request parameters
+    "401":
+      description: User not logged in (token invalid or not provided)
     default:
       $ref: "../../../responses/default.yaml"

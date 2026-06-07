@@ -501,11 +501,6 @@ func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 // GetHealthOK is response for GetHealth operation.
 type GetHealthOK struct{}
 
-// GetOrderBadRequest is response for GetOrder operation.
-type GetOrderBadRequest struct{}
-
-func (*GetOrderBadRequest) getOrderRes() {}
-
 // GetOrderByIdNotFound is response for GetOrderById operation.
 type GetOrderByIdNotFound struct{}
 
@@ -516,9 +511,19 @@ type GetOrderByIdUnauthorized struct{}
 
 func (*GetOrderByIdUnauthorized) getOrderByIdRes() {}
 
-type GetOrderOKApplicationJSON []Order
+// GetOrdersBadRequest is response for GetOrders operation.
+type GetOrdersBadRequest struct{}
 
-func (*GetOrderOKApplicationJSON) getOrderRes() {}
+func (*GetOrdersBadRequest) getOrdersRes() {}
+
+type GetOrdersOKApplicationJSON []Order
+
+func (*GetOrdersOKApplicationJSON) getOrdersRes() {}
+
+// GetOrdersUnauthorized is response for GetOrders operation.
+type GetOrdersUnauthorized struct{}
+
+func (*GetOrdersUnauthorized) getOrdersRes() {}
 
 // LoginNotFound is response for Login operation.
 type LoginNotFound struct{}

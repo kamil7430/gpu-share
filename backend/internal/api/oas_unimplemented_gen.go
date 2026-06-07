@@ -59,21 +59,21 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) error {
 	return ht.ErrNotImplemented
 }
 
-// GetOrder implements getOrder operation.
-//
-// Get a list of user's orders.
-//
-// GET /api/orders
-func (UnimplementedHandler) GetOrder(ctx context.Context, params GetOrderParams) (r GetOrderRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetOrderById implements getOrderById operation.
 //
 // Get a user's order.
 //
 // GET /api/orders/{orderId}
 func (UnimplementedHandler) GetOrderById(ctx context.Context, params GetOrderByIdParams) (r GetOrderByIdRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetOrders implements getOrders operation.
+//
+// Get a list of user's orders.
+//
+// GET /api/orders
+func (UnimplementedHandler) GetOrders(ctx context.Context, params GetOrdersParams) (r GetOrdersRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

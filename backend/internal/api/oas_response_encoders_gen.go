@@ -148,32 +148,6 @@ func encodeGetHealthResponse(response *GetHealthOK, w http.ResponseWriter, span 
 	return nil
 }
 
-func encodeGetOrderResponse(response GetOrderRes, w http.ResponseWriter, span trace.Span) error {
-	switch response := response.(type) {
-	case *GetOrderOKApplicationJSON:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		w.WriteHeader(200)
-		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-
-		return nil
-
-	case *GetOrderBadRequest:
-		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
-
-		return nil
-
-	default:
-		return errors.Errorf("unexpected response type: %T", response)
-	}
-}
-
 func encodeGetOrderByIdResponse(response GetOrderByIdRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Order:
@@ -198,6 +172,38 @@ func encodeGetOrderByIdResponse(response GetOrderByIdRes, w http.ResponseWriter,
 	case *GetOrderByIdNotFound:
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeGetOrdersResponse(response GetOrdersRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *GetOrdersOKApplicationJSON:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *GetOrdersBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	case *GetOrdersUnauthorized:
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
 
 		return nil
 

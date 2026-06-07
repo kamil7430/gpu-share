@@ -21,8 +21,8 @@ type GetOrderByIdRes interface {
 	getOrderByIdRes()
 }
 
-type GetOrderRes interface {
-	getOrderRes()
+type GetOrdersRes interface {
+	getOrdersRes()
 }
 
 type LoginRes interface {
