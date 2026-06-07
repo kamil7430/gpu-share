@@ -44,10 +44,10 @@ Story points: 5
 Wyszukiwanie GPU językiem naturalnym.
 
 Zadania:
-- [ ] implementacja seedowania bazy danych kartami z pliku csv
-- [ ] setup dockera z pythonowym serwerem REST
-- [ ] definicje OpenAPI
-- [ ] połączenie z frontendem
+- [x] implementacja seedowania bazy danych kartami z pliku csv
+- [x] setup dockera z pythonowym serwerem REST
+- [x] definicje OpenAPI
+- [x] połączenie z frontendem
 
 Story points: 8
 
