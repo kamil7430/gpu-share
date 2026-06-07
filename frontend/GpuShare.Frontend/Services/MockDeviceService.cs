@@ -40,5 +40,10 @@ namespace GpuShare.Frontend.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<DeviceAgentInfo> GetAgentInstallInfoAsync(int deviceId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

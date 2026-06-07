@@ -1,5 +1,6 @@
 namespace GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
+using System.ComponentModel.DataAnnotations;
 
 public class Order
 {
@@ -28,9 +29,14 @@ public class Order
 
 public enum OrderStatus
 {
+    [Display(Name = "Waiting for start")]
     WAITING_FOR_START,
+    [Display(Name = "Running")]
     RUNNING,
+    [Display(Name = "Completed")]
     COMPLETED,
+    [Display(Name = "Suspended")]
     SUSPENDED,
+    [Display(Name = "Failure")]
     FAILURE
 }

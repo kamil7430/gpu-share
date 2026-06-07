@@ -7,17 +7,17 @@ using GpuShare.Frontend.State;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using MudBlazor;
 using MudBlazor.Services;
 
 namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class EditDeviceFormTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IAuthState> _authStateMock = new();
 
         public EditDeviceFormTests()
         {
-            _authStateMock = new Mock<IAuthState>();
             Services.AddAuthorizationCore();
             Services.AddSingleton(_authStateMock.Object);
             Services.AddMudServices();
@@ -26,6 +26,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             JSInterop.SetupVoid(_ => true).SetVoidResult();
             JSInterop.SetupModule(_ => true);
+
+            Render<MudPopoverProvider>();
         }
 
         public Task InitializeAsync() => Task.CompletedTask;
@@ -133,24 +135,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         }
 
         // ------------------------------------------------------------
-        // 5. JS INTEROP (COPY TOKEN)
-        // ------------------------------------------------------------
-
-        [Fact]
-        public void Copy_Button_Should_Invoke_Clipboard_JS()
-        {
-            JSInterop.SetupVoid("navigator.clipboard.writeText");
-
-            var cut = Render<EditDeviceForm>(p => p
-                .Add(x => x.Device, CreateGpu()));
-
-            cut.Find(".agent-command-container button").Click();
-
-            JSInterop.VerifyInvoke("navigator.clipboard.writeText");
-        }
-
-        // ------------------------------------------------------------
-        // 6. SAVE BEHAVIOR
+        // 5. SAVE BEHAVIOR
         // ------------------------------------------------------------
 
         [Fact]
@@ -160,7 +145,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             bool invoked = false;
 
-            var cut = Render<EditDeviceForm>(p => p
+            var cut = Render<EditDeviceForm>(p => p.Add(x => x.Device, gpu)
                 .Add(x => x.OnSave, EventCallback.Factory.Create<Models.Device>( this, _ => invoked = true)));
 
             cut.Find("form").Submit();

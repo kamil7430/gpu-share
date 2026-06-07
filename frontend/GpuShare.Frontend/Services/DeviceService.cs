@@ -86,5 +86,13 @@ namespace GpuShare.Frontend.Services
                 State = oldDevice.State,
             };
         }
+
+        public async Task<DeviceAgentInfo> GetAgentInstallInfoAsync(int deviceId)
+        {
+            var agentInfo = await _api.GetAsync<DeviceAgentInfo>($"/devices/{deviceId}/agent-info");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got agent install info for device with ID {id}.", deviceId);
+            return agentInfo!;
+        }
     }
 }

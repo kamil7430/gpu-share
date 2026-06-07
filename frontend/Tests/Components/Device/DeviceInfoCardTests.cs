@@ -7,25 +7,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MudBlazor.Services;
 using FluentAssertions;
+using MudBlazor;
+using GpuShare.Frontend.Models.Dtos;
 
 namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class DeviceInfoCardTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private readonly Mock<IAuthState> _authStateMock;
+        private readonly Mock<IAuthState> _authStateMock = new();
+        private readonly Mock<IFormatters> _formattersMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
 
         public DeviceInfoCardTests()
         {
-            _authStateMock = new Mock<IAuthState>();
             Services.AddAuthorizationCore();
             Services.AddSingleton(_authStateMock.Object);
+            Services.AddSingleton(_formattersMock.Object);
+            Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
 
-            // important note: the JSInterop calls in the Device component are not being properly mocked, which causes the tests to fail. The following setup is an attempt to mock those calls, but it may need to be adjusted based on the actual JSInterop calls being made in the Device component.
             JSInterop.SetupVoid(_ => true).SetVoidResult();
             JSInterop.SetupModule(_ => true);
+
+            Render<MudPopoverProvider>();
+
+            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
+                .ReturnsAsync(new DeviceAgentInfo
+                {
+                    InstallScriptUrl = "https://gpu-share.io/install.sh",
+                    AgentToken = "abc123"
+                });
+        }
+
+        private void SetupAuthenticatedUser(string username)
+        {
+            _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(true);
+            _authStateMock.SetupGet(x => x.User).Returns(new User { Username = username });
         }
 
         public Task InitializeAsync() => Task.CompletedTask;
@@ -57,6 +76,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         {
             // Arrange
             _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(false);
+            _formattersMock.Setup(x => x.FormatUsd(450)).Returns("4,50");
 
             var gpu = CreateGpu();
 
@@ -72,7 +92,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             cut.Markup.Should().Contain("535.xx");
 
-            cut.Markup.Should().Contain("4,5");
+            cut.Markup.Should().Contain("4,50");
 
             cut.Markup.Should().Contain("CUDA");
             cut.Markup.Should().Contain("PyTorch");
@@ -92,7 +112,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             // Assert
             var banner = cut.Find(".status-banner");
 
-            banner.TextContent.Should().Contain("Available for Rent");
+            banner.TextContent.Should().Contain("Available");
 
             banner.ClassList.Should().Contain("online");
         }
@@ -111,7 +131,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             // Assert
             var banner = cut.Find(".status-banner");
 
-            banner.TextContent.Should().Contain("Currently Disabled");
+            banner.TextContent.Should().Contain("Unavailable");
 
             banner.ClassList.Should().Contain("offline");
         }
@@ -120,8 +140,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Authenticated_User_Should_See_Edit_Button()
         {
             // Arrange
-            _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(true);
-
+            SetupAuthenticatedUser("julie");
             var gpu = CreateGpu();
 
             // Act
@@ -169,8 +188,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Authenticated_User_Should_Not_See_Profile_Link()
         {
             // Arrange
-            _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(true);
-
+            SetupAuthenticatedUser("julie");
             var gpu = CreateGpu();
 
             // Act
@@ -184,8 +202,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Clicking_Edit_Button_Should_Change_Mode_To_Edit()
         {
             // Arrange
-            _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(true);
-
+            SetupAuthenticatedUser("julie");
             var gpu = CreateGpu();
 
             var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu).Add(x => x.Mode, DevicePageMode.View));
@@ -195,6 +212,96 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             // Assert
             cut.Instance.Mode.Should().Be(DevicePageMode.Edit);
+        }
+
+        [Fact]
+        public void Copy_Button_Should_Invoke_Clipboard_JS()
+        {
+            JSInterop.SetupVoid("navigator.clipboard.writeText");
+            SetupAuthenticatedUser("julie");
+            var gpu = CreateGpu();
+            
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
+            .Add(x => x.Mode, DevicePageMode.View));
+
+            cut.Find(".agent-command-container button").Click();
+
+            JSInterop.VerifyInvoke("navigator.clipboard.writeText").Arguments[0]!.ToString()
+                .Should().Contain("https://gpu-share.io/install.sh");
+        }
+
+        [Fact]
+        public void Should_Not_Show_Agent_Section_When_User_Is_Not_Owner()
+        {
+            // Arrange
+            SetupAuthenticatedUser("other-user");
+
+            var gpu = CreateGpu();
+
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
+                .Add(x => x.Mode, DevicePageMode.View));
+
+            // Assert
+            cut.Markup.Should().NotContain("Node Agent Installation");
+        }
+
+        [Fact]
+        public void Should_Show_Agent_Section_When_User_Is_Owner()
+        {
+            // Arrange
+            SetupAuthenticatedUser("julie");
+
+            var gpu = CreateGpu();
+
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
+                .Add(x => x.Mode, DevicePageMode.View));
+
+            // Assert
+            cut.Markup.Should().Contain("Node Agent Installation");
+        }
+
+        [Fact]
+        public async Task Should_Call_GetAgentInstallInfo_On_Render()
+        {
+            // Arrange
+            SetupAuthenticatedUser("julie");
+
+            var gpu = CreateGpu();
+
+            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
+                .ReturnsAsync(new DeviceAgentInfo
+                {
+                    InstallScriptUrl = "https://gpu-share.io/install.sh",
+                    AgentToken = "abc123"
+                });
+
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
+                .Add(x => x.Mode, DevicePageMode.View));
+
+            // Allow async lifecycle to complete
+            await cut.InvokeAsync(() => Task.CompletedTask);
+
+            _deviceServiceMock.Verify(x => x.GetAgentInstallInfoAsync(123), Times.Once);
+        }
+
+        [Fact]
+        public void Should_Render_Agent_Token()
+        {
+            SetupAuthenticatedUser("julie");
+
+            var gpu = CreateGpu();
+
+            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
+                .ReturnsAsync(new DeviceAgentInfo
+                {
+                    InstallScriptUrl = "https://gpu-share.io/install.sh",
+                    AgentToken = "gpu_test_token_123"
+                });
+
+            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
+                .Add(x => x.Mode, DevicePageMode.View));
+
+            cut.Markup.Should().Contain("gpu_test_token_123");
         }
     }
 }

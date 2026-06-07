@@ -101,7 +101,7 @@
     {
         var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams
         {
-            DeviceId = 1, // replace with actual device ID
+            DeviceId = DeviceId,
             StartDate = _weekStart,
             EndDate = _weekStart.AddDays(7)
         });
@@ -112,7 +112,12 @@
     private IEnumerable<Order> GetOrdersForSlot(DateTime day, int hour)
     {
 
-        return _orders.Where(r => r.StartDate != null && r.StartDate?.Date == day.Date && r.StartDate?.Hour == hour);
+        var orders = _orders.Where(r => r.StartDate != null && r.StartDate?.Date == day.Date && r.StartDate?.Hour == hour);
+        if (orders.Count() > 0)
+        {
+            Console.WriteLine($"Warning: Multiple orders found for {day.Date} at {hour}:00. This should not happen.");
+        };
+        return orders;
     }
 
     private string GetOrderStyle(Order r)

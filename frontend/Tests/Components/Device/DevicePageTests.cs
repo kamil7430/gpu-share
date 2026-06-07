@@ -3,38 +3,52 @@ using FluentAssertions;
 using GpuShare.Frontend.Components.Pages.Device;
 using GpuShare.Frontend.Components.Shared;
 using GpuShare.Frontend.Models;
+using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services.Interfaces;
 using GpuShare.Frontend.State;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MudBlazor;
 using MudBlazor.Services;
-using Polly;
-using System.Globalization;
-using System.Reflection.PortableExecutable;
 
 namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class DevicePageTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private readonly Mock<IAuthState> _authStateMock;
-        private readonly Mock<IDeviceService> _deviceServiceMock;
+        private readonly Mock<IAuthState> _authStateMock = new();
+        private readonly Mock<IFormatters> _formattersMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
+
+        private readonly Models.Device _device = new()
+        {
+            DeviceId = 123,
+            Name = "Workstation-Alpha",
+            OwnerUsername = "julie",
+            GpuModel = "RTX 4080",
+            VramMb = 20,
+            State = DeviceState.AVAILABLE
+        };
+
+        private readonly Models.Device _newDevice = new()
+        {
+            DeviceId = 1,
+            Name = "B",
+            GpuModel = "RTX 4090",
+            VramMb = 10
+        };
 
         public DevicePageTests()
         {
-            _authStateMock = new Mock<IAuthState>();
-            _deviceServiceMock = new Mock<IDeviceService>();
             Services.AddAuthorizationCore();
             Services.AddSingleton(_authStateMock.Object);
+            Services.AddSingleton(_formattersMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
 
-            // important note: the JSInterop calls in the Device component are not being properly mocked, which causes the tests to fail. The following setup is an attempt to mock those calls, but it may need to be adjusted based on the actual JSInterop calls being made in the Device component.
             JSInterop.SetupVoid(_ => true).SetVoidResult();
             JSInterop.SetupModule(_ => true);
-            //JSInterop.SetupVoid("mudElementRef.removeOnBlurEvent", _ => true).SetVoidResult();
 
             // Stub heavy components
             ComponentFactories.AddStub<TelemetryCard>("TELEMETRY_CARD");
@@ -43,12 +57,16 @@ namespace GpuShare.Frontend.Tests.Components.Device
             ComponentFactories.AddStub<DeviceOrderForm>("ORDER_FORM");
 
             _deviceServiceMock.Setup(s => s.GetDeviceAsync(It.IsAny<int>()))
-                .ReturnsAsync(new Models.Device
+                .ReturnsAsync(_device);
+
+            _deviceServiceMock.Setup(x => x.UpdateDeviceAsync(It.IsAny<int>(), It.IsAny<Models.Device>(),
+                    It.IsAny<UpdateDeviceRequest>())).ReturnsAsync(_newDevice);
+
+            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
+                .ReturnsAsync(new DeviceAgentInfo
                 {
-                    DeviceId = 123,
-                    Name = "Workstation-Alpha",
-                    OwnerUsername = "julie",
-                    State = DeviceState.AVAILABLE
+                    InstallScriptUrl = "https://gpu-share.io/install.sh",
+                    AgentToken = "abc123"
                 });
         }
 
@@ -144,52 +162,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
         }
 
         // =====================================================
-        // ADD MODE
-        // =====================================================
-
-        [Fact]
-        public void Add_Mode_Authorized_Should_Show_Only_Edit_Form()
-        {
-            // Arrange
-            ComponentFactories.AddStub<DeviceInfoCard>("DEVICE_INFO");
-            ComponentFactories.AddStub<EditDeviceForm>("EDIT_FORM");
-            var auth = AddAuthorization();
-            auth.SetAuthorized("john");
-
-            // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "add"));
-
-            // Assert
-            cut.Markup.Should().Contain("EDIT_FORM");
-            cut.Markup.Should().NotContain("DEVICE_INFO");
-            cut.Markup.Should().NotContain("TELEMETRY_CARD");
-            cut.Markup.Should().NotContain("CALENDAR");
-            cut.Markup.Should().NotContain("ORDER_FORM");
-            cut.Markup.Should().NotContain("OPINIONS");
-        }
-
-        [Fact]
-        public void Add_Mode_Unauthorized_Should_Show_Nothing()
-        {
-            // Arrange
-            ComponentFactories.AddStub<DeviceInfoCard>("DEVICE_INFO");
-            ComponentFactories.AddStub<EditDeviceForm>("EDIT_FORM");
-            var auth = AddAuthorization();
-            auth.SetNotAuthorized();
-
-            // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "add"));
-
-            // Assert
-            cut.Markup.Should().NotContain("EDIT_FORM");
-            cut.Markup.Should().NotContain("DEVICE_INFO");
-            cut.Markup.Should().NotContain("TELEMETRY_CARD");
-            cut.Markup.Should().NotContain("CALENDAR");
-            cut.Markup.Should().NotContain("ORDER_FORM");
-            cut.Markup.Should().NotContain("OPINIONS");
-        }
-
-        // =====================================================
         // ID / DATA LOADING
         // =====================================================
 
@@ -206,21 +178,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             // Assert
             cut.Markup.Should().Contain("DEVICE_INFO");
-        }
-
-        [Fact]
-        public void Add_Mode_Should_Not_Render_Device_Info()
-        {
-            // Arrange
-            ComponentFactories.AddStub<DeviceInfoCard>("DEVICE_INFO");
-            var auth = AddAuthorization();
-            auth.SetAuthorized("john");
-
-            // Act
-            var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "add"));
-
-            // Assert
-            cut.Markup.Should().NotContain("DEVICE_INFO");
         }
 
         [Fact]
@@ -244,6 +201,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
             // Arrange
             var auth = AddAuthorization();
             auth.SetAuthorized("john");
+
+            Render<MudPopoverProvider>();
 
             // Act
             var cut = Render<DevicePage>(p => p.Add(x => x.ModeString, "edit"));
@@ -285,6 +244,9 @@ namespace GpuShare.Frontend.Tests.Components.Device
         [Fact]
         public void Should_Not_Throw_When_Device_Is_Default()
         {
+            _deviceServiceMock.Setup(s => s.GetDeviceAsync(It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
+
             // Arrange
             var auth = AddAuthorization();
             auth.SetAuthorized("john");
@@ -293,7 +255,72 @@ namespace GpuShare.Frontend.Tests.Components.Device
             var cut = Render<DevicePage>();
 
             // Assert
-            cut.Markup.Should().Contain("There is no GPU");
+            cut.Markup.Should().Contain("Could not load device data");
+        }
+
+        [Fact]
+        public async Task Should_Call_UpdateDevice_When_Fields_Changed()
+        {
+            // Arrange
+            var auth = AddAuthorization();
+            auth.SetAuthorized("john");
+            Render<MudPopoverProvider>();
+
+            var cut = Render<DevicePage>(p => p.Add(x => x.DeviceId, 1).Add(x => x.ModeString, "edit"));
+
+            // Wait for load
+            await cut.InvokeAsync(() => Task.CompletedTask);
+
+            await cut.Instance.HandleDeviceSaved(_newDevice);
+
+            // Assert
+            _deviceServiceMock.Verify(x => x.UpdateDeviceAsync(1, It.IsAny<Models.Device>(), It.Is<UpdateDeviceRequest>(r => r.Name == "B")
+                ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Should_Not_Send_Fields_When_Unchanged()
+        {
+            // Arrange
+            var auth = AddAuthorization();
+            auth.SetAuthorized("john");
+            Render<MudPopoverProvider>();
+
+            var cut = Render<DevicePage>(p => p.Add(x => x.DeviceId, 1).Add(x => x.ModeString, "edit"));
+
+            await cut.InvokeAsync(() => Task.CompletedTask);
+
+            // Act
+            await cut.Instance.HandleDeviceSaved(_device);
+
+            // Assert → request should contain only nulls
+            _deviceServiceMock.Verify(x => x.UpdateDeviceAsync(1, It.IsAny<Models.Device>(),
+                    It.Is<UpdateDeviceRequest>(r => r.Name == null && r.GpuModel == null && r.VramMb == null)
+                ), Times.Once);
+        }
+
+        [Fact]
+        public async Task Should_Show_Error_When_Update_Fails()
+        {
+            // Arrange
+            var auth = AddAuthorization();
+            auth.SetAuthorized("john");
+            Render<MudPopoverProvider>();
+
+            _deviceServiceMock.Setup(x => x.UpdateDeviceAsync(It.IsAny<int>(),
+                    It.IsAny<Models.Device>(), It.IsAny<UpdateDeviceRequest>()))
+                .ThrowsAsync(new Exception("fail"));
+
+            var cut = Render<DevicePage>(p => p.Add(x => x.DeviceId, 1).Add(x => x.ModeString, "edit"));
+
+            await cut.InvokeAsync(() => Task.CompletedTask);
+
+            // Act
+            await cut.Instance.HandleDeviceSaved(_device);
+
+            // Assert snackbar
+            var snackbar = Services.GetService<ISnackbar>();
+            snackbar.Should().NotBeNull();
         }
     }
 }

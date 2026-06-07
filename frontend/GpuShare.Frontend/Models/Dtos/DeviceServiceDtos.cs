@@ -64,4 +64,10 @@
         public DeviceState? State { get; set; } = null;
         public List<string>? Frameworks { get; set; } = null;
     }
+
+    public class DeviceAgentInfo
+    {
+        public string InstallScriptUrl { get; set; } = "";
+        public string AgentToken { get; set; } = "";
+    }
 }

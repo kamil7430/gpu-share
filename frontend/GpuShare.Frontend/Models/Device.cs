@@ -16,13 +16,18 @@ public class Device
     public int PricePerHourUsdCents { get; set; }
 
     public bool IsAvailable => State == DeviceState.AVAILABLE;
+
+    public static List<string> SupportedFrameworks { get; } =
+    [
+        "TensorFlow", "PyTorch", "MXNet", "Keras", "Caffe"
+    ];
 }
 
 public enum DevicePageMode
 {
+    Add,
     View,
-    Edit,
-    Add
+    Edit
 }
 
 public enum DeviceState

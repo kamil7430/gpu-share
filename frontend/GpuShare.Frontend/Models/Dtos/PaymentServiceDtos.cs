@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GpuShare.Frontend.Models.Dtos
 {
@@ -60,11 +60,11 @@ namespace GpuShare.Frontend.Models.Dtos
 
     public enum PaymentMethod
     {
-        [Description("Credit/Debit Card")]
+        [Display(Name = "Credit/Debit Card")]
         CARD,
-        [Description("Bank Transfer")]
+        [Display(Name = "Bank Transfer")]
         BANK_TRANSFER,
-        [Description("PayPal")]
+        [Display(Name = "PayPal")]
         PAYPAL
     }
 }

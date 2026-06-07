@@ -11,6 +11,7 @@ using GpuShare.Frontend.Auth;
 using GpuShare.Frontend.Extensions;
 using GpuShare.Frontend.Infrastructure.Http;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +42,9 @@ builder.Services.AddScoped<IFormatters, Formatters>();
 builder.Services.AddScoped<IAuthState, MockAuthState>(); // for testing purposes, replace with real implementation later
 if (builder.Environment.IsDevelopment()) { builder.Services.AddScoped<IApiClient, MockApiClient>(); }
 else { builder.Services.AddApiInfrastructure(); }
+//builder.Services.AddScoped<ISnackbar, Snackbar>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IOrderService, OrderService>();

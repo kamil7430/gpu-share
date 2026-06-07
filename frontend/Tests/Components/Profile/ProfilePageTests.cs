@@ -3,6 +3,7 @@ using Bunit.TestDoubles;
 using FluentAssertions;
 using GpuShare.Frontend.Components.Pages.Profile;
 using GpuShare.Frontend.Services.Interfaces;
+using GpuShare.Frontend.Services;
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.State;
 using Microsoft.AspNetCore.Components;
@@ -23,10 +24,18 @@ namespace GpuShare.Frontend.Tests.Components.Profile
     public class ProfilePageTests : BunitContext, Xunit.IAsyncLifetime
     {
         private readonly Mock<IAuthState> _authStateMock = new();
+        private readonly Mock<IReviewService> _reviewServiceMock = new();
+        private readonly Mock<IAuthService> _authServiceMock = new();
+        private readonly Mock<IFormatters> _formattersMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
 
         public ProfilePageTests()
         {
             Services.AddSingleton(_authStateMock.Object);
+            Services.AddSingleton(_reviewServiceMock.Object);
+            Services.AddSingleton(_authServiceMock.Object);
+            Services.AddSingleton(_formattersMock.Object);
+            Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
@@ -189,21 +198,6 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 
             // Assert
             cut.FindComponent<ProfileCard>().Instance.Username.Should().Be("john");
-        }
-
-        [Fact]
-        public void Should_Pass_Authorized_True_To_GpuList()
-        {
-            // Arrange
-            _authStateMock.SetupGet(x => x.IsAuthenticated).Returns(true);
-            _authStateMock.SetupGet(x => x.User).Returns(new User { Username = "john" });
-
-            // Act
-            var cut = Render<ProfilePage>(p => p.Add(x => x.Username, "john"));
-
-            // Assert
-            var gpuList = cut.FindComponent<DevicesList>();
-            gpuList.Instance.authorized.Should().BeTrue();
         }
     }
 }

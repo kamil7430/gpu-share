@@ -1,4 +1,4 @@
-using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace GpuShare.Frontend.Models
 {
@@ -20,27 +20,27 @@ namespace GpuShare.Frontend.Models
 
     public enum TransactionType
     {
-        [Description("Top Up")]
+        [Display(Name = "Top Up")]
         TOPUP,
-        [Description("Reservation")]
+        [Display(Name = "Reservation")]
         RESERVATION,
-        [Description("Settlement")]
+        [Display(Name = "Settlement")]
         SETTLEMENT,
-        [Description("Refund")]
+        [Display(Name = "Refund")]
         REFUND,
-        [Description("Withdrawal")]
+        [Display(Name = "Withdrawal")]
         WITHDRAWAL
     }
 
     public enum TransactionStatus
     {
-        [Description("Pending")]
+        [Display(Name = "Pending")]
         PENDING,
-        [Description("Completed")]
+        [Display(Name = "Completed")]
         COMPLETED,
-        [Description("Failed")]
+        [Display(Name = "Failed")]
         FAILED,
-        [Description("Cancelled")]
+        [Display(Name = "Cancelled")]
         CANCELLED
     }
 }

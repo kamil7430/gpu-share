@@ -2,6 +2,9 @@
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Forms;
 @inject IFormatters Formatters
+@inject IOrderService OrderService
+@inject ISnackbar Snackbar
+@inject IFileService FileService
 
 @* 
 For GPU workloads, uploading files is usually better than typing Docker image names because users can provide:
@@ -57,7 +60,7 @@ which is what most cloud GPU platforms end up doing.
                     <SelectedTemplate Context="another_name"/>
                 </MudFileUpload>
 
-                @if (selectedFile is not null)
+                @if (_selectedFile is not null)
                 {
                     <div class="uploaded-file">
 
@@ -65,10 +68,10 @@ which is what most cloud GPU platforms end up doing.
                             <MudIcon Icon="@Icons.Material.Filled.Description"
                             Size="Size.Small" />
 
-                            <span>@selectedFile.Name</span>
+                            <span>@_selectedFile.Name</span>
 
                             <span class="file-size">
-                                (@(selectedFile.Size / 1024) KB)
+                                (@(_selectedFile.Size / 1024) KB)
                             </span>
                         </div>
 
@@ -76,12 +79,12 @@ which is what most cloud GPU platforms end up doing.
                         Size="Size.Small"
                         Color="Color.Primary"
                         Class="remove-file-btn"
-                        OnClick="@(() => selectedFile = null)" />
+                        OnClick="@(() => _selectedFile = null)" />
 
                     </div>
                 }
 
-                @if (selectedFile == null)
+                @if (_selectedFile == null)
                 {
                     <div class="input-hint">
                         Upload a Docker deployment archive or compose configuration
@@ -123,6 +126,10 @@ which is what most cloud GPU platforms end up doing.
 
         </EditForm>
 
+        @if(_orderId != null)
+        {
+            <a class="link" href="@($"/orders/{_orderId}")">View order</a>
+        }
     </div>
 }
 
@@ -130,11 +137,13 @@ which is what most cloud GPU platforms end up doing.
 
     [Parameter] public Device? Device { get; set; } = null;
 
-    private IBrowserFile? selectedFile;
+    private IBrowserFile? _selectedFile;
+    private string? _uploadedFileUrl;
+    private int? _orderId = null;
 
     private OrderModel orderModel = new()
     {
-        StartDate = DateTime.Today,
+        StartDate = DateTime.Today.AddDays(1),
         StartTime = new TimeSpan(12, 0, 0),
         DurationHours = 1
     };
@@ -159,10 +168,14 @@ which is what most cloud GPU platforms end up doing.
 
     private async Task OnFileSelected(IBrowserFile? file)
     {
-        selectedFile = file;
+        _selectedFile = file;
 
         if (file is null)
+        {
+            _uploadedFileUrl = null;
+            // Snackbar.Add("Please ")
             return;
+        }
 
         Console.WriteLine($"""
             FILE UPLOADED
@@ -171,21 +184,27 @@ which is what most cloud GPU platforms end up doing.
             Type: {file.ContentType}
         """);
 
-        // TODO:
-        // upload to backend/storage
+        try
+        {
+            var uploadResult = await FileService.UploadAsync(file);
+
+            _uploadedFileUrl = uploadResult.Url;
+
+            Snackbar.Add("File uploaded successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            _selectedFile = null;
+            _uploadedFileUrl = null;
+
+            Snackbar.Add("File upload failed", Severity.Error);
+
+            Console.WriteLine(ex);
+        }
     }
 
     private async Task SubmitOrder()
     {
-        var start =
-            orderModel.StartDate?.Date + orderModel.StartTime;
-
-        Console.WriteLine($"""
-            ORDER
-            GPU: {Device!.DeviceId}
-            Start: {start}
-            Duration: {orderModel.DurationHours}
-        """);
         // Docker: {orderModel.DockerImage}
 
         // TODO:
@@ -193,5 +212,72 @@ which is what most cloud GPU platforms end up doing.
         // - send API request
         // - payment flow
         // - deployment scheduling
+
+        if (Device is null)
+            return;
+
+        if (orderModel.StartDate is null || orderModel.StartTime is null)
+        {
+            Snackbar.Add("Start date and time are required", Severity.Error);
+            return;
+        }
+
+        if (_uploadedFileUrl == null)
+        {
+            Snackbar.Add("An image file must be uploaded", Severity.Error);
+            return;
+        }
+
+        var startAt = orderModel.StartDate.Value.Date + orderModel.StartTime.Value;
+
+        Console.WriteLine($"""
+            ORDER
+            GPU: {Device!.DeviceId}
+            Start: {startAt}
+            Duration: {orderModel.DurationHours}
+            DockerImage: {_uploadedFileUrl}
+        """);
+
+
+        var request = new CreateOrderRequest
+        {
+            DeviceId = Device.DeviceId,
+            StartTime = startAt,
+            DurationHours = orderModel.DurationHours,
+            DockerImage = _uploadedFileUrl!,
+        };
+
+        try
+        {
+            var result = await OrderService.CreateOrderAsync(request);
+            _orderId = result.OrderId;
+
+            Snackbar.Add("Order created successfully", Severity.Success);
+
+            Console.WriteLine($"""
+                ORDER CREATED
+                OrderId: {result.OrderId}
+            """);
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.BadRequest)
+            {
+                Snackbar.Add("Invalid order configuration", Severity.Error);
+            }
+            else if (ex.StatusCode == HttpStatusCode.PaymentRequired)
+            {
+                Snackbar.Add("Insufficient wallet balance", Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add("Unexpected error while creating order", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Unexpected error while creating order", Severity.Error);
+            Console.WriteLine(ex);
+        }
     }
 }

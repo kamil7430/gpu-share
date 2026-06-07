@@ -3,14 +3,12 @@ using GpuShare.Frontend.Infrastructure.Http;
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services;
-using MudBlazor.Charts;
+using GpuShare.Frontend.State;
 using RichardSzalay.MockHttp;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 
 namespace GpuShare.Frontend.Tests.Services
 {
@@ -21,6 +19,7 @@ namespace GpuShare.Frontend.Tests.Services
         private readonly ApiClient _apiClient;
         private readonly ILogger<OrderService> _logger;
         private readonly OrderService _sut;
+        private readonly Mock<IAuthState> _authStateMock = new();
 
         public OrderServiceTests()
         {
@@ -28,15 +27,15 @@ namespace GpuShare.Frontend.Tests.Services
             _http = _mockHttp.ToHttpClient();
             _http.BaseAddress = new Uri("https://localhost:5001");
             _logger = NullLogger<OrderService>.Instance;
+            _authStateMock.SetupGet(x => x.User).Returns(new User("john"));
 
             _apiClient = new ApiClient(_http, NullLogger<ApiClient>.Instance);
-            _sut = new OrderService(_apiClient, _logger);
+            _sut = new OrderService(_apiClient, _logger, _authStateMock.Object);
         }
 
         private readonly CreateOrderRequest _createOrderRequest = new()
         {
             DeviceId = 123,
-            Username = "john",
             StartTime = DateTime.UtcNow.AddHours(1),
             DurationHours = 2,
             DockerImage = "gpu-image:latest"

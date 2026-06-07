@@ -5,7 +5,6 @@
 @using GpuShare.Frontend.State
 @inject IAuthState AuthState
 @inject IDeviceService DeviceService
-@* @inject ILogger<DevicePage> Logger *@
 @inject ISnackbar Snackbar
 @inject NavigationManager Navigation
 
@@ -25,10 +24,7 @@
     else
     {
         <!-- Info card -->
-        @if (_mode != DevicePageMode.Add)
-        {
-            <DeviceInfoCard Device="@_device" Username="@_username"></DeviceInfoCard>
-        }
+        <DeviceInfoCard Device="@_device" Username="@_username" Mode="@_mode"></DeviceInfoCard>
 
         <!--  Edit form -->
         @if ((_mode == DevicePageMode.Edit || _mode == DevicePageMode.Add))
@@ -59,7 +55,7 @@
                     </div>
 
                     <!-- Order form -->
-                    <DeviceOrderForm></DeviceOrderForm>
+                    <DeviceOrderForm Device="@_device"></DeviceOrderForm>
                 </NotAuthorized>
             </AuthorizeView>
         }
@@ -68,12 +64,12 @@
 </div>
 
 @code {
-    [Parameter] public string ModeString { get; set; } = "view"; // "view", "edit", "add"
+    [Parameter] public string ModeString { get; set; } = "view"; // "view", "edit"
     [Parameter] public int DeviceId { get; set; }
 
     private DevicePageMode _mode = DevicePageMode.View;
     private Device? _device = null;
-    private string _username = "user1";
+    private string _username = "";
     private string _profileLink = "";
 
     protected override void OnInitialized()
@@ -83,27 +79,32 @@
     protected override async Task OnParametersSetAsync()
     {
         _mode = Enum.TryParse<DevicePageMode>(ModeString, ignoreCase: true, out var mode) ? mode : DevicePageMode.View;
-        try
+        if (_mode == DevicePageMode.Add)
         {
-            _device = await DeviceService.GetDeviceAsync(DeviceId);
-            _username = _device.OwnerUsername;
-            _profileLink = $"/profile/{_username}";
+            _device = new Device();
         }
-        catch
+        else
         {
-            _device = null;
+            try
+            {
+                _device = await DeviceService.GetDeviceAsync(DeviceId);
+                _username = _device.OwnerUsername;
+                _profileLink = $"/profile/{_username}";
+            }
+            catch
+            {
+                _device = null;
+            }
         }
     }
 
-    private async Task HandleDeviceSaved(Device savedGpu)
+    public async Task HandleDeviceSaved(Device savedGpu)
     {
-        // _device = savedGpu;
         if (_device == null)
         {
             // This should never happen, but just in case
             return;
         }
-        _mode = DevicePageMode.View;
 
         var request = new UpdateDeviceRequest
         {

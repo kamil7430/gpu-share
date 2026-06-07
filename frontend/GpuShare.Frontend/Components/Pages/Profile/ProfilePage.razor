@@ -3,6 +3,8 @@
 @using GpuShare.Frontend.Models
 @using GpuShare.Frontend.State
 @inject IAuthState AuthState
+@inject IDeviceService DeviceService
+@inject NavigationManager NavigationManager
 
 @* 
 Project decisions:
@@ -36,7 +38,7 @@ Project decisions:
             }
         </div>
 
-        <DevicesList authorized="@AuthState.IsAuthenticated" />
+        <DevicesList />
     </div>
 
     <!-- Orders -->
@@ -47,7 +49,7 @@ Project decisions:
                 <h3>My Orders</h3>
             </div>
 
-            <OrderTable />
+            <OrderTable Username="@Username" />
         </div>
     }
 
@@ -57,57 +59,16 @@ Project decisions:
             <h3>Opinions</h3>
         </div>
 
-        <ReviewsList />
+        <ReviewsList Username="@Username" />
     </div>
 
 </div>
 
 @code {
     [Parameter] public string Username { get; set; } = string.Empty;
-    private List<Device> devices = [];
-
-    private Device gpu = new();
-
-    protected override void OnInitialized()
-    {
-        // mock data
-        devices = Enumerable.Range(1, 10).Select(i => new Device
-        {
-            DeviceId = i,
-            Name = $"GPU {i}",
-            State = i % 2 == 0 ? DeviceState.AVAILABLE : DeviceState.UNAVAILABLE,
-            VramMb = 24567,
-            CudaCores = 16384,
-            DriverVersion = "535.104",
-            Frameworks = ["PyTorch", "Tensorflow"],
-            PricePerHourUsdCents = 500
-        }).ToList();
-
-        gpu = devices[0];
-    }
-    
-    protected override void OnParametersSet()
-    {
-
-    }
 
     private void AddDevice()
     {
-        
+        NavigationManager.NavigateTo("/device/new");
     }
-
-    private void Cancel() {
-
-    }
-
-    private void ConfirmRemove() {
-
-    } 
-
-    private async Task CloseModal()
-    {
-        await OnClose.InvokeAsync();
-    }
-
-    [Parameter] public EventCallback OnClose { get; set; }
 }

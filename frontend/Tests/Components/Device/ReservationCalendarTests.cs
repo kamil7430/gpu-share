@@ -40,6 +40,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 });
         }
 
+        private DateTime _weekStart = DateTime.Today.AddDays(-(int) DateTime.Today.DayOfWeek + 1);
+
         public Task InitializeAsync() => Task.CompletedTask;
 
         public new async Task DisposeAsync()
@@ -58,10 +60,24 @@ namespace GpuShare.Frontend.Tests.Components.Device
         }
 
         [Fact]
-        public void Orders_Should_Render()
+            public void Orders_Should_Render()
         {
             // Arrange
-            var now = DateTime.Today.AddHours(10);
+            var now = _weekStart.AddHours(10);
+            _orderServiceMock.Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>()))
+                .ReturnsAsync(new PagedResult<Models.Order>
+                {
+                    Items = [
+                        new Models.Order
+                        {
+                            OrderId = 1,
+                            Username = "john",
+                            StartDate = now,
+                            EndDate = now.AddHours(2),
+                            Status = Models.OrderStatus.WAITING_FOR_START
+                        }
+                    ]
+                });
 
             // Act
             var cut = Render<ReservationCalendar>();
@@ -69,8 +85,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             // Assert
             reservation.Children[0].TextContent.Should().Contain("john");
-            reservation.Children[2].TextContent.Should().Contain("10:00");
-            reservation.Children[2].TextContent.Should().Contain("12:00");
+            reservation.Children[1].TextContent.Should().Contain("10:00");
+            reservation.Children[1].TextContent.Should().Contain("12:00");
         }
 
         [Fact]
@@ -145,7 +161,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Reserved_Order_Should_Have_Reserved_Color()
         {
             // Arrange
-            var now = DateTime.Today.AddHours(8);
+            var now = _weekStart.AddHours(8);
 
             _orderServiceMock
                 .Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>()))
@@ -212,7 +228,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Multiple_Orders_Should_Render()
         {
             // Arrange
-            var now = DateTime.Today.AddHours(9);
+            var now = _weekStart.AddHours(9);
 
             _orderServiceMock.Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>()))
                 .ReturnsAsync(new PagedResult<Models.Order>
@@ -252,7 +268,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Completed_Order_Should_Have_Completed_Color()
         {
             // Arrange
-            var now = DateTime.Today.AddHours(14);
+            var now = _weekStart.AddHours(54);
 
             _orderServiceMock.Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>()))
                 .ReturnsAsync(new PagedResult<Models.Order>
@@ -260,13 +276,13 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     Items =
                     [
                         new Models.Order
-                {
-                    OrderId = 1,
-                    Username = "bob",
-                    StartDate = now,
-                    EndDate = now.AddHours(1),
-                    Status = Models.OrderStatus.COMPLETED
-                }
+                        {
+                            OrderId = 1,
+                            Username = "bob",
+                            StartDate = now,
+                            EndDate = now.AddHours(1),
+                            Status = Models.OrderStatus.COMPLETED
+                        }
                     ]
                 });
 
@@ -283,7 +299,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public void Orders_Should_Render_In_Correct_Hour()
         {
             // Arrange
-            var now = DateTime.Today.AddHours(15);
+            var now = _weekStart.AddHours(15);
 
             _orderServiceMock
                 .Setup(x => x.ListOrdersAsync(It.IsAny<OrderQueryParams>()))

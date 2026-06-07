@@ -15,16 +15,15 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 {
     public class ProfileCardTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private readonly Mock<IAuthState> _authStateMock;
-        private readonly Mock<IReviewService> _reviewServiceMock;
-
+        private readonly Mock<IReviewService> _reviewServiceMock = new();
+        private readonly Mock<IAuthService> _authServiceMock = new();
+        private readonly Mock<IAuthState> _authStateMock = new();
+        
         public ProfileCardTests()
         {
-            _authStateMock = new Mock<IAuthState>();
-            _reviewServiceMock = new Mock<IReviewService>();
-
-            Services.AddSingleton(_authStateMock.Object);
             Services.AddSingleton(_reviewServiceMock.Object);
+            Services.AddSingleton(_authServiceMock.Object);
+            Services.AddSingleton(_authStateMock.Object);
 
             Services.AddMudServices();
 

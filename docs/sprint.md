@@ -5,20 +5,19 @@ Replace frontend mock data with real backend API communication and deliver an en
 ## Epic 1: Authentication Integration
 
 ### User Stories
-- [ ] Integrate login endpoint
+- [x] Integrate login endpoint
 - [ ] Integrate logout endpoint
-- [ ] Persist JWT/token
+- [x] Persist JWT/token
 - [ ] Restore session after page refresh
-- [ ] Protect authorized pages
+- [x] Protect authorized pages
 
 ### Tasks
-- [ ] Create AuthApiClient
-- [ ] Implement login request
+- [x] Implement login request
 - [ ] Implement logout request
-- [ ] Store token
-- [ ] Configure HttpClient authorization handler
-- [ ] Connect AuthState
-- [ ] Remove authentication mocks
+- [x] Store token
+- [x] Configure HttpClient authorization handler
+- [x] Connect AuthState
+- [x] Remove authentication mocks
 - [ ] Test authorized/unauthorized flows
 
 ### Definition of Done
@@ -36,11 +35,11 @@ Replace frontend mock data with real backend API communication and deliver an en
 - [ ] User can remove device
 
 ### Tasks
-- [ ] Create DeviceApiClient
-- [ ] Integrate GpuList
-- [ ] Integrate DeviceCard
-- [ ] Integrate DevicePage
-- [ ] Integrate EditDeviceForm
+- [x] Create DeviceApiClient
+- [x] Integrate GpuList
+- [x] Integrate DeviceCard
+- [x] Integrate DevicePage
+- [x] Integrate EditDeviceForm
 - [ ] Integrate remove modal
 - [ ] Replace mock telemetry retrieval
 

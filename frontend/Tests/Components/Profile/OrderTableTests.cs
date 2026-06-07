@@ -18,15 +18,17 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 {
     public class OrderTableTests : BunitContext, Xunit.IAsyncLifetime
     {
-        private readonly Mock<IAuthState> _authStateMock;
-        private readonly Mock<IOrderService> _orderServiceMock;
+        private readonly Mock<IAuthState> _authStateMock = new();
+        private readonly Mock<IFormatters> _formattersMock = new();
+        private readonly Mock<IOrderService> _orderServiceMock = new();
+        private readonly Mock<IReviewService> _reviewServiceMock = new();
 
         public OrderTableTests()
         {
-            _authStateMock = new Mock<IAuthState>();
-            _orderServiceMock = new Mock<IOrderService>();
             Services.AddSingleton(_authStateMock.Object);
+            Services.AddSingleton(_formattersMock.Object);
             Services.AddSingleton(_orderServiceMock.Object);
+            Services.AddSingleton(_reviewServiceMock.Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
@@ -77,10 +79,10 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             var cut = Render<OrderTable>();
 
             // Assert
-            cut.Markup.Should().Contain("Active");
+            cut.Markup.Should().Contain("Running");
             cut.Markup.Should().Contain("Completed");
-            cut.Markup.Should().Contain("Cancelled");
-            cut.Markup.Should().Contain("Dispute");
+            cut.Markup.Should().Contain("Failure");
+            cut.Markup.Should().Contain("Suspended");
         }
 
         [Fact]
@@ -101,20 +103,21 @@ namespace GpuShare.Frontend.Tests.Components.Profile
         }
 
         [Fact]
-        public void Active_Filter_Should_Show_Only_Active_Orders()
+        public void Running_Filter_Should_Show_Only_Running_Orders()
         {
             // Arrange
             var cut = Render<OrderTable>();
 
             // Act
-            cut.FindAll("button").First(x => x.TextContent.Contains("Active")).Click();
+            cut.FindAll("button").First(x => x.TextContent.Contains("Running")).Click();
             var table = cut.Find(".custom-table");
 
             // Assert
-            table.InnerHtml.Should().Contain("Active");
+            table.InnerHtml.Should().Contain("Running");
+            table.InnerHtml.Should().NotContain("Waiting for start");
             table.InnerHtml.Should().NotContain("Completed");
-            table.InnerHtml.Should().NotContain("Cancelled");
-            table.InnerHtml.Should().NotContain("Dispute");
+            table.InnerHtml.Should().NotContain("Failure");
+            table.InnerHtml.Should().NotContain("Suspended");
         }
 
         [Fact]
@@ -129,9 +132,9 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 
             // Assert
             table.InnerHtml.Should().Contain("Completed");
-            table.InnerHtml.Should().NotContain("Active");
-            table.InnerHtml.Should().NotContain("Cancelled");
-            table.InnerHtml.Should().NotContain("Dispute");
+            table.InnerHtml.Should().NotContain("Running");
+            table.InnerHtml.Should().NotContain("Failure");
+            table.InnerHtml.Should().NotContain("Suspended");
             table.InnerHtml.Should().Contain("Leave Review");
         }
 
@@ -146,14 +149,14 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             var table = cut.Find(".custom-table");
 
             // Assert
-            table.InnerHtml.Should().Contain("Active");
+            table.InnerHtml.Should().Contain("Running");
             table.InnerHtml.Should().Contain("Completed");
-            table.InnerHtml.Should().Contain("Cancelled");
-            table.InnerHtml.Should().Contain("Dispute");
+            table.InnerHtml.Should().Contain("Failure");
+            table.InnerHtml.Should().Contain("Suspended");
         }
 
         [Fact]
-        public void Review_Button_Should_Only_Render_For_Completed_Orders()
+        public void Review_Button_Should_Only_Render_For_Completed_And_Failed_Orders()
         {
             // Arrange
             var cut = Render<OrderTable>();
@@ -163,17 +166,18 @@ namespace GpuShare.Frontend.Tests.Components.Profile
 
             // Assert
 
-            // Only one completed order exists in mock data
-            reviewButtons.Should().HaveCount(1);
+            // Only one completed order and one failed order should exists in mock data
+            reviewButtons.Should().HaveCount(2);
 
             // Verify button text
             reviewButtons[0].TextContent.Should().Contain("Leave Review");
 
             // Verify it belongs to completed order row
             var row = reviewButtons[0].Closest("tr");
-
             row!.TextContent.Should().Contain("Completed");
-            row!.TextContent.Should().Contain("#1001");
+
+            var row1 = reviewButtons[1].Closest("tr");
+            row1!.TextContent.Should().Contain("Failure");
         }
 
         [Fact]
@@ -246,17 +250,17 @@ namespace GpuShare.Frontend.Tests.Components.Profile
         }
 
         [Fact]
-        public void Active_Order_Should_Have_Active_Status_Class()
+        public void Running_Order_Should_Have_Running_Status_Class()
         {
             // Arrange
             var cut = Render<OrderTable>();
 
             // Act
-            var a = cut.Find(".status-active");
+            var a = cut.Find(".status-running");
 
             // Assert
             a.Should().NotBeNull();
-            a.OuterHtml.Should().Contain("Active");
+            a.OuterHtml.Should().Contain("Running");
         }
 
         [Fact]
@@ -274,31 +278,31 @@ namespace GpuShare.Frontend.Tests.Components.Profile
         }
 
         [Fact]
-        public void Cancelled_Order_Should_Have_Cancelled_Status_Class()
+        public void Failure_Order_Should_Have_Failure_Status_Class()
         {
             // Arrange
             var cut = Render<OrderTable>();
 
             // Act
-            var badge = cut.Find(".status-cancelled");
+            var badge = cut.Find(".status-failure");
 
             // Assert
             badge.Should().NotBeNull();
-            badge.OuterHtml.Should().Contain("Cancelled");
+            badge.OuterHtml.Should().Contain("Failure");
         }
 
         [Fact]
-        public void Dispute_Order_Should_Have_Dispute_Status_Class()
+        public void Suspended_Order_Should_Have_Suspended_Status_Class()
         {
             // Arrange
             var cut = Render<OrderTable>();
 
             // Act
-            var badge = cut.Find(".status-dispute");
+            var badge = cut.Find(".status-suspended");
 
             // Assert
             badge.Should().NotBeNull();
-            badge.OuterHtml.Should().Contain("Dispute");
+            badge.OuterHtml.Should().Contain("Suspended");
         }
 
         [Fact]

@@ -2,33 +2,29 @@
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services.Interfaces;
+using GpuShare.Frontend.State;
 using Microsoft.Extensions.Logging;
 
 namespace GpuShare.Frontend.Services
 {
-    public class OrderService : IOrderService
+    public class OrderService(IApiClient api, ILogger<OrderService> logger, IAuthState state) : IOrderService
     {
-        private readonly IApiClient _api;
-        private readonly ILogger<OrderService> _logger;
-
-        public OrderService(IApiClient api, ILogger<OrderService> logger)
-        {
-            _api = api;
-            _logger = logger;
-        }
+        private readonly IApiClient _api = api;
+        private readonly ILogger<OrderService> _logger = logger;
+        private readonly IAuthState _authState = state;
 
         public async Task<Order> CreateOrderAsync(CreateOrderRequest cmd)
         {
             var response = await _api.PostAsync<CreateOrderRequest, CreateOrderResponse>($"/orders", cmd);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Created order for device {id} and user {username}. Got ID {id} for it.", 
-                    cmd.DeviceId, cmd.Username, response!.OrderId);
+                _logger.LogInformation("Created order for device {id}. Got ID {id} for it.", 
+                    cmd.DeviceId, response!.OrderId);
 
             return new Order
             {
                 OrderId = response!.OrderId,
                 DeviceId = cmd.DeviceId,
-                Username = cmd.Username,
+                Username = _authState.User!.Username,
                 StartDate = cmd.StartTime,
                 EndDate = cmd.StartTime.AddHours(cmd.DurationHours),
                 Status = response.Status,

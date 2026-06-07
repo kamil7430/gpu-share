@@ -1,6 +1,5 @@
 namespace GpuShare.Frontend.Models;
 
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using GpuShare.Frontend.Models.Dtos;
 
@@ -30,12 +29,12 @@ public class Dispute
 
 public enum DisputeStatus
 {
-    [Description("Open")]
+    [Display(Name = "Open")]
     OPEN,
-    [Description("Under Review")]
+    [Display(Name = "Under Review")]
     UNDER_REVIEW,
-    [Description("Resolved")]
+    [Display(Name = "Resolved")]
     RESOLVED,
-    [Description("Rejected")]
+    [Display(Name = "Rejected")]
     REJECTED
 }
