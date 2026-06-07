@@ -10,8 +10,8 @@ Okres: 06-01 -- 06-07
 ### User story 0
 Dodanie brakującej funkcjonalności zamówień.
 
-- [ ] dodać endpoint GET /orders
-- [ ] dodać endpoint GET /orders/{id}
+- [x] dodać endpoint GET /orders
+- [x] dodać endpoint GET /orders/{id}
 
 ### User story 1
 Integracja frontendu z backendem.
@@ -32,12 +32,12 @@ Zatem mogę:
 
 Zadania:
 
-- [ ] dodać autektykację tokenem JWT do REST API api <-> coordinator
-- [ ] zastanowić się czy udostępniać porty 2138 i 2139
-- [ ] dodać testy poprawnej i błędnej autentykacji do endpointów
-- [ ] dodatkowo zrefaktorować autentykację coordinatora aby nie musiał porozumiewać
+- [x] dodać autektykację tokenem JWT do REST API api <-> coordinator
+- [x] zastanowić się czy udostępniać porty 2138 i 2139
+- [x] dodać testy poprawnej i błędnej autentykacji do endpointów
+- [x] dodatkowo zrefaktorować autentykację coordinatora aby nie musiał porozumiewać
       się z api (dodać klucz publiczny do weryfikacji JWT przez coordinatora)
-- [ ] zaktualizować dokumentację (pliki `README` i `gpu.http`) i dodać pliki ADR.
+- [x] zaktualizować dokumentację (pliki `README` i `gpu.http`) i dodać pliki ADR.
 
 Ryzyka:
 
@@ -48,7 +48,7 @@ Ryzyka:
 
 Story points: 5
 
-## User story 3
+### User story 3
 
 Wyszukiwanie GPU językiem naturalnym.
 
