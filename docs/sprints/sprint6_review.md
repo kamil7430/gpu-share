@@ -13,10 +13,8 @@ W tym sprincie skupiono się głównie na poprawie bezpieczeństwa (User Story 2
 
 ### User story 2: Bezpieczeństwo wewnętrznego REST API (api <-> coordinator)
 
-To była największa i najbardziej ryzykowna część sprintu (wyceniona na 5 Story Points), która została w całości zamknięta.
-
 * **Wykonane:**
-* Wprowadzono uwierzytelnianie tokenem JWT pomiędzy API a koordynatorem.
+* Wprowadzono uwierzytelnianie tokenem pomiędzy API a koordynatorem.
 * Przeanalizowano kwestię wystawienia portów 2138 i 2139 (dobra praktyka weryfikacji architektury sieciowej).
 * Dodano testy (zarówno typu *happy path*, jak i dla błędnej autentykacji), co bezpośrednio realizuje ogólne kryterium "Pełne testy integracyjne".
 * **Architektura:** Z powodzeniem zrefaktorowano autentykację tak, aby koordynator weryfikował tokeny asymetrycznie za pomocą klucza publicznego, bez odpytywania API. To świetna decyzja – eliminuje to wąskie gardło i potencjalny punkt awarii (SPOF).
@@ -29,6 +27,8 @@ To było najbardziej wymagające pod kątem punktowym (8 Story Points) i technol
 * **Wykonane:**
 * **Implementacja seedowania bazy danych z pliku CSV:** Baza danych została zasilona gotowym zestawem kart graficznych. Daje to stabilny i powtarzalny zestaw danych testowych oraz produkcyjnych dla silnika wyszukiwania.
 * **Setup Dockera z pythonowym serwerem REST:** Usługa NLP została poprawnie skonteneryzowana. Użycie Pythona jako dedykowanego mikroserwisu do obsługi AI/NLP to świetna decyzja architektoniczna (dostęp do bibliotek takich jak Hugging Face, spaCy czy scikit-learn).
+
+* **Do zrobienia**:
 * **Definicje OpenAPI:** Serwer posiada teraz jasny, formalny kontrakt API. Ułatwi to w przyszłości automatyczne generowanie klientów oraz ułatwiło integrację w tym sprincie.
 * **Połączenie z frontendem:** Funkcjonalność została w pełni spięta ("end-to-end"). Użytkownik końcowy może już wpisać zapytanie tekstowe na UI i otrzymać przefiltrowaną listę kart.
 

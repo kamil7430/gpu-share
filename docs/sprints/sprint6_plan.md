@@ -46,8 +46,8 @@ Wyszukiwanie GPU językiem naturalnym.
 Zadania:
 - [x] implementacja seedowania bazy danych kartami z pliku csv
 - [x] setup dockera z pythonowym serwerem REST
-- [x] definicje OpenAPI
-- [x] połączenie z frontendem
+- [ ] definicje OpenAPI
+- [ ] połączenie z frontendem
 
 Story points: 8
 
