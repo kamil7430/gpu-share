@@ -1,0 +1,33 @@
+post:
+  summary: Get a list of device ids sorted by the query
+  operationId: query
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - query
+          properties:
+            query:
+              description: Query in natural language to sort the devices by
+              type: string
+        examples:
+          simpleQueryExample:
+            summary: Simple query example
+            value:
+              query: "Niedroga architektura amd z dwunastoma gigabajtami vram."
+  responses:
+    "200":
+      description: Query processed successfully
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: integer
+    "404":
+      description: No devices found
+    default:
+      $ref: "../responses/default.yaml"
