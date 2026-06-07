@@ -30,9 +30,12 @@ services:
     env_file: ../.env
     ports:
       - "2140:2140"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       network:
-        ipv4_address: ${BACKEND_IP}
+        ipv4_address: ${SEARCH_IP}
   db:
     image: postgres
     restart: always

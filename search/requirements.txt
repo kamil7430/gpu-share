@@ -3,3 +3,6 @@ https://github.com/explosion/spacy-models/releases/download/pl_core_news_sm-3.8.
 pandas
 numpy
 click
+tornado
+sqlalchemy
+psycopg2

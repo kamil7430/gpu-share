@@ -2,7 +2,7 @@ from model import extract_gpu_criteria
 from data import gpu_data
 
 
-def rank(query: str, gpu_data: list[dict]):
+def rank(query: str):
     crit = extract_gpu_criteria(query)
 
     scored = []

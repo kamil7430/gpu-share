@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, text
 
 
 engine = create_engine(
-    "postgresql+psycopg2://postgres:password@db:5432/postgres"
+    "postgresql+psycopg2://postgres:zaq1%40WSX@db:5432/gpu"
 )
 
 def get_devices():
@@ -11,3 +11,6 @@ def get_devices():
 
         columns = result.keys()
         return [dict(zip(columns, row)) for row in result.fetchall()]
+
+
+gpu_data = get_devices()
