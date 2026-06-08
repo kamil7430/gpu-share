@@ -7,6 +7,7 @@ import (
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
+	"github.com/kamil7430/gpu-share/backend/internal/seeder"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
 )
 
@@ -20,6 +21,12 @@ func main() {
 	log.Println("Starting server...")
 	db, err := utils.InitializeDatabaseConnection(true)
 	fatalIfError(err)
+	if utils.IsDatabaseEmpty(db) {
+		log.Println("Seeding the database...")
+		if err := seeder.SeedDatabase(db); err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	store := repository.NewStore(db)
 

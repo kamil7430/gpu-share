@@ -62,3 +62,9 @@ func InitializeDatabaseConnection(verbose bool) (*gorm.DB, error) {
 
 	return db, nil
 }
+
+func IsDatabaseEmpty(db *gorm.DB) bool {
+	var count int64
+	db.Model(&model.Device{}).Count(&count)
+	return count == 0
+}

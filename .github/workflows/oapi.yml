@@ -39,6 +39,9 @@ jobs:
           redoc-cli bundle contract/gpu/openapi.yaml \
             -o public/gpu.html
 
+          redoc-cli bundle contract/search/openapi.yaml \
+            -o public/search.html
+
           cp contract/docs/index.html public/index.html
 
       - name: Upload artifact

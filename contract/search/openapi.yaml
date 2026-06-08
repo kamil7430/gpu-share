@@ -1,0 +1,12 @@
+openapi: 3.0.0
+
+info:
+  version: 0.0.1
+  title: GPU Search API
+  description: Allows searching for devices using natural language
+
+paths:
+  /health:
+    $ref: "./paths/health.yaml"
+  /query:
+    $ref: "./paths/query.yaml"
