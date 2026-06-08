@@ -51,9 +51,12 @@ services:
     networks:
       network:
         ipv4_address: ${FRONTEND_IP}
+    volumes:
+      - dataprotection:/keys
 
 volumes:
   db-data:
+  dataprotection:
 
 networks:
   network:
