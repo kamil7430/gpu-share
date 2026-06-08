@@ -27,9 +27,9 @@ To było najbardziej wymagające pod kątem punktowym (8 Story Points) i technol
 * **Wykonane:**
 * **Implementacja seedowania bazy danych z pliku CSV:** Baza danych została zasilona gotowym zestawem kart graficznych. Daje to stabilny i powtarzalny zestaw danych testowych oraz produkcyjnych dla silnika wyszukiwania.
 * **Setup Dockera z pythonowym serwerem REST:** Usługa NLP została poprawnie skonteneryzowana. Użycie Pythona jako dedykowanego mikroserwisu do obsługi AI/NLP to świetna decyzja architektoniczna (dostęp do bibliotek takich jak Hugging Face, spaCy czy scikit-learn).
+* **Definicje OpenAPI:** Serwer posiada teraz jasny, formalny kontrakt API. Ułatwi to w przyszłości automatyczne generowanie klientów oraz ułatwiło integrację w tym sprincie.
 
 * **Do zrobienia**:
-* **Definicje OpenAPI:** Serwer posiada teraz jasny, formalny kontrakt API. Ułatwi to w przyszłości automatyczne generowanie klientów oraz ułatwiło integrację w tym sprincie.
 * **Połączenie z frontendem:** Funkcjonalność została w pełni spięta ("end-to-end"). Użytkownik końcowy może już wpisać zapytanie tekstowe na UI i otrzymać przefiltrowaną listę kart.
 
 ---
