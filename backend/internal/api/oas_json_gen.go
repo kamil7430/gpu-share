@@ -1351,6 +1351,56 @@ func (s *GetDevicesOKApplicationJSON) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes GetOrdersOKApplicationJSON as json.
+func (s GetOrdersOKApplicationJSON) Encode(e *jx.Encoder) {
+	unwrapped := []Order(s)
+
+	e.ArrStart()
+	for _, elem := range unwrapped {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+}
+
+// Decode decodes GetOrdersOKApplicationJSON from json.
+func (s *GetOrdersOKApplicationJSON) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode GetOrdersOKApplicationJSON to nil")
+	}
+	var unwrapped []Order
+	if err := func() error {
+		unwrapped = make([]Order, 0)
+		if err := d.Arr(func(d *jx.Decoder) error {
+			var elem Order
+			if err := elem.Decode(d); err != nil {
+				return err
+			}
+			unwrapped = append(unwrapped, elem)
+			return nil
+		}); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
+	}
+	*s = GetOrdersOKApplicationJSON(unwrapped)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s GetOrdersOKApplicationJSON) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *GetOrdersOKApplicationJSON) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *LoginReq) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -1465,14 +1515,14 @@ func (s *LoginReq) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *OrderDeviceCreated) Encode(e *jx.Encoder) {
+func (s *Order) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *OrderDeviceCreated) encodeFields(e *jx.Encoder) {
+func (s *Order) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("orderId")
 		e.Str(s.OrderId)
@@ -1491,17 +1541,17 @@ func (s *OrderDeviceCreated) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfOrderDeviceCreated = [4]string{
+var jsonFieldsNameOfOrder = [4]string{
 	0: "orderId",
 	1: "status",
 	2: "connectionDetails",
 	3: "totalReservedCostCents",
 }
 
-// Decode decodes OrderDeviceCreated from json.
-func (s *OrderDeviceCreated) Decode(d *jx.Decoder) error {
+// Decode decodes Order from json.
+func (s *Order) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode OrderDeviceCreated to nil")
+		return errors.New("invalid: unable to decode Order to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -1556,7 +1606,7 @@ func (s *OrderDeviceCreated) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode OrderDeviceCreated")
+		return errors.Wrap(err, "decode Order")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1573,8 +1623,8 @@ func (s *OrderDeviceCreated) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfOrderDeviceCreated) {
-					name = jsonFieldsNameOfOrderDeviceCreated[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfOrder) {
+					name = jsonFieldsNameOfOrder[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1595,14 +1645,14 @@ func (s *OrderDeviceCreated) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *OrderDeviceCreated) MarshalJSON() ([]byte, error) {
+func (s *Order) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OrderDeviceCreated) UnmarshalJSON(data []byte) error {
+func (s *Order) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

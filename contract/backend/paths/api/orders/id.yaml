@@ -1,0 +1,26 @@
+get:
+  summary: Get a user's order
+  operationId: getOrderById
+  security:
+    - bearerAuth:
+        - user
+  parameters:
+    - name: orderId
+      in: path
+      required: true
+      description: The id of order to retrieve
+      schema:
+        type: string
+  responses:
+    "200":
+      description: Order found
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/Order.yaml"
+    "401":
+      description: Unauthorized to see the order
+    "404":
+      description: Order not found
+    default:
+      $ref: "../../../responses/default.yaml"

@@ -26,7 +26,7 @@ func ConnectCmd(args []string) {
 
 	token, err := LoadToken()
 	if err != nil {
-		panic("not logged in")
+		log.Fatal("not logged in")
 	}
 
 	reader := bufio.NewReader(os.Stdin)
@@ -35,6 +35,9 @@ func ConnectCmd(args []string) {
 		devices, err := ListDevices(args)
 		if err != nil {
 			log.Fatal(err)
+		}
+		if len(devices) == 0 {
+			return
 		}
 
 		deviceIndex := 0

@@ -2,7 +2,9 @@
 @coordinator = http://localhost:2138
 
 # copy the token from /api/users/register or /api/users/login response
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJhZG1pbiI6ZmFsc2UsImV4cCI6MTc3OTE5MDk3OSwiaWF0IjoxNzc5MTkwMzc5fQ.39DjdNZK1_HeQ69J0RsmnZJxo9ra0wur8USw9H3NvL8
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJhZG1pbiI6ZmFsc2UsImV4cCI6MTc4MDM0NTk3OCwiaWF0IjoxNzgwMzQ1Mzc4fQ.E6UHvjbklKmQbdJPxnMjLmLtqx9dWCQrqu7JmOHMFtc
+# token for backend -> coordinator REST API communication
+@coordinatorToken = test
 @agentId = 1
 @deviceId = 1
 
@@ -14,6 +16,7 @@ GET {{backend}}/health
 
 ### Coordinator health
 GET {{coordinator}}/health
+Authorization: {{coordinatorToken}}
 
 ### Register a user
 POST {{backend}}/api/users/register
@@ -50,6 +53,7 @@ Authorization: Bearer {{token}}
 ### Schedule a job
 POST {{coordinator}}/api/jobs
 Content-Type: application/json
+Authorization: {{coordinatorToken}}
 
 {
   "deviceId": "{{deviceId}}",
@@ -62,3 +66,4 @@ Content-Type: application/json
 
 ### Agent status
 GET {{coordinator}}/api/agents/{{agentId}}/status
+Authorization: {{coordinatorToken}}
