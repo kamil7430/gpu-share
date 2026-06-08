@@ -4,6 +4,10 @@ import tornado.escape
 from rank import rank
 
 
+class HealthHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.set_status(200)
+
 class QueryHandler(tornado.web.RequestHandler):
     def post(self):
         try:
@@ -24,6 +28,7 @@ class QueryHandler(tornado.web.RequestHandler):
 def make_app():
     return tornado.web.Application([
         tornado.web.url(r"/query", QueryHandler),
+        tornado.web.url(r"/health", HealthHandler),
     ])
 
 async def main():
