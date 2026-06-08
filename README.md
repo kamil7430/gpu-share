@@ -60,6 +60,8 @@ You can run it using [httpyac](https://httpyac.github.io) or any Jetbrains IDE.
 flowchart LR
     User[User / CLI / Frontend]
 
+    Search[NL Search server]
+
     Backend["Backend API<br/>(REST)<br/>Devices<br/>UI-facing"]
 
     Coordinator["Coordinator API<br/>(REST)<br/>Jobs<br/>Scheduling"]
@@ -73,6 +75,7 @@ flowchart LR
     Executor2["Executor<br/>(Mock / Real GPU)"]
 
     User -->|REST<br/>register GPU, query GPUs| Backend
+    User <-->|REST<br/>rank GPUs| Search
     Backend -->|REST<br/>GPUs list, usage stats| User
 
     Backend -->|REST<br/>job submission, status| Coordinator
@@ -102,6 +105,11 @@ flowchart LR
 - `GRPC`
 - `OpenAPI`
 - `JWT`
+
+### NL Search
+- `python`
+- `tornado`
+- `spaCy`
 
 ### Frontend
 
