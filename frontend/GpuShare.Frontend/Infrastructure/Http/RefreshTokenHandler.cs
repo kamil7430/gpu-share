@@ -6,9 +6,9 @@ using System.Net.Http.Json;
 using GpuShare.Frontend.Models;
 using Microsoft.Extensions.Http;
 
-public class RefreshTokenHandler(AuthState authState, IHttpClientFactory httpFactory) : DelegatingHandler
+public class RefreshTokenHandler(IAuthState authState, IHttpClientFactory httpFactory) : DelegatingHandler
 {
-    private readonly AuthState _authState = authState;
+    private readonly IAuthState _authState = authState;
     private readonly IHttpClientFactory _httpFactory = httpFactory;
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
