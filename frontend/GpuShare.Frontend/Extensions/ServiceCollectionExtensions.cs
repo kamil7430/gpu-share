@@ -8,11 +8,13 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ApiClientHandler>();
 
+        var backendAddress = new Uri("http://10.5.0.2:2137");
+
         // A plain http client used by the refresh handler to call auth endpoints without
         // going through the ApiClient pipeline (avoids circular DI dependencies).
         services.AddHttpClient("auth", client =>
         {
-            client.BaseAddress = new Uri("https://localhost:5001");
+            client.BaseAddress = backendAddress;
         });
 
         services.AddScoped<RefreshTokenHandler>();
@@ -20,8 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient<IApiClient, ApiClient>(
             client =>
             {
-                client.BaseAddress =
-                    new Uri("https://localhost:5001");
+                client.BaseAddress = backendAddress;
             })
             .AddHttpMessageHandler<ApiClientHandler>()
             .AddHttpMessageHandler<RefreshTokenHandler>()
