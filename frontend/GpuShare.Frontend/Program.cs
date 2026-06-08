@@ -38,11 +38,12 @@ builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<IJwtHelper, JwtHelper>();    
 builder.Services.AddScoped<IFormatters, Formatters>();
-//builder.Services.AddScoped<IAuthState, AuthState>();
-builder.Services.AddScoped<IAuthState, MockAuthState>(); // for testing purposes, replace with real implementation later
-if (builder.Environment.IsDevelopment()) { builder.Services.AddScoped<IApiClient, MockApiClient>(); }
-else { builder.Services.AddApiInfrastructure(); }
-//builder.Services.AddScoped<ISnackbar, Snackbar>();
+builder.Services.AddScoped<IAuthState, AuthState>();
+builder.Services.AddScoped<IAppNotifier, SnackbarNotifier>();
+//builder.Services.AddScoped<IAuthState, MockAuthState>(); // for testing purposes, replace with real implementation later
+//if (builder.Environment.IsDevelopment()) { builder.Services.AddScoped<IApiClient, MockApiClient>(); }
+//else { builder.Services.AddApiInfrastructure(builder.Configuration); }
+builder.Services.AddApiInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();

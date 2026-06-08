@@ -1,6 +1,8 @@
-@if (ShowEndModal)
+@inject IOrderService OrderService
+
+@if (IsVisible)
 {
-    <BaseModal TResult="string" IsVisible="@ShowEndModal" Title="End Session" OnClose="@CloseEndModal" SizeClass="small">
+    <BaseModal TResult="string" IsVisible="@IsVisible" Title="End Session" OnClose="@CloseEndModal" SizeClass="small">
         <ChildContent>
             <div class="end-session-modal">
                 @* <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Size="Size.Large" /> *@
@@ -23,7 +25,8 @@
 }
 
 @code {
-    [Parameter] public bool ShowEndModal { get; set; }
+    [Parameter] public int OrderId { get; set; }
+    [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<ModalResult<string>> OnClose { get; set; }
 
     private async Task CloseEndModal()
@@ -35,6 +38,16 @@
     {
         Console.WriteLine("Session terminated");
         // call to end session
+        try
+        {
+            await OrderService.EndOrderAsync(OrderId);
+        }
+        catch (ApiException ex)
+        {
+            await OnClose.InvokeAsync(ModalResult<string>.Fail(
+                $"Ending session failed with http code {ex.StatusCode} and error message: {ex.Message}"));
+        }
+
         await OnClose.InvokeAsync(ModalResult<string>.Ok());
     }
 }

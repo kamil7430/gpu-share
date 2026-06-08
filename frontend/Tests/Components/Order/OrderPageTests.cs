@@ -26,6 +26,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
             Services.AddSingleton(_authStateMock.Object);
             Services.AddSingleton(_orderServiceMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
+            Services.AddSingleton(new Mock<IAppNotifier>().Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
@@ -107,7 +108,10 @@ namespace GpuShare.Frontend.Tests.Components.Order
             cut.Find(".btn-danger").Click();
 
             // Assert (stub exists and receives re-render)
-            cut.Markup.Contains("End Session Modal");
+            cut.WaitForAssertion(() =>
+            {
+                cut.Markup.Contains("End Session Modal");
+            });
         }
 
         [Fact]
@@ -117,8 +121,7 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
             var link = cut.Find(".back-link");
 
-            link.GetAttribute("href")
-                .Should().Be("/profile/john");
+            link.GetAttribute("href").Should().Be("/profile/john");
         }
 
         [Fact]
@@ -151,8 +154,11 @@ namespace GpuShare.Frontend.Tests.Components.Order
 
             var cut = Render<OrderPage>(p => p.Add(x => x.OrderId, 1));
 
-            cut.Markup.Should().Contain("Workstation-Alpha");
-            cut.Markup.Should().Contain("RTX 4090");
+            cut.WaitForAssertion(() =>
+            {
+                cut.Markup.Should().Contain("Workstation-Alpha");
+                cut.Markup.Should().Contain("RTX 4090");
+            });
         }
 
         [Fact]
@@ -160,7 +166,10 @@ namespace GpuShare.Frontend.Tests.Components.Order
         {
             var cut = Render<OrderPage>(p => p.Add(x => x.OrderId, 1));
 
-            cut.Markup.Should().Contain("mud-chip-color-success");
+            cut.WaitForAssertion(() =>
+            {
+                cut.Markup.Should().Contain("mud-chip-color-success");
+            });
         }
 
         [Fact]

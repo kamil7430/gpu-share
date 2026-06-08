@@ -23,7 +23,7 @@
         </div>
 
         <div class="connection-command">
-        <code>@ConnectionDetails.ConnectionString</code>
+        <code>@ConnectionDetails.ConnectionUrl</code>
 
             <button class="btn-dark" @onclick='CopyConnectionString'>
                 <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="width: 16px; height: 16px;" />
@@ -36,9 +36,7 @@
 
     private async Task CopyConnectionString()
     {
-        await JS.InvokeVoidAsync(
-            "navigator.clipboard.writeText",
-            ConnectionDetails.ConnectionString);
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ConnectionDetails.ConnectionUrl);
     }
 
 }

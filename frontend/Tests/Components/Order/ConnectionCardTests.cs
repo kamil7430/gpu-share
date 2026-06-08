@@ -58,7 +58,8 @@ namespace GpuShare.Frontend.Tests.Components.Order
         {
             Host = "gpu-12.gpushare.io",
             Port = 443,
-            Protocol = "WSS"
+            Protocol = "WSS",
+            ConnectionUrl = "wss://gpu-12.gpushare.io/connect/session_x82A"
         };
 
         public Task InitializeAsync() => Task.CompletedTask;

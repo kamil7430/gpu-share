@@ -26,6 +26,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             Services.AddSingleton(_orderServiceMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddSingleton(_formattersMock.Object);
+            Services.AddSingleton(new Mock<IAppNotifier>().Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
@@ -161,8 +162,11 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             await cut.InvokeAsync(() => cut.Instance.HandleFilesChanged([ file ]));
 
             cut.Render();
+            cut.Markup.Should().Contain("evidence.png");
+            //cut.WaitForAssertion(() =>
+            //{
 
-            Assert.Contains("evidence.png", cut.Markup);
+            //});
         }
 
         [Fact]

@@ -17,12 +17,12 @@ namespace GpuShare.Frontend.Tests.Components.Device
     {
         private readonly Mock<IDeviceService> _deviceServiceMock = new();
         private readonly Mock<IAuthState> _authStateMock = new();
-        private readonly Mock<ISnackbar> _snackbar = new();
+        private readonly Mock<IAppNotifier> _notifierMock = new();
 
         public NewDevicePageTests()
         {
             Services.AddAuthorizationCore();
-            Services.AddSingleton(_snackbar.Object);
+            Services.AddSingleton(_notifierMock.Object);
             Services.AddSingleton(_authStateMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddMudServices();
@@ -141,9 +141,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             await cut.InvokeAsync(() => form.Instance.OnSave.InvokeAsync(new Models.Device()));
 
-            _snackbar.Verify(x => x.Add(
-                    "Creating device failed because of wrong input data. Please check your input and try again.",
-                    Severity.Error), Times.Once);
+            _notifierMock.Verify(x => x.ShowError(
+                    "Creating device failed because of wrong input data. Please check your input and try again."), Times.Once);
         }
 
         [Fact]
@@ -158,9 +157,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             await cut.InvokeAsync(() => form.Instance.OnSave.InvokeAsync(new Models.Device()));
 
-            _snackbar.Verify(x => x.Add(
-                    "You are not authorized to create a device. Please log in and try again.",
-                    Severity.Error), Times.Once);
+            _notifierMock.Verify(x => x.ShowError(
+                    "You are not authorized to create a device. Please log in and try again."), Times.Once);
         }
 
         [Fact]
@@ -175,9 +173,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             await cut.InvokeAsync(() => form.Instance.OnSave.InvokeAsync(new Models.Device()));
 
-            _snackbar.Verify(x => x.Add(
-                    "An unexpected error occured while creating the device. Please try again.",
-                    Severity.Error), Times.Once);
+            _notifierMock.Verify(x => x.ShowError(
+                    "An unexpected error occured while creating the device. Please try again."), Times.Once);
         }
     }
 }

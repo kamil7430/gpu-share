@@ -14,6 +14,8 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
     {
         private readonly Mock<IAuthState> _authStateMock;
         private readonly Mock<IDisputeService> _disputeServiceMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
+        private readonly Mock<IOrderService> _orderServiceMock = new();
         private readonly BunitAuthorizationContext? _authContext;
 
         public DisputePageTests()
@@ -22,6 +24,10 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             Services.AddAuthorizationCore();
             Services.AddSingleton(_authStateMock.Object);
             Services.AddSingleton(_disputeServiceMock.Object);
+            Services.AddSingleton(_deviceServiceMock.Object);
+            Services.AddSingleton(_orderServiceMock.Object);
+            Services.AddSingleton(new Mock<IFormatters>().Object);
+            Services.AddSingleton(new Mock<IAppNotifier>().Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
@@ -35,6 +41,13 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
             _disputeServiceMock.Setup(x => x.GetDisputeAsync(It.IsAny<int>())).ReturnsAsync(new Models.Dispute() {
                 DisputeId = 15,
                 OrderId = 10,
+            });
+            _orderServiceMock.Setup(x => x.GetOrderAsync(10)).ReturnsAsync(new Models.Order() {
+                OrderId = 10, DeviceId = 12, StartDate = DateTime.Now.AddHours(-1), EndDate = DateTime.Now.AddHours(-1)
+            });
+            _deviceServiceMock.Setup(x => x.GetDeviceAsync(12)).ReturnsAsync(new Models.Device()
+            {
+                DeviceId = 12, OwnerUsername = "julie", Name = "Workstation-Alpha", GpuModel = "RTX 4090"
             });
         }
 

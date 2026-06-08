@@ -2,6 +2,7 @@
 using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services.Interfaces;
 using GpuShare.Frontend.Infrastructure.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GpuShare.Frontend.Services
 {
@@ -57,14 +58,27 @@ namespace GpuShare.Frontend.Services
         {
             var devices = await _api.GetAsync<List<Device>>($"/devices", filters);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got devices.");
+                _logger.LogInformation($"Searching for '{filters.Name}', " +
+                    $"price between {filters.MinPricePerHourUsdCents ?? 0} " +
+                    $"and {filters.MinPricePerHourUsdCents ?? 0}, " +
+                    $"cores between {filters.MinCudaCores ?? 0} and {filters.MaxCudaCores ?? 0}, " +
+                    $"available only: {filters.AvailableOnly}, limit: {filters.Limit}");
+            
             return new PagedResult<Device>
             {
                 Items = devices!,
                 TotalCount = devices!.Count,
                 Page = 1,
-                PageSize = filters.Limit
+                PageSize = devices!.Count
             };
+        }
+        public async Task<List<Device>> GetUserDevicesAsync(string username)
+        {
+            var devices = await _api.GetAsync<List<Device>>($"/users/{username}/devices");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got devices for user {username}.", username);
+
+            return devices!;
         }
 
         public async Task<Device> UpdateDeviceAsync(int deviceId, Device oldDevice, UpdateDeviceRequest cmd)

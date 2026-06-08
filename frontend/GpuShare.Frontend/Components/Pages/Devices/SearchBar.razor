@@ -41,16 +41,17 @@
     </div>
 </div>
 
-<FilterModal @ref="Modal" CurrentFilter="Filter" OnApply="OnFiltersApplied" />
+<FilterModal CurrentFilter="Filter" OnApply="OnFiltersApplied" IsVisible="@_isVisible" />
 
 @code {
     [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
 
     private SearchFilter Filter = new();
-    private FilterModal? Modal;
+    private bool _isVisible = false;
+
     private void OpenModal()
     {
-        Modal?.Open(Filter);
+        _isVisible = true;
     }
 
     public async Task ApplySearch()

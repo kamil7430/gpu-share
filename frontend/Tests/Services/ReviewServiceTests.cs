@@ -205,8 +205,8 @@ namespace GpuShare.Frontend.Tests.Services
                 .ShouldMapTo(new PagedResult<Review>()
                 {
                     Items = _reviews,
-                    Page = 2,
-                    PageSize = 25,
+                    Page = 1,
+                    PageSize = 50,
                     TotalCount = 2
                 });
         }
@@ -269,8 +269,8 @@ namespace GpuShare.Frontend.Tests.Services
                 .ShouldMapTo(new PagedResult<Review>()
                 {
                     Items = _reviews,
-                    Page = 3,
-                    PageSize = 50,
+                    Page = 1,
+                    PageSize = 150,
                     TotalCount = 2
                 });
         }

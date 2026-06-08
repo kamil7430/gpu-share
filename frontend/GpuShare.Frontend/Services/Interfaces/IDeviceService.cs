@@ -11,6 +11,12 @@ public interface IDeviceService
     Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters);
 
     /// <summary>
+    /// GET /api/users/{username}/devices
+    /// Returns all devices belonging to user with provided username.
+    /// </summary>
+    Task<List<Device>> GetUserDevicesAsync(string username);
+
+    /// <summary>
     /// GET /api/devices/{id}
     /// Returns device details.
     /// </summary>

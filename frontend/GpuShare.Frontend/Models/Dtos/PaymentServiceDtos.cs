@@ -12,9 +12,10 @@ namespace GpuShare.Frontend.Models.Dtos
 
         public DateTime? To { get; set; }
 
-        public int Page { get; set; } = 1;
+        //public int Page { get; set; } = 1;
 
-        public int PageSize { get; set; } = 20;
+        //public int PageSize { get; set; } = 20;
+        public int Limit { get; set; } = 25;
     }
 
     public class TransferRequest

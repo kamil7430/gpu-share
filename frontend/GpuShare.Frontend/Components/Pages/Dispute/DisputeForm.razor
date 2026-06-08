@@ -1,8 +1,13 @@
 @inject IDeviceService DeviceService
 @inject IOrderService OrderService
 @inject IFormatters Formatters
+@inject IAppNotifier SnackbarNotifier
 
-@if (_order != null && _gpu != null && Dispute != null)
+@if(_loading == true)
+{
+    <p>Loading order data...</p>
+}
+else if (_order != null && _gpu != null && Dispute != null)
 {
     <EditForm Model="Dispute" OnValidSubmit="SubmitDispute">
         <DataAnnotationsValidator />
@@ -20,7 +25,7 @@
 
                 <div class="spec-box">
                     <div class="label">Device</div>
-                    <div class="value">@_gpu.GpuModel • @_gpu.Name</div>
+                    <div class="value">@_gpu.Name • @_gpu.GpuModel</div>
                 </div>
 
                 <div class="spec-box">
@@ -113,6 +118,7 @@
     private Order? _order = null; 
     private Device? _gpu = null;
     public List<IBrowserFile> UploadedFiles = new();
+    private bool _loading = true;
 
     private bool CanSubmit => Dispute == null? false : !string.IsNullOrWhiteSpace(Dispute.Reason) 
         && !string.IsNullOrWhiteSpace(Dispute.Description) && Dispute.Description.Length >= 50;
@@ -125,26 +131,24 @@
         try
         {
             _order = await OrderService.GetOrderAsync(OrderId);
-        }
-        catch
-        {
-            _order = null;
-        }
-
-        try
-        {
             _gpu = await DeviceService.GetDeviceAsync(_order!.DeviceId);
         }
-        catch
+        catch (Exception)
         {
+            SnackbarNotifier.ShowError("Error updating device. Please try again.");
+            _order = null;
             _gpu = null;
+        }
+        finally
+        {
+            _loading = false;
         }
     }
 
     public async Task HandleFilesChanged(IReadOnlyList<IBrowserFile> files)
     {
         UploadedFiles = files.Take(3).ToList();
-
+        StateHasChanged();
         await Task.CompletedTask;
     }
 

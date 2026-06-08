@@ -203,7 +203,10 @@ namespace GpuShare.Frontend.Tests
 
             var client = new HttpClient(handler);
 
-            await client.GetAsync("https://localhost/test");
+            var ex = await Assert.ThrowsAsync<ApiException>(
+                () => client.GetAsync("https://localhost/test"));
+
+            ex.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
             authState.AccessToken.Should().BeNull();
             authState.User.Should().BeNull();
@@ -241,7 +244,10 @@ namespace GpuShare.Frontend.Tests
 
             var client = new HttpClient(handler);
 
-            await client.GetAsync("https://localhost/test");
+            var ex = await Assert.ThrowsAsync<ApiException>(
+                () => client.GetAsync("https://localhost/test"));
+
+            ex.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
             authState.AccessToken.Should().BeNull();
             authState.User.Should().BeNull();

@@ -24,6 +24,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
             Services.AddSingleton(_authStateMock.Object);
             Services.AddSingleton(_formattersMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
+            Services.AddSingleton(new Mock<IAppNotifier>().Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;

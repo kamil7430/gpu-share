@@ -45,5 +45,10 @@ namespace GpuShare.Frontend.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<Device>> GetUserDevicesAsync(string username)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

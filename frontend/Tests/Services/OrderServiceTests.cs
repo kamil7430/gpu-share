@@ -49,7 +49,8 @@ namespace GpuShare.Frontend.Tests.Services
             {
                 Host = "gpu-server",
                 Port = 12345,
-                Protocol = "WSS"
+                Protocol = "WSS",
+                ConnectionUrl = "wss://gpu-server:12345/connect/session_x82A"
             },
             TotalReservedCostCents = 900
         };
@@ -61,7 +62,8 @@ namespace GpuShare.Frontend.Tests.Services
                 "connectionDetails": {
                     "host": "gpu-server",
                     "port": "12345",
-                    "protocol": "WSS"
+                    "protocol": "WSS",
+                    "connectionUrl": "wss://gpu-server:12345/connect/session_x82A"
                 },
                 "totalReservedCostCents": 900
             }
@@ -80,7 +82,8 @@ namespace GpuShare.Frontend.Tests.Services
             {
                 Host = "gpu-server",
                 Port = 12345,
-                Protocol = "WSS"
+                Protocol = "WSS",
+                ConnectionUrl = "wss://gpu-server:12345/connect/session_x82A"
             }
         };
 
@@ -95,7 +98,8 @@ namespace GpuShare.Frontend.Tests.Services
                 "connectionDetails": {
                     "host": "gpu-server",
                     "port": "12345",
-                    "protocol": "WSS"
+                    "protocol": "WSS",
+                    "connectionUrl": "wss://gpu-server:12345/connect/session_x82A"
                 },
                 "totalReservedCostCents": 900
             }
@@ -113,7 +117,8 @@ namespace GpuShare.Frontend.Tests.Services
                 {
                     Host = "gpu-server",
                     Port = 12345,
-                    Protocol = "WSS"
+                    Protocol = "WSS",
+                    ConnectionUrl = "wss://gpu-server:12345/connect/session_x82A"
                 }
             },
             new Order()
@@ -127,7 +132,8 @@ namespace GpuShare.Frontend.Tests.Services
                 {
                     Host = "gpu-server1",
                     Port = 12346,
-                    Protocol = "WSS"
+                    Protocol = "WSS",
+                    ConnectionUrl = "wss://gpu-server1:12346/connect/session_x82A"
                 }
             }
         ];
@@ -141,7 +147,8 @@ namespace GpuShare.Frontend.Tests.Services
                 "connectionDetails": {
                     "host": "gpu-server",
                     "port": "12345",
-                    "protocol": "WSS"
+                    "protocol": "WSS",
+                    "connectionUrl": "wss://gpu-server:12345/connect/session_x82A"
                 },
                 "totalReservedCostCents": 900
             },
@@ -153,7 +160,8 @@ namespace GpuShare.Frontend.Tests.Services
                 "connectionDetails": {
                     "host": "gpu-server1",
                     "port": "12346",
-                    "protocol": "WSS"
+                    "protocol": "WSS",
+                    "connectionUrl": "wss://gpu-server1:12346/connect/session_x82A"
                 },
                 "totalReservedCostCents": 1000
             }]
@@ -307,7 +315,7 @@ namespace GpuShare.Frontend.Tests.Services
                     Items = _orders,
                     Page = 1,
                     TotalCount = 2,
-                    PageSize = 25
+                    PageSize = 2
                 });
         }
 

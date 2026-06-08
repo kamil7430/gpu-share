@@ -53,14 +53,14 @@ namespace GpuShare.Frontend.Services
         {
             var orders = await _api.GetAsync<List<Order>>($"/orders", parameters);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got orders.");
+                _logger.LogInformation("Got {num} orders.", orders!.Count);
 
             return new PagedResult<Order>
             {
                 Items = orders!,
                 TotalCount = orders!.Count,
                 Page = 1,
-                PageSize = parameters.Limit
+                PageSize = orders!.Count
             };
         }
     }

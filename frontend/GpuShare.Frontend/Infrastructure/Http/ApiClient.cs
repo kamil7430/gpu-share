@@ -133,6 +133,10 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
         {
             await action();
         }
+        catch (ApiException ex)
+        {
+            throw new ApiException(ex.Message, ex.StatusCode);
+        }
         catch (TaskCanceledException)
         {
             _logger.LogError("Request timed out. Http code: {code}.", HttpStatusCode.RequestTimeout);
@@ -142,6 +146,11 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
         {
             _logger.LogError("Cannot connect to server. Http code: {code}.", HttpStatusCode.ServiceUnavailable);
             throw new ApiException("Cannot connect to server.", HttpStatusCode.ServiceUnavailable);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error");
+            throw new ApiException("Unexpected error", HttpStatusCode.InternalServerError);
         }
     }
 }

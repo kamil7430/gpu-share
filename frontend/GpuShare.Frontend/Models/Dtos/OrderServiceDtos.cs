@@ -26,11 +26,11 @@
     {
         public string Host { get; set; } = string.Empty;
 
-        public int Port { get; set; }
+        public int Port { get; set; } = 443;
 
         public string Protocol { get; set; } = "WSS";
 
-        public string ConnectionString => $"wss://{Host}:{Port}/connect/session_x82A";
+        public string ConnectionUrl { get; set; } = $"wss://1gpu-server:443/connect/session_x82A";
     }
 
     public class OrderQueryParams

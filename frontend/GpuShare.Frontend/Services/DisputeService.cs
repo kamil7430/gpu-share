@@ -30,7 +30,7 @@ namespace GpuShare.Frontend.Services
                 Items = disputes!,
                 TotalCount = disputes!.Count,
                 Page = 1,
-                PageSize = parameters.PageSize
+                PageSize = disputes!.Count
             };
         }
 

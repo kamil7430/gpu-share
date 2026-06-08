@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MudBlazor.Services;
 using Xunit;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace GpuShare.Frontend.Tests.Components.Devices
 {
@@ -27,6 +30,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             Services.AddSingleton(_authStateMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddMudServices();
+            Services.AddBlazorise(options => { })
+                .AddBootstrapProviders()
+                .AddFontAwesomeIcons();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
 
@@ -85,30 +91,24 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             // Assert
             cut.Find("input");
 
-            cut.FindAll("button")
-                .Should()
-                .HaveCount(2);
+            cut.FindAll("button").Should().HaveCount(2);
 
             cut.Markup.Should().Contain("Filters");
             cut.Markup.Should().Contain("Search");
         }
 
         [Fact]
-        public void Search_Should_Pass_Filter_Term()
+        public async Task Search_Should_Pass_Filter_Term()
         {
             // Arrange
             SearchFilter? received = null;
 
-            var cut = Render<SearchBar>(p => p
-                .Add(x => x.OnSearch,
-                    (SearchFilter filter) => received = filter));
+            var cut = Render<SearchBar>(p => p.Add(x => x.OnSearch, filter => received = filter));
 
             // Act
-            cut.Find("input")
-                .Input("RTX 4090");
+            cut.Find("input").Change("RTX 4090");
 
-            cut.Find(".btn-search")
-                .Click();
+            cut.Find(".btn-search").Click();
 
             // Assert
             received.Should().NotBeNull();
@@ -134,7 +134,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
         }
 
         [Fact]
-        public void Applying_Filters_Should_Render_Badges()
+        public async Task Applying_Filters_Should_Render_Badges()
         {
             // Arrange
             var cut = Render<SearchBar>();
@@ -148,11 +148,13 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            cut.InvokeAsync(() =>
+            await cut.InvokeAsync(() =>
             {
                 cut.Instance.OnFiltersApplied(filter);
                 return Task.CompletedTask;
             });
+
+            cut.Render();
 
             // Assert
             cut.Markup.Should().Contain("VRAM:");
@@ -169,19 +171,28 @@ namespace GpuShare.Frontend.Tests.Components.Devices
         }
 
         [Fact]
-        public void Empty_Filter_Should_Not_Render_Badges()
+        public async Task Empty_Filter_Should_Not_Render_Badges()
         {
             // Arrange
             var cut = Render<SearchBar>();
 
+            var filter = new SearchFilter();
+
+            // Act
+            await cut.InvokeAsync(() =>
+            {
+                cut.Instance.OnFiltersApplied(filter);
+                return Task.CompletedTask;
+            });
+
+            cut.Render();
+
             // Assert
-            cut.FindAll(".filter-badge")
-                .Should()
-                .BeEmpty();
+            cut.FindAll(".filter-badge").Should().BeEmpty();
         }
 
         [Fact]
-        public void FilterModal_Should_Receive_Current_Filter()
+        public async Task FilterModal_Should_Receive_Current_Filter()
         {
             // Arrange
             var cut = Render<SearchBar>();
@@ -192,22 +203,22 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            cut.InvokeAsync(() =>
+            await cut.InvokeAsync(() =>
             {
                 cut.Instance.OnFiltersApplied(filter);
                 return Task.CompletedTask;
             });
 
+            cut.Render();
+
             // Assert
             var modal = cut.FindComponent<FilterModal>();
 
-            modal.Instance.CurrentFilter.Term
-                .Should()
-                .Be("CUDA");
+            modal.Instance.CurrentFilter.Term.Should().Be("CUDA");
         }
 
         [Fact]
-        public void AvailableOnly_Should_Render_Badge()
+        public async Task AvailableOnly_Should_Render_Badge()
         {
             // Arrange
             var cut = Render<SearchBar>();
@@ -218,18 +229,20 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            cut.InvokeAsync(() =>
+            await cut.InvokeAsync(() =>
             {
                 cut.Instance.OnFiltersApplied(filter);
                 return Task.CompletedTask;
             });
+
+            cut.Render();
 
             // Assert
             cut.Markup.Should().Contain("Available Only");
         }
 
         [Fact]
-        public void Sort_None_Should_Not_Render_Badge()
+        public async Task Sort_None_Should_Not_Render_Badge()
         {
             // Arrange
             var cut = Render<SearchBar>();
@@ -240,11 +253,13 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            cut.InvokeAsync(() =>
+            await cut.InvokeAsync(() =>
             {
                 cut.Instance.OnFiltersApplied(filter);
                 return Task.CompletedTask;
             });
+
+            cut.Render();
 
             // Assert
             cut.Markup.Should().NotContain("Sort:");

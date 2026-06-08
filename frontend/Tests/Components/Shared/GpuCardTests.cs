@@ -16,6 +16,8 @@ namespace GpuShare.Frontend.Tests.Components.Shared
     public class GpuCardTests : BunitContext, Xunit.IAsyncLifetime
     {
         private readonly Mock<IAuthState> _authStateMock = new();
+        private readonly Mock<IFormatters> _formattersMock = new();
+        private readonly Mock<IDeviceService> _deviceServiceMock = new();
 
         private readonly Models.Device gpu = new()
         {
@@ -35,6 +37,8 @@ namespace GpuShare.Frontend.Tests.Components.Shared
         {
             Services.AddAuthorizationCore();
             Services.AddSingleton(_authStateMock.Object);
+            Services.AddSingleton(_formattersMock.Object);
+            Services.AddSingleton(_deviceServiceMock.Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;

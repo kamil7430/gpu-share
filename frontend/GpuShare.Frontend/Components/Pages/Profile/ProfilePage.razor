@@ -1,9 +1,8 @@
 @page "/profile/{Username}"
-@using GpuShare.Frontend.Services
-@using GpuShare.Frontend.Models
 @using GpuShare.Frontend.State
 @inject IAuthState AuthState
 @inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
 @inject NavigationManager NavigationManager
 
 @* 
@@ -38,7 +37,7 @@ Project decisions:
             }
         </div>
 
-        <DevicesList />
+        <DevicesList Devices="_devices" Loading="_loading"/>
     </div>
 
     <!-- Orders -->
@@ -66,6 +65,32 @@ Project decisions:
 
 @code {
     [Parameter] public string Username { get; set; } = string.Empty;
+    private List<Device> _devices = [];
+    private bool _loading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _devices = await DeviceService.GetUserDevicesAsync(Username);
+            _loading = false;
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _devices.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching devices for user.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while devices for user.");
+        }
+    }
 
     private void AddDevice()
     {

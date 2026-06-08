@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using GpuShare.Frontend.Components.Shared
 @using GpuShare.Frontend.Models
+@inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
 
 @*
 TODO:
@@ -18,24 +20,68 @@ TODO:
 <h1>Search for GPUs</h1>
 
 <!-- Search bar and filters -->
-<SearchBar OnSearch="ApplySearch" />
+<SearchBar OnSearch="ApplySearchAsync" />
 
 <!-- GPUs -->
-<DevicesList />
+<DevicesList Devices="_devices" Loading="_loading" />
 
 @code {
-    public EventCallback<SearchFilter> OnSearch { get; set; }
+    // public EventCallback<SearchFilter> OnSearch { get; set; }
 
     public SearchFilter Filter = new();
-    
-    public async Task ApplySearch()
-    {
-        await OnSearch.InvokeAsync(Filter);
-        Console.WriteLine($"Searching for '{Filter.Term}', price between {Filter.PricePerHour?.Start ?? 0} and {Filter.PricePerHour?.End ?? 0}, cores between {Filter.Cores?.Start ?? 0} and {Filter.Cores?.End ?? 0}, available only: {Filter.AvailableOnly}");
-    }
+    private List<Device> _devices = new();
+    private bool _loading = false;
 
-    public void OnFiltersApplied(SearchFilter updated)
+    public async Task ApplySearchAsync(SearchFilter updated)
     {
+        _loading = true;
         Filter = updated;
+
+        var filters = new DeviceSearchFilters
+        {
+            Name = Filter.Term,
+            GpuModel = Filter.Term,
+            MinVramMb = Filter.VRAM_MB.Count() > 0 ? int.Parse(Filter.VRAM_MB[0]) : null,
+            MaxVramMb = Filter.VRAM_MB.Count() > 0 ? int.Parse(Filter.VRAM_MB[Filter.VRAM_MB.Count() - 1]) : null,
+            MinPricePerHourUsdCents = Filter.PricePerHour != null ? (int)(Filter.PricePerHour?.Start * 100 ?? 0) : null,
+            MaxPricePerHourUsdCents = Filter.PricePerHour != null ? (int)(Filter.PricePerHour?.End * 100 ?? int.MaxValue) : null,
+            MinCudaCores = Filter.Cores?.Start,
+            MaxCudaCores = Filter.Cores?.End,
+            AvailableOnly = Filter.AvailableOnly,
+            Frameworks = Filter.SupportedFrameworks,
+            Limit = int.MaxValue
+        };
+
+        try
+        {
+            var devices = await DeviceService.SearchDevicesAsync(filters);
+            _devices = devices.Items;
+            _loading = false;
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                SnackbarNotifier.ShowError("Unauthorized access to device search.");
+            }
+            if (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                SnackbarNotifier.ShowError("Invalid request for device search.");
+            }
+            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _devices.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Server error occured while searching for devices.");
+            }
+            _loading = false;
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error occured while searching for devices.");
+            _loading = false;
+        }
     }
 }

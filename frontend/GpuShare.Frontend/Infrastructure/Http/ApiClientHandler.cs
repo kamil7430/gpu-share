@@ -1,5 +1,8 @@
 namespace GpuShare.Frontend.Infrastructure.Http;
+
+using GpuShare.Frontend.Models;
 using GpuShare.Frontend.State;
+using System.Net;
 using System.Net.Http.Headers;
 
 public class ApiClientHandler(IAuthState authState) : DelegatingHandler
@@ -8,11 +11,23 @@ public class ApiClientHandler(IAuthState authState) : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (!string.IsNullOrWhiteSpace(_authState.AccessToken))
+        try
         {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _authState.AccessToken);
-        }
+            if (!string.IsNullOrWhiteSpace(_authState.AccessToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _authState.AccessToken);
+            }
 
-        return await base.SendAsync(request, cancellationToken);
+            return await base.SendAsync(request, cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            var code = ex.StatusCode ?? HttpStatusCode.InternalServerError;
+            throw new ApiException($"Error ocurred while adding authentication header: {ex.Message}", code);
+        }
+        catch (Exception ex)
+        {
+            throw new ApiException($"Error ocurred while adding authentication header: {ex.Message}", HttpStatusCode.InternalServerError);
+        }
     }
 }

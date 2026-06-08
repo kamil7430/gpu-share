@@ -230,7 +230,7 @@ namespace GpuShare.Frontend.Tests.Services
                 .To("/devices")
                 .Returns(_devicesJson)
                 .ShouldMapTo(new PagedResult<Device>() { TotalCount = _devices.Count, 
-                    Page = 1, PageSize = 25, Items = _devices });
+                    Page = 1, PageSize = 2, Items = _devices });
         }
 
         [Fact]

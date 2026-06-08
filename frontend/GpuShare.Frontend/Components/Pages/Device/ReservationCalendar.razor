@@ -1,4 +1,5 @@
 @inject IOrderService OrderService
+@inject IAppNotifier SnackbarNotifier
 @using GpuShare.Frontend.Models.Dtos
 
 <div class="card">
@@ -99,13 +100,32 @@
 
     private async Task LoadOrdersForWeek()
     {
-        var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams
+        try
         {
-            DeviceId = DeviceId,
-            StartDate = _weekStart,
-            EndDate = _weekStart.AddDays(7)
-        });
-        _orders = pagedResult.Items.ToList();
+            var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams
+                {
+                    DeviceId = DeviceId,
+                    StartDate = _weekStart,
+                    EndDate = _weekStart.AddDays(7),
+                    Limit = int.MaxValue
+                });
+            _orders = pagedResult.Items.ToList();
+        } 
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _orders.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+        }
     }
 
     // ===== HELPERS =====

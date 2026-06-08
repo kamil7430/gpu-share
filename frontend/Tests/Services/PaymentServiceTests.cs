@@ -85,8 +85,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             Type = TransactionType.RESERVATION,
             Status = TransactionStatus.COMPLETED,
-            Page = 2,
-            PageSize = 33
+            Limit = 66
         };
 
         private readonly List<Transaction> _transactions = [
@@ -171,8 +170,7 @@ namespace GpuShare.Frontend.Tests.Services
                 .Returns(_transactionsJson)
                 .ExpectQuery(q =>
                 {
-                    q["page"].Should().Be("1");
-                    q["pageSize"].Should().Be("25");
+                    q["limit"].Should().Be("66");
                     q["type"].Should().Be("Deposit");
                 })
                 .ExecuteAction();
@@ -188,9 +186,9 @@ namespace GpuShare.Frontend.Tests.Services
                 .ShouldMapTo(new PagedResult<Transaction>()
                 {
                     Items = _transactions,
-                    Page = 2,
+                    Page = 1,
                     TotalCount = 2,
-                    PageSize = 33
+                    PageSize = 2
                 });
         }
 

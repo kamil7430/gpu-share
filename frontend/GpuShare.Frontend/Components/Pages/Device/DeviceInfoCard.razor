@@ -2,7 +2,7 @@
 @inject IAuthState AuthState
 @inject IFormatters Formatters
 @inject IDeviceService DeviceService
-@inject ISnackbar Snackbar
+@inject IAppNotifier SnackbarNotifier
 @inject IJSRuntime JS
 
 @if (Device != null)
@@ -106,7 +106,7 @@
         }
         catch (ApiException)
         {
-            Snackbar.Add("Failed to load agent installation info. Please try again later.", Severity.Error);
+            SnackbarNotifier.ShowError("Failed to load agent installation info. Please try again later.");
         }
     }
 

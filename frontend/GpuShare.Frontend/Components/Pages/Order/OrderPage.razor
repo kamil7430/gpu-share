@@ -4,6 +4,7 @@
 @inject IAuthState AuthState
 @inject IOrderService OrderService
 @inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
 
 @page "/order/{OrderId:int}"
 @attribute [Authorize]
@@ -13,10 +14,16 @@
         <NavLink href=@_profileLink class="back-link">&lt; Back to Profile</NavLink>
     </div>
 
-@if (_order == null || _gpu == null)
+    @if (_loading)
     {
         <div class="card">
-            <h3>Loading order details...</h3>
+            <h4>Loading order details...</h4>
+        </div>
+    }
+    else if (_order == null || _gpu == null)
+    {
+        <div class="card">
+            <h4>Could not load order deatils.</h4>
         </div>
     }
     else
@@ -32,12 +39,12 @@
                         </div>
 
                         <MudChip T="string" Color="@GetChipColor(_order.Status)" Variant="Variant.Filled">
-                            @GetChipContent(_order.Status)
+                            @_order.Status.GetDisplayName()
                         </MudChip>
                     </div>
 
                     <!-- Live Stats -->
-                    <DeviceStatsCard />
+                    <DeviceStatsCard Device="_gpu" Order="_order" />
 
                     <!-- Actions -->
                     <div class="flex-row" style="justify-content: space-between;">
@@ -69,7 +76,7 @@
 </div>
 
 <!-- End Session Modal -->
-<EndSessionModal ShowEndModal="@_showEndModal" />
+<EndSessionModal IsVisible="@_showEndModal" OrderId="OrderId", OnClose="HandleEndSession" />
 
 
 @code {
@@ -77,8 +84,11 @@
     [Parameter] public int OrderId { get; set; }
 
     private DateTime _startTime = DateTime.UtcNow.AddMinutes(-12);
-    private bool _showEndModal;
     private string _profileLink = string.Empty;
+    
+    private bool _showEndModal = false;
+    private bool _loading = true;
+    
     private Order? _order;
     private Device? _gpu;
     private User? _user;
@@ -87,21 +97,37 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        _order = await OrderService.GetOrderAsync(OrderId);
-        _gpu = await DeviceService.GetDeviceAsync(_order.DeviceId);
-        _user = AuthState?.User;
-        _profileLink = $"/profile/{_user?.Username}";
+        try
+        {
+            _order = await OrderService.GetOrderAsync(OrderId);
+            _gpu = await DeviceService.GetDeviceAsync(_order.DeviceId);
+            _user = AuthState?.User;
+            _profileLink = $"/profile/{_user?.Username}";
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                SnackbarNotifier.ShowError("Unauthorized access to order page.");
+            }
+            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                SnackbarNotifier.ShowError("Order info not found.");
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Server error occured while searching for devices.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error occured while searching for devices.");
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
-
-    private string GetChipContent(OrderStatus status) => status switch
-    {
-        OrderStatus.WAITING_FOR_START => "Waiting for start",
-        OrderStatus.RUNNING => "Running",
-        OrderStatus.COMPLETED => "Completed",
-        OrderStatus.SUSPENDED => "Suspended",
-        OrderStatus.FAILURE => "Failure",
-        _ => "Unknown status"
-    };
 
     private Color GetChipColor(OrderStatus status) => status switch
     {
@@ -117,5 +143,19 @@
     {
         _showEndModal = true;
         Console.WriteLine($"Open End Session Modal: _showEndModal={_showEndModal}");
+    }
+
+    private async Task HandleEndSession(ModalResult<string> result)
+    {
+        if (result.Status == ModalResultStatus.Failed)
+        {
+            SnackbarNotifier.ShowError("Ending session failed.");
+            return;
+        }
+        else if (result.Status == ModalResultStatus.Success)
+        {
+            SnackbarNotifier.ShowInfo("Successfully ended session.");
+        }
+        _showEndModal = false;
     }
 }

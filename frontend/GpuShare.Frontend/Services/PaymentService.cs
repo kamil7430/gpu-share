@@ -29,8 +29,8 @@ namespace GpuShare.Frontend.Services
             {
                 Items = transactions!,
                 TotalCount = transactions!.Count,
-                Page = parameters.Page,
-                PageSize = parameters.PageSize
+                Page = 1,
+                PageSize = transactions!.Count
             };
         }
 

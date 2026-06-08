@@ -1,7 +1,7 @@
 @using GpuShare.Frontend.Components.Modals
 @inject IOrderService OrderService
 @inject IFormatters Formatters
-@inject ISnackbar Snackbar
+@inject IAppNotifier SnackbarNotifier
 
 <div class="table-controls">
     <div class="status-filters">
@@ -101,12 +101,30 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+        try
         {
-            Username = Username,
-            Limit = 10,
-        });
-        _orders.AddRange(pagedResult.Items);
+            var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+            {
+                Username = Username,
+                Limit = 10,
+            });
+            _orders.AddRange(pagedResult.Items);
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _orders.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+        }
     }
 
     private void SelectStatus(string status)
@@ -129,20 +147,37 @@
     {
         _showReviewModal = false;
         if (result.Status == ModalResultStatus.Success)
-            Snackbar.Add("Review created successfully.", Severity.Success);
+            SnackbarNotifier.ShowError("Review created successfully.");
         else if (result.Status == ModalResultStatus.Failed)
-            Snackbar.Add("Creating review failed.", Severity.Error);
+            SnackbarNotifier.ShowError("Creating review failed.");
     }
 
     private async Task LoadMore()
     {
-        var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+        try
         {
-            Username = Username,
-            Limit = 10 * ++_lastPage,
-            // Page = _lastPage++
-        });
-        _orders.AddRange(pagedResult.Items.TakeLast(pagedResult.TotalCount == pagedResult.PageSize ? 10 : (pagedResult.TotalCount % 10)));
+            var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+                {
+                    Username = Username,
+                    Limit = 10 * ++_lastPage,
+                });
+            _orders.AddRange(pagedResult.Items.TakeLast(pagedResult.TotalCount == pagedResult.PageSize ? 10 : (pagedResult.TotalCount % 10)));
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _orders.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+        }
     }
 
     private string GetStatusClass(OrderStatus status)

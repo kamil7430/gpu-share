@@ -5,17 +5,10 @@ using GpuShare.Frontend.Services.Interfaces;
 
 namespace GpuShare.Frontend.Services
 {
-    public class ReviewService : IReviewService
+    public class ReviewService(IApiClient api, ILogger<ReviewService> logger) : IReviewService
     {
-        private readonly IApiClient _api;
-        private readonly ILogger<ReviewService> _logger;
-
-        public ReviewService(IApiClient api, ILogger<ReviewService> logger)
-        {
-            _api = api;
-            _logger = logger;
-        }
-
+        private readonly IApiClient _api = api;
+        private readonly ILogger<ReviewService> _logger = logger;
 
         public async Task<Review> CreateReviewAsync(int orderId, CreateReviewRequest cmd)
         {
@@ -38,7 +31,7 @@ namespace GpuShare.Frontend.Services
         public async Task<PagedResult<Review>> GetDeviceReviewsAsync(int deviceId, int page = 1, int count = 10)
         {
             var reviews = await _api.GetAsync<List<Review>>($"/devices/{deviceId}/reviews", 
-                new PaginationQuery { Page = page, Count = count });
+                new LimitQuery { Limit = page * count });
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got reviews for device {deviceId}.", deviceId);
 
@@ -46,8 +39,8 @@ namespace GpuShare.Frontend.Services
             {
                 Items = reviews!,
                 TotalCount = reviews!.Count,
-                Page = page,
-                PageSize = count
+                Page = 1,
+                PageSize = page * count
             };
         }
 
@@ -62,7 +55,7 @@ namespace GpuShare.Frontend.Services
         public async Task<PagedResult<Review>> GetUserReviewsAsync(string username, int page = 1, int count = 10)
         {
             var reviews = await _api.GetAsync<List<Review>>($"/users/{username}/reviews",
-                new PaginationQuery { Page = page, Count = count });
+                new LimitQuery { Limit = page * count });
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got reviews for user {username}.", username);
 
@@ -70,8 +63,8 @@ namespace GpuShare.Frontend.Services
             {
                 Items = reviews!,
                 TotalCount = reviews!.Count,
-                Page = page,
-                PageSize = count
+                Page = 1,
+                PageSize = page * count
             };
         }
     }

@@ -74,8 +74,7 @@ namespace GpuShare.Frontend.Tests.Services
         private readonly DisputeQueryParams _queryParams = new()
         {
             Status = DisputeStatus.OPEN,
-            Page = 1,
-            PageSize = 10
+            Limit = 10
         };
 
         private readonly string _disputeJson = """
@@ -230,8 +229,7 @@ namespace GpuShare.Frontend.Tests.Services
                 .ExpectQuery(q =>
                 {
                     q["status"].Should().Be(_queryParams.Status.ToString());
-                    q["page"].Should().Be(_queryParams.Page.ToString());
-                    q["pageSize"].Should().Be(_queryParams.PageSize.ToString());
+                    q["limit"].Should().Be(_queryParams.Limit.ToString());
                 })
                 .ExecuteAction();
         }
@@ -247,8 +245,8 @@ namespace GpuShare.Frontend.Tests.Services
                 {
                     Items = [_dispute],
                     TotalCount = 1,
-                    Page = _queryParams.Page,
-                    PageSize = _queryParams.PageSize
+                    Page = 1,
+                    PageSize = 1
                 });
         }
 

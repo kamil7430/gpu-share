@@ -16,6 +16,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         public ReservationCalendarTests()
         {
             Services.AddSingleton(_orderServiceMock.Object);
+            Services.AddSingleton(new Mock<IAppNotifier>().Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;

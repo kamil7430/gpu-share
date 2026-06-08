@@ -18,6 +18,7 @@ using System.Text;
 using Xunit;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using GpuShare.Frontend.Components.Shared;
+using GpuShare.Frontend.Models.Dtos;
 
 namespace GpuShare.Frontend.Tests.Components.Profile
 {
@@ -36,6 +37,7 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             Services.AddSingleton(_authServiceMock.Object);
             Services.AddSingleton(_formattersMock.Object);
             Services.AddSingleton(_deviceServiceMock.Object);
+            Services.AddSingleton(new Mock<IAppNotifier>().Object);
             Services.AddMudServices();
 
             JSInterop.Mode = JSRuntimeMode.Loose;
@@ -46,7 +48,40 @@ namespace GpuShare.Frontend.Tests.Components.Profile
             ComponentFactories.AddStub<WalletCard>("WALLET_STUB");
             ComponentFactories.AddStub<ReviewsList>("OPINIONS_LIST_STUB");
             ComponentFactories.AddStub<OrderTable>("ORDER_TABLE_STUB");
+            ComponentFactories.AddStub<DevicesList>("DEVICES_LIST");
+
+            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+                .ReturnsAsync(new PagedResult<Models.Device>{ Items = _devices });
         }
+
+        private readonly List<Models.Device> _devices = [
+            new Models.Device()
+            {
+                DeviceId = 123,
+                Name = "Workstation-Alpha",
+                OwnerUsername = "julie",
+                State = DeviceState.AVAILABLE,
+                GpuModel = "RTX 4090",
+                VramMb = 24576,
+                CudaCores = 16384,
+                DriverVersion = "535.104",
+                PricePerHourUsdCents = 450,
+                Frameworks = ["CUDA"]
+            },
+            new Models.Device()
+            {
+                DeviceId = 124,
+                Name = "Workstation-Alpha 2",
+                OwnerUsername = "john",
+                State = DeviceState.UNAVAILABLE,
+                GpuModel = "RTX 4080",
+                VramMb = 24000,
+                CudaCores = 16000,
+                DriverVersion = "535.105",
+                PricePerHourUsdCents = 550,
+                Frameworks = ["PyTorch"]
+            },
+        ];
 
         public Task InitializeAsync() => Task.CompletedTask;
 

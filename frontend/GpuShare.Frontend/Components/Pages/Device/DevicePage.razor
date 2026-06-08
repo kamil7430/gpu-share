@@ -1,11 +1,10 @@
 @page "/device/{ModeString}/{DeviceId:int}"
 @using Microsoft.AspNetCore.Components.Authorization
-@using MudBlazor.Charts
 @using GpuShare.Frontend.Models
 @using GpuShare.Frontend.State
 @inject IAuthState AuthState
 @inject IDeviceService DeviceService
-@inject ISnackbar Snackbar
+@inject IAppNotifier SnackbarNotifier
 @inject NavigationManager Navigation
 
 @* what happens when the reserved time run out but the job is not finished 
@@ -17,9 +16,13 @@
         <NavLink href="@_profileLink" class="back-link">&lt; Back to Profile</NavLink>
     </div>
 
+    @if (_loading == true)
+    {
+        <div class="card"><h4>Loading device data...</h4></div>
+    }
     @if (_device == null)
     {
-        <div class="card">Could not load device data. Try again later.</div>
+        <div class="card"><h4>Could not load device data. Try again later.</h4></div>
     }
     else
     {
@@ -71,6 +74,7 @@
     private Device? _device = null;
     private string _username = "";
     private string _profileLink = "";
+    private bool _loading = true;
 
     protected override void OnInitialized()
     {
@@ -94,8 +98,10 @@
             catch
             {
                 _device = null;
+                SnackbarNotifier.ShowError("Error loading device details. Please try again later.");
             }
         }
+        _loading = false;
     }
 
     public async Task HandleDeviceSaved(Device savedGpu)
@@ -124,7 +130,7 @@
         }
         catch (Exception)
         {
-            Snackbar.Add("Error updating device. Please try again.", Severity.Error);
+            SnackbarNotifier.ShowError("Error updating device. Please try again.");
         }
     }
 
