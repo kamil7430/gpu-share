@@ -1,52 +1,52 @@
 <div class="search-container">
 
-    <input @bind="Filter.Term" placeholder="Search..." class="form-control" />
+    <input @bind="_filter.Term" placeholder="Search..." class="form-control" />
 
     <button class="btn-secondary" @onclick="OpenModal">
         Filters
     </button>
 
-    <button class="btn-primary btn-search" @onclick="ApplySearch">
+    <button class="btn-primary btn-search" @onclick="Search">
         Search
     </button>
 
     <!-- Active filters preview -->
     <div class="mt-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0px !important;">
-        @if (!string.IsNullOrEmpty(Filter.VRAM_MB?.Count > 0 ? string.Join(", ", Filter.VRAM_MB) + " GB VRAM" : null))
+        @if (!string.IsNullOrEmpty(_filter.VRAM_MB?.Count > 0 ? string.Join(", ", _filter.VRAM_MB) + " GB VRAM" : null))
         {
-            <span class="filter-badge badge">VRAM: @string.Join(", ", Filter.VRAM_MB!) GB</span>
+            <span class="filter-badge badge">VRAM: @string.Join(", ", _filter.VRAM_MB!) GB</span>
         }
-        @if (Filter.PricePerHour != null)
+        @if (_filter.PricePerHour != null)
         {
-            <span class="filter-badge badge">Price: @Filter.PricePerHour.Value.Start - @Filter.PricePerHour.Value.End</span>
+            <span class="filter-badge badge">Price: @_filter.PricePerHour.Value.Start - @_filter.PricePerHour.Value.End</span>
         }
-        @if (Filter.Cores != null)
+        @if (_filter.Cores != null)
         {
-            <span class="filter-badge badge">Cores: @Filter.Cores.Value.Start - @Filter.Cores.Value.End</span>
+            <span class="filter-badge badge">Cores: @_filter.Cores.Value.Start - @_filter.Cores.Value.End</span>
         }
-        @if (Filter.AvailableOnly == true)
+        @if (_filter.AvailableOnly == true)
         {
             <span class="filter-badge badge">
                 Available Only
             </span>
         }
-        @if (Filter.SupportedFrameworks?.Count > 0)
+        @if (_filter.SupportedFrameworks?.Count > 0)
         {
-            <span class="filter-badge badge">Frameworks: @string.Join(", ", Filter.SupportedFrameworks)</span>
+            <span class="filter-badge badge">Frameworks: @string.Join(", ", _filter.SupportedFrameworks)</span>
         }
-        @if (Filter.SortBy != SortOption.None)
+        @if (_filter.SortBy != SortOption.None)
         {
-            <span class="filter-badge badge">Sort: @Filter.SortBy</span>
+            <span class="filter-badge badge">Sort: @_filter.SortBy</span>
         }
     </div>
 </div>
 
-<FilterModal CurrentFilter="Filter" OnApply="OnFiltersApplied" IsVisible="@_isVisible" />
+<FilterModal CurrentFilter="_filter" OnClose="CloseModal" OnApply="ApplySearch" IsVisible="@_isVisible" />
 
 @code {
     [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
 
-    private SearchFilter Filter = new();
+    private SearchFilter _filter = new();
     private bool _isVisible = false;
 
     private void OpenModal()
@@ -54,14 +54,25 @@
         _isVisible = true;
     }
 
-    public async Task ApplySearch()
+    public async Task Search()
     {
-        await OnSearch.InvokeAsync(Filter);
-        Console.WriteLine($"Searching for '{Filter.Term}', price between {Filter.PricePerHour?.Start ?? 0} and {Filter.PricePerHour?.End ?? 0}, cores between {Filter.Cores?.Start ?? 0} and {Filter.Cores?.End ?? 0}, available only: {Filter.AvailableOnly}");
+        await OnSearch.InvokeAsync(_filter);
+        Console.WriteLine($"Searching for '{_filter.Term}', " +
+        $"price between {_filter.PricePerHour?.Start ?? 0} and {_filter.PricePerHour?.End ?? 0}, " +
+        $"cores between {_filter.Cores?.Start ?? 0} and {_filter.Cores?.End ?? 0}, " +
+        $"available only: {_filter.AvailableOnly}"
+        );
     }
 
-    public void OnFiltersApplied(SearchFilter updated)
+    public void CloseModal()
     {
-        Filter = updated;
+        _isVisible = false;
+    }
+
+    public async Task ApplySearch(SearchFilter updated)
+    {
+        _filter = updated;
+        _isVisible = false;
+        await Search();
     }
 }

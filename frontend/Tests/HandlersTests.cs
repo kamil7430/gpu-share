@@ -323,16 +323,11 @@ namespace GpuShare.Frontend.Tests
         }
     }
 
-    public class TestHandler : HttpMessageHandler
+    public class TestHandler(Func<HttpRequestMessage, HttpResponseMessage> responseFactory) : HttpMessageHandler
     {
         public HttpRequestMessage? LastRequest { get; private set; }
 
-        private readonly Func<HttpRequestMessage, HttpResponseMessage> _responseFactory;
-
-        public TestHandler(Func<HttpRequestMessage, HttpResponseMessage> responseFactory)
-        {
-            _responseFactory = responseFactory;
-        }
+        private readonly Func<HttpRequestMessage, HttpResponseMessage> _responseFactory = responseFactory;
 
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,

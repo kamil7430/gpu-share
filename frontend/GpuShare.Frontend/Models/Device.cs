@@ -21,6 +21,11 @@ public class Device
     [
         "TensorFlow", "PyTorch", "MXNet", "Keras", "Caffe"
     ];
+
+    public static List<int> VramOptions { get; } =
+    [
+        2048, 4096, 6144, 8192, 10240, 12288, 16384, 24576, 32768, 65536, 81920
+    ];
 }
 
 public enum DevicePageMode

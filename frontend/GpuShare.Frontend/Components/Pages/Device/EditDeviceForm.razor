@@ -1,4 +1,4 @@
-@using GpuShare.Frontend.Components.Pages.Device
+
 
 @if (Device != null)
 {
@@ -25,15 +25,10 @@
                 <div class="form-group">
                     <label>VRAM</label>
                     <InputSelect @bind-Value="Device.VramMb">
-                        <option value="2048">2 GB</option>
-                        <option value="4096">4 GB</option>
-                        <option value="6144">6 GB</option>
-                        <option value="8192">8 GB</option>
-                        <option value="10240">10 GB</option>
-                        <option value="12288">12 GB</option>
-                        <option value="16384">16 GB</option>
-                        <option value="24576">24 GB</option>
-                        <option value="32768">32 GB</option>
+                        @foreach(int vram in Device.VramOptions)
+                        {
+                            <option value="@vram">@vram MB</option>
+                        }
                     </InputSelect>
                 </div>
 

@@ -1,9 +1,8 @@
-﻿@using GpuShare.Frontend.Services
-@using GpuShare.Frontend.Models
-@using GpuShare.Frontend.State
+﻿@using GpuShare.Frontend.State
 @inject IAuthModalService AuthModal
 @inject IAuthService AuthService
 @inject IAuthState AuthState
+@inject IAppNotifier SnackbarNotifier
 
 <nav class="nav-links">
     <NavLink href="/">Search</NavLink>
@@ -18,7 +17,7 @@
     }
 </nav>
 
-<LoginModal IsVisible="@AuthModal.IsOpen" OnClose="CloseModal" />
+<LoginModal IsVisible="@AuthModal.IsOpen" OnClose="OnClose" />
 
 @code {
     private string? profileLink = null;
@@ -29,7 +28,20 @@
         AuthModal.OnChange += HandleAuthChanged;
     }
 
-    private void CloseModal() => AuthModal.Close();
+    private void OnClose(ModalResult<string> result)
+    {
+        if (result.Status == ModalResultStatus.Success)
+        {
+            SnackbarNotifier.ShowInfo(result.Data!);
+            UpdateProfileLink();
+            InvokeAsync(HandleAuthChanged);
+        }
+        else if (result.Status == ModalResultStatus.Failed)
+        {
+            SnackbarNotifier.ShowError(result.Message!);
+        }
+        AuthModal.Close();
+    }
 
     private void OpenLogin()
     {

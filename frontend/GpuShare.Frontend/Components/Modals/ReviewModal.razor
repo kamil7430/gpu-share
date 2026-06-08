@@ -70,6 +70,7 @@
         {
             await ReviewService.CreateReviewAsync(OrderId, request);
             await OnSubmit.InvokeAsync(ModalResult<string>.Ok());
+            reviewModel = new();
         }
         catch (ApiException e)
         {
@@ -80,6 +81,7 @@
     private async Task HandleClose()
     {
         await OnSubmit.InvokeAsync(ModalResult<string>.Cancel());
+        reviewModel = new();
     }
 
     private class ReviewFormModel

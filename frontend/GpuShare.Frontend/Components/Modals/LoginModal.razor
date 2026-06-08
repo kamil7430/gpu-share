@@ -1,7 +1,5 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.ComponentModel.DataAnnotations;
-@using GpuShare.Frontend.Services
-@using GpuShare.Frontend.Models
 @inject IAuthService AuthService
 
 <BaseModal TResult="string" IsVisible="@IsVisible" Title="@(_currentMode == AuthMode.Login ? "Login" : "Register")" OnClose="@CloseModal" SizeClass="small">
@@ -59,11 +57,11 @@
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<ModalResult<string>> OnClose { get; set; }
-    
+
     private LoginModel _loginModel = new LoginModel();
     private RegisterModel _registerModel = new RegisterModel();
     private string? _errorMessage = null;
-    
+
     private AuthMode _currentMode = AuthMode.Login;
 
     public enum AuthMode
@@ -77,12 +75,23 @@
         if (_currentMode == AuthMode.Login) _currentMode = AuthMode.Register;
         else _currentMode = AuthMode.Login;
 
+        _loginModel = new();
+        _registerModel = new();
         _errorMessage = null;
+    }
+
+    private void CleanInfo()
+    {
+        _loginModel = new();
+        _registerModel = new();
+        _errorMessage = null;
+        _currentMode = AuthMode.Login;
     }
 
     private async Task CloseModal()
     {
         await OnClose.InvokeAsync(ModalResult<string>.Cancel());
+        CleanInfo();
     }
 
     private async Task HandleLogin()
@@ -92,17 +101,21 @@
             Username = _loginModel.Username,
             Password = _loginModel.Password
         };
-        
+
         Console.WriteLine($"Logging in with {_loginModel.Username}");
         try {
             await AuthService.LoginAsync(request);
-            await OnClose.InvokeAsync(ModalResult<string>.Ok());
+            await OnClose.InvokeAsync(ModalResult<string>.Ok($"Successfully logged in. Welcome, {_loginModel.Username}!"));
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Login failed: {ex.Message}");
             _errorMessage = "Login failed. Please check your credentials and try again.";
             await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
+        }
+        finally
+        {
+            CleanInfo();
         }
     }
 
@@ -118,12 +131,17 @@
 
         try {
             await AuthService.RegisterAsync(request);
-            await CloseModal();
+            await OnClose.InvokeAsync(ModalResult<string>.Ok("Successfully registered. Please log in now."));
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Registration failed: {ex.Message}");
             _errorMessage = "Registration failed. Please check your input and try again.";
+            await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
+        }
+        finally
+        {
+            CleanInfo();
         }
     }
 

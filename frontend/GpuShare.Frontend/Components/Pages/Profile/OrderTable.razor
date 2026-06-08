@@ -147,7 +147,7 @@
     {
         _showReviewModal = false;
         if (result.Status == ModalResultStatus.Success)
-            SnackbarNotifier.ShowError("Review created successfully.");
+            SnackbarNotifier.ShowInfo("Review created successfully.");
         else if (result.Status == ModalResultStatus.Failed)
             SnackbarNotifier.ShowError("Creating review failed.");
     }

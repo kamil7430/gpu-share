@@ -121,13 +121,10 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             // Arrange
             var invoked = false;
 
-            var cut = Render<SearchBar>(p => p
-                .Add(x => x.OnSearch,
-                    (SearchFilter _) => invoked = true));
+            var cut = Render<SearchBar>(p => p.Add(x => x.OnSearch, _ => invoked = true));
 
             // Act
-            cut.Find(".btn-search")
-                .Click();
+            cut.Find(".btn-search").Click();
 
             // Assert
             invoked.Should().BeTrue();
@@ -148,9 +145,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            await cut.InvokeAsync(() =>
+            await cut.InvokeAsync(async () =>
             {
-                cut.Instance.OnFiltersApplied(filter);
+                await cut.Instance.ApplySearch(filter);
                 return Task.CompletedTask;
             });
 
@@ -179,9 +176,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             var filter = new SearchFilter();
 
             // Act
-            await cut.InvokeAsync(() =>
+            await cut.InvokeAsync(async () =>
             {
-                cut.Instance.OnFiltersApplied(filter);
+                await cut.Instance.ApplySearch(filter);
                 return Task.CompletedTask;
             });
 
@@ -203,9 +200,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            await cut.InvokeAsync(() =>
+            await cut.InvokeAsync(async () =>
             {
-                cut.Instance.OnFiltersApplied(filter);
+                await cut.Instance.ApplySearch(filter);
                 return Task.CompletedTask;
             });
 
@@ -229,9 +226,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            await cut.InvokeAsync(() =>
+            await cut.InvokeAsync(async () =>
             {
-                cut.Instance.OnFiltersApplied(filter);
+                await cut.Instance.ApplySearch(filter);
                 return Task.CompletedTask;
             });
 
@@ -253,9 +250,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             };
 
             // Act
-            await cut.InvokeAsync(() =>
+            await cut.InvokeAsync(async () =>
             {
-                cut.Instance.OnFiltersApplied(filter);
+                await cut.Instance.ApplySearch(filter);
                 return Task.CompletedTask;
             });
 

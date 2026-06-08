@@ -27,10 +27,14 @@ TODO:
 
 @code {
     // public EventCallback<SearchFilter> OnSearch { get; set; }
-
     public SearchFilter Filter = new();
     private List<Device> _devices = new();
     private bool _loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDevicesAsync(new DeviceSearchFilters());
+    }
 
     public async Task ApplySearchAsync(SearchFilter updated)
     {
@@ -52,11 +56,16 @@ TODO:
             Limit = int.MaxValue
         };
 
+        await LoadDevicesAsync(filters);
+        StateHasChanged();
+    }
+
+    public async Task LoadDevicesAsync(DeviceSearchFilters filters)
+    {
         try
         {
             var devices = await DeviceService.SearchDevicesAsync(filters);
             _devices = devices.Items;
-            _loading = false;
         }
         catch (ApiException ex)
         {
@@ -76,11 +85,13 @@ TODO:
             {
                 SnackbarNotifier.ShowError("Server error occured while searching for devices.");
             }
-            _loading = false;
         }
         catch (Exception)
         {
             SnackbarNotifier.ShowError("Error occured while searching for devices.");
+        }
+        finally
+        {
             _loading = false;
         }
     }
