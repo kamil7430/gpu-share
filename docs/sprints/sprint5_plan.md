@@ -1,6 +1,6 @@
-# Sprint 6 Planning
+# Sprint 5 Planning
 
-Sprint 6
+Sprint 5
 Okres: 06-01 -- 06-07
 
 ---
