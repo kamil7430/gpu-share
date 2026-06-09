@@ -501,6 +501,30 @@ func (*GetDevicesOKApplicationJSON) getDevicesRes() {}
 // GetHealthOK is response for GetHealth operation.
 type GetHealthOK struct{}
 
+// GetOrderByIdNotFound is response for GetOrderById operation.
+type GetOrderByIdNotFound struct{}
+
+func (*GetOrderByIdNotFound) getOrderByIdRes() {}
+
+// GetOrderByIdUnauthorized is response for GetOrderById operation.
+type GetOrderByIdUnauthorized struct{}
+
+func (*GetOrderByIdUnauthorized) getOrderByIdRes() {}
+
+// GetOrdersBadRequest is response for GetOrders operation.
+type GetOrdersBadRequest struct{}
+
+func (*GetOrdersBadRequest) getOrdersRes() {}
+
+type GetOrdersOKApplicationJSON []Order
+
+func (*GetOrdersOKApplicationJSON) getOrdersRes() {}
+
+// GetOrdersUnauthorized is response for GetOrders operation.
+type GetOrdersUnauthorized struct{}
+
+func (*GetOrdersUnauthorized) getOrdersRes() {}
+
 // LoginNotFound is response for Login operation.
 type LoginNotFound struct{}
 
@@ -628,12 +652,8 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// OrderDeviceBadRequest is response for OrderDevice operation.
-type OrderDeviceBadRequest struct{}
-
-func (*OrderDeviceBadRequest) orderDeviceRes() {}
-
-type OrderDeviceCreated struct {
+// Ref: #
+type Order struct {
 	OrderId                string            `json:"orderId"`
 	Status                 RentalStatus      `json:"status"`
 	ConnectionDetails      ConnectionDetails `json:"connectionDetails"`
@@ -641,46 +661,52 @@ type OrderDeviceCreated struct {
 }
 
 // GetOrderId returns the value of OrderId.
-func (s *OrderDeviceCreated) GetOrderId() string {
+func (s *Order) GetOrderId() string {
 	return s.OrderId
 }
 
 // GetStatus returns the value of Status.
-func (s *OrderDeviceCreated) GetStatus() RentalStatus {
+func (s *Order) GetStatus() RentalStatus {
 	return s.Status
 }
 
 // GetConnectionDetails returns the value of ConnectionDetails.
-func (s *OrderDeviceCreated) GetConnectionDetails() ConnectionDetails {
+func (s *Order) GetConnectionDetails() ConnectionDetails {
 	return s.ConnectionDetails
 }
 
 // GetTotalReservedCostCents returns the value of TotalReservedCostCents.
-func (s *OrderDeviceCreated) GetTotalReservedCostCents() int {
+func (s *Order) GetTotalReservedCostCents() int {
 	return s.TotalReservedCostCents
 }
 
 // SetOrderId sets the value of OrderId.
-func (s *OrderDeviceCreated) SetOrderId(val string) {
+func (s *Order) SetOrderId(val string) {
 	s.OrderId = val
 }
 
 // SetStatus sets the value of Status.
-func (s *OrderDeviceCreated) SetStatus(val RentalStatus) {
+func (s *Order) SetStatus(val RentalStatus) {
 	s.Status = val
 }
 
 // SetConnectionDetails sets the value of ConnectionDetails.
-func (s *OrderDeviceCreated) SetConnectionDetails(val ConnectionDetails) {
+func (s *Order) SetConnectionDetails(val ConnectionDetails) {
 	s.ConnectionDetails = val
 }
 
 // SetTotalReservedCostCents sets the value of TotalReservedCostCents.
-func (s *OrderDeviceCreated) SetTotalReservedCostCents(val int) {
+func (s *Order) SetTotalReservedCostCents(val int) {
 	s.TotalReservedCostCents = val
 }
 
-func (*OrderDeviceCreated) orderDeviceRes() {}
+func (*Order) getOrderByIdRes() {}
+func (*Order) orderDeviceRes()  {}
+
+// OrderDeviceBadRequest is response for OrderDevice operation.
+type OrderDeviceBadRequest struct{}
+
+func (*OrderDeviceBadRequest) orderDeviceRes() {}
 
 // OrderDevicePaymentRequired is response for OrderDevice operation.
 type OrderDevicePaymentRequired struct{}

@@ -108,13 +108,79 @@ func (s *OrderService) OrderDevice(ctx context.Context, params *api.OrderDeviceR
 		addresses = &model.ConnectionDetails{}
 	}
 
-	return &api.OrderDeviceCreated{
+	return &api.Order{
 		OrderId: strconv.Itoa(int(order.ID)),
 		Status:  order.RentalStatus,
 		ConnectionDetails: api.ConnectionDetails{
 			Host:     addresses.Host,
 			Port:     addresses.Port,
 			Protocol: addresses.Protocol,
+		},
+		TotalReservedCostCents: order.RentalCostCents,
+	}, nil
+}
+
+func (s *OrderService) GetOrders(ctx context.Context, params api.GetOrdersParams) (api.GetOrdersRes, error) {
+	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
+	if !ok {
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.store.Users().GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	orders, err := s.store.Orders().GetOrdersByUserId(ctx, user.ID, params.Limit.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(api.GetOrdersOKApplicationJSON, len(orders))
+	for i, order := range orders {
+		result[i] = api.Order{
+			OrderId:                strconv.Itoa(int(order.ID)),
+			Status:                 order.RentalStatus,
+			ConnectionDetails:      api.ConnectionDetails{},
+			TotalReservedCostCents: order.RentalCostCents,
+		}
+	}
+
+	return &result, nil
+}
+
+func (s *OrderService) GetOrderById(ctx context.Context, params api.GetOrderByIdParams) (api.GetOrderByIdRes, error) {
+	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
+	if !ok {
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.store.Users().GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	order, err := s.store.Orders().GetOrderById(ctx, params.OrderId)
+	if err != nil {
+		return &api.GetOrderByIdNotFound{}, nil
+	}
+
+	if order.UserID != user.ID {
+		return &api.GetOrderByIdUnauthorized{}, nil
+	}
+
+	conn, err := s.store.Gpus().GetConnectionDetailsById(ctx, strconv.Itoa(int(order.DeviceID)))
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.Order{
+		OrderId: strconv.Itoa(int(order.ID)),
+		Status:  order.RentalStatus,
+		ConnectionDetails: api.ConnectionDetails{
+			Host:     conn.Host,
+			Port:     conn.Port,
+			Protocol: conn.Protocol,
 		},
 		TotalReservedCostCents: order.RentalCostCents,
 	}, nil

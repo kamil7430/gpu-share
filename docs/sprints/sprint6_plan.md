@@ -1,3 +1,8 @@
+# Sprint 6 Planning
+
+Sprint 6
+Okres: 06-08 -- 06-15
+
 ## Sprint Goal
 
 Replace frontend mock data with real backend API communication and deliver an end-to-end functional MVP.
