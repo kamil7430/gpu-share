@@ -1,0 +1,99 @@
+@page "/profile/{Username}"
+@using GpuShare.Frontend.State
+@inject IAuthState AuthState
+@inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
+@inject NavigationManager NavigationManager
+
+@* 
+Project decisions:
+- is the timeframe of the order fixed? if not then when and how the user can change/cancel the order?
+- does the owner have to accept the order or is it automatically accepted? 
+- maybe a calendar for every gpu when ordering?
+*@
+
+<div class="profile-page cards-container">
+
+    <!-- Profile Info -->
+    <ProfileCard Username="@Username" />
+
+    @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
+    {
+        <!-- Wallet -->
+        <WalletCard />
+    }
+
+    <!-- GPUs -->
+    <div class="card">
+        <div class="flex-row" style="justify-content: space-between;">
+            @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
+            {
+                <h3>My GPUs</h3>
+                <button class="btn-add-device btn-primary" @onclick="AddDevice">Add GPU</button>
+            }
+            else
+            {
+                <h3>@Username's GPUs</h3>
+            }
+        </div>
+
+        <DevicesList Devices="_devices" Loading="_loading"/>
+    </div>
+
+    <!-- Orders -->
+    @if (AuthState.IsAuthenticated && Username == AuthState.User!.Username)
+    {
+        <div class="card">
+            <div class="header-main-row">
+                <h3>My Orders</h3>
+            </div>
+
+            <OrderTable Username="@Username" />
+        </div>
+    }
+
+    <!-- Opinions -->
+    <div class="card">
+        <div class="header-main-row">
+            <h3>Opinions</h3>
+        </div>
+
+        <ReviewsList Username="@Username" />
+    </div>
+
+</div>
+
+@code {
+    [Parameter] public string Username { get; set; } = string.Empty;
+    private List<Device> _devices = [];
+    private bool _loading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _devices = await DeviceService.GetUserDevicesAsync(Username);
+            _loading = false;
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _devices.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching devices for user.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while devices for user.");
+        }
+    }
+
+    private void AddDevice()
+    {
+        NavigationManager.NavigateTo("/device/new");
+    }
+}

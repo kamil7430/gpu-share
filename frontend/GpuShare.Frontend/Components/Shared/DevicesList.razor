@@ -1,0 +1,69 @@
+@rendermode InteractiveServer
+
+@if (Loading)
+{
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">
+        Loading devices...
+    </p>
+    }
+else if (_pagedDevices.Count == 0)
+{
+    <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">
+        No devices added yet.
+    </p>
+}
+else
+{
+    <div class="results-container">
+        @foreach (var gpu in _pagedDevices)
+        {
+            <DeviceCard Device="@gpu" />
+        }
+
+        <div class="pagination">
+            <button @onclick="PrevPage" disabled="@(_page == 1 || Loading)">Prev</button>
+
+            <span>Page @_page / @_totalPages</span>
+
+            <button @onclick="NextPage" disabled="@(_page == _totalPages || Loading)">Next</button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public List<Device> Devices { get; set; } = new();
+    [Parameter] public bool Loading { get; set; } = true;
+
+    private List<Device> _pagedDevices => Devices.Skip((_page - 1) * _pageSize).Take(_pageSize).ToList();
+    private int _page = 1;
+    private int _pageSize = 5;
+    private int _totalPages => (int)Math.Ceiling(Devices.Count / (double)_pageSize);
+
+    protected override void OnParametersSet()
+    {
+        LoadPage();
+    }
+
+    private void LoadPage()
+    {
+
+    }
+
+    private void NextPage()
+    {
+        if (_page < _totalPages)
+        {
+            _page++;
+            LoadPage();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_page > 1)
+        {
+            _page--;
+            LoadPage();
+        }
+    }
+}

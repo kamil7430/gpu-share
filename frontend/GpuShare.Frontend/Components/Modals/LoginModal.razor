@@ -1,0 +1,180 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations;
+@inject IAuthService AuthService
+
+<BaseModal TResult="string" IsVisible="@IsVisible" Title="@(_currentMode == AuthMode.Login ? "Login" : "Register")" OnClose="@CloseModal" SizeClass="small">
+    <ChildContent>
+    @if (_currentMode == AuthMode.Login)
+    {
+        <EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="_loginModel.Username" />
+            <input name="password" autocomplete="current-password" type="password" placeholder="Password" @bind-value="_loginModel.Password" />
+            
+            <ValidationSummary />
+            
+            <button class="action-btn btn-primary" type="submit">Sign In</button>  
+            
+        </EditForm>
+
+        <p class="error-banner">
+            @_errorMessage
+        </p>
+        <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
+            New here? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Register</a>
+        </p>
+    } else
+    {
+        <EditForm Model="_registerModel" OnValidSubmit="HandleRegister">
+            <DataAnnotationsValidator />
+
+            @* <input type="text" placeholder="Email" @bind-value="registerModel.Email" /> *@
+            <input name="username" autocomplete="username" type="text" placeholder="Username" @bind-value="_registerModel.Username" />
+            <input name="password" autocomplete="new-password" type="password" placeholder="Password" @bind-value="_registerModel.Password" />
+            <input name="confirmPassword" type="password" placeholder="Confirm Password" @bind-value="_registerModel.ConfirmPassword" />
+            <label class="custom-checkbox" style="margin-top: 8px;margin-bottom: 8px;">
+                <input type="checkbox" style="width: auto;" @bind-value="_registerModel.AcceptTerms" />
+            <span class="checkmark"></span>
+                I accept<a href="/terms" target="_blank">Terms and Conditions</a>
+            </label>
+
+            <ValidationSummary />
+
+            <button class="action-btn btn-primary" type="submit">Create Account</button>
+        </EditForm>
+
+        <p class="error-banner">
+            @_errorMessage
+        </p>
+        <p style="margin-bottom: 0px; margin-top: 16px; font-size: small;">
+            Already have an account? <a style="color: #4c6eb2;" href="javascript:void(0)" @onclick="ToggleMode">Login</a>
+        </p>
+    }
+    </ChildContent>
+</BaseModal>
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<ModalResult<string>> OnClose { get; set; }
+
+    private LoginModel _loginModel = new LoginModel();
+    private RegisterModel _registerModel = new RegisterModel();
+    private string? _errorMessage = null;
+
+    private AuthMode _currentMode = AuthMode.Login;
+
+    public enum AuthMode
+    {
+        Login,
+        Register
+    }
+
+    private void ToggleMode() 
+    {
+        if (_currentMode == AuthMode.Login) _currentMode = AuthMode.Register;
+        else _currentMode = AuthMode.Login;
+
+        _loginModel = new();
+        _registerModel = new();
+        _errorMessage = null;
+    }
+
+    private void CleanInfo()
+    {
+        _loginModel = new();
+        _registerModel = new();
+        _errorMessage = null;
+        _currentMode = AuthMode.Login;
+    }
+
+    private async Task CloseModal()
+    {
+        await OnClose.InvokeAsync(ModalResult<string>.Cancel());
+        CleanInfo();
+    }
+
+    private async Task HandleLogin()
+    {
+        var request = new AuthRequest
+        {
+            Username = _loginModel.Username,
+            Password = _loginModel.Password
+        };
+
+        Console.WriteLine($"Logging in with {_loginModel.Username}");
+        try {
+            await AuthService.LoginAsync(request);
+            await OnClose.InvokeAsync(ModalResult<string>.Ok($"Successfully logged in. Welcome, {_loginModel.Username}!"));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Login failed: {ex.Message}");
+            _errorMessage = "Login failed. Please check your credentials and try again.";
+            await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
+        }
+        finally
+        {
+            CleanInfo();
+        }
+    }
+
+    private async Task HandleRegister()
+    {
+        var request = new AuthRequest
+        {
+            Username = _registerModel.Username,
+            Password = _registerModel.Password
+        };
+
+        Console.WriteLine($"Registering {_registerModel.Username}");
+
+        try {
+            await AuthService.RegisterAsync(request);
+            await OnClose.InvokeAsync(ModalResult<string>.Ok("Successfully registered. Please log in now."));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Registration failed: {ex.Message}");
+            _errorMessage = "Registration failed. Please check your input and try again.";
+            await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
+        }
+        finally
+        {
+            CleanInfo();
+        }
+    }
+
+    private class LoginModel
+    {
+        [Required]
+        public string Username { get; set; } = "";
+
+        [Required]
+        public string Password { get; set; } = "";
+    }
+
+    private class RegisterModel
+    {
+        //[Required]
+        //[EmailAddress(ErrorMessage = "Invalid email format")]
+        //public string Email { get; set; } = "";
+
+        [Required]
+        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        [MaxLength(20, ErrorMessage = "Username too long")]
+        public string Username { get; set; } = "";
+
+        [Required]
+        [MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+        [PasswordComplexity(ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one digit")]
+        public string Password { get; set; } = "";
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = "";
+
+        [Range(typeof(bool), "true", "true", ErrorMessage = "You must accept the Terms and Conditions.")]
+        public bool AcceptTerms { get; set; }
+    }
+}

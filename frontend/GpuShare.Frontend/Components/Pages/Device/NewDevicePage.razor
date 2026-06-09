@@ -1,0 +1,63 @@
+﻿@page "/device/new"
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Net
+@inject NavigationManager NavigationManager
+@inject IDeviceService DeviceService
+@inject IAuthState AuthState
+@inject IAppNotifier SnackbarNotifier
+
+<div class="cards-container">
+    <div class="page-header" style="margin-bottom: 8px;">
+        <NavLink href="@_profileLink" class="back-link">&lt; Back to Profile</NavLink>
+    </div>
+
+    <AuthorizeView>
+        <Authorized>
+            <EditDeviceForm Device="@_device" Mode="@DevicePageMode.Add" OnSave="HandleDeviceSaved"></EditDeviceForm>
+        </Authorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    private Device _device = new();
+    private string _profileLink = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _profileLink = $"/profile/{AuthState.User!.Username}";
+    }
+
+    private async Task HandleDeviceSaved(Device savedGpu)
+    {
+
+        var request = new RegisterDeviceRequest
+        {
+            Name = savedGpu.Name,
+            GpuModel = savedGpu.GpuModel,
+            VramMb = savedGpu.VramMb,
+            CudaCores = savedGpu.CudaCores,
+            DriverVersion = savedGpu.DriverVersion,
+            PricePerHourUsdCents = savedGpu.PricePerHourUsdCents,
+            Frameworks = savedGpu.Frameworks
+        };
+
+        try
+        {
+            var device = await DeviceService.RegisterDeviceAsync(request);
+            NavigationManager.NavigateTo($"/device/view/{device.DeviceId}");
+        }
+        catch (ApiException e)
+        {
+            if (e.StatusCode == HttpStatusCode.BadRequest)
+                SnackbarNotifier.ShowError("Creating device failed because of wrong input data. Please check your input and try again.");
+            else if (e.StatusCode == HttpStatusCode.Unauthorized)
+                SnackbarNotifier.ShowError("You are not authorized to create a device. Please log in and try again.");
+            else SnackbarNotifier.ShowError("An unexpected error occured while creating the device. Please try again.");
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("An unexpected error occured while creating the device. Please try again.");
+        }
+    }
+}

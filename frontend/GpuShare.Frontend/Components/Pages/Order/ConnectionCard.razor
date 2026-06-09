@@ -1,0 +1,42 @@
+@inject IJSRuntime JS
+@using GpuShare.Frontend.Models.Dtos
+
+<div class="card">
+        <h3> Connection Details</h3>
+
+        <div class="stats-grid mt-2">
+            <div class="spec-box">
+                <div class="label">Host</div>
+            <div class="value" style="height: 100%; font-size: large;">@ConnectionDetails.Host</div>
+            </div>
+
+            <div class="spec-box">
+                <div class="label">Port</div>
+            <div class="value">@ConnectionDetails.Port</div>
+            </div>
+
+            <div class="spec-box">
+                <div class="label">Protocol</div>
+            <div class="value">@ConnectionDetails.Protocol</div>
+            </div>
+
+        </div>
+
+        <div class="connection-command">
+        <code>@ConnectionDetails.ConnectionUrl</code>
+
+            <button class="btn-dark" @onclick='CopyConnectionString'>
+                <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="width: 16px; height: 16px;" />
+            </button>
+        </div>
+    </div>
+
+@code {
+    [Parameter] public ConnectionDetailsDto ConnectionDetails { get; set; } = null!;
+
+    private async Task CopyConnectionString()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", ConnectionDetails.ConnectionUrl);
+    }
+
+}

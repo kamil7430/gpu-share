@@ -1,0 +1,78 @@
+<div class="search-container">
+
+    <input @bind="_filter.Term" placeholder="Search..." class="form-control" />
+
+    <button class="btn-secondary" @onclick="OpenModal">
+        Filters
+    </button>
+
+    <button class="btn-primary btn-search" @onclick="Search">
+        Search
+    </button>
+
+    <!-- Active filters preview -->
+    <div class="mt-2" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0px !important;">
+        @if (!string.IsNullOrEmpty(_filter.VRAM_MB?.Count > 0 ? string.Join(", ", _filter.VRAM_MB) + " GB VRAM" : null))
+        {
+            <span class="filter-badge badge">VRAM: @string.Join(", ", _filter.VRAM_MB!) GB</span>
+        }
+        @if (_filter.PricePerHour != null)
+        {
+            <span class="filter-badge badge">Price: @_filter.PricePerHour.Value.Start - @_filter.PricePerHour.Value.End</span>
+        }
+        @if (_filter.Cores != null)
+        {
+            <span class="filter-badge badge">Cores: @_filter.Cores.Value.Start - @_filter.Cores.Value.End</span>
+        }
+        @if (_filter.AvailableOnly == true)
+        {
+            <span class="filter-badge badge">
+                Available Only
+            </span>
+        }
+        @if (_filter.SupportedFrameworks?.Count > 0)
+        {
+            <span class="filter-badge badge">Frameworks: @string.Join(", ", _filter.SupportedFrameworks)</span>
+        }
+        @if (_filter.SortBy != SortOption.None)
+        {
+            <span class="filter-badge badge">Sort: @_filter.SortBy</span>
+        }
+    </div>
+</div>
+
+<FilterModal CurrentFilter="_filter" OnClose="CloseModal" OnApply="ApplySearch" IsVisible="@_isVisible" />
+
+@code {
+    [Parameter] public EventCallback<SearchFilter> OnSearch { get; set; }
+
+    private SearchFilter _filter = new();
+    private bool _isVisible = false;
+
+    private void OpenModal()
+    {
+        _isVisible = true;
+    }
+
+    public async Task Search()
+    {
+        await OnSearch.InvokeAsync(_filter);
+        Console.WriteLine($"Searching for '{_filter.Term}', " +
+        $"price between {_filter.PricePerHour?.Start ?? 0} and {_filter.PricePerHour?.End ?? 0}, " +
+        $"cores between {_filter.Cores?.Start ?? 0} and {_filter.Cores?.End ?? 0}, " +
+        $"available only: {_filter.AvailableOnly}"
+        );
+    }
+
+    public void CloseModal()
+    {
+        _isVisible = false;
+    }
+
+    public async Task ApplySearch(SearchFilter updated)
+    {
+        _filter = updated;
+        _isVisible = false;
+        await Search();
+    }
+}

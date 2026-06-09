@@ -1,0 +1,106 @@
+@using Blazorise
+@using GpuShare.Frontend.Models
+
+@* Filters:
+ - Model?
+ - Brand?
+ - vram
+ - Price range
+ - Cores num range
+ - min driver version?
+ - supported frameworks
+ - availability
+
+Decisions:
+    Show when gpu will be available?
+    Add brand to model?
+*@
+
+<BaseModal TResult="string" IsVisible="IsVisible" Title="Filters" OnClose="Close">
+    <ChildContent>
+    <label>VRAM:</label>
+    <CheckBoxList className="checkbox-list" TItem="int" Data="Device.VramOptions" TextField="@((int c) => $"{c} MB")" 
+        ValueField="@((int c) => c.ToString())" SelectedValues="@_tempFilter.VRAM_MB" />
+
+    <label>Price per hour:</label>  
+    <Field>
+        <RangeSlider TValue="decimal" @bind-Value="@_pricePerHour" Min="0" Max="100" Step="0.1m" 
+            StartAriaLabel="Minimum value" EndAriaLabel="Maximum value" />
+        <FieldHelp>Selected range: @_pricePerHour.Start - @_pricePerHour.End</FieldHelp>
+    </Field>
+
+    <label>CUDA cores:</label>
+    <Field>
+        <RangeSlider TValue="int" @bind-Value="@_cores" Min="1000" Max="30000" Step="100" 
+        StartAriaLabel="Minimum value" EndAriaLabel="Maximum value" />
+        <FieldHelp>Selected range: @_cores.Start - @_cores.End</FieldHelp>
+    </Field>
+
+    <label>Supported Frameworks:</label>
+    <CheckBoxList className="checkbox-list" TItem="string" Data="Device.SupportedFrameworks" 
+        TextField="@(new Func<string, string>(c => c))" ValueField="@(new Func<string, string>(c => c))" 
+        SelectedValues="@_tempFilter.SupportedFrameworks" />
+
+    <label class="custom-checkbox" style="margin-bottom: 16px;">
+        <input type="checkbox" style="width: auto;" @bind="_tempFilter.AvailableOnly" class="" />
+        <span class="checkmark"></span>
+        Available Only
+    </label>
+
+    <label>Sorting:</label>
+    <select @bind="@_tempFilter.SortBy" class="form-select">
+        <option value="@SortOption.None">No Sorting</option>
+        <option value="@SortOption.Name">Name</option>
+        <option value="@SortOption.Model">Model</option>
+        <option value="@SortOption.Price">Price</option>
+    </select>
+    </ChildContent>
+
+    <FooterContent>
+        <button class="btn btn-cancel" @onclick="Close">Cancel</button>
+        <button class="btn btn-primary" @onclick="Apply">Apply</button>
+    </FooterContent>
+</BaseModal>
+
+
+@code {
+    [Parameter] public EventCallback<SearchFilter> OnApply { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public SearchFilter CurrentFilter { get; set; } = new();
+    [Parameter] public bool IsVisible { get; set; }
+
+    private SearchFilter _tempFilter = new();
+    private RangeSliderValue<decimal> _pricePerHour = new RangeSliderValue<decimal>(0, 100);
+    private RangeSliderValue<int> _cores = new RangeSliderValue<int>(1000, 30000);
+
+    private List<int> _selectedVRAM = [];
+
+    private List<string> _selectedFrameworks = [];
+
+    public void Open(SearchFilter existing)
+    {
+        // clone so user edits don't apply until confirmed
+        _tempFilter = new SearchFilter
+        {
+            Term = existing.Term,
+            VRAM_MB = existing.VRAM_MB,
+            PricePerHour = existing.PricePerHour,
+            Cores = existing.Cores,
+            SupportedFrameworks = existing.SupportedFrameworks,
+            AvailableOnly = existing.AvailableOnly,
+            SortBy = existing.SortBy
+        };
+        StateHasChanged();
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task Apply()
+    {
+        _tempFilter.VRAM_MB.Sort();
+        await OnApply.InvokeAsync(_tempFilter);
+    }
+}

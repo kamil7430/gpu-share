@@ -1,0 +1,119 @@
+@using GpuShare.Frontend.Models;
+@inject IAuthState AuthState
+@inject IFormatters Formatters
+@inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
+@inject IJSRuntime JS
+
+@if (Device != null)
+{
+    <div class="card">
+        <div class="flex-row mb-2" style="justify-content: space-between;"> 
+            <div class="status-banner @(Device.IsAvailable ? "online" : "offline")">
+                @Device.State.GetDisplayName()
+            </div>
+            @if (AuthState.IsAuthenticated)
+            {
+                <button class="btn-primary btn-edit" @onclick='() => Mode = DevicePageMode.Edit'>
+                    Edit Device
+                </button>
+            }
+        </div>
+
+        <div class="gpu-header">
+            <h1 style="margin-bottom: 0px;">@Device.Name</h1>
+            @if (!AuthState.IsAuthenticated)
+            {
+                <h2 style="margin: 0 20px;">|</h2>
+                <NavLink href="@($"/profile/{Username}")" class="profile-link">
+                    @Username
+                </NavLink>
+            }
+        </div>
+        <p class="model-sub">@Device.GpuModel</p>
+
+        <div class="spec-grid">
+            <div class="spec-box">
+                <span class="label">VRAM</span>
+                <span class="value">@Device.VramMb MB</span>
+            </div>
+            <div class="spec-box">
+                <span class="label">Cores</span>
+                <span class="value">@Device.CudaCores</span>
+            </div>
+            <div class="spec-box">
+                <span class="label">Driver</span>
+                <span class="value">@Device.DriverVersion</span>
+            </div>
+            <div class="spec-box">
+                <span class="label">Price per hour</span>
+                <span class="value">@Formatters.FormatUsd(Device.PricePerHourUsdCents) $</span>
+            </div>
+            <div class="spec-box spec-box-long">
+                <span class="label">Supported Frameworks</span>
+                <span class="value">@(string.Join(", ", @Device.Frameworks))</span>
+            </div>
+        </div>
+
+        @if (AuthState.IsAuthenticated && AuthState.User!.Username == Device.OwnerUsername)
+        {
+            <div class="agent-install-section">
+                <div class="agent-header">
+                    <div>
+                        <h4>Node Agent Installation</h4>
+                        <p>
+                            Install the GPU Share node agent on your machine
+                            to enable monitoring, reservations, and workload execution.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="agent-command-container">
+                    <code class="agent-command">
+                        curl -sSL @_installUrl | bash -s -- --token @_agentToken
+                    </code>
+
+                    <button type="button" class="btn-primary" @onclick="CopyAgentToken">Copy</button>
+                </div>
+
+                <div class="hint mt-4">
+                    After installation, the node will automatically connect
+                    to your account and begin reporting GPU telemetry.
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public string? Username { get; set; }
+    [Parameter] public Device? Device { get; set; } = null;
+    [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.View;
+
+    private string _installUrl = "";
+    private string _agentToken = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Device == null)
+            return;
+
+        try
+        {
+            var agentInfo = await DeviceService.GetAgentInstallInfoAsync(Device.DeviceId);
+            _installUrl = agentInfo.InstallScriptUrl;
+            _agentToken = agentInfo.AgentToken;
+        }
+        catch (ApiException)
+        {
+            SnackbarNotifier.ShowError("Failed to load agent installation info. Please try again later.");
+        }
+    }
+
+    private async Task CopyAgentToken()
+    {
+        await JS.InvokeVoidAsync(
+            "navigator.clipboard.writeText",
+            $"curl -sSL {_installUrl} | bash -s -- --token {_agentToken}");
+    }
+}

@@ -1,0 +1,184 @@
+@inject IOrderService OrderService
+@inject IAppNotifier SnackbarNotifier
+@using GpuShare.Frontend.Models.Dtos
+
+<div class="card">
+            <div class="calendar-toolbar">
+                <button Class="btn-secondary" @onclick="PreviousWeek">
+                    Previous
+                </button>
+
+                <MudText Typo="Typo.h6">
+                    @(_weekStart.ToString("dd.MM.yyyy")) - @(_weekStart.AddDays(6).ToString("dd.MM.yyyy"))
+                </MudText>
+
+                <button Class="btn-secondary" @onclick="NextWeek">
+                    Next
+                </button>
+            </div>
+
+            <div class="week-calendar">
+                <div class="calendar-header"></div>
+
+                @foreach (var day in _weekDays)
+                {
+                    <div class="calendar-header-cell">
+                        <div>@day.ToString("ddd")</div>
+                        <div class="date">@day.Day</div>
+                    </div>
+                }
+
+                @foreach (var hour in _hours)
+                {
+                    <div class="time-label">
+                        @($"{hour:00}:00")
+                    </div>
+
+                    @foreach (var day in _weekDays)
+                    {
+                        <div class="calendar-cell">
+                            @foreach (var order in GetOrdersForSlot(day, hour))
+                            {
+                                <div class="reservation-block" style="@GetOrderStyle(order)" title="@order.Username">
+                                    <div class="reservation-title">
+                                        @order.Username
+                                    </div>
+
+                                    <div class="reservation-time">
+                                        @order.StartDate?.ToString("HH:mm") - @order.EndDate?.ToString("HH:mm")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="calendar-legend">
+
+                <div class="legend-item">
+                    <div class="legend-color reserved"></div>
+                    <span>Reserved</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color in-use"></div>
+                    <span>In Use</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color completed"></div>
+                    <span>Completed</span>
+                </div>
+
+                <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>Available</span>
+                </div>
+
+            </div>
+        </div>
+
+@code {
+    [Parameter] public int DeviceId { get; set; }
+
+    private DateTime _weekStart = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+
+    private List<int> _hours = Enumerable.Range(0, 24).ToList();
+
+    private List<DateTime> _weekDays => Enumerable.Range(0, 7).Select(i => _weekStart.AddDays(i)) .ToList();
+
+    private List<Order> _orders = new();
+
+    private const int _dayHeightPx = 1440; // or scaled version
+    private const double _pxPerMinute = 80.0/60.0; // tweak this
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrdersForWeek();
+    }
+
+    private async Task LoadOrdersForWeek()
+    {
+        try
+        {
+            var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams
+                {
+                    DeviceId = DeviceId,
+                    StartDate = _weekStart,
+                    EndDate = _weekStart.AddDays(7),
+                    Limit = int.MaxValue
+                });
+            _orders = pagedResult.Items.ToList();
+        } 
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _orders.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+        }
+    }
+
+    // ===== HELPERS =====
+    private IEnumerable<Order> GetOrdersForSlot(DateTime day, int hour)
+    {
+
+        var orders = _orders.Where(r => r.StartDate != null && r.StartDate?.Date == day.Date && r.StartDate?.Hour == hour);
+        if (orders.Count() > 0)
+        {
+            Console.WriteLine($"Warning: Multiple orders found for {day.Date} at {hour}:00. This should not happen.");
+        };
+        return orders;
+    }
+
+    private string GetOrderStyle(Order r)
+    {
+        var startMinutes = r.StartDate?.Minute;
+        var durationMinutes = (r.EndDate - r.StartDate)?.TotalMinutes;
+    
+        var top = startMinutes * _pxPerMinute + 4; // +4 for some padding from the top of the cell
+        var height = durationMinutes * _pxPerMinute - 8; // -8 for some padding from the bottom of the cell
+
+        return $@"
+            position: absolute;
+            top: {top}px;
+            height: {height}px; 
+            left: 4px;
+            right: 4px;
+            background: {GetColor(r.Status)};
+        ";
+    }
+
+    private string GetColor(OrderStatus status) => status switch
+    {
+        OrderStatus.WAITING_FOR_START => "#ff9800",
+        OrderStatus.RUNNING => "#f44336",
+        OrderStatus.COMPLETED => "#2196f3",
+        _ => "#4caf50"
+    };
+
+    // =========================
+    // NAVIGATION
+    // =========================
+
+    private async Task NextWeek()
+    {
+        _weekStart = _weekStart.AddDays(7);
+        await LoadOrdersForWeek();
+    }
+
+    private async Task PreviousWeek()
+    {
+        _weekStart = _weekStart.AddDays(-7);
+        await LoadOrdersForWeek();
+    }
+}

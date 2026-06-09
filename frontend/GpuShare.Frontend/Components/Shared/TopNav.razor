@@ -1,0 +1,70 @@
+﻿@using GpuShare.Frontend.State
+@inject IAuthModalService AuthModal
+@inject IAuthService AuthService
+@inject IAuthState AuthState
+@inject IAppNotifier SnackbarNotifier
+
+<nav class="nav-links">
+    <NavLink href="/">Search</NavLink>
+    @if (AuthState.IsAuthenticated)
+    {
+        <NavLink href="@profileLink">@AuthState.User!.Username</NavLink>
+        <button class="login-btn" @onclick="Logout">Logout</button>
+    }
+    else
+    {
+        <button class="login-btn" @onclick="OpenLogin">Login</button>
+    }
+</nav>
+
+<LoginModal IsVisible="@AuthModal.IsOpen" OnClose="OnClose" />
+
+@code {
+    private string? profileLink = null;
+
+    protected override void OnInitialized()
+    {
+        UpdateProfileLink();
+        AuthModal.OnChange += HandleAuthChanged;
+    }
+
+    private void OnClose(ModalResult<string> result)
+    {
+        if (result.Status == ModalResultStatus.Success)
+        {
+            SnackbarNotifier.ShowInfo(result.Data!);
+            UpdateProfileLink();
+            InvokeAsync(HandleAuthChanged);
+        }
+        else if (result.Status == ModalResultStatus.Failed)
+        {
+            SnackbarNotifier.ShowError(result.Message!);
+        }
+        AuthModal.Close();
+    }
+
+    private void OpenLogin()
+    {
+        AuthModal.Open();
+        Console.WriteLine("Login modal opened");
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Console.WriteLine("User logged out");
+    }
+
+    private void UpdateProfileLink()
+    {
+        profileLink = AuthState.User != null
+            ? $"/profile/{AuthState.User.Username}"
+            : null;
+    }
+
+    private void HandleAuthChanged()
+    {
+        UpdateProfileLink();
+        InvokeAsync(StateHasChanged);
+    }
+}

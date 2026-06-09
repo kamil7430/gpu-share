@@ -1,0 +1,97 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using GpuShare.Frontend.Models.Dtos
+@using GpuShare.Frontend.Models
+@inject IReviewService ReviewService
+
+<BaseModal TResult="string" IsVisible="@IsVisible" Title="Leave a Review" OnClose="HandleClose" SizeClass="medium">
+
+    <EditForm Model="reviewModel" OnValidSubmit="SubmitReview">
+        <DataAnnotationsValidator />
+
+        <!-- Rating -->
+        <div class="review-section">
+            <label class="review-label">Rating</label>
+
+            <MudRating SelectedValue="@(reviewModel.Rating)" SelectedValueChanged="OnRatingChanged" MaxValue="5"
+                       Size="Size.Large" Color="Color.Primary" />
+
+            <div class="rating-value">
+                @reviewModel.Rating / 5
+            </div>
+
+            <ValidationMessage For="@(() => reviewModel.Rating)" />
+        </div>
+
+        <!-- Review text -->
+        <div class="review-section">
+            <label class="review-label">Your Review</label>
+
+            <textarea class="review-textarea" @bind="reviewModel.Comment"
+                      placeholder="Describe your experience with the device, owner, stability, performance, etc.">
+            </textarea>
+
+                <ValidationMessage For="@(() => reviewModel.Comment)" />
+        </div>
+
+        <!-- Actions -->
+        <div class="review-actions">
+            <button type="button" class="btn-secondary" @onclick="HandleClose">Cancel</button>
+            <button type="submit" class="btn-primary">Submit Review</button>
+        </div>
+    </EditForm>
+
+</BaseModal>
+
+@code {
+
+    [Parameter] public bool IsVisible { get; set; }
+
+    [Parameter] public int OrderId { get; set; }
+
+    [Parameter] public EventCallback<ModalResult<string>> OnSubmit { get; set; }
+
+    private ReviewFormModel reviewModel = new();
+
+    private void OnRatingChanged(int value)
+    {
+        reviewModel.Rating = value;
+    }
+
+    private async Task SubmitReview()
+    {
+        var request = new CreateReviewRequest
+        {
+            OrderId = OrderId,
+            Rating = reviewModel.Rating,
+            Comment = reviewModel.Comment
+        };
+
+        try
+        {
+            await ReviewService.CreateReviewAsync(OrderId, request);
+            await OnSubmit.InvokeAsync(ModalResult<string>.Ok());
+            reviewModel = new();
+        }
+        catch (ApiException e)
+        {
+            await OnSubmit.InvokeAsync(ModalResult<string>.Fail($"Error occured while creating request, {e.StatusCode}: {e.Message}"));
+        }
+    }
+
+    private async Task HandleClose()
+    {
+        await OnSubmit.InvokeAsync(ModalResult<string>.Cancel());
+        reviewModel = new();
+    }
+
+    private class ReviewFormModel
+    {
+        [Range(1, 5, ErrorMessage = "Please select a rating.")]
+        public int Rating { get; set; } = 5;
+
+        [Required(ErrorMessage = "Review text is required.")]
+        [MinLength(10, ErrorMessage = "Review must contain at least 10 characters.")]
+        [MaxLength(5000, ErrorMessage = "Review is too long.")]
+        public string Comment { get; set; } = "";
+    }
+}

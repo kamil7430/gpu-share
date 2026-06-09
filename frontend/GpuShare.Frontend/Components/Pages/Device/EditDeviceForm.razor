@@ -1,0 +1,124 @@
+
+
+@if (Device != null)
+{
+    <div class="card">
+        <h3>@(Mode == DevicePageMode.Add ? "Register New Device" : "Edit Device Specs")</h3>
+        <EditForm FormName="SaveSpec" Model="Device" OnValidSubmit="HandleSave">
+            <DataAnnotationsValidator />
+
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Device Name</label>
+                    <InputText @bind-Value="Device.Name" placeholder="e.g. My Beast Rig" />
+                </div>
+
+                <div class="form-group">
+                    <label>Model</label>
+                    <input list="models" @bind="Device.GpuModel" />
+                    <datalist id="models">
+                        <option value="NVIDIA RTX 4090" />
+                        <option value="NVIDIA A100" />
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label>VRAM</label>
+                    <InputSelect @bind-Value="Device.VramMb">
+                        @foreach(int vram in Device.VramOptions)
+                        {
+                            <option value="@vram">@vram MB</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="form-group">
+                    <label>Cores</label>
+                    <InputNumber @bind-Value="Device.CudaCores" />
+                </div>
+
+                <div class="form-group">
+                    <label>Driver Version</label>
+                    <InputText @bind-Value="Device.DriverVersion" />
+                </div>
+
+                <div class="form-group">
+                    <label>Supported Frameworks</label>
+                    <CheckBoxList className="checkbox-list" TItem="string" Data="Device.SupportedFrameworks" 
+                        TextField="@(new Func<string, string>(c => c))" 
+                        ValueField="@(new Func<string, string>(c => c))" 
+                        SelectedValues="@_selectedFrameworks" />
+                </div>
+
+                <div class="form-group" style="flex-direction: row; align-items: center; height: fit-content;">
+                    <label>Price per hour</label>
+                    <InputNumber Min="0" style="width: 100px" @bind-Value="PricePerHourUsd" />
+                    <label>$</label>
+                </div>
+            </div>
+
+            <div class="availability-section">
+
+                <div class="flex-row">
+                    <label>Device availability</label>
+                    <MudSelect Style="font-size: 0.875rem" T="DeviceState" @bind-Value="Device.State" Dense="true"> 
+                        <MudSelectItem Value="DeviceState.AVAILABLE">Available</MudSelectItem>
+                        <MudSelectItem Value="DeviceState.UNAVAILABLE">Unavailable</MudSelectItem>
+                    </MudSelect>
+                    
+                </div>
+
+                <div class="hint mt-2">
+                    @(Device.State == DeviceState.AVAILABLE ? "Users can reserve and run workloads on this GPU." : "Device is hidden from scheduling and reservations.")
+                </div>
+
+            </div>
+
+            @* validation errors *@
+            @if (_validationErrors.Any())
+            {
+                <div class="validation-summary">
+                    <div class="validation-summary-title">
+                        Please fix the following issues:
+                    </div>
+                    <ul>
+                        @foreach (var error in _validationErrors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <div class="form-footer" style="margin-top:8px">
+                <button type="submit" class="btn-primary btn-save">Save Configuration</button>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter] public Device? Device { get; set; } = null;
+    [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.Edit;
+    [Parameter] public EventCallback<Device> OnSave { get; set; }
+
+    private List<string> _selectedFrameworks = [];
+    private List<string> _validationErrors = new() { "Error1", "Error2 a bit longerrrrrrr rrrrrrrrr rrrrrrrrrrrrrrr rrrrrrrrrr rrrrrrrrrr rrrrrrrr rrrrrrrrrrr rrrrrrrrrrrrrrr" };
+
+    private decimal PricePerHourUsd
+    {
+        get => Device != null ? Device.PricePerHourUsdCents / 100m : 0;
+        set
+        {
+            if (Device != null)
+            {
+                Device.PricePerHourUsdCents = (int)(value * 100);
+            }
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        await OnSave.InvokeAsync(Device);
+    }
+}

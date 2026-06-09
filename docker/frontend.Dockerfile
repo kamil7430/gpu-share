@@ -2,10 +2,10 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /src
 
-COPY frontend/GpuShare.Frontend.csproj ./
+COPY frontend/GpuShare.Frontend/GpuShare.Frontend.csproj ./
 RUN dotnet restore GpuShare.Frontend.csproj
 
-COPY frontend/. ./
+COPY frontend/GpuShare.Frontend/. ./
 
 RUN dotnet publish GpuShare.Frontend.csproj -c Release -o /app/out
 

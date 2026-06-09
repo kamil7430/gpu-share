@@ -1,0 +1,33 @@
+@typeparam TResult
+@inherits BaseModalState<TResult>
+
+@if (IsVisible)
+{
+    <div class="modal-backdrop" @onclick="HandleBackdropClick">
+        <div class="modal-dialog @SizeClass">
+            <div class="modal-content"
+                 @onclick:stopPropagation="true">
+                <div class="modal-header">
+                    <h3>@Title</h3>
+                    @if (ShowCloseButton)
+                    {
+                        <button class="btn-close" @onclick="Close">&times;</button>
+                    }
+                </div>
+                <div class="modal-body @(FooterContent is not null ? "with-footer" : "without-footer")">
+                    @ChildContent
+                </div>
+                @if (FooterContent is not null)
+                {
+                    <div class="modal-footer">
+                        @FooterContent
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    
+}

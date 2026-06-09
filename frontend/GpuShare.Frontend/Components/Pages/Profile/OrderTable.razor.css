@@ -1,0 +1,145 @@
+.table-card {
+    background-color: white; /* Table area looks cleaner white */
+    border: 2px solid #d1e3f8; /* Light blue border from your screenshot */
+    border-radius: 12px;
+    padding: 10px 20px;
+    overflow: hidden; /* Keeps the rounded corners clean */
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+}
+
+/* Header Styling */
+.custom-table th {
+    text-align: left;
+    padding: 15px 10px;
+    color: #444;
+    font-weight: 500;
+    border-bottom: 2px solid #d1e3f8; /* Subtle line under header */
+}
+
+/* Row Styling */
+.custom-table td {
+    padding: 15px 10px;
+    color: #222;
+    border-bottom: 1px solid #f0f7ff; /* Very light row separators */
+}
+
+/* Remove border from last row */
+.custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* "Load more" styling */
+.load-more-container {
+    margin-top: 10px;
+    padding-left: 5px;
+}
+
+.load-more-container a {
+    color: #4c6eb2;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.load-more-container a:hover {
+    text-decoration: underline;
+}
+
+.profile-link {
+    color: #4c6eb2;
+    text-decoration: none;
+}
+
+.profile-link:hover {
+    color: #3b5a8a;
+    text-decoration: none;
+}
+
+.table-controls {
+    margin-bottom: 20px;
+}
+
+.status-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    border: 1px solid #d0d7e2;
+    background: white;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+    border-color: #4c6ef5;
+}
+
+.filter-btn.active {
+    background: #4c6ef5;
+
+    border-color: #4c6ef5;
+
+    color: white;
+}
+
+.review-btn {
+    border: none;
+    background: #4c6ef5;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.review-btn:hover {
+    background: #3b5bdb;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-waiting {
+    background: #e3fafc;
+    color: #0c8599;
+}
+
+.status-running {
+    background: #e3fafc;
+    color: #0c8599;
+}
+
+.status-completed {
+    background: #ebfbee;
+    color: #2b8a3e;
+}
+
+.status-failure {
+    background: #fff5f5;
+    color: #c92a2a;
+}
+
+.status-suspended {
+    background: #fff3bf;
+    color: #e67700;
+}
+
+.empty-state {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}

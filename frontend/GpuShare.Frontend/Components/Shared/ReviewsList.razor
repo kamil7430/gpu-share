@@ -1,0 +1,96 @@
+@inject IReviewService ReviewService
+
+<div class=@(Class == null ? "reviews-container" : Class + " reviews-container")>
+    @if (Reviews.Count == 0)
+    {
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No reviews yet.</p>
+    }
+    else
+    {
+        @foreach (Review review in Reviews.Reverse<Review>())
+        {
+            bool isExpanded = _expandedReviews.Contains(review.AuthorUsername);
+
+            <div class="review-card">
+            <div class="flex-row">
+                    <h4 class="user-name">@review.AuthorUsername</h4>
+                @* <h4>|</h4>
+                <h6>@opinion.GpuName</h6> *@
+            </div>
+            
+            <div class="star-rating">
+                @for (int i = 1; i <= 5; i++)
+                {
+                        <span>@(i <= review.Rating ? "★" : "☆")</span>
+                }
+            </div>
+
+                <p class="review-text @(isExpanded ? "" : "text-clamp")">
+                    @review.Comment
+            </p>
+
+                @if (review.Comment.Length > 200)
+            {
+                    <button class="toggle-text-btn" @onclick="() => ToggleExpand(review.AuthorUsername)">
+                    @(isExpanded ? "Show less" : "Read more...")
+                </button>
+            }
+        </div>
+        }
+    }
+</div>
+
+<div class="load-more-container">
+    <a class="load-more-link" href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
+</div>
+
+@code {
+    [Parameter] public string? Class {get; set;} = null;
+    [Parameter] public string? Username { get; set; } = null;
+    [Parameter] public int? DeviceId { get; set; } = null;
+    [Parameter] public int PageSize { get; set; } = 10;
+
+    private HashSet<string> _expandedReviews = new();
+    private int _currentpage = 1;
+
+    private void ToggleExpand(string username)
+    {
+        if (_expandedReviews.Contains(username))
+            _expandedReviews.Remove(username);
+        else
+            _expandedReviews.Add(username);
+    }
+
+    private List<Review> Reviews = [];
+    // {
+    //     new () { AuthorUsername = "User1", DeviceId = 1, Rating = 5, Comment = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc sit amet mi nec arcu hendrerit auctor varius sit amet diam. Duis tempor elit felis, ac sollicitudin lacus fringilla non. Suspendisse potenti. Vestibulum dictum metus felis, et scelerisque justo feugiat eget. Phasellus sed dictum risus, sit amet faucibus lorem. Proin eu lacus at dolor tempus tempus. Sed ullamcorper tortor massa, quis egestas mauris luctus a. Suspendisse in purus nulla. Nunc pellentesque arcu ac vehicula placerat. Proin eget lorem eu sapien volutpat consectetur. Nullam placerat purus neque, aliquet convallis purus tempor vitae. Suspendisse ut erat quis neque commodo venenatis. Nulla vel fringilla nisl. Curabitur lacinia sapien posuere, interdum eros sed, porta tellus. Proin euismod eros vitae porta placerat. Curabitur ornare metus a elit faucibus hendrerit." },
+    //     new () { AuthorUsername = "User2", DeviceId = 3, Rating = 4, Comment = "Nice :)" }
+    // };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        PagedResult<Review>? page = null;
+        if (Username != null) { page = await ReviewService.GetUserReviewsAsync(Username, 1, PageSize); }
+        else if (DeviceId != null) { page = await ReviewService.GetDeviceReviewsAsync(DeviceId.Value, 1, PageSize); }
+
+        if (page != null)
+        {
+            Reviews = page.Items.OrderBy(r => r.CreatedAt).ToList();
+            if (page.TotalCount == page.PageSize) _currentpage++;
+        }
+    }
+
+    private async Task LoadMore()
+    {
+        PagedResult<Review>? page = null;
+        if (Username != null) { page = await ReviewService.GetUserReviewsAsync(Username, _currentpage, PageSize); }
+        else if (DeviceId != null) { page = await ReviewService.GetDeviceReviewsAsync(DeviceId.Value, _currentpage, PageSize); }
+
+        if (page != null && page.TotalCount != 0) 
+        {
+            Reviews.AddRange(page.Items.TakeLast(page.TotalCount - (Reviews.Count % PageSize))
+                .OrderBy(r => r.CreatedAt)); // add only new ones
+            if (page.TotalCount == page.PageSize) _currentpage++; // next time fetch next page if current is full
+        }
+    }
+}

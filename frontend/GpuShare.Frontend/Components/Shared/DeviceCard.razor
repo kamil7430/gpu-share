@@ -1,0 +1,129 @@
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+@inject IAuthState AuthState
+@inject ISnackbar Snackbar
+@inject IFormatters Formatters
+
+@if (Device == null)
+{
+    <div class="gpu-card loading">
+        <div class="loading-spinner"></div>
+    </div>
+    <p>Error loading device data.</p>
+}
+else
+{
+<div class="gpu-card">
+
+    <div class="gpu-body">
+        <div class="left">
+            <div class="gpu-header">
+                    <h4><NavLink class="device-name" href="@($"/device/view/{Device.DeviceId}")">@Device.Name</NavLink></h4>
+            </div>
+
+                <div>Model: <span style="color: #0A1128;">@Device.GpuModel</span></div>
+                @if (!AuthState.IsAuthenticated || Device.OwnerUsername != AuthState.User!.Username)
+                {
+                    <div>Owner name: @Device.OwnerUsername</div>
+                }
+
+            <div class="price">
+                    Price per hour: @Formatters.FormatUsd(Device.PricePerHourUsdCents)
+            </div>
+        </div>
+
+        <div class="middle">
+                <div>VRAM MB: <span style="color: #0A1128;">@Device.VramMb</span></div>
+                <div>CUDA cores: <span style="color: #0A1128;">@Device.CudaCores</span></div>
+                <div>Driver version: <span style="color: #0A1128;">@Device.DriverVersion</span></div>
+            <div>
+                Supported frameworks:
+                    <span style="color: #0A1128;">@string.Join(", ", Device.Frameworks)</span>
+            </div>
+        </div>
+
+        <div class="right">
+                <span class="badge @(Device.IsAvailable ? "available" : "unavailable")">
+                    @(Device.IsAvailable ? "Available" : "Unavailable")
+            </span>
+                @if (AuthState.IsAuthenticated && Device.OwnerUsername == AuthState.User!.Username)
+            {
+                <div class="buttons-wrapper">
+                    <button class="btn btn-primary edit-btn" @onclick="() => EditGpu()">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => RemoveGpu()">Remove</button>
+                </div>
+            }
+            else 
+            {
+                <button class="btn btn-primary order-btn" disabled=@(!Device.IsAvailable) @onclick="() => OrderGpu()">Order</button>
+            }
+        </div>
+    </div>
+
+        @if (AuthState.IsAuthenticated && Device.OwnerUsername == AuthState.User!.Username)
+    {
+        <MudDivider Class="my-2" style="border: 1px solid #3b5a8a" />
+
+        <div class="flex-row" style="justify-content: space-between; color: #0A1128;">
+            <span style="font-weight: bold;">Current tenant: -</span>
+            <span style="font-weight: bold;">Uptime: 1h 45min</span>
+        </div>
+    }
+
+</div>
+}
+
+<RemoveDeviceModal Device="@Device" IsVisible="@_showRemoveDeviceModal" OnClose="@HandleCloseModal" />
+
+@code {
+    [Parameter] public Device? Device { get; set; } = null;
+    private bool _showRemoveDeviceModal = false;
+
+    public void OrderGpu()
+    {
+        if (Device == null) return;
+
+        // Implement order logic here
+        Console.WriteLine($"Ordering GPU: {Device.Name}");
+        Navigation.NavigateTo($"/device/view/{Device.DeviceId}");
+    }
+
+    public void EditGpu()
+    {
+        if (Device == null) return;
+
+        // Implement edit logic here
+        Console.WriteLine($"Editing GPU: {Device.Name}");
+        Navigation.NavigateTo($"/device/edit/{Device.DeviceId}");
+    }
+
+    public void RemoveGpu()
+    {
+        if (Device == null) return;
+
+        _showRemoveDeviceModal = true;
+        // Implement remove logic here
+        Console.WriteLine($"Removing GPU: {Device.Name}");
+    }
+
+    private async Task HandleCloseModal(ModalResult<string> result)
+    {
+        _showRemoveDeviceModal = false;
+
+        switch (result.Status)
+        {
+            case ModalResultStatus.Success:
+                Snackbar.Add(result.Message ?? "Saved", Severity.Success);
+                // await ReloadDevices(); - remove device from shown list
+                break;
+
+            case ModalResultStatus.Failed:
+                Snackbar.Add(result.Message ?? "Error", Severity.Error);
+                break;
+
+            case ModalResultStatus.Cancelled:
+                // usually silent
+                break;
+        }
+    }
+}

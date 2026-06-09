@@ -1,0 +1,41 @@
+﻿.review-section {
+    margin-bottom: 20px;
+}
+
+.review-label {
+    font-size: 1rem;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.rating-value {
+    margin-top: 8px;
+    font-size: 0.95rem;
+    color: #6c757d;
+}
+
+.review-textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: white;
+}
+
+    .review-textarea:focus {
+        outline: none;
+        border-color: #4c6eb2;
+        box-shadow: 0 0 0 3px rgba(76, 110, 178, 0.15);
+    }
+
+.review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}

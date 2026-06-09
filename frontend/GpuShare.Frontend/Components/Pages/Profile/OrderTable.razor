@@ -1,0 +1,196 @@
+@using GpuShare.Frontend.Components.Modals
+@inject IOrderService OrderService
+@inject IFormatters Formatters
+@inject IAppNotifier SnackbarNotifier
+
+<div class="table-controls">
+    <div class="status-filters">
+        @foreach (var filter in _statusFilters)
+        {
+            <button class="filter-btn @(_selectedStatus == filter ? "active" : "")"
+                    @onclick="@(() => SelectStatus(filter))">
+                @filter
+            </button>
+        }
+    </div>
+</div>
+
+<div class="table-card">
+    @if (_orders.Count == 0)
+    {
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #6c757d;">No orders yet.</p>
+    }
+    else
+    {
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Device</th>
+                    <th>Owner</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Cost</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in _filteredOrders)
+                {
+                    <tr>
+                        @* <!-- Singular order page --> *@
+                        <td>
+                            <a class="order-link" href="@($"/order/{order.OrderId}")">#@order.OrderId</a>
+                        </td>
+                        <td>@order.DeviceId</td>
+                        <td><a class="profile-link" href="/profile/@order.Username">@order.Username</a></td>
+                        <td>@(order.StartDate == null || order.StartDate == DateTime.MinValue ? "-" : order.StartDate.ToString())</td>
+                        <td>@(order.EndDate == null || order.EndDate == DateTime.MinValue ? "-" : order.EndDate.ToString())</td>
+                        <td>@(order.TotalReservedCostCents == 0 ? "-" : $"{order.TotalReservedCostCents / 100.0:C}")</td>
+                        <td>
+                            <span class="status-badge @GetStatusClass(order.Status)">
+                                @(order.Status.GetDisplayName())
+                            </span>
+                        </td>
+
+                        <td>
+                            <div class="order-actions">
+                                @* <a class="details-btn" href="@($"/orders/{order.Id}")">Details</a> *@
+                                @if (order.Status == OrderStatus.COMPLETED || order.Status == OrderStatus.FAILURE) // && !order.HasReview
+                                {
+                                    <button class="review-btn" @onclick="@(() => LeaveReview(order.OrderId))">Leave Review</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<div class="load-more-container">
+    <a class="load-more-link" href="javascript:void(0)" @onclick="LoadMore">Load more...</a>
+</div>
+
+<ReviewModal IsVisible="@_showReviewModal" OrderId="@_selectedOrderId" OnSubmit="@HandleReviewSubmit" />
+
+@code {
+    [Parameter] public string Username { get; set; } = null!;
+
+    private string _selectedStatus = "All";
+    private bool _showReviewModal;
+    private int _selectedOrderId;
+    private int _lastPage = 1; // last loaded page
+
+    private List<string> _statusFilters = new()
+    {
+        "All",
+        "Waiting for start",
+        "Running",
+        "Completed",
+        "Failure",
+        "Suspended"
+    };
+
+    private List<Order> _orders { get; set; } = [];
+
+    private List<Order> _filteredOrders =>
+        _selectedStatus == "All" ? _orders : _orders.Where(x => x.Status.GetDisplayName() == _selectedStatus).ToList();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+            {
+                Username = Username,
+                Limit = 10,
+            });
+            _orders.AddRange(pagedResult.Items);
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _orders.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+        }
+    }
+
+    private void SelectStatus(string status)
+    {
+        _selectedStatus = status;
+    }
+
+    private void LeaveReview(int orderId)
+    {
+        _selectedOrderId = orderId;
+        _showReviewModal = true;
+    }
+
+    private void CloseReviewModal()
+    {
+        _showReviewModal = false;
+    }
+
+    private async Task HandleReviewSubmit(ModalResult<string> result)
+    {
+        _showReviewModal = false;
+        if (result.Status == ModalResultStatus.Success)
+            SnackbarNotifier.ShowInfo("Review created successfully.");
+        else if (result.Status == ModalResultStatus.Failed)
+            SnackbarNotifier.ShowError("Creating review failed.");
+    }
+
+    private async Task LoadMore()
+    {
+        try
+        {
+            var pagedResult = await OrderService.ListOrdersAsync(new OrderQueryParams()
+                {
+                    Username = Username,
+                    Limit = 10 * ++_lastPage,
+                });
+            _orders.AddRange(pagedResult.Items.TakeLast(pagedResult.TotalCount == pagedResult.PageSize ? 10 : (pagedResult.TotalCount % 10)));
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                _orders.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error ocurred while fetching orders.");
+        }
+    }
+
+    private string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.WAITING_FOR_START => "status-waiting",
+            OrderStatus.RUNNING => "status-running",
+            OrderStatus.COMPLETED => "status-completed",
+            OrderStatus.FAILURE => "status-failure",
+            OrderStatus.SUSPENDED => "status-suspended",
+            _ => ""
+        };
+    }
+
+}

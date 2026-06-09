@@ -1,64 +1,180 @@
 # Sprint 6 Planning
 
 Sprint 6
-Okres: 06-01 -- 06-07
+Okres: 06-08 -- 06-15
 
----
+## Sprint Goal
 
-## Zakres sprintu
+Replace frontend mock data with real backend API communication and deliver an end-to-end functional MVP.
 
-### User story 1
-Dodanie brakującej funkcjonalności zamówień.
+## Epic 1: Authentication Integration
 
-- [x] dodać endpoint GET /orders
-- [x] dodać endpoint GET /orders/{id}
+### User Stories
+- [x] Integrate login endpoint
+- [ ] Integrate logout endpoint
+- [x] Persist JWT/token
+- [ ] Restore session after page refresh
+- [x] Protect authorized pages
 
-### User story 2
-Jako atakujący mam dostęp do wewnętrznego REST API (api <-> coordinator).
-Zatem mogę:
+### Tasks
+- [x] Implement login request
+- [ ] Implement logout request
+- [x] Store token
+- [x] Configure HttpClient authorization handler
+- [x] Connect AuthState
+- [x] Remove authentication mocks
+- [ ] Test authorized/unauthorized flows
 
-- wysłać zadanie do dowolnego gpu bez opłacenia zamówienia
-- wykonać atak DOS
-- dostać potencjalnie prywante informacje o kartach graficznych/statusach zadań
+### Definition of Done
+- [ ] User can log in
+- [ ] User can log out
+- [ ] Session survives refresh
+- [ ] Protected pages work correctly
 
-Zadania:
+## Epic 2: Device Management Integration
 
-- [x] dodać autektykację tokenem JWT do REST API api <-> coordinator
-- [x] zastanowić się czy udostępniać porty 2138 i 2139
-- [x] dodać testy poprawnej i błędnej autentykacji do endpointów
-- [x] dodatkowo zrefaktorować autentykację coordinatora aby nie musiał porozumiewać
-      się z api (dodać klucz publiczny do weryfikacji JWT przez coordinatora)
-- [x] zaktualizować dokumentację (pliki `README` i `gpu.http`) i dodać pliki ADR.
+### User Stories
+- [ ] User can view devices
+- [ ] User can add device
+- [ ] User can edit device
+- [ ] User can remove device
 
-Ryzyka:
+### Tasks
+- [x] Create DeviceApiClient
+- [x] Integrate GpuList
+- [x] Integrate DeviceCard
+- [x] Integrate DevicePage
+- [x] Integrate EditDeviceForm
+- [ ] Integrate remove modal
+- [ ] Replace mock telemetry retrieval
 
-- Zmiany dotykają dużego wycinka systemu, więc istnieje ryzyko, że trzeba będzie
-  dokonać niespodziewanych zmian/refactoringu co wydłuży czas realizacji.
-- Rozwiązanie z kluczem publicznym do weryfikacji JWT może nie działać, w takim
-  wypadku można użyć klucza prywantego.
+### Definition of Done
+- [ ] Device CRUD works against backend
+- [ ] No device mocks remain
 
-Story points: 5
+## Epic 3: Search Integration
 
-### User story 3
+### User Stories
+- [ ] User can search GPUs
+- [ ] User can filter GPUs
 
-Wyszukiwanie GPU językiem naturalnym.
+### Tasks
+- [ ] Connect SearchBar
+- [ ] Convert filters into API query parameters
+- [ ] Integrate pagination
+- [ ] Integrate sorting
 
-Zadania:
-- [x] implementacja seedowania bazy danych kartami z pliku csv
-- [x] setup dockera z pythonowym serwerem REST
-- [x] definicje OpenAPI
-- [ ] połączenie z frontendem
+### Definition of Done
+- [ ] Search results come from backend
+- [ ] Filters affect API results
 
-Story points: 8
+## Epic 4: Order Integration
 
-## Kryteria realizacji
+### User Stories
+- [ ] User can create order
+- [ ] User can view order
+- [ ] User can finish order
 
-- Kod znajduje się na `main`
-- Pełne testy integracyjne
-- Aktualna dokumentacja
+### Tasks
+- [ ] Connect DeviceOrderForm
+- [ ] Connect reservation validation
+- [ ] Connect OrderPage
+- [ ] Connect DeviceStatsCard
+- [ ] Connect ConnectionCard
+- [ ] Connect session ending flow
 
-## Oczekiwany rezultat
+### Definition of Done
+- [ ] Complete ordering flow works
+- [ ] User can start and finish session
 
-- Atakujący próbując dostać się do REST API (api <-> coordinator) dostaje błąd
-  autoryzacji
-- Coordinator nie wywołuje api
+## Epic 5: Reservation Calendar Integration
+
+### User Stories
+- [ ] User can see real reservations
+
+### Tasks
+- [ ] Connect ReservationCalendar
+- [ ] Implement week navigation API calls
+- [ ] Handle empty weeks
+- [ ] Handle overlapping reservations
+
+### Definition of Done
+- [ ] Calendar displays real order data
+
+## Epic 6: Reviews Integration
+
+### User Stories
+- [ ] User can view reviews
+- [ ] User can create reviews
+
+### Tasks
+- [ ] Connect ReviewsList
+- [ ] Connect review modal
+- [ ] Implement paging
+- [ ] Implement load more
+
+### Definition of Done
+- [ ] Reviews are fully backend-driven
+
+## Epic 7: Dispute System Integration
+
+- [ ] User Stories
+- [ ] User can submit dispute
+- [ ] User can upload evidence
+
+### Tasks
+- [ ] Connect DisputeForm
+- [ ] Implement file upload API
+- [ ] Connect dispute submission
+- [ ] Connect dispute history
+
+### Definition of Done
+- [ ] Disputes are persisted in backend
+
+## Epic 8: Telemetry Integration
+
+### User Stories
+- [ ] User can view real telemetry
+
+### Tasks
+- [ ] Connect TelemetryCard
+- [ ] Connect OrderTelemetryCard
+- [ ] Implement polling/SSE/WebSocket
+- [ ] Implement CSV export
+
+### Definition of Done
+- [ ] Telemetry displays live backend data
+
+## Technical Tasks
+
+### API Infrastructure
+- [ ] Create typed API clients
+- [ ] Add global exception handling
+- [ ] Add loading states
+- [ ] Add retry policies
+- [ ] Add notification system (success/error toasts)
+
+### Logging
+- [ ] Add service-level logging
+- [ ] Add API failure logging
+- [ ] Add telemetry error logging
+
+### Testing
+- [ ] Replace mocks with API mocks
+- [ ] Add integration tests
+- [ ] Verify end-to-end flows
+
+## Sprint Deliverable
+
+By the end of the sprint, a user should be able to:
+
+1. Register/Login
+2. Add a GPU
+3. Search available GPUs
+4. Reserve a GPU
+5. View live session information
+6. Leave a review
+7. Open a dispute
+8. View telemetry
+
+with all data coming from the backend and no frontend mock data remaining.

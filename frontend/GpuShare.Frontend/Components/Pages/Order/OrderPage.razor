@@ -1,0 +1,161 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
+@inject IAuthState AuthState
+@inject IOrderService OrderService
+@inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
+
+@page "/order/{OrderId:int}"
+@attribute [Authorize]
+
+<div class="cards-container">
+    <div class="page-top" style="margin-bottom: 8px;">
+        <NavLink href=@_profileLink class="back-link">&lt; Back to Profile</NavLink>
+    </div>
+
+    @if (_loading)
+    {
+        <div class="card">
+            <h4>Loading order details...</h4>
+        </div>
+    }
+    else if (_order == null || _gpu == null)
+    {
+        <div class="card">
+            <h4>Could not load order deatils.</h4>
+        </div>
+    }
+    else
+    {
+        <AuthorizeView>
+            <Authorized>
+                <div class="card">
+                    <!-- Header -->
+                    <div class="page-header">
+                        <div>
+                            <div class="page-subtitle">Order #@OrderId</div>
+                            <h1 style="margin: 0;">@_gpu.GpuModel • @_gpu.Name</h1>
+                        </div>
+
+                        <MudChip T="string" Color="@GetChipColor(_order.Status)" Variant="Variant.Filled">
+                            @_order.Status.GetDisplayName()
+                        </MudChip>
+                    </div>
+
+                    <!-- Live Stats -->
+                    <DeviceStatsCard Device="_gpu" Order="_order" />
+
+                    <!-- Actions -->
+                    <div class="flex-row" style="justify-content: space-between;">
+                        <button class="btn-danger" @onclick='OpenEndModal'>
+                            <MudIcon Icon="@Icons.Material.Filled.StopCircle" Style="margin-right: 4px;" />End Session
+                        </button>
+
+                        @if (CanOpenDispute)
+                        {
+                            <a class="dispute-link" href="@($"/orders/{OrderId}/dispute")">Report an Issue</a>
+                        }
+                    </div>
+                </div>
+
+                <!-- Telemetry -->
+                <OrderTelemetryCard />
+
+                <!-- Connection -->
+                <ConnectionCard />
+            </Authorized>
+            <NotAuthorized>
+                <div class="card">
+                    <h3>You are not authorized to view this order.</h3>
+                    <p>Please log in to access your orders and sessions.</p>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+</div>
+
+<!-- End Session Modal -->
+<EndSessionModal IsVisible="@_showEndModal" OrderId="OrderId", OnClose="HandleEndSession" />
+
+
+@code {
+
+    [Parameter] public int OrderId { get; set; }
+
+    private DateTime _startTime = DateTime.UtcNow.AddMinutes(-12);
+    private string _profileLink = string.Empty;
+    
+    private bool _showEndModal = false;
+    private bool _loading = true;
+    
+    private Order? _order;
+    private Device? _gpu;
+    private User? _user;
+
+    private bool CanOpenDispute => DateTime.UtcNow - _startTime > TimeSpan.FromMinutes(5);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            _order = await OrderService.GetOrderAsync(OrderId);
+            _gpu = await DeviceService.GetDeviceAsync(_order.DeviceId);
+            _user = AuthState?.User;
+            _profileLink = $"/profile/{_user?.Username}";
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                SnackbarNotifier.ShowError("Unauthorized access to order page.");
+            }
+            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                SnackbarNotifier.ShowError("Order info not found.");
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Server error occured while searching for devices.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error occured while searching for devices.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private Color GetChipColor(OrderStatus status) => status switch
+    {
+        OrderStatus.WAITING_FOR_START => Color.Info,
+        OrderStatus.RUNNING => Color.Success,
+        OrderStatus.COMPLETED => Color.Success,
+        OrderStatus.SUSPENDED => Color.Warning,
+        OrderStatus.FAILURE => Color.Error,
+        _ => Color.Error
+    };
+
+    private void OpenEndModal()
+    {
+        _showEndModal = true;
+        Console.WriteLine($"Open End Session Modal: _showEndModal={_showEndModal}");
+    }
+
+    private async Task HandleEndSession(ModalResult<string> result)
+    {
+        if (result.Status == ModalResultStatus.Failed)
+        {
+            SnackbarNotifier.ShowError("Ending session failed.");
+            return;
+        }
+        else if (result.Status == ModalResultStatus.Success)
+        {
+            SnackbarNotifier.ShowInfo("Successfully ended session.");
+        }
+        _showEndModal = false;
+    }
+}

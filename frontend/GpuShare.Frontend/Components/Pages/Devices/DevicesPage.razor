@@ -1,0 +1,98 @@
+﻿@page "/"
+@using GpuShare.Frontend.Components.Shared
+@using GpuShare.Frontend.Models
+@inject IDeviceService DeviceService
+@inject IAppNotifier SnackbarNotifier
+
+@*
+TODO:
+- move sorting outside of filters
+- badges scrolling horizontally if too many
+- add "clear filters" button ?
+- removing filters with badges 
+- disable page buttons when no more pages
+- handle empty results
+- add loading state
+*@
+
+<PageTitle>Search for GPUs</PageTitle>
+
+<h1>Search for GPUs</h1>
+
+<!-- Search bar and filters -->
+<SearchBar OnSearch="ApplySearchAsync" />
+
+<!-- GPUs -->
+<DevicesList Devices="_devices" Loading="_loading" />
+
+@code {
+    // public EventCallback<SearchFilter> OnSearch { get; set; }
+    public SearchFilter Filter = new();
+    private List<Device> _devices = new();
+    private bool _loading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDevicesAsync(new DeviceSearchFilters());
+    }
+
+    public async Task ApplySearchAsync(SearchFilter updated)
+    {
+        _loading = true;
+        Filter = updated;
+
+        var filters = new DeviceSearchFilters
+        {
+            Name = Filter.Term,
+            GpuModel = Filter.Term,
+            MinVramMb = Filter.VRAM_MB.Count() > 0 ? int.Parse(Filter.VRAM_MB[0]) : null,
+            MaxVramMb = Filter.VRAM_MB.Count() > 0 ? int.Parse(Filter.VRAM_MB[Filter.VRAM_MB.Count() - 1]) : null,
+            MinPricePerHourUsdCents = Filter.PricePerHour != null ? (int)(Filter.PricePerHour?.Start * 100 ?? 0) : null,
+            MaxPricePerHourUsdCents = Filter.PricePerHour != null ? (int)(Filter.PricePerHour?.End * 100 ?? int.MaxValue) : null,
+            MinCudaCores = Filter.Cores?.Start,
+            MaxCudaCores = Filter.Cores?.End,
+            AvailableOnly = Filter.AvailableOnly,
+            Frameworks = Filter.SupportedFrameworks,
+            Limit = int.MaxValue
+        };
+
+        await LoadDevicesAsync(filters);
+        StateHasChanged();
+    }
+
+    public async Task LoadDevicesAsync(DeviceSearchFilters filters)
+    {
+        try
+        {
+            var devices = await DeviceService.SearchDevicesAsync(filters);
+            _devices = devices.Items;
+        }
+        catch (ApiException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                SnackbarNotifier.ShowError("Unauthorized access to device search.");
+            }
+            if (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                SnackbarNotifier.ShowError("Invalid request for device search.");
+            }
+            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _devices.Clear();
+            }
+            else
+            {
+                SnackbarNotifier.ShowError("Server error occured while searching for devices.");
+            }
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error occured while searching for devices.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}
