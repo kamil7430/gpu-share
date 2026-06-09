@@ -11,6 +11,7 @@ using GpuShare.Frontend.Auth;
 using GpuShare.Frontend.Extensions;
 using GpuShare.Frontend.Infrastructure.Http;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using MudBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,10 @@ builder.Services.AddScoped<IDisputeService, MockDisputeService>();
 builder.Services.AddScoped<IPaymentService, MockPaymentService>();
 builder.Services.AddScoped<IAdminService, MockAdminService>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(
+        new DirectoryInfo("/keys"));
 
 var app = builder.Build();
 
