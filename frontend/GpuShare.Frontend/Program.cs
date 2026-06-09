@@ -80,7 +80,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 // Disable HTTPS redirect for Docker container
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 
