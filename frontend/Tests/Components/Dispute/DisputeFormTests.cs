@@ -86,6 +86,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         {
             var dispute = new Models.Dispute
             {
+                OrderId = 123,
                 Description = new string('A', 100)
             };
 
@@ -101,6 +102,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         {
             var dispute = new Models.Dispute
             {
+                OrderId = 123,
                 Reason = "Hardware mismatch",
                 Description = "too short"
             };
@@ -117,6 +119,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         {
             var dispute = new Models.Dispute
             {
+                OrderId = 123,
                 Reason = "Hardware mismatch",
                 Description = new string('A', 100)
             };
@@ -152,7 +155,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         public async Task Should_Display_Uploaded_Files()
         {
             var cut = Render<DisputeForm>(p => p.Add(x => x.OrderId, 123)
-                .Add(x => x.Dispute, new Models.Dispute()));
+                .Add(x => x.Dispute, new Models.Dispute {OrderId = 123}));
 
             var file = new FakeBrowserFile
             {
@@ -173,7 +176,7 @@ namespace GpuShare.Frontend.Tests.Components.Dispute
         public async Task Should_Remove_File()
         {
             var cut = Render<DisputeForm>(p => p.Add(x => x.OrderId, 123)
-                .Add(x => x.Dispute, new Models.Dispute()));
+                .Add(x => x.Dispute, new Models.Dispute { OrderId = 123 }));
 
             var file = new FakeBrowserFile
             {

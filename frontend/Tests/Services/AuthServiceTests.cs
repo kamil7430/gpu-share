@@ -68,8 +68,8 @@ public class AuthServiceTests
     [Fact]
     public async Task LoginAsync_Should_Send_Post_To_Correct_Endpoint()
     {
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/login")
-            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/login")
+            .Respond("application/json", ContractFixtures.AuthToken);
 
         var act = async () => await _sut.LoginAsync(_loginRequest);
 
@@ -82,15 +82,15 @@ public class AuthServiceTests
     public async Task LoginAsync_Should_Return_AuthResponse_When_Credentials_Are_Valid()
     {
         // Arrange
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/login")
-            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/login")
+            .Respond("application/json", ContractFixtures.AuthToken);
 
         // Act
         await _sut.LoginAsync(_loginRequest);
 
         // Assert
         _authState.User.Should().NotBeNull();
-        _authState.AccessToken.Should().Be("jwt-token");
+        _authState.AccessToken.Should().Be("test-jwt-token");
         _authState.User.Username.Should().Be("john");
     }
 
@@ -98,7 +98,7 @@ public class AuthServiceTests
     public async Task LoginAsync_Should_Throw_When_Response_Is_Unauthorized()
     {
         // Arrange
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/login")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/login")
             .Respond(HttpStatusCode.Unauthorized);
 
         var payload = new AuthRequest
@@ -115,6 +115,31 @@ public class AuthServiceTests
         exception.Which.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    [Fact]
+    public async Task LoginAsync_Should_Send_CamelCase_Fields()
+    {
+        // This test catches the Username → username serialization bug
+        string? capturedJson = null;
+
+        _mockHttp.When(HttpMethod.Post, "*/api/users/login")
+            .Respond(async req =>
+            {
+                capturedJson = await req.Content!.ReadAsStringAsync();
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(ContractFixtures.AuthToken,
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            });
+
+        await _sut.LoginAsync(new AuthRequest { Username = "john", Password = "pass123" });
+
+        capturedJson.Should().Contain("\"username\"");   // camelCase — what backend requires
+        capturedJson.Should().Contain("\"password\"");
+        capturedJson.Should().NotContain("\"Username\""); // PascalCase would be rejected
+        capturedJson.Should().NotContain("\"Password\"");
+    }
+
     // =====================================================
     // REGISTER
     // =====================================================
@@ -122,7 +147,7 @@ public class AuthServiceTests
     [Fact]
     public async Task RegisterAsync_Should_Send_Post_To_Correct_Endpoint()
     {
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/register")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/register")
             .Respond(HttpStatusCode.Created);
 
         var act = async () => await _sut.RegisterAsync(_registerRequest);
@@ -136,7 +161,7 @@ public class AuthServiceTests
     public async Task RegisterAsync_Should_Throw_When_Username_Is_Already_Taken()
     {
         // Arrange
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/register")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/register")
             .Respond(HttpStatusCode.Conflict);
 
         // Act
@@ -155,8 +180,8 @@ public class AuthServiceTests
     public async Task RefreshTokenAsync_Should_Send_Post_To_Correct_Endpoint()
     {
         // Arrange
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/refresh")
-            .Respond("application/json", JsonSerializer.Serialize(_expectedLogin.Token));
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/refresh")
+            .Respond("application/json", ContractFixtures.AuthToken);
         _authState.SetAuth(_expectedLogin);
 
         // Act
@@ -172,8 +197,8 @@ public class AuthServiceTests
     public async Task RefreshTokenAsync_Should_Return_New_Tokens()
     {
         // Arrange
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/refresh")
-            .Respond("application/json", JsonSerializer.Serialize("new-jwt"));
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/refresh")
+            .Respond("application/json", "{\"token\": \"new-jwt\"}");
         _authState.SetAuth(_expectedLogin);
 
         // Act
@@ -187,7 +212,7 @@ public class AuthServiceTests
     public async Task RefreshTokenAsync_Should_Throw_When_Refresh_Fails()
     {
         // Arrange
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/refresh")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/refresh")
             .Respond(HttpStatusCode.Unauthorized);
 
         // Act
@@ -262,7 +287,7 @@ public class AuthServiceTests
     [Fact]
     public async Task ChangePasswordAsync_Should_Send_Post_To_Correct_Endpoint()
     {
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/changePassword")
             .Respond(HttpStatusCode.OK);
 
         var act = async () => await _sut.ChangePasswordAsync(_changePasswordRequest);
@@ -277,7 +302,7 @@ public class AuthServiceTests
     {
         ChangePasswordRequest? receivedPayload = null;
 
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/changePassword")
             .Respond(async req =>
             {
                 var json = await req.Content!.ReadAsStringAsync();
@@ -299,7 +324,7 @@ public class AuthServiceTests
     [Fact]
     public async Task ChangePasswordAsync_Should_Throw_When_Old_Password_Is_Invalid()
     {
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/changePassword")
             .Respond(HttpStatusCode.Unauthorized);
 
         var request = new ChangePasswordRequest
@@ -318,7 +343,7 @@ public class AuthServiceTests
     [Fact]
     public async Task ChangePasswordAsync_Should_Throw_When_New_Password_Is_Invalid()
     {
-        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/users/changePassword")
+        _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/users/changePassword")
             .Respond(HttpStatusCode.BadRequest);
 
         var request = new ChangePasswordRequest

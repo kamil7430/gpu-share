@@ -190,6 +190,8 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 .ThrowsAsync(new Exception("boom"));
 
             var cut = Render<DevicesPage>();
+            _deviceServiceMock.Invocations.Clear();
+            _notifierMock.Invocations.Clear();
 
             // Act
             await cut.InvokeAsync(async () => await cut.Instance.ApplySearchAsync(new SearchFilter()));
@@ -206,6 +208,8 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 .ThrowsAsync(new ApiException("Unauthorized", HttpStatusCode.Unauthorized));
 
             var cut = Render<DevicesPage>();
+            _deviceServiceMock.Invocations.Clear();
+            _notifierMock.Invocations.Clear();
 
             // Act
             await cut.InvokeAsync(async () => await cut.Instance.ApplySearchAsync(new SearchFilter()));
@@ -222,6 +226,9 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 .ThrowsAsync(new ApiException("Bad Request", HttpStatusCode.BadRequest));
 
             var cut = Render<DevicesPage>();
+
+            _deviceServiceMock.Invocations.Clear();
+            _notifierMock.Invocations.Clear();
 
             // Act
             await cut.InvokeAsync(async () => await cut.Instance.ApplySearchAsync(new SearchFilter()));
@@ -250,20 +257,19 @@ namespace GpuShare.Frontend.Tests.Components.Devices
 
             _deviceServiceMock.SetupSequence(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
                 .ReturnsAsync(firstResponse)
+                .ReturnsAsync(firstResponse)
                 .ThrowsAsync(new ApiException("Not found", HttpStatusCode.NotFound));
 
             var cut = Render<DevicesPage>();
 
             await cut.InvokeAsync(async () => await cut.Instance.ApplySearchAsync(new SearchFilter()));
 
-            cut.Render();
             cut.Markup.Should().Contain("RTX 4090");
 
             // Act
 
             await cut.InvokeAsync(async () =>
                 await cut.Instance.ApplySearchAsync(new SearchFilter()));
-            cut.Render();
 
             // Assert
             cut.Markup.Should().NotContain("RTX 4090");

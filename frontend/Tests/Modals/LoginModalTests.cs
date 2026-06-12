@@ -5,6 +5,7 @@ using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services.Interfaces;
 using GpuShare.Frontend.State;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
@@ -66,21 +67,33 @@ namespace GpuShare.Frontend.Tests.Modals
         }
 
         [Fact]
-        public void Invalid_Login_Should_Show_Error_Message()
+        public void Login_Should_Invoke_OnClose_With_Error_Message_When_Service_Throws()
         {
             // Arrange
-            _authServiceMock.Setup(x => x.LoginAsync(It.IsAny<AuthRequest>())).ThrowsAsync(
-                    new ApiException("Invalid credentials", HttpStatusCode.Unauthorized));
+            _authServiceMock.Setup(x => x.LoginAsync(It.IsAny<AuthRequest>()))
+                .ThrowsAsync(new Exception("Login failed"));
 
-            var cut = Render<LoginModal>(parameters => parameters.Add(x => x.IsVisible, true));
+            ModalResult<string>? receivedResult = null;
 
-            // Act
+            var cut = Render<LoginModal>(parameters => parameters.Add(x => x.IsVisible, true)
+                .Add(x => x.OnClose, EventCallback.Factory.Create<ModalResult<string>>(
+                        this, result => receivedResult = result)));
+
+            // Fill form
             cut.Find("input[name='username']").Change("john");
-            cut.Find("input[name='password']").Change("wrong");
+            cut.Find("input[name='password']").Change("Password123");
+
+            // Submit
             cut.Find("button[type='submit']").Click();
 
             // Assert
-            cut.Markup.Should().Contain("Login failed");
+            cut.WaitForAssertion(() =>
+            {
+                receivedResult.Should().NotBeNull();
+                receivedResult!.Status.Should().Be(ModalResultStatus.Failed);
+                receivedResult.Data.Should().Be(
+                    "Login failed. Please check your input and try again.");
+            });
         }
 
         [Fact]
@@ -176,13 +189,17 @@ namespace GpuShare.Frontend.Tests.Modals
         }
 
         [Fact]
-        public void Register_Should_Show_Error_Banner_When_Service_Throws()
+        public void Register_Should_Invoke_OnClose_With_Error_Message_When_Service_Throws()
         {
             // Arrange
             _authServiceMock.Setup(x => x.RegisterAsync(It.IsAny<AuthRequest>()))
                 .ThrowsAsync(new Exception("Registration failed"));
 
-            var cut = Render<LoginModal>(parameters => parameters.Add(x => x.IsVisible, true));
+            ModalResult<string>? receivedResult = null;
+
+            var cut = Render<LoginModal>(parameters => parameters.Add(x => x.IsVisible, true)
+                .Add(x => x.OnClose, EventCallback.Factory.Create<ModalResult<string>>(
+                        this, result => receivedResult = result)));
 
             // Switch to register mode
             cut.FindAll("a").First(x => x.TextContent.Contains("Register")).Click();
@@ -197,7 +214,13 @@ namespace GpuShare.Frontend.Tests.Modals
             cut.Find("button[type='submit']").Click();
 
             // Assert
-            cut.Markup.Should().Contain("Registration failed");
+            cut.WaitForAssertion(() =>
+            {
+                receivedResult.Should().NotBeNull();
+                receivedResult!.Status.Should().Be(ModalResultStatus.Failed);
+                receivedResult.Data.Should().Be(
+                    "Registration failed. Please check your input and try again.");
+            });
         }
 
         [Fact]

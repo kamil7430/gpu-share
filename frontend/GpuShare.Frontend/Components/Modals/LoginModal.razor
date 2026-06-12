@@ -110,7 +110,7 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Login failed: {ex.Message}");
-            _errorMessage = "Login failed. Please check your credentials and try again.";
+            _errorMessage = "Login failed. Please check your input and try again.";
             await OnClose.InvokeAsync(ModalResult<string>.Fail(_errorMessage));
         }
         finally

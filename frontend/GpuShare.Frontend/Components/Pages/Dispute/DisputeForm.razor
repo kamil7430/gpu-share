@@ -135,7 +135,7 @@ else if (_order != null && _gpu != null && Dispute != null)
         }
         catch (Exception)
         {
-            SnackbarNotifier.ShowError("Error updating device. Please try again.");
+            SnackbarNotifier.ShowError("Error getting order and device data for dispute. Please try again.");
             _order = null;
             _gpu = null;
         }

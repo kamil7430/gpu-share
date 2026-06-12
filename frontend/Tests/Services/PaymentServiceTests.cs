@@ -142,7 +142,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, WalletBalance>
                 .Get(_mockHttp, () => _sut.GetWalletBalanceAsync())
-                .To("/wallet")
+                .To("/api/wallet")
                 .Returns(_walletJson)
                 .ShouldMapTo(_walletBalance);
         }
@@ -150,7 +150,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetWalletBalanceAsync_Should_Throw_When_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/wallet")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/wallet")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetWalletBalanceAsync(),
@@ -166,7 +166,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Transaction>>
                 .Get(_mockHttp, () => _sut.GetTransactionsAsync(_query))
-                .To("/wallet/transactions")
+                .To("/api/wallet/transactions")
                 .Returns(_transactionsJson)
                 .ExpectQuery(q =>
                 {
@@ -181,7 +181,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Transaction>>
                 .Get(_mockHttp, () => _sut.GetTransactionsAsync(_query))
-                .To("/wallet/transactions")
+                .To("/api/wallet/transactions")
                 .Returns(_transactionsJson)
                 .ShouldMapTo(new PagedResult<Transaction>()
                 {
@@ -195,7 +195,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetTransactionsAsync_Should_Throw_When_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/wallet/transactions*")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/wallet/transactions*")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -212,7 +212,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<TopUpRequest, TransferResponse>
                 .Post(_mockHttp, () => _sut.TopUpAsync(_topUpRequest))
-                .To("/wallet/transfer")
+                .To("/api/wallet/transfer")
                 .Returns(_transferJson)
                 .ShouldSendBody(req =>
                 {
@@ -226,7 +226,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<TopUpRequest, TransferResponse>
                 .Post(_mockHttp, () => _sut.TopUpAsync(_topUpRequest))
-                .To("/wallet/transfer")
+                .To("/api/wallet/transfer")
                 .Returns(_transferJson)
                 .ShouldMapTo(_transferResponse);
         }
@@ -234,7 +234,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task TopUpAsync_Should_Throw_On_Invalid_Amount()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/wallet/transfer")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/wallet/transfer")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -249,7 +249,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task TopUpAsync_Should_Throw_When_Provider_Rejected()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/wallet/transfer")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/wallet/transfer")
                 .Respond(HttpStatusCode.PaymentRequired);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -266,7 +266,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<WithdrawRequest, TransferResponse>
                 .Post(_mockHttp, () => _sut.WithdrawAsync(_withdrawRequest))
-                .To("/wallet/transfer")
+                .To("/api/wallet/transfer")
                 .Returns(_transferJson)
                 .ShouldSendBody(req =>
                 {
@@ -280,7 +280,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<WithdrawRequest, TransferResponse>
                 .Post(_mockHttp, () => _sut.WithdrawAsync(_withdrawRequest))
-                .To("/wallet/transfer")
+                .To("/api/wallet/transfer")
                 .Returns(_transferJson)
                 .ShouldMapTo(_transferResponse);
         }
@@ -288,7 +288,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task WithdrawAsync_Should_Throw_When_Insufficient_Balance()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/wallet/transfer")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/wallet/transfer")
                 .Respond(HttpStatusCode.PaymentRequired);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -305,7 +305,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PayoutAccount>
                 .Get(_mockHttp, () => _sut.GetPayoutAccountAsync())
-                .To("/wallet/payout-account")
+                .To("/api/wallet/payout-account")
                 .Returns(_payoutJson)
                 .ShouldMapTo(_payoutAccount);
         }
@@ -313,7 +313,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetPayoutAccountAsync_Should_Throw_On_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/wallet/payout-account")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/wallet/payout-account")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetPayoutAccountAsync(),
@@ -329,7 +329,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<PayoutAccount, object>
                 .Post(_mockHttp, () => _sut.SavePayoutAccountAsync(_payoutAccount))
-                .To("/wallet/payout-account")
+                .To("/api/wallet/payout-account")
                 .NoReturn()
                 .ShouldSendBodyVoid(req =>
                 {
@@ -341,7 +341,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SavePayoutAccountAsync_Should_Throw_On_Invalid_Data()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/wallet/payout-account")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/wallet/payout-account")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.SavePayoutAccountAsync(new PayoutAccount()),
@@ -351,7 +351,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SavePayoutAccountAsync_Should_Throw_On_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/wallet/payout-account")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/wallet/payout-account")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.SavePayoutAccountAsync(new PayoutAccount()),

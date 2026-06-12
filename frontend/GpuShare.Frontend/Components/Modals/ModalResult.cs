@@ -64,7 +64,9 @@ namespace GpuShare.Frontend.Components.Modals
         public static ModalResult<T> Cancel(string? message = null)
             => new(ModalResultStatus.Cancelled, default, message);
 
+        // For failures we populate the Data field with the error message so consumers
+        // that expect the result payload to be an error string receive it in Data.
         public static ModalResult<T> Fail(string? message)
-            => new(ModalResultStatus.Failed, default, message);
+            => new(ModalResultStatus.Failed, (T?)(object?)message, message);
     }
 }

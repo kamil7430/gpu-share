@@ -185,7 +185,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SearchDevicesAsync_Should_Call_Devices_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices")
                 .Respond("application/json", _devicesJson);
 
             var act = async () => await _sut.SearchDevicesAsync(_filters);
@@ -200,7 +200,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Device>>
                 .Get(_mockHttp, () => _sut.SearchDevicesAsync(_filters))
-                .To("/devices")
+                .To("/api/devices")
                 .Returns("[]")
                 .ExpectQuery(q =>
                 {
@@ -227,7 +227,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Device>>
                 .Get(_mockHttp, async () => await _sut.SearchDevicesAsync(new DeviceSearchFilters()))
-                .To("/devices")
+                .To("/api/devices")
                 .Returns(_devicesJson)
                 .ShouldMapTo(new PagedResult<Device>() { TotalCount = _devices.Count, 
                     Page = 1, PageSize = 2, Items = _devices });
@@ -236,7 +236,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SearchDevicesAsync_Should_Throw_On_400()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices")
                 .Respond(HttpStatusCode.BadRequest);
 
             var act = async () => await _sut.SearchDevicesAsync(new DeviceSearchFilters());
@@ -248,7 +248,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SearchDevicesAsync_Should_Throw_When_No_Devices_Found()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.SearchDevicesAsync(new DeviceSearchFilters());
@@ -264,7 +264,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDeviceAsync_Should_Call_Correct_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123")
                 .Respond("application/json", _device1Json);
 
             var act = async () => await _sut.GetDeviceAsync(123);
@@ -279,7 +279,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, Device>
                 .Get(_mockHttp, async () => await _sut.GetDeviceAsync(123))
-                .To("https://localhost:5001/devices/123")
+                .To("https://localhost:5001/api/devices/123")
                 .Returns(_device1Json)
                 .ShouldMapTo(_devices[0]);
         }
@@ -287,7 +287,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDeviceAsync_Should_Throw_On_404()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.GetDeviceAsync(123);
@@ -303,7 +303,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDeviceStatusAsync_Should_Call_Status_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices/123/status")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123/status")
                 .Respond("application/json", JsonSerializer.Serialize(_status));
 
             var act = async () => await _sut.GetDeviceStatusAsync(123);
@@ -317,7 +317,7 @@ namespace GpuShare.Frontend.Tests.Services
         public async Task GetDeviceStatusAsync_Should_Map_Response()
         {
             // Arrange
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices/123/status")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123/status")
                 .Respond("application/json", _statusJson);
 
             // Act
@@ -335,7 +335,7 @@ namespace GpuShare.Frontend.Tests.Services
 
             await ApiContract<object, DeviceStatus>
                 .Get(_mockHttp, async () => await _sut.GetDeviceStatusAsync(123))
-                .To("https://localhost:5001/devices/123/status")
+                .To("https://localhost:5001/api/devices/123/status")
                 .Returns(_statusJson)
                 .ShouldMapTo(_status);
         }
@@ -343,7 +343,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDeviceStatusAsync_Should_Throw_On_404()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/devices/123/status")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123/status")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.GetDeviceStatusAsync(123);
@@ -362,7 +362,7 @@ namespace GpuShare.Frontend.Tests.Services
             await ApiContract<RegisterDeviceRequest, Device>
                 .Post(_mockHttp, () => _sut.RegisterDeviceAsync(_registerDeviceRequest))
                 .ExpectStatus(HttpStatusCode.Created)
-                .To("https://localhost:5001/devices")
+                .To("https://localhost:5001/api/devices")
                 //.WithHeader("Authorization", "Bearer test-token")
                 //.WithQuery("source", "frontend")
                 .Returns(_registerJson)
@@ -383,7 +383,7 @@ namespace GpuShare.Frontend.Tests.Services
                 .Post(_mockHttp, () => _sut.RegisterDeviceAsync(_registerDeviceRequest))
                 .ExpectStatus(HttpStatusCode.Created)
                 .WithHeader("Authorization", "Bearer test-token")
-                .To("https://localhost:5001/devices")
+                .To("https://localhost:5001/api/devices")
                 .Returns(_registerJson)
                 .ShouldMapTo(_devices[0]);
         }
@@ -391,7 +391,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task RegisterDeviceAsync_Should_Throw_On_400()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/devices")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/devices")
                 .Respond(HttpStatusCode.BadRequest);
 
             var act = async () => await _sut.RegisterDeviceAsync(_registerDeviceRequest);
@@ -403,7 +403,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task RegisterDeviceAsync_Should_Throw_On_401()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/devices")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/devices")
                 .Respond(HttpStatusCode.Unauthorized);
 
             var act = async () => await _sut.RegisterDeviceAsync(_registerDeviceRequest);
@@ -419,7 +419,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task UpdateDeviceAsync_Should_Call_Correct_Endpoint() 
         {
-            _mockHttp.When(HttpMethod.Patch, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Patch, "https://localhost:5001/api/devices/123")
                 .Respond(HttpStatusCode.OK);
 
             var act = async () => await _sut.UpdateDeviceAsync(123, _devices[0], _updateDeviceRequest);
@@ -432,12 +432,12 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task UpdateDeviceAsync_Should_Send_Correct_Payload()
         {
-            //_mockHttp.When(HttpMethod.Patch, "https://localhost:5001/devices/123")
+            //_mockHttp.When(HttpMethod.Patch, "https://localhost:5001/api/devices/123")
             //    .Respond(HttpStatusCode.OK);
 
             await ApiContract<UpdateDeviceRequest, Device>
                 .Patch(_mockHttp, () => _sut.UpdateDeviceAsync(123, _devices[0], _updateDeviceRequest))
-                .To("https://localhost:5001/devices/123")
+                .To("https://localhost:5001/api/devices/123")
                 .ExpectStatus(HttpStatusCode.Created)
                 //.WithHeader("Authorization", "Bearer test-token")
                 .Returns("")
@@ -455,7 +455,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task UpdateDeviceAsync_Should_Return_Updated_Device()
         {
-            _mockHttp.When(HttpMethod.Patch, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Patch, "https://localhost:5001/api/devices/123")
                 .Respond(HttpStatusCode.OK);
 
             var device = await _sut.UpdateDeviceAsync(123, _devices[0], _updateDeviceRequest);
@@ -471,7 +471,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task UpdateDeviceAsync_Should_Throw_On_400()
         {
-            _mockHttp.When(HttpMethod.Patch, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Patch, "https://localhost:5001/api/devices/123")
                 .Respond(HttpStatusCode.BadRequest);
 
             var act = async () => await _sut.UpdateDeviceAsync(123, _devices[0], _updateDeviceRequest);
@@ -487,7 +487,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task RemoveDeviceAsync_Should_Call_Delete_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Delete, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Delete, "https://localhost:5001/api/devices/123")
                 .Respond(HttpStatusCode.OK);
 
             var act = async () => await _sut.DeleteDeviceAsync(123);
@@ -500,7 +500,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task RemoveDeviceAsync_Should_Throw_On_404()
         {
-            _mockHttp.When(HttpMethod.Delete, "https://localhost:5001/devices/123")
+            _mockHttp.When(HttpMethod.Delete, "https://localhost:5001/api/devices/123")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.DeleteDeviceAsync(123);

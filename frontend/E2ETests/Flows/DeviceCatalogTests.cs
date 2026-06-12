@@ -9,7 +9,7 @@ namespace E2ETests.Flows
         [Fact]
         public async Task Browse_Catalog_Shows_Seeded_Devices()
         {
-            await Page.GotoAsync("/devices");
+            await Page.GotoAsync("/");
 
             await Page.WaitForSelectorAsync(".gpu-card");
             var cards = await Page.QuerySelectorAllAsync(".gpu-card");
@@ -20,7 +20,7 @@ namespace E2ETests.Flows
         [Fact]
         public async Task Search_By_Name_Filters_Results()
         {
-            await Page.GotoAsync("/devices");
+            await Page.GotoAsync("/");
             await Page.GetByPlaceholder("Search").FillAsync("A100");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Search" }).ClickAsync();
 
@@ -33,7 +33,7 @@ namespace E2ETests.Flows
         [Fact]
         public async Task Click_Device_Card_Navigates_To_Device_Page()
         {
-            await Page.GotoAsync("/devices");
+            await Page.GotoAsync("/");
             await Page.WaitForSelectorAsync(".gpu-card");
 
             await Page.Locator(".gpu-card").First.ClickAsync();
