@@ -15,7 +15,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<Order> CreateOrderAsync(CreateOrderRequest cmd)
         {
-            var response = await _api.PostAsync<CreateOrderRequest, CreateOrderResponse>($"/orders", cmd);
+            var response = await _api.PostAsync<CreateOrderRequest, CreateOrderResponse>($"/api/orders", cmd);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Created order for device {id}. Got ID {id} for it.", 
                     cmd.DeviceId, response!.OrderId);
@@ -35,14 +35,14 @@ namespace GpuShare.Frontend.Services
 
         public async Task EndOrderAsync(int orderId)
         {
-            await _api.PostAsync<object>($"/orders/{orderId}/end", new { });
+            await _api.PostAsync<object>($"/api/orders/{orderId}/end", new { });
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Ended order with ID {id}.", orderId);
         }
 
         public async Task<Order> GetOrderAsync(int orderId)
         {
-            var order = await _api.GetAsync<Order>($"/orders/{orderId}");
+            var order = await _api.GetAsync<Order>($"/api/orders/{orderId}");
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got order with id {Id}", orderId);
 
@@ -51,7 +51,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<PagedResult<Order>> ListOrdersAsync(OrderQueryParams parameters)
         {
-            var orders = await _api.GetAsync<List<Order>>($"/orders", parameters);
+            var orders = await _api.GetAsync<List<Order>>($"/api/orders", parameters);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got {num} orders.", orders!.Count);
 

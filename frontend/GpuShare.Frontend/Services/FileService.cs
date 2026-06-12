@@ -23,7 +23,7 @@ namespace GpuShare.Frontend.Services
 
             form.Add(fileContent, "file", file.Name);
 
-            var result = await _api.PostAsync<MultipartFormDataContent, FileUploadResult>("/files/upload", form);
+            var result = await _api.PostAsync<MultipartFormDataContent, FileUploadResult>("/api/files/upload", form);
 
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("File uploaded to url {url} with name {name} and size {size}", 
