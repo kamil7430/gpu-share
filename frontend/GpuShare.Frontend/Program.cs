@@ -47,22 +47,22 @@ builder.Services.AddScoped<IAuthModalService, AuthModalService>();
 //else { builder.Services.AddApiInfrastructure(builder.Configuration); }
 builder.Services.AddApiInfrastructure(builder.Configuration);
 
-//builder.Services.AddScoped<IAuthService, AuthService>();
-//builder.Services.AddScoped<IFileService, FileService>();
-//builder.Services.AddScoped<IDeviceService, DeviceService>();
-//builder.Services.AddScoped<IReviewService, ReviewService>();
-//builder.Services.AddScoped<IOrderService, OrderService>();
-//builder.Services.AddScoped<IDisputeService, DisputeService>();
-//builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IDisputeService, DisputeService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 // Mock services — swap individual lines above with these to run without a backend:
-builder.Services.AddScoped<IAuthService, MockAuthService>();
-builder.Services.AddScoped<IFileService, MockFileService>();
-builder.Services.AddScoped<IDeviceService, MockDeviceService>();
-builder.Services.AddScoped<IReviewService, MockReviewService>();
-builder.Services.AddScoped<IOrderService, MockOrderService>();
-builder.Services.AddScoped<IDisputeService, MockDisputeService>();
-builder.Services.AddScoped<IPaymentService, MockPaymentService>();
+//builder.Services.AddScoped<IAuthService, MockAuthService>();
+//builder.Services.AddScoped<IFileService, MockFileService>();
+//builder.Services.AddScoped<IDeviceService, MockDeviceService>();
+//builder.Services.AddScoped<IReviewService, MockReviewService>();
+//builder.Services.AddScoped<IOrderService, MockOrderService>();
+//builder.Services.AddScoped<IDisputeService, MockDisputeService>();
+//builder.Services.AddScoped<IPaymentService, MockPaymentService>();
 builder.Services.AddScoped<IAdminService, MockAdminService>();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 
