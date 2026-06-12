@@ -1,13 +1,14 @@
-@using Microsoft.AspNetCore.Authorization
+@page "/order/{OrderId:int}"
+@rendermode InteractiveServer
+@* Endpoint-level [Authorize] needs authorization middleware that this app doesn't
+   register (auth is JWT held client-side) — routing 500s on the metadata. The
+   AuthorizeView below handles the unauthorized case instead. *@
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazor
 @inject IAuthState AuthState
 @inject IOrderService OrderService
 @inject IDeviceService DeviceService
 @inject IAppNotifier SnackbarNotifier
-
-@page "/order/{OrderId:int}"
-@attribute [Authorize]
 
 <div class="cards-container">
     <div class="page-top" style="margin-bottom: 8px;">
@@ -63,7 +64,10 @@
                 <OrderTelemetryCard />
 
                 <!-- Connection -->
-                <ConnectionCard />
+                @if (_order.ConnectionDetails != null)
+                {
+                    <ConnectionCard ConnectionDetails="@_order.ConnectionDetails" />
+                }
             </Authorized>
             <NotAuthorized>
                 <div class="card">
@@ -76,7 +80,7 @@
 </div>
 
 <!-- End Session Modal -->
-<EndSessionModal IsVisible="@_showEndModal" OrderId="OrderId", OnClose="HandleEndSession" />
+<EndSessionModal IsVisible="@_showEndModal" OrderId="OrderId" OnClose="HandleEndSession" />
 
 
 @code {

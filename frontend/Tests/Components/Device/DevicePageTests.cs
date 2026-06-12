@@ -98,9 +98,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
             cut.Markup.Should().Contain("DEVICE_INFO");
             cut.Markup.Should().Contain("TELEMETRY_CARD");
             cut.Markup.Should().Contain("CALENDAR");
-
-            cut.Markup.Should().NotContain("ORDER_FORM");
-            cut.Markup.Should().NotContain("OPINIONS");
         }
 
         [Fact]

@@ -14,12 +14,14 @@ namespace E2ETests.Flows
             // Order 2 is COMPLETED — alice can open a dispute.
             // CanOpenDispute = (now - _startTime) > 5 min, where _startTime = now - 12 min → true.
             await Page.GotoAsync("/order/2");
+            await WaitForBlazorInteractiveAsync();
 
             // Link text was changed to "Open dispute" in OrderPage; href is /order/2/dispute
             await Page.GetByRole(AriaRole.Link, new() { Name = "Open dispute" }).ClickAsync();
 
             // We're now on the dispute creation page (/order/2/dispute)
             await Page.WaitForURLAsync("**/dispute*");
+            await WaitForBlazorInteractiveAsync();
 
             // Reason is a MudRadioGroup — select one of the available options
             await Page.GetByRole(AriaRole.Radio, new() { Name = "Other" }).CheckAsync();

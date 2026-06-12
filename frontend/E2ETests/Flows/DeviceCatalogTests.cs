@@ -1,6 +1,7 @@
 ﻿using E2ETests.Infrastructure;
 using FluentAssertions;
 using Microsoft.Playwright;
+using System.Reflection.PortableExecutable;
 
 namespace E2ETests.Flows
 {
@@ -21,13 +22,18 @@ namespace E2ETests.Flows
         public async Task Search_By_Name_Filters_Results()
         {
             await Page.GotoAsync("/");
+            // Wait for the Blazor circuit to connect before interacting — SSR prerender shows cards
+            // immediately but @onclick/@bind are inert until the SignalR circuit is established.
+            await WaitForBlazorInteractiveAsync();
+
             await Page.GetByPlaceholder("Search...").FillAsync("A100");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Search" }).ClickAsync();
 
-            await Page.WaitForSelectorAsync(".gpu-card");
-            var markup = await Page.ContentAsync();
-            markup.Should().Contain("A100 Server Node");
-            markup.Should().NotContain("RTX 4090");
+            // Wait until the list contracts to the single matching card
+            await Assertions.Expect(Page.Locator(".gpu-card")).ToHaveCountAsync(1, new() { Timeout = 10000 });
+            var cards = await Page.WaitForSelectorAsync(".results-container");
+            (await cards!.InnerHTMLAsync()).Should().Contain("A100 Server Node");
+            (await cards!.InnerHTMLAsync()).Should().NotContain("RTX 4090");
         }
 
         [Fact]

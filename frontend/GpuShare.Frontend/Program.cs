@@ -27,7 +27,8 @@ public partial class Program
     public static WebApplication CreateApp(
         string[] args,
         Action<WebApplicationBuilder>? configure = null,
-        string? contentRootPath = null)
+        string? contentRootPath = null,
+        string? staticAssetsManifestPath = null)
     {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
@@ -87,6 +88,12 @@ public partial class Program
             app.UseExceptionHandler("/Error", createScopeForErrors: true);
             app.UseHsts();
         }
+        else if (app.Environment.IsEnvironment("Test"))
+        {
+            // Development gets this implicitly; tests need it too so an E2E failure
+            // shows the real server exception instead of an opaque 500.
+            app.UseDeveloperExceptionPage();
+        }
 
         // Disable HTTPS redirect for Docker container
         // app.UseHttpsRedirection();
@@ -97,12 +104,11 @@ public partial class Program
         app.UseRouting();
         app.UseAntiforgery();
 
-        // MapStaticAssets() reads a manifest keyed on the entry-assembly name.
-        // Under `dotnet test` the entry assembly is `testhost`, so the manifest
-        // is never found.  UseStaticFiles() already covers serving — skip the
-        // optimised-assets middleware when running in the Test environment.
-        if (!app.Environment.IsEnvironment("Test"))
-            app.MapStaticAssets();
+        // MapStaticAssets() looks for "{entry-assembly}.staticwebassets.endpoints.json".
+        // Under `dotnet test` the entry assembly is `testhost`, so tests must pass the
+        // manifest path explicitly. Without these endpoints _framework/blazor.web.js and
+        // _content/* package assets return 404 and the Blazor circuit never starts.
+        app.MapStaticAssets(staticAssetsManifestPath);
 
         app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 

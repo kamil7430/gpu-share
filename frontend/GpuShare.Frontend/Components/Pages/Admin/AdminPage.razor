@@ -1,0 +1,82 @@
+@page "/admin"
+@rendermode InteractiveServer
+@inject IAuthState AuthState
+@inject IAdminService AdminService
+@inject IAppNotifier SnackbarNotifier
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<div class="cards-container">
+    @if (!AuthState.Admin)
+    {
+        <div class="card"><h4>You are not authorized to view this page.</h4></div>
+    }
+    else
+    {
+        <div class="card">
+            <h1 style="margin-bottom: 0px;">Admin Dashboard</h1>
+            <p class="model-sub">Platform statistics</p>
+
+            @if (_loading)
+            {
+                <h4>Loading platform stats...</h4>
+            }
+            else if (_stats == null)
+            {
+                <h4>Could not load platform stats. Try again later.</h4>
+            }
+            else
+            {
+                <div class="spec-grid">
+                    <div class="spec-box">
+                        <span class="label">Active Sessions</span>
+                        <span class="value">@_stats.ActiveSessions</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Registered Users</span>
+                        <span class="value">@_stats.RegisteredUsers</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Devices in Catalog</span>
+                        <span class="value">@_stats.DevicesInCatalog</span>
+                    </div>
+                    <div class="spec-box">
+                        <span class="label">Open Disputes</span>
+                        <span class="value">@_stats.OpenDisputes</span>
+                    </div>
+                    <div class="spec-box spec-box-long">
+                        <span class="label">Total Revenue</span>
+                        <span class="value">$@_stats.TotalRevenue.ToString("0.00")</span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private PlatformStats? _stats = null;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthState.Admin)
+        {
+            _loading = false;
+            return;
+        }
+
+        try
+        {
+            _stats = await AdminService.GetPlatformStatsAsync();
+        }
+        catch (Exception)
+        {
+            SnackbarNotifier.ShowError("Error loading platform stats. Please try again later.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

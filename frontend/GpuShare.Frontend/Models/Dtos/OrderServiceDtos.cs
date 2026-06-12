@@ -1,13 +1,20 @@
-﻿namespace GpuShare.Frontend.Models.Dtos
+﻿using System.Text.Json.Serialization;
+
+namespace GpuShare.Frontend.Models.Dtos
 {
     public class CreateOrderRequest
     {
+        // orders.yaml declares deviceId as a JSON string
+        [JsonNumberHandling(JsonNumberHandling.WriteAsString | JsonNumberHandling.AllowReadingFromString)]
         public int DeviceId { get; set; }
 
+        // Not part of the orders.yaml request body — the backend skips unknown
+        // fields; mock services use it to schedule the session.
         public DateTime StartTime { get; set; }
 
         public double DurationHours { get; set; }
 
+        // orders.yaml: name of the Docker image to run on the device, e.g. "ubuntu:latest"
         public string DockerImage { get; set; } = string.Empty;
     }
 

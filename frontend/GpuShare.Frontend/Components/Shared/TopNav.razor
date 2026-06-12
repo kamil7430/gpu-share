@@ -8,6 +8,10 @@
     <NavLink href="/">Search</NavLink>
     @if (AuthState.IsAuthenticated)
     {
+        @if (AuthState.Admin)
+        {
+            <NavLink href="/admin">Admin</NavLink>
+        }
         <NavLink href="@profileLink">@AuthState.User!.Username</NavLink>
         <button class="login-btn" @onclick="Logout">Logout</button>
     }

@@ -1,5 +1,6 @@
-@page "/dispute/{DisputeId:int}"  
+@page "/dispute/{DisputeId:int}"
 @page "/order/{OrderId:int}/dispute"
+@rendermode InteractiveServer
 @* existing dispute/create new dispute *@
 @* TO-DO: Add dispute view mode *@
 
@@ -64,11 +65,11 @@
         {
             _dispute = await DisputeService.GetDisputeAsync(DisputeId.Value);
             _orderPage = $"/order/{_dispute.OrderId}";
-        } 
+        }
         else
         {
-            _dispute = new();
-            _orderPage = $"/order/{_dispute.OrderId}";
+            _dispute = new() { OrderId = OrderId ?? 0 };
+            _orderPage = $"/order/{OrderId}";
         }
     }
 

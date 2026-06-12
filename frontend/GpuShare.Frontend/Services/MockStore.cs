@@ -13,9 +13,18 @@ public static class MockStore
 
     public static User CurrentUser { get; set; } = new() { Id = 1, Username = "alice", Admin = false };
 
+    /// <summary>
+    /// Set by MockAuthService.LoginAsync, cleared on logout/reset. MockAuthState reads it
+    /// when a new circuit starts so auth survives full page reloads like a persisted token.
+    /// </summary>
+    public static User? AuthenticatedUser { get; set; }
+
     public static List<User> Users { get; } = [];
 
-    private static readonly List<User> _seedUsers =
+    // Seeds are factory methods so Reset() rebuilds fresh instances — tests mutate
+    // these objects (device.State, order.Status), and re-adding shared instances
+    // would leak those mutations across tests.
+    private static List<User> SeedUsers() =>
     [
         new() { Id = 1, Username = "alice", Admin = false },
         new() { Id = 2, Username = "bob",   Admin = false },
@@ -25,7 +34,7 @@ public static class MockStore
 
     public static List<Device> Devices { get; } = [];
 
-    private static readonly List<Device> _seedDevices =
+    private static List<Device> SeedDevices() =>
     [
         new()
         {
@@ -66,7 +75,7 @@ public static class MockStore
 
     public static List<Order> Orders { get; } = [];
 
-    private static readonly List<Order> _seedOrders =
+    private static List<Order> SeedOrders() =>
     [
         new()
         {
@@ -107,7 +116,9 @@ public static class MockStore
         },
     ];
 
-    public static List<Review> Reviews { get; } =
+    public static List<Review> Reviews { get; } = [];
+
+    private static List<Review> SeedReviews() =>
     [
         new()
         {
@@ -123,7 +134,9 @@ public static class MockStore
         },
     ];
 
-    public static List<Transaction> Transactions { get; } =
+    public static List<Transaction> Transactions { get; } = [];
+
+    private static List<Transaction> SeedTransactions() =>
     [
         new()
         {
@@ -151,7 +164,9 @@ public static class MockStore
         },
     ];
 
-    public static List<Dispute> Disputes { get; } =
+    public static List<Dispute> Disputes { get; } = [];
+
+    private static List<Dispute> SeedDisputes() =>
     [
         new()
         {
@@ -182,17 +197,26 @@ public static class MockStore
     {
         _nextId = 100;
         CurrentUser = new() { Id = 1, Username = "alice", Admin = false };
+        AuthenticatedUser = null;
 
         Users.Clear();
-        Users.AddRange(_seedUsers);
+        Users.AddRange(SeedUsers());
 
         Devices.Clear();
-        Devices.AddRange(_seedDevices);
+        Devices.AddRange(SeedDevices());
 
         Orders.Clear();
-        Orders.AddRange(_seedOrders);
+        Orders.AddRange(SeedOrders());
 
-        // ... repeat for Reviews, Transactions, Disputes
+        Reviews.Clear();
+        Reviews.AddRange(SeedReviews());
+
+        Transactions.Clear();
+        Transactions.AddRange(SeedTransactions());
+
+        Disputes.Clear();
+        Disputes.AddRange(SeedDisputes());
+
         Wallet = new() { TotalUsdCents = 14000, LockedUsdCents = 9600 };
         PayoutAccount = null;
     }

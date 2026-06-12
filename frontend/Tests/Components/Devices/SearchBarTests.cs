@@ -106,7 +106,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             var cut = Render<SearchBar>(p => p.Add(x => x.OnSearch, filter => received = filter));
 
             // Act
-            cut.Find("input").Change("RTX 4090");
+            cut.Find("input").Input("RTX 4090");
 
             cut.Find(".btn-search").Click();
 

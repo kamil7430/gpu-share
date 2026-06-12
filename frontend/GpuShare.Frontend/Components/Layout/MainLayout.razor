@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using GpuShare.Frontend.Components.Shared
 
 <MudThemeProvider Theme="@GpuTheme" />
 <MudDialogProvider />
@@ -20,6 +21,8 @@
         </article>
     </main>
 </div>
+
+<BlazorReadySentinel />
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

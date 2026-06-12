@@ -2,6 +2,7 @@ using GpuShare.Frontend.Services;
 using GpuShare.Frontend.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Net;
@@ -30,7 +31,17 @@ public sealed class MockAppFactory : IAsyncDisposable
                 "..", "..", "..", "..",
                 "GpuShare.Frontend"));
 
-        _app = Program.CreateApp([], contentRootPath: contentRoot, configure: builder =>
+        // The build copies the frontend's static-assets manifest into the test output.
+        // MapStaticAssets() can't find it on its own (it looks for "testhost.*" under
+        // dotnet test), so pass the path explicitly — it serves _framework/blazor.web.js
+        // and _content/* package assets, without which the Blazor circuit never starts.
+        var staticAssetsManifest = Path.Combine(
+            AppContext.BaseDirectory, "GpuShare.Frontend.staticwebassets.endpoints.json");
+
+        _app = Program.CreateApp([],
+            contentRootPath: contentRoot,
+            staticAssetsManifestPath: staticAssetsManifest,
+            configure: builder =>
         {
             // Tell Kestrel which port to use
             builder.WebHost.UseUrls($"http://127.0.0.1:{_port}");
@@ -38,7 +49,21 @@ public sealed class MockAppFactory : IAsyncDisposable
             // Force Test environment (skips error-handler / HSTS middleware)
             builder.Environment.EnvironmentName = "Test";
 
+            // Wire the dev-style static web assets file provider. The endpoints manifest
+            // (above) only maps ROUTES; the physical files for _content/* packages,
+            // _framework/blazor.web.js and the scoped-CSS bundle live in NuGet/obj folders
+            // that this runtime manifest maps into the web root. CreateBuilder does this
+            // automatically only in the Development environment with a matching app name,
+            // so under dotnet test we must do it ourselves — without it every mapped asset
+            // endpoint 500s and the Blazor circuit never starts.
+            builder.Configuration[WebHostDefaults.StaticWebAssetsKey] = Path.Combine(
+                AppContext.BaseDirectory, "GpuShare.Frontend.staticwebassets.runtime.json");
+            StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
+
             // Replace real API services with MockStore-backed in-process implementations
+            builder.Services.RemoveAll<GpuShare.Frontend.State.IAuthState>();
+            builder.Services.AddScoped<GpuShare.Frontend.State.IAuthState, MockAuthState>();
+
             builder.Services.RemoveAll<IAuthService>();
             builder.Services.RemoveAll<IDeviceService>();
             builder.Services.RemoveAll<IOrderService>();
