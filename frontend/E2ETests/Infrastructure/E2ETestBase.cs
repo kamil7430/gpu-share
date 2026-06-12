@@ -35,10 +35,12 @@ namespace E2ETests.Infrastructure
         {
             await Page.GotoAsync("/");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Login" }).ClickAsync();
-            await Page.GetByLabel("Username").FillAsync(username);
-            await Page.GetByLabel("Password").FillAsync("anypassword");
-            await Page.GetByRole(AriaRole.Button, new() { Name = "Sign in" }).ClickAsync();
-            await Page.WaitForURLAsync("**/profile/**");
+            // The modal uses placeholders, not <label> elements
+            await Page.GetByPlaceholder("Username").FillAsync(username);
+            await Page.GetByPlaceholder("Password").FillAsync("anypassword");
+            await Page.GetByRole(AriaRole.Button, new() { Name = "Sign In" }).ClickAsync();
+            // TopNav swaps "Login" → "Logout" after auth; no page navigation occurs
+            await Page.GetByRole(AriaRole.Button, new() { Name = "Logout" }).WaitForAsync();
         }
     }
 

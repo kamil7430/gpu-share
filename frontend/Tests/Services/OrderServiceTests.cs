@@ -184,7 +184,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<CreateOrderRequest, Order>
                 .Post(_mockHttp, () => _sut.CreateOrderAsync(_createOrderRequest))
-                .To("/orders")
+                .To("/api/orders")
                 .Returns(_createOrderJson)
                 .ShouldSendBody(body =>
                 {
@@ -202,7 +202,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<CreateOrderRequest, Order>
                 .Post(_mockHttp, () => _sut.CreateOrderAsync(_createOrderRequest))
-                .To("/orders")
+                .To("/api/orders")
                 .Returns(_createOrderJson)
                 .ShouldMapTo(_order);
         }
@@ -210,7 +210,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task CreateOrderAsync_Should_Throw_On_400()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/orders")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders")
                 .Respond(HttpStatusCode.BadRequest);
 
             var act = async () => await _sut.CreateOrderAsync(_createOrderRequest);
@@ -222,7 +222,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task CreateOrderAsync_Should_Throw_On_402()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/orders")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders")
                 .Respond(HttpStatusCode.PaymentRequired);
 
             var act = async () => await _sut.CreateOrderAsync(_createOrderRequest);
@@ -238,7 +238,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetOrderAsync_Should_Call_Correct_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/orders/456")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/orders/456")
                 .Respond("application/json", _orderJson);
 
             var act = async () => await _sut.GetOrderAsync(456);
@@ -253,7 +253,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, Order>
                 .Get(_mockHttp, () => _sut.GetOrderAsync(456))
-                .To("/orders/456")
+                .To("/api/orders/456")
                 .Returns(_orderJson)
                 .ShouldMapTo(_order);
         }
@@ -261,7 +261,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetOrderAsync_Should_Throw_On_404()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/orders/456")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/orders/456")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.GetOrderAsync(456);
@@ -277,7 +277,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListOrdersAsync_Should_Call_Devices_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/orders")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/orders")
                 .Respond("application/json", _ordersJson);
 
             var act = async () => await _sut.ListOrdersAsync(new OrderQueryParams());
@@ -292,7 +292,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Order>>
                 .Get(_mockHttp, () => _sut.ListOrdersAsync(_filters))
-                .To("/orders")
+                .To("/api/orders")
                 .Returns(_ordersJson)
                 .ExpectQuery(q =>
                 {
@@ -308,7 +308,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Order>>
                 .Get(_mockHttp, () => _sut.ListOrdersAsync(_filters))
-                .To("/orders")
+                .To("/api/orders")
                 .Returns(_ordersJson)
                 .ShouldMapTo(new PagedResult<Order>()
                 {
@@ -322,7 +322,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListOrdersAsync_Should_Throw_On_400()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/orders")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/orders")
                 .Respond(HttpStatusCode.BadRequest);
 
             var act = async () => await _sut.ListOrdersAsync(_filters);
@@ -334,7 +334,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListOrdersAsync_Should_Throw_When_No_Orders_Found()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/orders")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/orders")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.ListOrdersAsync(_filters);
@@ -350,7 +350,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task EndOrderAsync_Should_Call_Delete_Endpoint()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/orders/456/end")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/456/end")
                 .Respond(HttpStatusCode.OK);
 
             var act = async () => await _sut.EndOrderAsync(456);
@@ -363,7 +363,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task EndOrderAsync_Should_Throw_On_404()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/orders/456/end")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/456/end")
                 .Respond(HttpStatusCode.NotFound);
 
             var act = async () => await _sut.EndOrderAsync(456);

@@ -16,7 +16,8 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task LoginAsync(AuthRequest payload)
     {
-        var token = await _api.PostAsync<AuthRequest, string>("/api/users/login", payload);
+        var result = await _api.PostAsync<AuthRequest, TokenResponse>("/api/users/login", payload);
+        var token = result?.Token;
         if (token != null)
         {
             var response = new AuthResponse
@@ -43,7 +44,8 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task RefreshTokenAsync()
     {
-        var token = await _api.PostAsync<string>("/api/users/refresh");
+        var result = await _api.PostAsync<TokenResponse>("/api/users/refresh");
+        var token = result?.Token;
         if (token != null)
         {
             var response = new AuthResponse

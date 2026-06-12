@@ -7,7 +7,7 @@ RUN dotnet restore GpuShare.Frontend.csproj
 
 COPY frontend/GpuShare.Frontend/. ./
 
-RUN dotnet publish GpuShare.Frontend.csproj -c Release -o /app/out
+RUN dotnet publish GpuShare.Frontend/GpuShare.Frontend.csproj -c Release -o /app/out
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 

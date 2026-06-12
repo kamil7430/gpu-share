@@ -141,7 +141,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<OpenDisputeRequest, Dispute>
                 .Post(_mockHttp, () => _sut.OpenDisputeAsync(_openDisputeRequest))
-                .To("/disputes")
+                .To("/api/disputes")
                 .Returns(_openDisputeResponseJson)
                 .ShouldSendBody(body =>
                 {
@@ -156,7 +156,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<OpenDisputeRequest, Dispute>
                 .Post(_mockHttp, () => _sut.OpenDisputeAsync(_openDisputeRequest))
-                .To("/disputes")
+                .To("/api/disputes")
                 .Returns(_openDisputeResponseJson)
                 .ShouldMapTo(_dispute);
         }
@@ -164,7 +164,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task OpenDisputeAsync_Should_Throw_On_BadRequest()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.OpenDisputeAsync(_openDisputeRequest),
@@ -174,7 +174,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task OpenDisputeAsync_Should_Throw_On_Conflict()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes")
                 .Respond(HttpStatusCode.Conflict);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.OpenDisputeAsync(_openDisputeRequest),
@@ -190,7 +190,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, Dispute>
                 .Get(_mockHttp, () => _sut.GetDisputeAsync(10))
-                .To("/disputes/10")
+                .To("/api/disputes/10")
                 .Returns(_disputeJson)
                 .ShouldMapTo(_dispute);
         }
@@ -198,7 +198,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDisputeAsync_Should_Throw_When_NotFound()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/disputes/10")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/disputes/10")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetDisputeAsync(10),
@@ -208,7 +208,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDisputeAsync_Should_Throw_When_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/disputes/10")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/disputes/10")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetDisputeAsync(10),
@@ -224,7 +224,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Dispute>>
                 .Get(_mockHttp, () => _sut.ListDisputesAsync(_queryParams))
-                .To("/disputes")
+                .To("/api/disputes")
                 .Returns(_disputeListResponseJson)
                 .ExpectQuery(q =>
                 {
@@ -239,7 +239,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Dispute>>
                 .Get(_mockHttp, () => _sut.ListDisputesAsync(_queryParams))
-                .To("/disputes")
+                .To("/api/disputes")
                 .Returns(_disputeListResponseJson)
                 .ShouldMapTo(new PagedResult<Dispute>()
                 {
@@ -253,7 +253,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListDisputesAsync_Should_Throw_When_BadRequest()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/disputes")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/disputes")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ListDisputesAsync(_queryParams),
@@ -263,7 +263,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListDisputesAsync_Should_Throw_When_NotFound()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/disputes")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/disputes")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ListDisputesAsync(_queryParams),
@@ -273,7 +273,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ListDisputesAsync_Should_Throw_When_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/disputes")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/disputes")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ListDisputesAsync(_queryParams),
@@ -289,7 +289,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<SubmitClarificationRequest, object>
                 .Post(_mockHttp, () => _sut.SubmitClarificationAsync(10, _submitClarificationRequest))
-                .To("/disputes/10/clarification")
+                .To("/api/disputes/10/clarification")
                 .NoReturn()
                 .ShouldSendBodyVoid(body =>
                 {
@@ -301,7 +301,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SubmitClarificationAsync_Should_Throw_On_BadRequest()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/clarification")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/clarification")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.SubmitClarificationAsync(10, _submitClarificationRequest),
@@ -311,7 +311,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SubmitClarificationAsync_Should_Throw_On_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/clarification")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/clarification")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.SubmitClarificationAsync(10, _submitClarificationRequest),
@@ -321,7 +321,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task SubmitClarificationAsync_Should_Throw_On_NotFound()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/clarification")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/clarification")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.SubmitClarificationAsync(10, _submitClarificationRequest),
@@ -337,7 +337,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<ResolveDisputeRequest, object>
                 .Post(_mockHttp, () => _sut.ResolveDisputeAsync(10, _resolveDisputeRequest))
-                .To("/disputes/10/resolve")
+                .To("/api/disputes/10/resolve")
                 .NoReturn()
                 .ShouldSendBodyVoid(body =>
                 {
@@ -350,7 +350,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ResolveDisputeAsync_Should_Throw_On_BadRequest()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/resolve")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/resolve")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ResolveDisputeAsync(10, _resolveDisputeRequest),
@@ -360,7 +360,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ResolveDisputeAsync_Should_Throw_On_Unauthorized()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/resolve")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/resolve")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ResolveDisputeAsync(10, _resolveDisputeRequest),
@@ -370,7 +370,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ResolveDisputeAsync_Should_Throw_On_NotFound()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/resolve")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/resolve")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ResolveDisputeAsync(10, _resolveDisputeRequest),
@@ -380,7 +380,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task ResolveDisputeAsync_Should_Throw_On_Forbidden()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/disputes/10/resolve")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/disputes/10/resolve")
                 .Respond(HttpStatusCode.Forbidden);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.ResolveDisputeAsync(10, _resolveDisputeRequest),

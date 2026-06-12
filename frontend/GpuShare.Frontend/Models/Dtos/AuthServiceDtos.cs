@@ -17,6 +17,14 @@ namespace GpuShare.Frontend.Models.Dtos
         public DateTime ExpiresAt { get; set; }
     }
 
+    /// <summary>
+    /// Raw token envelope returned by the backend: {"token": "..."}
+    /// </summary>
+    public class TokenResponse
+    {
+        public string Token { get; set; } = string.Empty;
+    }
+
     public class ChangePasswordRequest
     {
         public string Username { get; set; } = "";
