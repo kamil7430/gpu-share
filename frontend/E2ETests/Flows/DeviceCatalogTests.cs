@@ -21,7 +21,7 @@ namespace E2ETests.Flows
         public async Task Search_By_Name_Filters_Results()
         {
             await Page.GotoAsync("/");
-            await Page.GetByPlaceholder("Search").FillAsync("A100");
+            await Page.GetByPlaceholder("Search...").FillAsync("A100");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Search" }).ClickAsync();
 
             await Page.WaitForSelectorAsync(".gpu-card");
@@ -36,10 +36,16 @@ namespace E2ETests.Flows
             await Page.GotoAsync("/");
             await Page.WaitForSelectorAsync(".gpu-card");
 
-            await Page.Locator(".gpu-card").First.ClickAsync();
+            // .gpu-card is a plain <div>; navigation lives on the .device-name NavLink inside it
+            await Page.Locator(".gpu-card .device-name").First.ClickAsync();
             await Page.WaitForURLAsync("**/device/**");
 
-            (await Page.TitleAsync()).Should().NotBeNullOrEmpty();
+            Page.Url.Should().Contain("/device/");
+
+            var header = await Page.WaitForSelectorAsync(".gpu-header");
+            // var markup = await Page.ContentAsync();
+            (await header!.InnerHTMLAsync()).Should().Contain("RTX 4090 Workstation");
+            // markup.Should().NotContain("RTX 4090");
         }
     }
 }
