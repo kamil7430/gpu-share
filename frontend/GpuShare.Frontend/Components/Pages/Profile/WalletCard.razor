@@ -1,229 +1,125 @@
-@* navigate to all transactions *@
+@rendermode InteractiveServer
+@inject IPaymentService PaymentService
+@inject IAppNotifier Notifier
+@inject IFormatters Formatters
 
 <div class="wallet-layout card">
 
     <!-- BALANCE -->
-    <MudPaper Class="wallet-card balance-card" Elevation="0">
-
+    <div class="wallet-card balance-card">
         <div class="balance-header">
-            <MudText Typo="Typo.h6">Wallet</MudText>
-            <MudIcon Icon="@Icons.Material.Filled.AccountBalanceWallet" Color="Color.Primary" />
+            <h3>Wallet</h3>
         </div>
-
-        <div class="balance-value">1248.50 PLN</div>
-
-        <div class="balance-details">
-            <div class="balance-row">
-                <span>Locked Funds</span>
-                <span>320.00 PLN</span>
+        @if (_balance != null)
+        {
+            <div class="balance-value">@Formatters.FormatUsd(_balance.TotalUsdCents)</div>
+            <div class="balance-details">
+                <div class="balance-row">
+                    <span>Locked Funds</span>
+                    <span>@Formatters.FormatUsd(_balance.LockedUsdCents)</span>
+                </div>
+                <div class="balance-row">
+                    <span>Available Balance</span>
+                    <span>@Formatters.FormatUsd(_balance.TotalUsdCents - _balance.LockedUsdCents)</span>
+                </div>
             </div>
-            <div class="balance-row">
-                <span>Available Balance</span>
-                <span>928.50 PLN</span>
-            </div>
-        </div>
-
-    </MudPaper>
+        }
+        else
+        {
+            <p>Loading balance...</p>
+        }
+    </div>
 
     <!-- TOP UP -->
-    <MudPaper Class="wallet-card" Elevation="0">
+    <div class="wallet-card">
+        <button class="btn-primary" @onclick="ToggleTopUp">Top up</button>
+        @if (_showTopUp)
+        {
+            <div style="margin-top: 12px;">
+                <label for="topup-amount">Amount (USD)</label>
+                <input id="topup-amount" type="number" min="1" step="1"
+                       @bind="_topUpDollars" style="display:block; width:100%; margin: 8px 0;" />
+                <button class="btn-primary" @onclick="ConfirmTopUpAsync">Confirm</button>
+            </div>
+        }
+    </div>
 
-        <MudText Typo="Typo.h6" GutterBottom="true">Top Up Balance</MudText>
-
-        <MudNumericField T="decimal" Label="Amount"  Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentText="PLN"
-                         Min="10" Class="mb-4" />
-
-        <MudSelect T="string" Label="Payment Method" Variant="Variant.Outlined" Class="mb-4">
-            <MudSelectItem Value='"Card"'>Card</MudSelectItem>
-            <MudSelectItem Value='"Bank Transfer"'>Bank Transfer</MudSelectItem>
-        </MudSelect>
-
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">
-            Add Funds
-        </MudButton>
-
-    </MudPaper>
-
-    <!-- PENDING -->
-    @* <MudPaper Class="wallet-card" Elevation="0">
-
-        <MudText Typo="Typo.h6" GutterBottom="true"> Pending Reservations </MudText>
-
-        <div class="reservation-list">
-
-            <NavLink href="/order/15" class="reservation-item">
-                <div>
-                    <div class="reservation-title">RTX 4090 • 12h</div>
-                    <div class="reservation-date">15.05.2026 18:00</div>
-                </div>
-                <div class="reservation-amount">-180 PLN</div>
-
-            </NavLink>
-
-            <NavLink href="/order/19" class="reservation-item">
-                <div>
-                    <div class="reservation-title">A100 • 6h</div>
-                    <div class="reservation-date">16.05.2026 10:00</div>
-                </div>
-                <div class="reservation-amount">-140 PLN</div>
-            </NavLink>
-
-        </div>
-
-    </MudPaper> *@
-
-    <!-- TRANSACTIONS -->
-    <MudPaper Class="wallet-card transactions-card" Elevation="0">
-
-        <div class="section-header">
-            <MudText Typo="Typo.h6">Financial Activity</MudText>
-
-            <MudSelect T="string" @bind-Value="selectedFilter" Variant="Variant.Outlined" Dense="true" Class="activity-filter">
-                <MudSelectItem Value='"All"'>All</MudSelectItem>
-                <MudSelectItem Value='"Deposit"'>Deposits</MudSelectItem>
-                <MudSelectItem Value='"Reservation"'>Reservations</MudSelectItem>
-                <MudSelectItem Value='"Settlement"'>Settlements</MudSelectItem>
-                <MudSelectItem Value='"Payout"'>Payouts</MudSelectItem>
-            </MudSelect>
-        </div>
-
-        <MudTable T="FinancialActivityItem" Items="FilteredActivities" Dense="true" Hover="true" Elevation="0">
-            <HeaderContent>
-                <MudTh>Type</MudTh>
-                <MudTh>Description</MudTh>
-                <MudTh>Amount</MudTh>
-                <MudTh>Date</MudTh>
-                <MudTh>Status</MudTh>
-            </HeaderContent>
-
-            <RowTemplate>
-                <MudTd>
-                    <MudChip T="string" Color="@context.Color" Variant="Variant.Filled" Size="Size.Small">
-                        @context.Type
-                    </MudChip>
-                </MudTd>
-                <MudTd>@context.Description</MudTd>
-                <MudTd>@context.Amount</MudTd>
-                <MudTd>@context.Date</MudTd>
-                <MudTd>
-                    <MudChip T="string" Color="@context.StatusColor" Variant="Variant.Outlined" Size="Size.Small">
-                        @context.Status
-                    </MudChip>
-                </MudTd>
-            </RowTemplate>
-        </MudTable>
-    </MudPaper>
-
-    <!-- REVENUE CHART -->
-    @* <MudPaper Class="wallet-card" Elevation="0">
-
-        <MudText Typo="Typo.h6">Revenue (Last 12 Months)</MudText>
-
-        <MudChart T="double" ChartType="ChartType.Bar" Labels="revenueLabels" Data="revenueData" Width="100%" Height="300px" />
-
-    </MudPaper> *@
-
-    <!-- PayoutAccountForm -->
-    <MudPaper Class="wallet-card" Elevation="0">
-
-        <MudText Typo="Typo.h6">Payout Account</MudText>
-
-        <MudTextField @bind-Value="account.BankName" Label="Bank Name" Variant="Variant.Outlined" Class="mb-2" />
-        <MudTextField @bind-Value="account.AccountNumber" Label="Account Number / IBAN" Variant="Variant.Outlined" Class="mb-2" />
-        <MudTextField @bind-Value="account.PayPalEmail" Label="PayPal Email (optional)" Variant="Variant.Outlined" Class="mb-4" />
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" FullWidth="true">
-            Save Payout Settings
-        </MudButton>
-    </MudPaper>
+    <!-- WITHDRAW -->
+    <div class="wallet-card">
+        <button class="btn-secondary" @onclick="ToggleWithdraw">Withdraw</button>
+        @if (_showWithdraw)
+        {
+            <div style="margin-top: 12px;">
+                <label for="withdraw-amount">Amount (USD)</label>
+                <input id="withdraw-amount" type="number" min="1" step="1"
+                       @bind="_withdrawDollars" style="display:block; width:100%; margin: 8px 0;" />
+                <button class="btn-primary" @onclick="ConfirmWithdrawAsync">Confirm</button>
+            </div>
+        }
+    </div>
 
 </div>
 
 @code {
 
-    private string selectedFilter = "All";
+    private WalletBalance? _balance;
+    private bool _showTopUp = false;
+    private bool _showWithdraw = false;
+    private decimal _topUpDollars = 10;
+    private decimal _withdrawDollars = 10;
 
-    private List<FinancialActivityItem> activities = new()
+    protected override async Task OnInitializedAsync()
     {
-        new()
-        {
-            Type = "Deposit",
-            Description = "Top up via card",
-            Amount = "+500 PLN",
-            Date = "2026-05-14",
-            Status = "Completed",
-            Color = Color.Success,
-            StatusColor = Color.Success
-        },
+        _balance = await PaymentService.GetWalletBalanceAsync();
+    }
 
-        new()
-        {
-            Type = "Reservation",
-            Description = "RTX 4090 reservation",
-            Amount = "-180 PLN",
-            Date = "2026-05-15",
-            Status = "Locked",
-            Color = Color.Warning,
-            StatusColor = Color.Warning
-        },
+    private void ToggleTopUp()
+    {
+        _showTopUp = !_showTopUp;
+        _showWithdraw = false;   // only one panel open at a time
+    }
 
-        new()
-        {
-            Type = "Settlement",
-            Description = "A100 usage settlement",
-            Amount = "-165 PLN",
-            Date = "2026-05-15",
-            Status = "Completed",
-            Color = Color.Info,
-            StatusColor = Color.Success
-        },
+    private void ToggleWithdraw()
+    {
+        _showWithdraw = !_showWithdraw;
+        _showTopUp = false;
+    }
 
-        new()
+    private async Task ConfirmTopUpAsync()
+    {
+        try
         {
-            Type = "Payout",
-            Description = "Monthly payout",
-            Amount = "+820 PLN",
-            Date = "2026-05-01",
-            Status = "Pending",
-            Color = Color.Secondary,
-            StatusColor = Color.Warning
+            await PaymentService.TopUpAsync(new TopUpRequest
+            {
+                AmountUsdCents = (int)(_topUpDollars * 100),
+                Method = PaymentMethod.CARD,
+            });
+            _balance = await PaymentService.GetWalletBalanceAsync();
+            _showTopUp = false;
+            Notifier.ShowInfo($"Topped up ${_topUpDollars:0.00} successfully.");
         }
-    };
-
-    private IEnumerable<FinancialActivityItem> FilteredActivities =>
-        selectedFilter == "All"
-            ? activities
-            : activities.Where(x => x.Type == selectedFilter);
-
-    public class FinancialActivityItem
-    {
-        public string Type { get; set; } = "";
-
-        public string Description { get; set; } = "";
-
-        public string Amount { get; set; } = "";
-
-        public string Date { get; set; } = "";
-
-        public string Status { get; set; } = "";
-
-        public Color Color { get; set; }
-
-        public Color StatusColor { get; set; }
+        catch (Exception ex)
+        {
+            Notifier.ShowError($"Top up failed: {ex.Message}");
+        }
     }
 
-    private string[] revenueLabels =
-        { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-    private double[] revenueData =
-        { 120, 240, 180, 320, 410, 390, 520, 610, 580, 730, 690, 820 };
-
-    public class PayoutAccount
+    private async Task ConfirmWithdrawAsync()
     {
-        public string BankName { get; set; } = "";
-        public string AccountNumber { get; set; } = "";
-        public string PayPalEmail { get; set; } = "";
+        try
+        {
+            await PaymentService.WithdrawAsync(new WithdrawRequest
+            {
+                AmountUsdCents = (int)(_withdrawDollars * 100),
+                Method = PaymentMethod.BANK_TRANSFER,
+            });
+            _balance = await PaymentService.GetWalletBalanceAsync();
+            _showWithdraw = false;
+            Notifier.ShowInfo($"Withdrawal of ${_withdrawDollars:0.00} initiated.");
+        }
+        catch (Exception ex)
+        {
+            Notifier.ShowError($"Withdrawal failed: {ex.Message}");
+        }
     }
-
-    private PayoutAccount account = new();
 }

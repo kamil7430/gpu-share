@@ -48,6 +48,12 @@
 
                     <!-- Reservation Calendar -->
                     <ReservationCalendar DeviceId="@_device.DeviceId"></ReservationCalendar>
+
+                    <!-- Order form — only for non-owners -->
+                    @if (_device?.OwnerUsername != AuthState.User?.Username)
+                    {
+                        <DeviceOrderForm Device="@_device"></DeviceOrderForm>
+                    }
                 </Authorized>
                 <NotAuthorized>
                     <!-- Opinions -->
