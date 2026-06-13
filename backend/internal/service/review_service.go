@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -33,8 +34,8 @@ func (s *ReviewService) GetReviewsByDeviceId(ctx context.Context, params api.Get
 	}
 
 	rev := make(api.GetReviewsByDeviceIdOKApplicationJSON, 0, len(reviews))
-	for i, review := range reviews {
-		rev[i] = api.Review{
+	for _, review := range reviews {
+		newRev := api.Review{
 			ReviewId:       int(review.ID),
 			OrderId:        strconv.Itoa(int(review.OrderID)),
 			AuthorUsername: review.AuthorUsername,
@@ -45,6 +46,9 @@ func (s *ReviewService) GetReviewsByDeviceId(ctx context.Context, params api.Get
 			},
 			CreatedAt: review.CreatedAt,
 		}
+
+		log.Println(newRev)
+		rev = append(rev, newRev)
 	}
 
 	return &rev, nil
@@ -111,10 +115,14 @@ func (s *ReviewService) GetUserRating(ctx context.Context, params api.GetUserRat
 		}
 	}
 
-	return &api.GetUserRatingOK{
-		AverageRating: float32(sumRatings) / float32(ratingCount),
-		RatingCount:   ratingCount,
-	}, nil
+	if ratingCount > 0 {
+		return &api.GetUserRatingOK{
+			AverageRating: float32(sumRatings) / float32(ratingCount),
+			RatingCount:   ratingCount,
+		}, nil
+	}
+
+	return &api.GetUserRatingOK{}, nil
 }
 
 func (s *ReviewService) ReviewOrderById(ctx context.Context, req *api.ReviewOrderByIdReq, params api.ReviewOrderByIdParams) (api.ReviewOrderByIdRes, error) {

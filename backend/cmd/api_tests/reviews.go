@@ -78,12 +78,12 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 	}
 
 	type ratingResponse struct {
-		averageRating float32
-		ratingCount   int
+		AverageRating float32
+		RatingCount   int
 	}
 
 	// testing reviews
-	t.Run("reviews -- user rating on zero reviews", func(t *testing.T) {
+	t.Run("reviews -- user Rating on zero reviews", func(t *testing.T) {
 		resp, err := http.Get(baseUrl + "/api/reviews/userRating/TestOwner")
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -97,15 +97,15 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.NoError(t, err)
 
 		require.Equal(t, ratingResponse{
-			averageRating: 0.0,
-			ratingCount:   0,
+			AverageRating: 0.0,
+			RatingCount:   0,
 		}, respStruct)
 	})
 
 	t.Run("reviews -- adding review for the first time", func(t *testing.T) {
 		payloadReader := strings.NewReader(`{
-			"rating": 4,
-			"comment": "Fantastic device"
+			"Rating": 4,
+			"Comment": "Fantastic device"
 		}`)
 		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/reviews/reviewOrder/"+orderId, payloadReader)
 		require.NoError(t, err)
@@ -120,8 +120,8 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	t.Run("reviews -- adding review for the second time", func(t *testing.T) {
 		payloadReader := strings.NewReader(`{
-			"rating": 4,
-			"comment": "Fantastic device"
+			"Rating": 4,
+			"Comment": "Fantastic device"
 		}`)
 		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/reviews/reviewOrder/"+orderId, payloadReader)
 		require.NoError(t, err)
@@ -134,12 +134,12 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	type review struct {
-		reviewId       int
-		orderId        string
-		authorUsername string
-		rating         int
-		comment        string
-		createdAt      time.Time
+		ReviewId       int
+		OrderId        string
+		AuthorUsername string
+		Rating         int
+		Comment        string
+		CreatedAt      time.Time
 	}
 
 	t.Run("reviews -- by device id", func(t *testing.T) {
@@ -157,16 +157,16 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 
 		require.Equal(t, 1, len(respStruct))
 		expected := review{
-			orderId:        orderId,
-			authorUsername: "TestRentingUser1",
-			rating:         4,
-			comment:        "Fantastic device",
+			OrderId:        orderId,
+			AuthorUsername: "TestRentingUser1",
+			Rating:         4,
+			Comment:        "Fantastic device",
 		}
 
-		require.Equal(t, expected.orderId, respStruct[0].orderId)
-		require.Equal(t, expected.authorUsername, respStruct[0].authorUsername)
-		require.Equal(t, expected.rating, respStruct[0].rating)
-		require.Equal(t, expected.comment, respStruct[0].comment)
+		require.Equal(t, expected.OrderId, respStruct[0].OrderId)
+		require.Equal(t, expected.AuthorUsername, respStruct[0].AuthorUsername)
+		require.Equal(t, expected.Rating, respStruct[0].Rating)
+		require.Equal(t, expected.Comment, respStruct[0].Comment)
 	})
 
 	t.Run("reviews -- by username", func(t *testing.T) {
@@ -184,15 +184,15 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 
 		require.Equal(t, 1, len(respStruct))
 		expected := review{
-			orderId:        orderId,
-			authorUsername: "TestRentingUser1",
-			rating:         4,
-			comment:        "Fantastic device",
+			OrderId:        orderId,
+			AuthorUsername: "TestRentingUser1",
+			Rating:         4,
+			Comment:        "Fantastic device",
 		}
 
-		require.Equal(t, expected.orderId, respStruct[0].orderId)
-		require.Equal(t, expected.authorUsername, respStruct[0].authorUsername)
-		require.Equal(t, expected.rating, respStruct[0].rating)
-		require.Equal(t, expected.comment, respStruct[0].comment)
+		require.Equal(t, expected.OrderId, respStruct[0].OrderId)
+		require.Equal(t, expected.AuthorUsername, respStruct[0].AuthorUsername)
+		require.Equal(t, expected.Rating, respStruct[0].Rating)
+		require.Equal(t, expected.Comment, respStruct[0].Comment)
 	})
 }
