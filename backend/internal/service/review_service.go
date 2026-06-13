@@ -102,6 +102,10 @@ func (s *ReviewService) GetUserRating(ctx context.Context, params api.GetUserRat
 
 	revs, err := s.GetReviewsByUsername(ctx, api.GetReviewsByUsernameParams{
 		Username: user.Name,
+		Limit: api.OptInt{
+			Value: 1000,
+			Set:   true,
+		},
 	})
 	if err != nil {
 		return nil, err
