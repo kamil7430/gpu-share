@@ -44,7 +44,6 @@ public class MockDeviceService : IDeviceService
             CudaCores = cmd.CudaCores,
             DriverVersion = cmd.DriverVersion,
             PricePerHourUsdCents = cmd.PricePerHourUsdCents,
-            Frameworks = cmd.Frameworks,
             State = DeviceState.UNAVAILABLE,
         };
         MockStore.Devices.Add(device);
@@ -78,8 +77,6 @@ public class MockDeviceService : IDeviceService
             query = query.Where(d => d.PricePerHourUsdCents >= filters.MinPricePerHourUsdCents.Value);
         if (filters.MaxPricePerHourUsdCents.HasValue)
             query = query.Where(d => d.PricePerHourUsdCents <= filters.MaxPricePerHourUsdCents.Value);
-        if (filters.Frameworks.Count > 0)
-            query = query.Where(d => filters.Frameworks.All(f => d.Frameworks.Contains(f)));
         if (filters.AvailableOnly == true)
             query = query.Where(d => d.State == DeviceState.AVAILABLE);
 
@@ -110,7 +107,6 @@ public class MockDeviceService : IDeviceService
         if (cmd.CudaCores.HasValue) device.CudaCores = cmd.CudaCores.Value;
         if (cmd.DriverVersion != null) device.DriverVersion = cmd.DriverVersion;
         if (cmd.PricePerHourUsdCents.HasValue) device.PricePerHourUsdCents = cmd.PricePerHourUsdCents.Value;
-        if (cmd.Frameworks != null) device.Frameworks = cmd.Frameworks;
         if (cmd.State.HasValue) device.State = cmd.State.Value;
 
         return Task.FromResult(device);

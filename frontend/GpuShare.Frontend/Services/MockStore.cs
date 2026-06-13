@@ -41,35 +41,35 @@ public static class MockStore
             DeviceId = 1, OwnerUsername = "bob", Name = "RTX 4090 Workstation",
             GpuModel = "NVIDIA RTX 4090", VramMb = 24576, CudaCores = 16384,
             DriverVersion = "545.92", PricePerHourUsdCents = 350,
-            Frameworks = ["PyTorch", "TensorFlow"], State = DeviceState.AVAILABLE
+            State = DeviceState.AVAILABLE
         },
         new()
         {
             DeviceId = 2, OwnerUsername = "charlie", Name = "A100 Server Node",
             GpuModel = "NVIDIA A100", VramMb = 81920, CudaCores = 6912,
             DriverVersion = "535.104", PricePerHourUsdCents = 1200,
-            Frameworks = ["PyTorch", "TensorFlow", "MXNet"], State = DeviceState.RENTED
+            State = DeviceState.RENTED
         },
         new()
         {
             DeviceId = 3, OwnerUsername = "bob", Name = "RTX 3080 Rig",
             GpuModel = "NVIDIA RTX 3080", VramMb = 10240, CudaCores = 8704,
             DriverVersion = "535.104", PricePerHourUsdCents = 150,
-            Frameworks = ["PyTorch", "Keras"], State = DeviceState.AVAILABLE
+            State = DeviceState.AVAILABLE
         },
         new()
         {
             DeviceId = 4, OwnerUsername = "diana", Name = "H100 Training Cluster",
             GpuModel = "NVIDIA H100", VramMb = 81920, CudaCores = 14592,
             DriverVersion = "545.92", PricePerHourUsdCents = 2500,
-            Frameworks = ["PyTorch", "TensorFlow", "MXNet", "Caffe"], State = DeviceState.AVAILABLE
+            State = DeviceState.AVAILABLE
         },
         new()
         {
             DeviceId = 5, OwnerUsername = "charlie", Name = "GTX 1080 Ti Budget",
             GpuModel = "NVIDIA GTX 1080 Ti", VramMb = 11264, CudaCores = 3584,
             DriverVersion = "470.182", PricePerHourUsdCents = 80,
-            Frameworks = ["TensorFlow", "Caffe"], State = DeviceState.UNAVAILABLE
+            State = DeviceState.UNAVAILABLE
         },
     ];
 

@@ -49,10 +49,6 @@
                 <span class="label">Price per hour</span>
                 <span class="value">@Formatters.FormatUsd(Device.PricePerHourUsdCents) $</span>
             </div>
-            <div class="spec-box spec-box-long">
-                <span class="label">Supported Frameworks</span>
-                <span class="value">@(string.Join(", ", @Device.Frameworks))</span>
-            </div>
         </div>
 
         @if (AuthState.IsAuthenticated && AuthState.User!.Username == Device.OwnerUsername)

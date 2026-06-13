@@ -68,7 +68,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 CudaCores = 16384,
                 DriverVersion = "535.xx",
                 PricePerHourUsdCents = 450,
-                Frameworks = ["CUDA", "PyTorch"]
             };
         }
 

@@ -12,19 +12,13 @@ public class Device
     public int VramMb { get; set; }
     public int CudaCores { get; set; }
     public string DriverVersion { get; set; } = "";
-    public List<string> Frameworks { get; set; } = [];
     public int PricePerHourUsdCents { get; set; }
 
     public bool IsAvailable => State == DeviceState.AVAILABLE;
 
-    public static List<string> SupportedFrameworks { get; } =
-    [
-        "TensorFlow", "PyTorch", "MXNet", "Keras", "Caffe"
-    ];
-
     public static List<int> VramOptions { get; } =
     [
-        2048, 4096, 6144, 8192, 10240, 12288, 16384, 24576, 32768, 65536, 81920
+        512, 1024, 2048, 4096, 6144, 8192, 10240, 12288, 16384, 24576, 32768, 65536, 81920
     ];
 }
 

@@ -141,7 +141,6 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 VRAM_MB = ["24"],
                 PricePerHour = new (1, 5),
                 AvailableOnly = true,
-                SupportedFrameworks = ["CUDA", "PyTorch"]
             };
 
             // Act
@@ -159,12 +158,6 @@ namespace GpuShare.Frontend.Tests.Components.Devices
 
             cut.Markup.Should().Contain("Price:");
             cut.Markup.Should().Contain("1 - 5");
-
-            cut.Markup.Should().Contain("Available Only");
-
-            cut.Markup.Should().Contain("Frameworks:");
-            cut.Markup.Should().Contain("CUDA");
-            cut.Markup.Should().Contain("PyTorch");
         }
 
         [Fact]

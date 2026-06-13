@@ -29,7 +29,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
             VramMb = 24000,
             CudaCores = 16000,
             DriverVersion = "535",
-            Frameworks = [ "CUDA" ],
             State = Models.DeviceState.AVAILABLE
         };
 
