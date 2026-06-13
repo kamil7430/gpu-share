@@ -1,10 +1,13 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -58,6 +61,42 @@ func verifyParams(params api.GetDevicesParams) error {
 	return nil
 }
 
+func fetchSortedDeviceIds(ctx context.Context, query string) ([]uint, error) {
+	reqBody, err := json.Marshal(map[string]string{
+		"query": query,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		"http://10.0.5.4:2140/search",
+		bytes.NewReader(reqBody),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("search service returned status %d", resp.StatusCode)
+	}
+
+	var ids []uint
+	err = json.NewDecoder(resp.Body).Decode(&ids)
+
+	return ids, err
+}
+
 func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesParams) (api.GetDevicesRes, error) {
 	// See `/contract/openapi/paths/api/devices/devices.yaml` for more information.
 	// In particular regarding filters values constraints.
@@ -78,8 +117,17 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 	}
 
 	if !containsUsername {
-		devices, err = s.store.Devices().GetDevices(ctx, params)
+		if params.NlQuery.IsSet() {
+			deviceIds, err := fetchSortedDeviceIds(ctx, params.NlQuery.Value)
+			if err != nil {
+				return nil, err
+			}
+			devices, err = s.store.Devices().GetDevicesByIds(ctx, deviceIds)
+		} else {
+			devices, err = s.store.Devices().GetDevices(ctx, params)
+		}
 	}
+
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &api.GetDevicesNotFound{}, nil

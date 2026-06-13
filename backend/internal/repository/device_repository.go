@@ -13,6 +13,7 @@ import (
 type DeviceRepository interface {
 	GetDevices(ctx context.Context, params api.GetDevicesParams) ([]model.Device, error)
 	GetDeviceById(ctx context.Context, id string) (*model.Device, error)
+	GetDevicesByIds(ctx context.Context, ids []uint) ([]model.Device, error)
 	GetDevicesForUser(ctx context.Context, userId uint, params api.GetDevicesParams) ([]model.Device, error)
 	AddDevice(ctx context.Context, device *model.Device) error
 	UpdateDevice(ctx context.Context, device *model.Device) error
@@ -91,6 +92,37 @@ func (r *deviceRepository) GetDeviceById(ctx context.Context, id string) (*model
 		return nil, err
 	}
 	return &device, nil
+}
+
+func (r *deviceRepository) GetDevicesByIds(
+	ctx context.Context,
+	ids []uint,
+) ([]model.Device, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+
+	var devices []model.Device
+
+	if err := r.db.WithContext(ctx).
+		Where("id IN ?", ids).
+		Find(&devices).Error; err != nil {
+		return nil, err
+	}
+
+	deviceMap := make(map[uint]model.Device, len(devices))
+	for _, d := range devices {
+		deviceMap[d.ID] = d
+	}
+
+	ordered := make([]model.Device, 0, len(ids))
+	for _, id := range ids {
+		if d, ok := deviceMap[id]; ok {
+			ordered = append(ordered, d)
+		}
+	}
+
+	return ordered, nil
 }
 
 func (r *deviceRepository) GetDevicesForUser(ctx context.Context, userId uint, params api.GetDevicesParams) ([]model.Device, error) {
