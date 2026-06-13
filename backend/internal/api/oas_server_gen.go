@@ -64,6 +64,12 @@ type Handler interface {
 	//
 	// POST /api/orders
 	OrderDevice(ctx context.Context, req *OrderDeviceReq) (OrderDeviceRes, error)
+	// Refresh implements refresh operation.
+	//
+	// Refresh the Bearer token for logged in user.
+	//
+	// GET /api/users/refresh
+	Refresh(ctx context.Context) (RefreshRes, error)
 	// Register implements register operation.
 	//
 	// Register a user.

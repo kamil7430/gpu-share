@@ -96,6 +96,15 @@ func (UnimplementedHandler) OrderDevice(ctx context.Context, req *OrderDeviceReq
 	return r, ht.ErrNotImplemented
 }
 
+// Refresh implements refresh operation.
+//
+// Refresh the Bearer token for logged in user.
+//
+// GET /api/users/refresh
+func (UnimplementedHandler) Refresh(ctx context.Context) (r RefreshRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // Register implements register operation.
 //
 // Register a user.

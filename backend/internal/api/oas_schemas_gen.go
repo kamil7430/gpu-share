@@ -170,6 +170,7 @@ func (s *AuthToken) SetToken(val string) {
 }
 
 func (*AuthToken) loginRes()    {}
+func (*AuthToken) refreshRes()  {}
 func (*AuthToken) registerRes() {}
 
 type BearerAuth struct {
@@ -752,6 +753,11 @@ func (s *OrderDeviceReq) SetDockerImage(val string) {
 func (s *OrderDeviceReq) SetDurationHours(val float64) {
 	s.DurationHours = val
 }
+
+// RefreshUnauthorized is response for Refresh operation.
+type RefreshUnauthorized struct{}
+
+func (*RefreshUnauthorized) refreshRes() {}
 
 type RegisterBadRequestApplicationJSON string
 
