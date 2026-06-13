@@ -150,6 +150,9 @@ func (s *ReviewService) ReviewOrderById(ctx context.Context, req *api.ReviewOrde
 
 	err = s.store.Reviews().AddReview(ctx, &review)
 	if err != nil {
+		//if errors.Is(err, gorm.ErrDuplicatedKey) {
+		//	return &api.ReviewOrderByIdConflict{}, nil
+		//}
 		return nil, err
 	}
 
