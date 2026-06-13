@@ -26,5 +26,5 @@ func (r *orderRepository) GetOrdersByUserId(ctx context.Context, userId uint, li
 }
 
 func (r *orderRepository) GetOrderById(ctx context.Context, id string) (model.Order, error) {
-	return gorm.G[model.Order](r.db).Where("id = ?", id).First(ctx)
+	return gorm.G[model.Order](r.db).Preload("Review", func(db gorm.PreloadBuilder) error { return nil }).Where("id = ?", id).First(ctx)
 }

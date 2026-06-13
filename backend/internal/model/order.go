@@ -13,4 +13,5 @@ type Order struct {
 	RentalCostCents int
 	UserID          uint
 	DeviceID        uint
+	Review          *Review
 }

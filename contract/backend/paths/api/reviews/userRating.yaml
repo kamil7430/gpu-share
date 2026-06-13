@@ -1,0 +1,36 @@
+get:
+  summary: Get user rating statistics
+  description: Returns the calculated average rating and the total count of reviews for a specific user.
+  operationId: getUserRating
+  parameters:
+    - name: username
+      in: path
+      required: true
+      description: The unique username of the user whose rating stats are being requested.
+      schema:
+        type: string
+        example: "john"
+  responses:
+    "200":
+      description: User rating statistics retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - averageRating
+              - ratingCount
+            properties:
+              averageRating:
+                type: number
+                format: float
+                description: The average rating score of the user.
+                example: 4.56
+              ratingCount:
+                type: integer
+                description: The total number of reviews submitted for this user.
+                example: 21
+    "404":
+      description: Not Found. The specified username does not exist in the system.
+    default:
+      $ref: "../../../responses/default.yaml"

@@ -7,6 +7,7 @@ type Store interface {
 	Devices() DeviceRepository
 	Gpus() GpuRepository
 	Orders() OrderRepository
+	Reviews() ReviewRepository
 	Transaction(fn func(Store) error) error
 }
 
@@ -33,6 +34,10 @@ func (s store) Gpus() GpuRepository {
 
 func (s store) Orders() OrderRepository {
 	return &orderRepository{db: s.db}
+}
+
+func (s store) Reviews() ReviewRepository {
+	return &reviewRepository{db: s.db}
 }
 
 func (s store) Transaction(fn func(Store) error) error {
