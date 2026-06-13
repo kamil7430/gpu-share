@@ -2,6 +2,8 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -24,19 +26,21 @@ type errorResponse struct {
 
 type DeviceRepository struct{}
 
+var ErrUnauthorized = errors.New("unauthorized")
+
 func (dr *DeviceRepository) GetDevices(token string) ([]Device, error) {
 	url := "http://" + backendIp() + ":" + backendPort + "/api/devices"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("couldn't connect with backend: %w", err)
 	}
 
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Fatalf("couldn't connect to backend (%v)", err)
+		return nil, fmt.Errorf("couldn't connect with backend: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -57,7 +61,7 @@ func (dr *DeviceRepository) GetDevices(token string) ([]Device, error) {
 		log.Fatalf("bad request: %s", errResp.ErrorMessage)
 
 	case http.StatusUnauthorized:
-		log.Fatal("invalid or expired token")
+    	return nil, ErrUnauthorized
 
 	case http.StatusNotFound:
 		log.Println("not found")
