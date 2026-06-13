@@ -147,7 +147,7 @@ func testOrderDevice(t *testing.T, db *gorm.DB, baseUrl string) {
 
 		var expectedStruct responseStruct
 		err = json.Unmarshal([]byte(`{
-			"OrderId": "0",
+			"orderId": "0",
 			"status": "WAITING_FOR_START",
 			"connectionDetails": {
 				"host": "node-01.gpushare.net",

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"log"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -47,7 +46,6 @@ func (s *ReviewService) GetReviewsByDeviceId(ctx context.Context, params api.Get
 			CreatedAt: review.CreatedAt,
 		}
 
-		log.Println(newRev)
 		rev = append(rev, newRev)
 	}
 

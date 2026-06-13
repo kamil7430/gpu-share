@@ -104,8 +104,8 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	t.Run("reviews -- adding review for the first time", func(t *testing.T) {
 		payloadReader := strings.NewReader(`{
-			"Rating": 4,
-			"Comment": "Fantastic device"
+			"rating": 4,
+			"comment": "Fantastic device"
 		}`)
 		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/reviews/reviewOrder/"+orderId, payloadReader)
 		require.NoError(t, err)
@@ -120,8 +120,8 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	t.Run("reviews -- adding review for the second time", func(t *testing.T) {
 		payloadReader := strings.NewReader(`{
-			"Rating": 4,
-			"Comment": "Fantastic device"
+			"rating": 4,
+			"comment": "Fantastic device"
 		}`)
 		req, err := http.NewRequestWithContext(t.Context(), "POST", baseUrl+"/api/reviews/reviewOrder/"+orderId, payloadReader)
 		require.NoError(t, err)
