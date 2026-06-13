@@ -48,7 +48,6 @@ func StartRestServer(addr string, as *service.AgentService) {
 	go func() {
 		log.Printf("Coordinator REST listening on %v\n", addr)
 		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Println(addr)
 			log.Fatal(err)
 		}
 	}()
