@@ -83,7 +83,7 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 	}
 
 	// testing reviews
-	t.Run("reviews -- user Rating on zero reviews", func(t *testing.T) {
+	t.Run("reviews -- user rating on zero reviews", func(t *testing.T) {
 		resp, err := http.Get(baseUrl + "/api/reviews/userRating/TestOwner")
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -194,5 +194,24 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 		require.Equal(t, expected.AuthorUsername, respStruct[0].AuthorUsername)
 		require.Equal(t, expected.Rating, respStruct[0].Rating)
 		require.Equal(t, expected.Comment, respStruct[0].Comment)
+	})
+
+	t.Run("reviews -- user Rating on one review", func(t *testing.T) {
+		resp, err := http.Get(baseUrl + "/api/reviews/userRating/TestOwner")
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		var respStruct ratingResponse
+		err = json.Unmarshal(body, &respStruct)
+		require.NoError(t, err)
+
+		require.Equal(t, ratingResponse{
+			AverageRating: 4.0,
+			RatingCount:   1,
+		}, respStruct)
 	})
 }

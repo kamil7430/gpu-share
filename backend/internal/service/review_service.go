@@ -59,7 +59,9 @@ func (s *ReviewService) GetReviewsByUsername(ctx context.Context, params api.Get
 		return nil, err
 	}
 
-	devices, err := s.store.Devices().GetDevicesForUser(ctx, user.ID, api.GetDevicesParams{})
+	devices, err := s.store.Devices().GetDevicesForUser(ctx, user.ID, api.GetDevicesParams{
+		Limit: params.Limit,
+	})
 	if err != nil {
 		return nil, err
 	}
