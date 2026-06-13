@@ -7,5 +7,5 @@ type Review struct {
 	AuthorUsername string
 	Rating         int
 	Comment        string
-	OrderID        uint
+	OrderID        uint `gorm:"uniqueIndex"`
 }
