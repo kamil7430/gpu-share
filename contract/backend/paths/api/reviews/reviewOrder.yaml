@@ -1,0 +1,59 @@
+post:
+  summary: Create a session review
+  description: Creates a one-time review for a specific order after the session has been completed.
+  operationId: reviewOrderById
+  parameters:
+    - name: orderId
+      in: path
+      required: true
+      description: The unique identifier of the completed order.
+      schema:
+        type: string
+        example: "456"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - rating
+            - comment
+          properties:
+            rating:
+              type: integer
+              minimum: 1
+              maximum: 5
+              description: The rating score given by the user (from 1 to 5).
+              example: 4
+            comment:
+              type: string
+              description: Detailed feedback from the user.
+              example: "Great device"
+  responses:
+    "201":
+      description: Review created successfully.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              reviewId:
+                type: integer
+                description: The unique identifier of the newly created review.
+                example: 1
+              authorUsername:
+                type: string
+                description: Username of the currently authenticated user who wrote the review.
+                example: "john"
+              createdAt:
+                type: string
+                format: date-time
+                description: The timestamp when the review was created.
+                example: "2026-06-06T12:00:00Z"
+    "400":
+      description: Bad Request. The request body is missing required fields, or the orderId format is invalid.
+    "401":
+      description: Unauthorized. The request lacks valid authentication credentials for the current user session.
+    "409":
+      description: Conflict. A review has already been submitted for this specific order.

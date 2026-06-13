@@ -16,6 +16,14 @@ paths:
     $ref: "./paths/api/orders/orders.yaml"
   /api/orders/{orderId}:
     $ref: "./paths/api/orders/id.yaml"
+  /api/reviews/device/{deviceId}:
+    $ref: "./paths/api/reviews/device.yaml"
+  /api/reviews/reviewOrder/{orderId}:
+    $ref: "./paths/api/reviews/reviewOrder.yaml"
+  /api/reviews/user/{username}:
+    $ref: "./paths/api/reviews/user.yaml"
+  /api/reviews/userRating/{username}:
+    $ref: "./paths/api/reviews/userRating.yaml"
   /api/users/changePassword:
     $ref: "./paths/api/users/changePassword.yaml"
   /api/users/login:
