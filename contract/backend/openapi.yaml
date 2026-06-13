@@ -28,6 +28,8 @@ paths:
     $ref: "./paths/api/users/changePassword.yaml"
   /api/users/login:
     $ref: "./paths/api/users/login.yaml"
+  /api/users/refresh:
+    $ref: "./paths/api/users/refresh.yaml"
   /api/users/register:
     $ref: "./paths/api/users/register.yaml"
 
