@@ -22,6 +22,12 @@ public interface IApiClient
 
     Task<T?> GetAsync<T>(string url, object query);
 
+    /// <summary>
+    /// GET with a query object. When <paramref name="anonymous"/> is true the request is sent
+    /// without an Authorization header even if the user is logged in (for public endpoints).
+    /// </summary>
+    Task<T?> GetAsync<T>(string url, object query, bool anonymous);
+
     Task<TResponse?> PostAsync<TRequest, TResponse>(string url, TRequest data);
 
     Task PostAsync<TRequest>(string url, TRequest data);

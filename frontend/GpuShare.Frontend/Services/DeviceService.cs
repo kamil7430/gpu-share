@@ -54,9 +54,9 @@ namespace GpuShare.Frontend.Services
                 _logger.LogInformation("Deleted device with ID {id}.", deviceId);
         }
 
-        public async Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters)
+        public async Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false)
         {
-            var devices = await _api.GetAsync<List<Device>>($"/api/devices", filters);
+            var devices = await _api.GetAsync<List<Device>>($"/api/devices", filters, anonymous);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation($"Searching for '{filters.Name}', " +
                     $"price between {filters.MinPricePerHourUsdCents ?? 0} " +
@@ -71,14 +71,6 @@ namespace GpuShare.Frontend.Services
                 Page = 1,
                 PageSize = devices!.Count
             };
-        }
-        public async Task<List<Device>> GetUserDevicesAsync(string username)
-        {
-            var devices = await _api.GetAsync<List<Device>>($"/api/users/{username}/devices");
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got devices for user {username}.", username);
-
-            return devices!;
         }
 
         public async Task<Device> UpdateDeviceAsync(int deviceId, Device oldDevice, UpdateDeviceRequest cmd)

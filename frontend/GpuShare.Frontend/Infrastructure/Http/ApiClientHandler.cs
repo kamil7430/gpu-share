@@ -13,7 +13,11 @@ public class ApiClientHandler(IAuthState authState) : DelegatingHandler
     {
         try
         {
-            if (!string.IsNullOrWhiteSpace(_authState.AccessToken))
+            // A call site can opt a single request out of auth (e.g. the public device catalog)
+            // by setting ApiRequestOptions.Anonymous via HttpRequestMessage.Options.
+            var anonymous = request.Options.TryGetValue(ApiRequestOptions.Anonymous, out var skip) && skip;
+
+            if (!anonymous && !string.IsNullOrWhiteSpace(_authState.AccessToken))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _authState.AccessToken);
             }

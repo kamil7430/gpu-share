@@ -46,7 +46,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                     State = DeviceState.AVAILABLE,
                 });
 
-            _deviceServiceMock.Setup(s => s.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.Setup(s => s.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ReturnsAsync(new PagedResult<Models.Device>
                 {
                     Items = [
@@ -135,7 +135,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 }
             };
 
-            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ReturnsAsync(new PagedResult<Models.Device>
                 {
                     Items = devices,
@@ -165,7 +165,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 AvailableOnly = true
             };
 
-            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ReturnsAsync(new PagedResult<Models.Device>());
 
             // Act
@@ -177,7 +177,8 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                     It.Is<DeviceSearchFilters>(f =>
                         f.Name == "RTX" &&
                         f.GpuModel == "RTX" &&
-                        f.AvailableOnly == true)),
+                        f.AvailableOnly == true),
+                    It.IsAny<bool>()),
                 Times.Once);
         }
 
@@ -186,7 +187,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
         {
             // Arrange
             _deviceServiceMock
-                .Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+                .Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ThrowsAsync(new Exception("boom"));
 
             var cut = Render<DevicesPage>();
@@ -204,7 +205,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
         public async Task Unauthorized_Search_Should_Show_Unauthorized_Message()
         {
             // Arrange
-            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ThrowsAsync(new ApiException("Unauthorized", HttpStatusCode.Unauthorized));
 
             var cut = Render<DevicesPage>();
@@ -222,7 +223,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
         public async Task BadRequest_Search_Should_Show_Invalid_Request_Message()
         {
             // Arrange
-            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ThrowsAsync(new ApiException("Bad Request", HttpStatusCode.BadRequest));
 
             var cut = Render<DevicesPage>();
@@ -255,7 +256,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 TotalCount = 1
             };
 
-            _deviceServiceMock.SetupSequence(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.SetupSequence(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ReturnsAsync(firstResponse)
                 .ReturnsAsync(firstResponse)
                 .ThrowsAsync(new ApiException("Not found", HttpStatusCode.NotFound));
@@ -278,7 +279,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
         [Fact]
         public async Task Search_Should_Render_Devices_From_Result()
         {
-            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>()))
+            _deviceServiceMock.Setup(x => x.SearchDevicesAsync(It.IsAny<DeviceSearchFilters>(), It.IsAny<bool>()))
                 .ReturnsAsync(new PagedResult<Models.Device>
                 {
                     Items =

@@ -58,7 +58,7 @@ public class MockDeviceService : IDeviceService
         return Task.CompletedTask;
     }
 
-    public Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters)
+    public Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false)
     {
         var query = MockStore.Devices.AsEnumerable();
 
@@ -123,10 +123,5 @@ public class MockDeviceService : IDeviceService
             InstallScriptUrl = $"https://install.gpushare.io/agent.sh?deviceId={deviceId}",
             AgentToken = $"mck_agt_{deviceId}_a1b2c3d4e5f6",
         });
-    }
-
-    public Task<List<Device>> GetUserDevicesAsync(string username)
-    {
-        return Task.FromResult(MockStore.Devices.Where(d => d.OwnerUsername == username).ToList());
     }
 }

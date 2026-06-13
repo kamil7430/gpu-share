@@ -7,18 +7,14 @@ public interface IDeviceService
     /// <summary>
     /// GET /api/devices
     /// Searches devices using filters and pagination.
+    /// Pass <paramref name="anonymous"/> = true to query the public catalog without sending the
+    /// caller's Authorization header (e.g. from DevicesPage); the default sends it when logged in.
     /// </summary>
-    Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters);
+    Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false);
 
     /// <summary>
     /// GET /api/users/{username}/devices
     /// Returns all devices belonging to user with provided username.
-    /// </summary>
-    Task<List<Device>> GetUserDevicesAsync(string username);
-
-    /// <summary>
-    /// GET /api/devices/{id}
-    /// Returns device details.
     /// </summary>
     Task<Device> GetDeviceAsync(int deviceId);
 

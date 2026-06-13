@@ -66,7 +66,8 @@ TODO:
     {
         try
         {
-            var devices = await DeviceService.SearchDevicesAsync(filters);
+            // Public catalog — browse without sending the user's auth token, even if logged in.
+            var devices = await DeviceService.SearchDevicesAsync(filters, anonymous: true);
             _devices = devices.Items;
         }
         catch (ApiException ex)

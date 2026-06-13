@@ -36,14 +36,22 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
         });
     }
 
-    public async Task<T?> GetAsync<T>(string url, object query)
+    public Task<T?> GetAsync<T>(string url, object query) => GetAsync<T>(url, query, anonymous: false);
+
+    public async Task<T?> GetAsync<T>(string url, object query, bool anonymous)
     {
         return await ExecuteRequest(async () =>
         {
-            var response = await _http.GetAsync(QueryStringBuilder.Build(url, query));
+            var requestUri = QueryStringBuilder.Build(url, query);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Sending request: to url {url} with query: {query}...",
-                    url, QueryStringBuilder.Build(url, query));
+                _logger.LogInformation("Sending request: to url {url} with query: {query}...", url, requestUri);
+
+            // Build the request explicitly so we can tag it for the handler pipeline.
+            using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            if (anonymous)
+                request.Options.Set(ApiRequestOptions.Anonymous, true);
+
+            var response = await _http.SendAsync(request);
 
             await EnsureSuccess(response);
 
