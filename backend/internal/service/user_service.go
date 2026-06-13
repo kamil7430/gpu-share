@@ -65,6 +65,27 @@ func (s *UserService) Login(ctx context.Context, req *api.LoginReq) (api.LoginRe
 	}, nil
 }
 
+func (s *UserService) Refresh(ctx context.Context) (api.RefreshRes, error) {
+	username, ok := ctx.Value(utils.ContextUsernameKey{}).(string)
+	if !ok {
+		return nil, errors.New("username not found in context")
+	}
+
+	user, err := s.store.Users().GetUserByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := auth.CreateToken(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.AuthToken{
+		Token: token,
+	}, nil
+}
+
 func (s *UserService) Register(ctx context.Context, req *api.RegisterReq) (api.RegisterRes, error) {
 	if _, err := s.store.Users().GetUserByName(ctx, req.Username); err == nil {
 		return &api.RegisterConflict{}, nil

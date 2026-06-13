@@ -33,6 +33,10 @@ type OrderDeviceRes interface {
 	orderDeviceRes()
 }
 
+type RefreshRes interface {
+	refreshRes()
+}
+
 type RegisterRes interface {
 	registerRes()
 }

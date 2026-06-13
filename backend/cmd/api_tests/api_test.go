@@ -28,7 +28,7 @@ var testsToRun = []func(*testing.T, *gorm.DB, string){
 	testGetDevices,
 	testGetDevicesForUser,
 	testAddDevice,
-	testLogin,
+	testLoginAndRefresh,
 	testRegister,
 	testChangePassword,
 	testOrderDevice,
