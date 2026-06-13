@@ -2,6 +2,9 @@ post:
   summary: Create a session review
   description: Creates a one-time review for a specific order after the session has been completed.
   operationId: reviewOrderById
+  security:
+    - bearerAuth:
+        - user
   parameters:
     - name: orderId
       in: path

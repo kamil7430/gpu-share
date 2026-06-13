@@ -1,6 +1,7 @@
 get:
   summary: Get reviews for a specific user
   description: Returns a list of all reviews authored by or associated with a specific user.
+  operationId: getReviewsByUsername
   parameters:
     - name: username
       in: path

@@ -1,6 +1,7 @@
 get:
   summary: Get reviews for a specific device
   description: Returns a list of all reviews associated with a specific device.
+  operationId: getReviewsByDeviceId
   parameters:
     - name: deviceId
       in: path
