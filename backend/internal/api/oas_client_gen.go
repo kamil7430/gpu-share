@@ -71,6 +71,24 @@ type Invoker interface {
 	//
 	// GET /api/orders
 	GetOrders(ctx context.Context, params GetOrdersParams) (GetOrdersRes, error)
+	// GetReviewsByDeviceId invokes getReviewsByDeviceId operation.
+	//
+	// Returns a list of all reviews associated with a specific device.
+	//
+	// GET /api/reviews/device/{deviceId}
+	GetReviewsByDeviceId(ctx context.Context, params GetReviewsByDeviceIdParams) (GetReviewsByDeviceIdRes, error)
+	// GetReviewsByUsername invokes getReviewsByUsername operation.
+	//
+	// Returns a list of all reviews authored by or associated with a specific user.
+	//
+	// GET /api/reviews/user/{username}
+	GetReviewsByUsername(ctx context.Context, params GetReviewsByUsernameParams) (GetReviewsByUsernameRes, error)
+	// GetUserRating invokes getUserRating operation.
+	//
+	// Returns the calculated average rating and the total count of reviews for a specific user.
+	//
+	// GET /api/reviews/userRating/{username}
+	GetUserRating(ctx context.Context, params GetUserRatingParams) (GetUserRatingRes, error)
 	// Login invokes login operation.
 	//
 	// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
@@ -96,6 +114,12 @@ type Invoker interface {
 	//
 	// POST /api/users/register
 	Register(ctx context.Context, request *RegisterReq) (RegisterRes, error)
+	// ReviewOrderById invokes reviewOrderById operation.
+	//
+	// Creates a one-time review for a specific order after the session has been completed.
+	//
+	// POST /api/reviews/reviewOrder/{orderId}
+	ReviewOrderById(ctx context.Context, request *ReviewOrderByIdReq, params ReviewOrderByIdParams) (ReviewOrderByIdRes, error)
 }
 
 // Client implements OAS client.
@@ -1105,6 +1129,324 @@ func (c *Client) sendGetOrders(ctx context.Context, params GetOrdersParams) (res
 	return result, nil
 }
 
+// GetReviewsByDeviceId invokes getReviewsByDeviceId operation.
+//
+// Returns a list of all reviews associated with a specific device.
+//
+// GET /api/reviews/device/{deviceId}
+func (c *Client) GetReviewsByDeviceId(ctx context.Context, params GetReviewsByDeviceIdParams) (GetReviewsByDeviceIdRes, error) {
+	res, err := c.sendGetReviewsByDeviceId(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetReviewsByDeviceId(ctx context.Context, params GetReviewsByDeviceIdParams) (res GetReviewsByDeviceIdRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getReviewsByDeviceId"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/reviews/device/{deviceId}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetReviewsByDeviceIdOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/reviews/device/"
+	{
+		// Encode "deviceId" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "deviceId",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.DeviceId))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "limit" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "limit",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Limit.Get(); ok {
+				return e.EncodeValue(conv.IntToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetReviewsByDeviceIdResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetReviewsByUsername invokes getReviewsByUsername operation.
+//
+// Returns a list of all reviews authored by or associated with a specific user.
+//
+// GET /api/reviews/user/{username}
+func (c *Client) GetReviewsByUsername(ctx context.Context, params GetReviewsByUsernameParams) (GetReviewsByUsernameRes, error) {
+	res, err := c.sendGetReviewsByUsername(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetReviewsByUsername(ctx context.Context, params GetReviewsByUsernameParams) (res GetReviewsByUsernameRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getReviewsByUsername"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/reviews/user/{username}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetReviewsByUsernameOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/reviews/user/"
+	{
+		// Encode "username" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "username",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Username))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "limit" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "limit",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Limit.Get(); ok {
+				return e.EncodeValue(conv.IntToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetReviewsByUsernameResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetUserRating invokes getUserRating operation.
+//
+// Returns the calculated average rating and the total count of reviews for a specific user.
+//
+// GET /api/reviews/userRating/{username}
+func (c *Client) GetUserRating(ctx context.Context, params GetUserRatingParams) (GetUserRatingRes, error) {
+	res, err := c.sendGetUserRating(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetUserRating(ctx context.Context, params GetUserRatingParams) (res GetUserRatingRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getUserRating"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/reviews/userRating/{username}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetUserRatingOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/reviews/userRating/"
+	{
+		// Encode "username" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "username",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Username))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetUserRatingResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // Login invokes login operation.
 //
 // Log into an account. Returns a token to use in the Authorization header as a Bearer token for
@@ -1470,6 +1812,134 @@ func (c *Client) sendRegister(ctx context.Context, request *RegisterReq) (res Re
 
 	stage = "DecodeResponse"
 	result, err := decodeRegisterResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ReviewOrderById invokes reviewOrderById operation.
+//
+// Creates a one-time review for a specific order after the session has been completed.
+//
+// POST /api/reviews/reviewOrder/{orderId}
+func (c *Client) ReviewOrderById(ctx context.Context, request *ReviewOrderByIdReq, params ReviewOrderByIdParams) (ReviewOrderByIdRes, error) {
+	res, err := c.sendReviewOrderById(ctx, request, params)
+	return res, err
+}
+
+func (c *Client) sendReviewOrderById(ctx context.Context, request *ReviewOrderByIdReq, params ReviewOrderByIdParams) (res ReviewOrderByIdRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("reviewOrderById"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/api/reviews/reviewOrder/{orderId}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, ReviewOrderByIdOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/reviews/reviewOrder/"
+	{
+		// Encode "orderId" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "orderId",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.OrderId))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeReviewOrderByIdRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, ReviewOrderByIdOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeReviewOrderByIdResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

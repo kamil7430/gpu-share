@@ -22,3 +22,5 @@ get:
               $ref: "../../../schemas/Review.yaml"
     "404":
       description: Not Found. The specified username does not exist in the system.
+    default:
+      $ref: "../../../responses/default.yaml"

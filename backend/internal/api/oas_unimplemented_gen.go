@@ -77,6 +77,33 @@ func (UnimplementedHandler) GetOrders(ctx context.Context, params GetOrdersParam
 	return r, ht.ErrNotImplemented
 }
 
+// GetReviewsByDeviceId implements getReviewsByDeviceId operation.
+//
+// Returns a list of all reviews associated with a specific device.
+//
+// GET /api/reviews/device/{deviceId}
+func (UnimplementedHandler) GetReviewsByDeviceId(ctx context.Context, params GetReviewsByDeviceIdParams) (r GetReviewsByDeviceIdRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetReviewsByUsername implements getReviewsByUsername operation.
+//
+// Returns a list of all reviews authored by or associated with a specific user.
+//
+// GET /api/reviews/user/{username}
+func (UnimplementedHandler) GetReviewsByUsername(ctx context.Context, params GetReviewsByUsernameParams) (r GetReviewsByUsernameRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetUserRating implements getUserRating operation.
+//
+// Returns the calculated average rating and the total count of reviews for a specific user.
+//
+// GET /api/reviews/userRating/{username}
+func (UnimplementedHandler) GetUserRating(ctx context.Context, params GetUserRatingParams) (r GetUserRatingRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // Login implements login operation.
 //
 // Log into an account. Returns a token to use in the Authorization header as a Bearer token for
@@ -111,6 +138,15 @@ func (UnimplementedHandler) Refresh(ctx context.Context) (r RefreshRes, _ error)
 //
 // POST /api/users/register
 func (UnimplementedHandler) Register(ctx context.Context, req *RegisterReq) (r RegisterRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ReviewOrderById implements reviewOrderById operation.
+//
+// Creates a one-time review for a specific order after the session has been completed.
+//
+// POST /api/reviews/reviewOrder/{orderId}
+func (UnimplementedHandler) ReviewOrderById(ctx context.Context, req *ReviewOrderByIdReq, params ReviewOrderByIdParams) (r ReviewOrderByIdRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

@@ -60,3 +60,5 @@ post:
       description: Unauthorized. The request lacks valid authentication credentials for the current user session.
     "409":
       description: Conflict. A review has already been submitted for this specific order.
+    default:
+      $ref: "../../../responses/default.yaml"

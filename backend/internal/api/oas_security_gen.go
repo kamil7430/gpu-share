@@ -55,6 +55,9 @@ var operationRolesBearerAuth = map[string][]string{
 	RefreshOperation: []string{
 		"user",
 	},
+	ReviewOrderByIdOperation: []string{
+		"user",
+	},
 }
 
 // GetRolesForBearerAuth returns the required roles for the given operation.
