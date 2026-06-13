@@ -72,7 +72,7 @@ func fetchSortedDeviceIds(ctx context.Context, query string) ([]uint, error) {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		"http://10.0.5.4:2140/search",
+		"http://10.5.0.6:2140/query",
 		bytes.NewReader(reqBody),
 	)
 	if err != nil {

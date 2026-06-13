@@ -1,16 +1,19 @@
 from model import extract_gpu_criteria
-from data import gpu_data
+from data import get_devices
 
 
 def rank(query: str):
     crit = extract_gpu_criteria(query)
+    print(f"ranking with query: {query}\ncriteria: {crit}")
 
     scored = []
-    for gpu in gpu_data:
+    for gpu in get_devices():
+        print(gpu)
         score = calc_score(gpu, crit)
         scored.append((score, gpu))
 
     scored.sort(key=lambda x: x[0], reverse=True)
+    print("finished: {scored}")
 
     return [gpu for score, gpu in scored]
 
