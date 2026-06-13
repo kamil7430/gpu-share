@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
 	"github.com/kamil7430/gpu-share/backend/internal/model"
@@ -21,15 +22,99 @@ func NewReviewService(store repository.Store) ReviewService {
 }
 
 func (s *ReviewService) GetReviewsByDeviceId(ctx context.Context, params api.GetReviewsByDeviceIdParams) (api.GetReviewsByDeviceIdRes, error) {
-	panic("unimplemented")
+	device, err := s.store.Devices().GetDeviceById(ctx, params.DeviceId)
+	if err != nil {
+		return &api.GetReviewsByDeviceIdNotFound{}, nil
+	}
+
+	reviews, err := s.store.Reviews().GetReviewsByDeviceId(ctx, device.ID, params.Limit.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	rev := make(api.GetReviewsByDeviceIdOKApplicationJSON, len(reviews))
+	for i, review := range reviews {
+		rev[i] = api.Review{
+			ReviewId:       int(review.ID),
+			OrderId:        strconv.Itoa(int(review.OrderID)),
+			AuthorUsername: review.AuthorUsername,
+			Rating:         review.Rating,
+			Comment: api.OptString{
+				Value: review.Comment,
+				Set:   true,
+			},
+			CreatedAt: review.CreatedAt,
+		}
+	}
+
+	return &rev, nil
 }
 
 func (s *ReviewService) GetReviewsByUsername(ctx context.Context, params api.GetReviewsByUsernameParams) (api.GetReviewsByUsernameRes, error) {
-	panic("unimplemented")
+	user, err := s.store.Users().GetUserByName(ctx, params.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	devices, err := s.store.Devices().GetDevicesForUser(ctx, user.ID, api.GetDevicesParams{})
+	if err != nil {
+		return nil, err
+	}
+
+	reviews := make(api.GetReviewsByUsernameOKApplicationJSON, params.Limit.Value)
+	for _, device := range devices {
+		revs, err := s.GetReviewsByDeviceId(ctx, api.GetReviewsByDeviceIdParams{
+			DeviceId: strconv.Itoa(int(device.ID)),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		if targetType, ok := revs.(*api.GetReviewsByDeviceIdOKApplicationJSON); ok && targetType != nil {
+			cast := []api.Review(*targetType)
+
+			for _, rev := range cast {
+				if len(reviews) < params.Limit.Value {
+					reviews = append(reviews, rev)
+				} else {
+					return &reviews, nil
+				}
+			}
+		}
+	}
+
+	return &reviews, nil
 }
 
 func (s *ReviewService) GetUserRating(ctx context.Context, params api.GetUserRatingParams) (api.GetUserRatingRes, error) {
-	panic("unimplemented")
+	user, err := s.store.Users().GetUserByName(ctx, params.Username)
+	if err != nil {
+		return &api.GetUserRatingNotFound{}, nil
+	}
+
+	revs, err := s.GetReviewsByUsername(ctx, api.GetReviewsByUsernameParams{
+		Username: user.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	sumRatings := 0
+	ratingCount := 0
+
+	if targetType, ok := revs.(*api.GetReviewsByUsernameOKApplicationJSON); ok && targetType != nil {
+		cast := []api.Review(*targetType)
+
+		for _, rev := range cast {
+			sumRatings += rev.Rating
+			ratingCount += 1
+		}
+	}
+
+	return &api.GetUserRatingOK{
+		AverageRating: float32(sumRatings) / float32(ratingCount),
+		RatingCount:   ratingCount,
+	}, nil
 }
 
 func (s *ReviewService) ReviewOrderById(ctx context.Context, req *api.ReviewOrderByIdReq, params api.ReviewOrderByIdParams) (api.ReviewOrderByIdRes, error) {
@@ -57,9 +142,10 @@ func (s *ReviewService) ReviewOrderById(ctx context.Context, req *api.ReviewOrde
 	}
 
 	review := model.Review{
-		Rating:  req.Rating,
-		Comment: req.Comment,
-		OrderID: order.ID,
+		AuthorUsername: username,
+		Rating:         req.Rating,
+		Comment:        req.Comment,
+		OrderID:        order.ID,
 	}
 
 	err = s.store.Reviews().AddReview(ctx, &review)
@@ -69,7 +155,7 @@ func (s *ReviewService) ReviewOrderById(ctx context.Context, req *api.ReviewOrde
 
 	return &api.ReviewOrderByIdCreated{
 		ReviewId:       int(review.ID),
-		AuthorUsername: username,
+		AuthorUsername: review.AuthorUsername,
 		CreatedAt:      review.CreatedAt,
 	}, nil
 }
