@@ -143,7 +143,7 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 	}
 
 	t.Run("reviews -- by device id", func(t *testing.T) {
-		resp, err := http.Get("/api/reviews/device/1")
+		resp, err := http.Get(baseUrl + "/api/reviews/device/1")
 		require.NoError(t, err)
 		defer resp.Body.Close()
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -170,7 +170,7 @@ func testReviewService(t *testing.T, db *gorm.DB, baseUrl string) {
 	})
 
 	t.Run("reviews -- by username", func(t *testing.T) {
-		resp, err := http.Get("/api/reviews/user/TestRentingUser1")
+		resp, err := http.Get(baseUrl + "/api/reviews/user/TestRentingUser1")
 		require.NoError(t, err)
 		defer resp.Body.Close()
 		require.Equal(t, http.StatusOK, resp.StatusCode)
