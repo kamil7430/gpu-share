@@ -62,13 +62,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             _deviceServiceMock.Setup(x => x.UpdateDeviceAsync(It.IsAny<int>(), It.IsAny<Models.Device>(),
                     It.IsAny<UpdateDeviceRequest>())).ReturnsAsync(_newDevice);
-
-            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
-                .ReturnsAsync(new DeviceAgentInfo
-                {
-                    InstallScriptUrl = "https://gpu-share.io/install.sh",
-                    AgentToken = "abc123"
-                });
         }
 
         public Task InitializeAsync() => Task.CompletedTask;

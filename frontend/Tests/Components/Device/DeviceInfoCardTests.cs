@@ -33,13 +33,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
             JSInterop.SetupModule(_ => true);
 
             Render<MudPopoverProvider>();
-
-            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
-                .ReturnsAsync(new DeviceAgentInfo
-                {
-                    InstallScriptUrl = "https://gpu-share.io/install.sh",
-                    AgentToken = "abc123"
-                });
         }
 
         private void SetupAuthenticatedUser(string username)
@@ -258,50 +251,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             // Assert
             cut.Markup.Should().Contain("Node Agent Installation");
-        }
-
-        [Fact]
-        public async Task Should_Call_GetAgentInstallInfo_On_Render()
-        {
-            // Arrange
-            SetupAuthenticatedUser("julie");
-
-            var gpu = CreateGpu();
-
-            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
-                .ReturnsAsync(new DeviceAgentInfo
-                {
-                    InstallScriptUrl = "https://gpu-share.io/install.sh",
-                    AgentToken = "abc123"
-                });
-
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
-                .Add(x => x.Mode, DevicePageMode.View));
-
-            // Allow async lifecycle to complete
-            await cut.InvokeAsync(() => Task.CompletedTask);
-
-            _deviceServiceMock.Verify(x => x.GetAgentInstallInfoAsync(123), Times.Once);
-        }
-
-        [Fact]
-        public void Should_Render_Agent_Token()
-        {
-            SetupAuthenticatedUser("julie");
-
-            var gpu = CreateGpu();
-
-            _deviceServiceMock.Setup(x => x.GetAgentInstallInfoAsync(123))
-                .ReturnsAsync(new DeviceAgentInfo
-                {
-                    InstallScriptUrl = "https://gpu-share.io/install.sh",
-                    AgentToken = "gpu_test_token_123"
-                });
-
-            var cut = Render<DeviceInfoCard>(p => p.Add(x => x.Device, gpu)
-                .Add(x => x.Mode, DevicePageMode.View));
-
-            cut.Markup.Should().Contain("gpu_test_token_123");
         }
     }
 }

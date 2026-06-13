@@ -66,15 +66,13 @@
 
                 <div class="agent-command-container">
                     <code class="agent-command">
-                        curl -sSL @_installUrl | bash -s -- --token @_agentToken
+                        https://github.com/kamil7430/gpu-share/releases
                     </code>
-
-                    <button type="button" class="btn-primary" @onclick="CopyAgentToken">Copy</button>
                 </div>
 
                 <div class="hint mt-4">
-                    After installation, the node will automatically connect
-                    to your account and begin reporting GPU telemetry.
+                    After installation, run the executable and log in.
+                    The node will automatically connect to your account and begin reporting GPU telemetry.
                 </div>
             </div>
         }
@@ -85,31 +83,4 @@
     [Parameter] public string? Username { get; set; }
     [Parameter] public Device? Device { get; set; } = null;
     [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.View;
-
-    private string _installUrl = "";
-    private string _agentToken = "";
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (Device == null)
-            return;
-
-        try
-        {
-            var agentInfo = await DeviceService.GetAgentInstallInfoAsync(Device.DeviceId);
-            _installUrl = agentInfo.InstallScriptUrl;
-            _agentToken = agentInfo.AgentToken;
-        }
-        catch (ApiException)
-        {
-            SnackbarNotifier.ShowError("Failed to load agent installation info. Please try again later.");
-        }
-    }
-
-    private async Task CopyAgentToken()
-    {
-        await JS.InvokeVoidAsync(
-            "navigator.clipboard.writeText",
-            $"curl -sSL {_installUrl} | bash -s -- --token {_agentToken}");
-    }
 }

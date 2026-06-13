@@ -111,13 +111,4 @@ public class MockDeviceService : IDeviceService
 
         return Task.FromResult(device);
     }
-
-    public Task<DeviceAgentInfo> GetAgentInstallInfoAsync(int deviceId)
-    {
-        return Task.FromResult(new DeviceAgentInfo
-        {
-            InstallScriptUrl = $"https://install.gpushare.io/agent.sh?deviceId={deviceId}",
-            AgentToken = $"mck_agt_{deviceId}_a1b2c3d4e5f6",
-        });
-    }
 }
