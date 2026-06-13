@@ -32,7 +32,7 @@ func (s *ReviewService) GetReviewsByDeviceId(ctx context.Context, params api.Get
 		return nil, err
 	}
 
-	rev := make(api.GetReviewsByDeviceIdOKApplicationJSON, len(reviews))
+	rev := make(api.GetReviewsByDeviceIdOKApplicationJSON, 0, len(reviews))
 	for i, review := range reviews {
 		rev[i] = api.Review{
 			ReviewId:       int(review.ID),
@@ -61,7 +61,7 @@ func (s *ReviewService) GetReviewsByUsername(ctx context.Context, params api.Get
 		return nil, err
 	}
 
-	reviews := make(api.GetReviewsByUsernameOKApplicationJSON, params.Limit.Value)
+	reviews := make(api.GetReviewsByUsernameOKApplicationJSON, 0, params.Limit.Value)
 	for _, device := range devices {
 		revs, err := s.GetReviewsByDeviceId(ctx, api.GetReviewsByDeviceIdParams{
 			DeviceId: strconv.Itoa(int(device.ID)),
