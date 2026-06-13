@@ -5,7 +5,6 @@ package api
 import (
 	"math/bits"
 	"strconv"
-	"time"
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
@@ -1728,76 +1727,6 @@ func (s *LoginReq) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes time.Time as json.
-func (o OptDateTime) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
-	if !o.Set {
-		return
-	}
-	format(e, o.Value)
-}
-
-// Decode decodes time.Time from json.
-func (o *OptDateTime) Decode(d *jx.Decoder, format func(*jx.Decoder) (time.Time, error)) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptDateTime to nil")
-	}
-	o.Set = true
-	v, err := format(d)
-	if err != nil {
-		return err
-	}
-	o.Value = v
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptDateTime) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e, json.EncodeDateTime)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptDateTime) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d, json.DecodeDateTime)
-}
-
-// Encode encodes int as json.
-func (o OptInt) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	e.Int(int(o.Value))
-}
-
-// Decode decodes int from json.
-func (o *OptInt) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptInt to nil")
-	}
-	o.Set = true
-	v, err := d.Int()
-	if err != nil {
-		return err
-	}
-	o.Value = int(v)
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptInt) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptInt) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes string as json.
 func (o OptString) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -2496,22 +2425,16 @@ func (s *ReviewOrderByIdCreated) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ReviewOrderByIdCreated) encodeFields(e *jx.Encoder) {
 	{
-		if s.ReviewId.Set {
-			e.FieldStart("reviewId")
-			s.ReviewId.Encode(e)
-		}
+		e.FieldStart("reviewId")
+		e.Int(s.ReviewId)
 	}
 	{
-		if s.AuthorUsername.Set {
-			e.FieldStart("authorUsername")
-			s.AuthorUsername.Encode(e)
-		}
+		e.FieldStart("authorUsername")
+		e.Str(s.AuthorUsername)
 	}
 	{
-		if s.CreatedAt.Set {
-			e.FieldStart("createdAt")
-			s.CreatedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("createdAt")
+		json.EncodeDateTime(e, s.CreatedAt)
 	}
 }
 
@@ -2526,13 +2449,16 @@ func (s *ReviewOrderByIdCreated) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ReviewOrderByIdCreated to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "reviewId":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.ReviewId.Reset()
-				if err := s.ReviewId.Decode(d); err != nil {
+				v, err := d.Int()
+				s.ReviewId = int(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2540,9 +2466,11 @@ func (s *ReviewOrderByIdCreated) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"reviewId\"")
 			}
 		case "authorUsername":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.AuthorUsername.Reset()
-				if err := s.AuthorUsername.Decode(d); err != nil {
+				v, err := d.Str()
+				s.AuthorUsername = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2550,9 +2478,11 @@ func (s *ReviewOrderByIdCreated) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"authorUsername\"")
 			}
 		case "createdAt":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.CreatedAt.Reset()
-				if err := s.CreatedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := json.DecodeDateTime(d)
+				s.CreatedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2565,6 +2495,38 @@ func (s *ReviewOrderByIdCreated) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode ReviewOrderByIdCreated")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfReviewOrderByIdCreated) {
+					name = jsonFieldsNameOfReviewOrderByIdCreated[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil

@@ -613,52 +613,6 @@ type LoginUnauthorized struct{}
 
 func (*LoginUnauthorized) loginRes() {}
 
-// NewOptDateTime returns new OptDateTime with value set to v.
-func NewOptDateTime(v time.Time) OptDateTime {
-	return OptDateTime{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptDateTime is optional time.Time.
-type OptDateTime struct {
-	Value time.Time
-	Set   bool
-}
-
-// IsSet returns true if OptDateTime was set.
-func (o OptDateTime) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptDateTime) Reset() {
-	var v time.Time
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptDateTime) SetTo(v time.Time) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptDateTime) Get() (v time.Time, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptDateTime) Or(d time.Time) time.Time {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
 	return OptInt{
@@ -1042,40 +996,40 @@ func (*ReviewOrderByIdConflict) reviewOrderByIdRes() {}
 
 type ReviewOrderByIdCreated struct {
 	// The unique identifier of the newly created review.
-	ReviewId OptInt `json:"reviewId"`
+	ReviewId int `json:"reviewId"`
 	// Username of the currently authenticated user who wrote the review.
-	AuthorUsername OptString `json:"authorUsername"`
+	AuthorUsername string `json:"authorUsername"`
 	// The timestamp when the review was created.
-	CreatedAt OptDateTime `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 // GetReviewId returns the value of ReviewId.
-func (s *ReviewOrderByIdCreated) GetReviewId() OptInt {
+func (s *ReviewOrderByIdCreated) GetReviewId() int {
 	return s.ReviewId
 }
 
 // GetAuthorUsername returns the value of AuthorUsername.
-func (s *ReviewOrderByIdCreated) GetAuthorUsername() OptString {
+func (s *ReviewOrderByIdCreated) GetAuthorUsername() string {
 	return s.AuthorUsername
 }
 
 // GetCreatedAt returns the value of CreatedAt.
-func (s *ReviewOrderByIdCreated) GetCreatedAt() OptDateTime {
+func (s *ReviewOrderByIdCreated) GetCreatedAt() time.Time {
 	return s.CreatedAt
 }
 
 // SetReviewId sets the value of ReviewId.
-func (s *ReviewOrderByIdCreated) SetReviewId(val OptInt) {
+func (s *ReviewOrderByIdCreated) SetReviewId(val int) {
 	s.ReviewId = val
 }
 
 // SetAuthorUsername sets the value of AuthorUsername.
-func (s *ReviewOrderByIdCreated) SetAuthorUsername(val OptString) {
+func (s *ReviewOrderByIdCreated) SetAuthorUsername(val string) {
 	s.AuthorUsername = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
-func (s *ReviewOrderByIdCreated) SetCreatedAt(val OptDateTime) {
+func (s *ReviewOrderByIdCreated) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
 }
 
