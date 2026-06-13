@@ -18,6 +18,7 @@ type sauron struct {
 	service.DeviceService
 	service.UserService
 	service.OrderService
+	service.ReviewService
 }
 
 func NewServer(store repository.Store) *http.Server {
@@ -26,6 +27,7 @@ func NewServer(store repository.Store) *http.Server {
 		service.NewDeviceService(store),
 		service.NewUserService(store),
 		service.NewOrderService(store),
+		service.NewReviewService(store),
 	}
 
 	srv, err := api.NewServer(&sauron, &sauron.UserService)
