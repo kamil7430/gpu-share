@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 
 	"github.com/kamil7430/gpu-share/backend/internal/api"
@@ -67,6 +68,7 @@ func (s *ReviewService) GetReviewsByUsername(ctx context.Context, params api.Get
 	for _, device := range devices {
 		revs, err := s.GetReviewsByDeviceId(ctx, api.GetReviewsByDeviceIdParams{
 			DeviceId: strconv.Itoa(int(device.ID)),
+			Limit:    params.Limit,
 		})
 		if err != nil {
 			return nil, err
@@ -82,6 +84,8 @@ func (s *ReviewService) GetReviewsByUsername(ctx context.Context, params api.Get
 					return &reviews, nil
 				}
 			}
+		} else {
+			log.Println("Warning: failed to cast in GetReviewsByUsername")
 		}
 	}
 
