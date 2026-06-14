@@ -22,6 +22,7 @@ class QueryHandler(tornado.web.RequestHandler):
                 self.write(str(list(map(lambda d: d['id'], devices))))
         except Exception as e:
             self.set_status(500)
+            print(f"error while responding to query: {e}")
             self.write(f"Internal error: {e}")
 
 

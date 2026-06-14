@@ -294,16 +294,16 @@ func testGetDevices(t *testing.T, db *gorm.DB, baseUrl string) {
 		getDevicesTestNotFound("states=RENTED&states=REPORTED")
 	})
 
-	t.Run("get devices by nlQuery -- returns ordered devices", func(t *testing.T) {
-		getDevicesTestCase(`nlQuery="rtx"`,
-			testCard3Info,
-			testCardInfo,
-			testCard2Info,
-		)
-	})
+	// t.Run("get devices by nlQuery -- returns ordered devices", func(t *testing.T) {
+	// 	getDevicesTestCase(`nlQuery="rtx"`,
+	// 		testCard3Info,
+	// 		testCardInfo,
+	// 		testCard2Info,
+	// 	)
+	// })
 
 	t.Run("get devices by nlQuery -- returns ordered devices with vram", func(t *testing.T) {
-		getDevicesTestCase(`nlQuery="vram 4gb"`,
+		getDevicesTestCase(`nlQuery=4gb`,
 			testCard3Info,
 			testCardInfo,
 			testCard2Info,

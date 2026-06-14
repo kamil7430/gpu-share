@@ -8,7 +8,6 @@ def rank(query: str):
 
     scored = []
     for gpu in get_devices():
-        print(gpu)
         score = calc_score(gpu, crit)
         scored.append((score, gpu))
 
@@ -29,7 +28,7 @@ def calc_score(gpu, crit) -> float:
 
     if crit["min_vram_gb"]:
         ram_want = float(crit["min_vram_gb"])
-        ram_got = float(gpu["vram_gb"])
+        ram_got = float(gpu["vram_mb"]) / 2**10
         if ram_got >= ram_want:
             score += ram_want / ram_got
 
