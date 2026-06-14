@@ -163,6 +163,7 @@ func (s *DeviceService) GetDevices(ctx context.Context, params api.GetDevicesPar
 func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDeviceStatusParams) (api.GetDeviceStatusRes, error) {
 	device, err := s.store.Devices().GetDeviceById(ctx, params.DeviceId)
 	if err != nil {
+		print(err)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return &api.GetDeviceStatusNotFound{}, nil
 		}
@@ -181,6 +182,33 @@ func (s *DeviceService) GetDeviceStatus(ctx context.Context, params api.GetDevic
 		UtilizationPercent: status.UtilizationPercent,
 		MemoryUsedMb:       status.MemoryUsedMb,
 		LastHeartbeat:      status.LastHeartbeat,
+	}, nil
+}
+
+func (s *DeviceService) GetDevice(ctx context.Context, params api.GetDeviceParams) (api.GetDeviceRes, error) {
+	device, err := s.store.Devices().GetDeviceById(ctx, params.DeviceId)
+	if err != nil {
+		print(err)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return &api.GetDeviceNotFound{}, nil
+		}
+		return nil, err
+	}
+
+	dv, err := utils.NewDriverVersion(device.DriverVersionMajor, device.DriverVersionMinor)
+	if err != nil {
+		log.Fatal(err) // should be unreachable
+	}
+
+	return &api.Device{
+		DeviceId:             strconv.Itoa(int(device.ID)),
+		Name:                 device.Name,
+		GpuModel:             device.GpuModel,
+		VramMb:               device.VramMb,
+		CudaCores:            device.CudaCores,
+		PricePerHourUsdCents: device.PricePerHourUsdCents,
+		DriverVersion:        dv.String(),
+		State:                device.State,
 	}, nil
 }
 

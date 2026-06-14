@@ -21,7 +21,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<DeviceStatus> GetDeviceStatusAsync(int deviceId)
         {
-            var deviceStatus = await _api.GetAsync<DeviceStatus>($"/api/devices/{deviceId}/status");
+            var deviceStatus = await _api.GetAsync<DeviceStatus>($"/api/devices/{deviceId}");
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got status device with id {id}. Device is {health}", deviceId, deviceStatus!.Online);
             return deviceStatus!;

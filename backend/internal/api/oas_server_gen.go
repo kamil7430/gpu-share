@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// POST /api/users/changePassword
 	ChangePassword(ctx context.Context, req *ChangePasswordReq) (ChangePasswordRes, error)
+	// GetDevice implements getDevice operation.
+	//
+	// Get device by ID.
+	//
+	// GET /api/devices/{deviceId}
+	GetDevice(ctx context.Context, params GetDeviceParams) (GetDeviceRes, error)
 	// GetDeviceStatus implements getDeviceStatus operation.
 	//
 	// Get device status by ID.

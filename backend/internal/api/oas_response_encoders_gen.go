@@ -76,6 +76,32 @@ func encodeChangePasswordResponse(response ChangePasswordRes, w http.ResponseWri
 	}
 }
 
+func encodeGetDeviceResponse(response GetDeviceRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *Device:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *GetDeviceNotFound:
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeGetDeviceStatusResponse(response GetDeviceStatusRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DeviceStatus:

@@ -395,6 +395,8 @@ func (s *Device) SetState(val State) {
 	s.State = val
 }
 
+func (*Device) getDeviceRes() {}
+
 // Ref: #
 type DeviceStatus struct {
 	DeviceId           string    `json:"deviceId"`
@@ -468,6 +470,11 @@ func (s *DeviceStatus) SetLastHeartbeat(val time.Time) {
 func (*DeviceStatus) getDeviceStatusRes() {}
 
 type Error string
+
+// GetDeviceNotFound is response for GetDevice operation.
+type GetDeviceNotFound struct{}
+
+func (*GetDeviceNotFound) getDeviceRes() {}
 
 // GetDeviceStatusNotFound is response for GetDeviceStatus operation.
 type GetDeviceStatusNotFound struct{}
