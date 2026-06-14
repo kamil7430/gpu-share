@@ -110,6 +110,7 @@ func (s *OrderService) OrderDevice(ctx context.Context, params *api.OrderDeviceR
 
 	return &api.Order{
 		OrderId: strconv.Itoa(int(order.ID)),
+		DeviceId: strconv.Itoa(int(order.DeviceID)),
 		Status:  order.RentalStatus,
 		ConnectionDetails: api.ConnectionDetails{
 			Host:     addresses.Host,
@@ -140,6 +141,7 @@ func (s *OrderService) GetOrders(ctx context.Context, params api.GetOrdersParams
 	for i, order := range orders {
 		result[i] = api.Order{
 			OrderId:                strconv.Itoa(int(order.ID)),
+			DeviceId: 				strconv.Itoa(int(order.DeviceID)),
 			Status:                 order.RentalStatus,
 			ConnectionDetails:      api.ConnectionDetails{},
 			TotalReservedCostCents: order.RentalCostCents,
@@ -176,6 +178,7 @@ func (s *OrderService) GetOrderById(ctx context.Context, params api.GetOrderById
 
 	return &api.Order{
 		OrderId: strconv.Itoa(int(order.ID)),
+		DeviceId: strconv.Itoa(int(order.DeviceID)),
 		Status:  order.RentalStatus,
 		ConnectionDetails: api.ConnectionDetails{
 			Host:     conn.Host,

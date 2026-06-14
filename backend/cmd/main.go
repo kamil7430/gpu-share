@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/http"
 
 	"github.com/kamil7430/gpu-share/backend/cmd/server"
+	"github.com/kamil7430/gpu-share/backend/internal/executor"
 	"github.com/kamil7430/gpu-share/backend/internal/repository"
 	"github.com/kamil7430/gpu-share/backend/internal/seeder"
 	"github.com/kamil7430/gpu-share/backend/internal/utils"
@@ -37,6 +39,9 @@ func main() {
 			log.Println(err)
 		}
 	}()
+
+	executor := executor.NewOrderExecutor(store)
+	go executor.Run(context.Background())
 
 	log.Println("Started server!")
 	err = srv.ListenAndServe()

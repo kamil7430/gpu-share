@@ -101,6 +101,8 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_order != null) return;
+
         try
         {
             _order = await OrderService.GetOrderAsync(OrderId);
