@@ -36,8 +36,7 @@ namespace GpuShare.Frontend.Tests.Services
         private readonly CreateReviewRequest _createReviewRequest = new()
         {
             Rating = 4,
-            Comment = "Great GPU, I needed exactly this",
-            OrderId = 456
+            Comment = "Great GPU, I needed exactly this"
         };
 
         private readonly string _createReviewResponseJson = """
@@ -114,13 +113,13 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<CreateReviewRequest, Review>
                 .Post(_mockHttp, () => _sut.CreateReviewAsync(456, _createReviewRequest))
-                .To("/api/orders/456/review")
+                .To("/api/orders/reviewOrder/456")
                 .Returns(_createReviewResponseJson)
+                .WithBody(_createReviewRequest)
                 .ShouldSendBody(body =>
                 {
-                    body.Rating.Should().Be(5);
-                    body.Comment.Should().Be("Great GPU");
-                    body.OrderId.Should().Be(456);
+                    body.Rating.Should().Be(4);
+                    body.Comment.Should().Be("Great GPU, I needed exactly this");
                 });
         }
 
@@ -129,7 +128,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<CreateReviewRequest, Review>
                 .Post(_mockHttp, () => _sut.CreateReviewAsync(456, _createReviewRequest))
-                .To("/api/orders/456/review")
+                .To("/api/orders/reviewOrder/456")
                 .Returns(_createReviewResponseJson)
                 .ShouldMapTo(_reviews[0]);
         }
@@ -137,7 +136,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task CreateReviewAsync_Should_Throw_When_Request_Invalid()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/456/review")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/reviewOrder/456")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -148,7 +147,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task CreateReviewAsync_Should_Throw_When_User_Not_Logged_In()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/456/review")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/reviewOrder/456")
                 .Respond(HttpStatusCode.Unauthorized);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -159,7 +158,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task CreateReviewAsync_Should_Throw_When_Review_Already_Exists()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/456/review")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/orders/reviewOrder/456")
                 .Respond(HttpStatusCode.Conflict);
 
             await ApiErrorAssertions.ShouldFailWith(
@@ -176,7 +175,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Review>>
                 .Get(_mockHttp, () => _sut.GetDeviceReviewsAsync(123))
-                .To("/api/devices/123/reviews")
+                .To("/api/reviews/device/123")
                 .Returns(_reviewsJson)
                 .ExecuteAction();
         }
@@ -186,7 +185,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Review>>
                 .Get(_mockHttp, () => _sut.GetDeviceReviewsAsync(deviceId: 123, page: 2, count: 25))
-                .To("/api/devices/123/reviews")
+                .To("/api/reviews/device/123")
                 .Returns(_reviewsJson)
                 .ExpectQuery(q =>
                 {
@@ -200,7 +199,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Review>>
                 .Get(_mockHttp, () => _sut.GetDeviceReviewsAsync(123, page: 2, count: 25))
-                .To("/api/devices/123/reviews")
+                .To("/api/reviews/device/123")
                 .Returns(_reviewsJson)
                 .ShouldMapTo(new PagedResult<Review>()
                 {
@@ -214,7 +213,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDeviceReviewsAsync_Should_Throw_ApiException_When_Device_Not_Found()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123/reviews*")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/reviews/device/123*")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetDeviceReviewsAsync(123),
@@ -224,7 +223,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetDeviceReviewsAsync_Should_Throw_ApiException_On_Server_Error()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/devices/123/reviews*")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/reviews/device/123*")
                 .Respond(HttpStatusCode.InternalServerError);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetDeviceReviewsAsync(123),
@@ -240,7 +239,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Review>>
                 .Get(_mockHttp, () => _sut.GetUserReviewsAsync("john"))
-                .To("/api/users/john/reviews")
+                .To("/api/reviews/user/john")
                 .Returns(_reviewsJson).ExecuteAction();
         }
 
@@ -249,7 +248,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, PagedResult<Review>>
                 .Get(_mockHttp, () => _sut.GetUserReviewsAsync("john", 3, 50))
-                .To("/api/users/john/reviews")
+                .To("/api/reviews/user/john")
                 .Returns(_reviewsJson)
                 .ExpectQuery(q =>
                 {
@@ -264,7 +263,7 @@ namespace GpuShare.Frontend.Tests.Services
             await ApiContract<object, PagedResult<Review>>
                 .Get(_mockHttp,
                     () => _sut.GetUserReviewsAsync("john", 3, 50))
-                .To("/api/users/john/reviews")
+                .To("/api/reviews/user/john")
                 .Returns(_reviewsJson)
                 .ShouldMapTo(new PagedResult<Review>()
                 {
@@ -278,7 +277,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetUserReviewsAsync_Should_Throw_When_User_Not_Found()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/users/john/reviews*")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/reviews/user/john*")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetUserReviewsAsync("john"),
@@ -294,7 +293,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, UserRatingDto>
                 .Get(_mockHttp, () => _sut.GetUserRatingAsync("john"))
-                .To("/api/users/john/rating")
+                .To("/api/reviews/userRating/john")
                 .Returns(_userRatingJson)
                 .ExecuteAction();
         }
@@ -304,7 +303,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<object, UserRatingDto>
                 .Get(_mockHttp, () => _sut.GetUserRatingAsync("john"))
-                .To("/api/users/john/rating")
+                .To("/api/reviews/userRating/john")
                 .Returns(_userRatingJson)
                 .ShouldMapTo(_userRating);
         }
@@ -312,7 +311,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task GetUserRatingAsync_Should_Throw_When_User_Not_Found()
         {
-            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/users/john/rating")
+            _mockHttp.When(HttpMethod.Get, "https://localhost:5001/api/reviews/userRating/john")
                 .Respond(HttpStatusCode.NotFound);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.GetUserRatingAsync("john"),

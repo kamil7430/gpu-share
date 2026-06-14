@@ -74,7 +74,7 @@ namespace GpuShare.Frontend.Tests.Services
                         "pricePerHourUsdCents": 450,
                         "driverVersion": "535.104",
                         "state": "AVAILABLE",
-                        "ownerUsername": "julie",
+                        "ownerUsername": "julie"
                     },
                     {
                         "deviceId" : "124",
@@ -85,7 +85,7 @@ namespace GpuShare.Frontend.Tests.Services
                         "pricePerHourUsdCents": 550,
                         "driverVersion": "535.105",
                         "state": "UNAVAILABLE",
-                        "ownerUsername": "john",
+                        "ownerUsername": "john"
                     }
                 ]
                 """;
@@ -100,7 +100,7 @@ namespace GpuShare.Frontend.Tests.Services
                         "pricePerHourUsdCents": 450,
                         "driverVersion": "535.104",
                         "state": "AVAILABLE",
-                        "ownerUsername": "julie",
+                        "ownerUsername": "julie"
                     }
                 """;
 

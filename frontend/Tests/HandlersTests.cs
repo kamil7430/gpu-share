@@ -2,6 +2,7 @@
 using GpuShare.Frontend.Infrastructure.Http;
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.State;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace GpuShare.Frontend.Tests
             var innerHandler = new TestHandler(_ =>
                 new HttpResponseMessage(HttpStatusCode.OK));
 
-            var handler = new ApiClientHandler(authState)
+            var handler = new ApiClientHandler(authState, NullLogger<ApiClientHandler>.Instance)
             {
                 InnerHandler = innerHandler
             };
@@ -43,12 +44,12 @@ namespace GpuShare.Frontend.Tests
         [Fact]
         public async Task Should_Not_Add_Header_When_Not_Authenticated()
         {
-            var authState = new AuthState(new MockJwtHelper());
+            var authState = new AuthState(new MockJwtHelper(), NullLogger<AuthState>.Instance);
 
             var innerHandler = new TestHandler(_ =>
                 new HttpResponseMessage(HttpStatusCode.OK));
 
-            var handler = new ApiClientHandler(authState)
+            var handler = new ApiClientHandler(authState, NullLogger<ApiClientHandler>.Instance)
             {
                 InnerHandler = innerHandler
             };
@@ -101,7 +102,7 @@ namespace GpuShare.Frontend.Tests
         [Fact]
         public async Task Should_Return_Response_When_Not_Unauthorized()
         {
-            var authState = new AuthState(new MockJwtHelper());
+            var authState = new AuthState(new MockJwtHelper(), NullLogger<AuthState>.Instance);
 
             var innerHandler = new TestHandler(_ =>
                 new HttpResponseMessage(HttpStatusCode.OK));
@@ -125,7 +126,7 @@ namespace GpuShare.Frontend.Tests
         [Fact]
         public async Task Should_Refresh_Token_And_Retry_Request()
         {
-            var authState = new AuthState(new MockJwtHelper());
+            var authState = new AuthState(new MockJwtHelper(), NullLogger<AuthState>.Instance);
 
             authState.SetAuth(
                 new User { Username = "john" },
@@ -177,7 +178,7 @@ namespace GpuShare.Frontend.Tests
         [Fact]
         public async Task Should_Logout_When_Refresh_Fails()
         {
-            var authState = new AuthState(new MockJwtHelper());
+            var authState = new AuthState(new MockJwtHelper(), NullLogger<AuthState>.Instance);
 
             authState.SetAuth(
                 new User { Username = "john" },
@@ -215,7 +216,7 @@ namespace GpuShare.Frontend.Tests
         [Fact]
         public async Task Should_Logout_When_Refresh_Returns_Empty_Token()
         {
-            var authState = new AuthState(new MockJwtHelper());
+            var authState = new AuthState(new MockJwtHelper(), NullLogger<AuthState>.Instance);
 
             authState.SetAuth(
                 new User { Username = "john" },
@@ -257,7 +258,7 @@ namespace GpuShare.Frontend.Tests
         public async Task Should_Use_New_Token_On_Retry()
         {
             // Arrange
-            var authState = new AuthState(new MockJwtHelper());
+            var authState = new AuthState(new MockJwtHelper(), NullLogger<AuthState>.Instance);
 
             authState.SetAuth(
                 new User { Username = "john" },
@@ -298,7 +299,7 @@ namespace GpuShare.Frontend.Tests
                 InnerHandler = apiHandler
             };
 
-            var authHandler = new ApiClientHandler(authState)
+            var authHandler = new ApiClientHandler(authState, NullLogger<ApiClientHandler>.Instance)
             {
                 InnerHandler = refreshTokenHandler
             };
