@@ -59,7 +59,7 @@ public partial class Program
 
         builder.Services.AddScoped<IJwtHelper, JwtHelper>();
         builder.Services.AddScoped<IFormatters, Formatters>();
-        builder.Services.AddScoped<IAuthState, AuthState>();
+        builder.Services.AddSingleton<IAuthState, AuthState>();
         builder.Services.AddScoped<IAppNotifier, SnackbarNotifier>();
         builder.Services.AddScoped<IAuthModalService, AuthModalService>();
         builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();

@@ -32,6 +32,7 @@
 
     <!-- TOP UP -->
     <div class="wallet-card">
+        <div style="width: 100%; margin-bottom: 12px;">
         <button class="btn-primary" @onclick="ToggleTopUp">Top up</button>
         @if (_showTopUp)
         {
@@ -42,10 +43,8 @@
                 <button class="btn-primary" @onclick="ConfirmTopUpAsync">Confirm</button>
             </div>
         }
-    </div>
-
-    <!-- WITHDRAW -->
-    <div class="wallet-card">
+        </div>
+        <div style="width: 100%;">
         <button class="btn-secondary" @onclick="ToggleWithdraw">Withdraw</button>
         @if (_showWithdraw)
         {
@@ -56,7 +55,13 @@
                 <button class="btn-primary" @onclick="ConfirmWithdrawAsync">Confirm</button>
             </div>
         }
+        </div>
     </div>
+
+    <!-- WITHDRAW -->
+    @* <div class="wallet-card">
+        
+    </div> *@
 
 </div>
 

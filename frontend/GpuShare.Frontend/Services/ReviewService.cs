@@ -12,15 +12,15 @@ namespace GpuShare.Frontend.Services
 
         public async Task<Review> CreateReviewAsync(int orderId, CreateReviewRequest cmd)
         {
-            var response = await _api.PostAsync<CreateReviewRequest, CreateReviewResponse>($"/api/orders/{orderId}/review", cmd);
+            var response = await _api.PostAsync<CreateReviewRequest, CreateReviewResponse>($"/api/orders/reviewOrder/{orderId}", cmd);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Created review for order {orderId} from user {username}. Got ID {id} for it.",
-                    cmd.OrderId, response!.AuthorUsername, response!.ReviewId);
+                    orderId, response!.AuthorUsername, response!.ReviewId);
 
             return new Review
             {
                 ReviewId = response!.ReviewId,
-                OrderId = cmd.OrderId,
+                OrderId = orderId,
                 AuthorUsername = response!.AuthorUsername,
                 Comment = cmd.Comment,
                 Rating = cmd.Rating,
@@ -30,7 +30,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<PagedResult<Review>> GetDeviceReviewsAsync(int deviceId, int page = 1, int count = 10)
         {
-            var reviews = await _api.GetAsync<List<Review>>($"/api/devices/{deviceId}/reviews", 
+            var reviews = await _api.GetAsync<List<Review>>($"/api/reviews/device/{deviceId}", 
                 new LimitQuery { Limit = page * count });
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got reviews for device {deviceId}.", deviceId);
@@ -46,7 +46,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<UserRatingDto> GetUserRatingAsync(string username)
         {
-            var rating = await _api.GetAsync<UserRatingDto>($"/api/users/{username}/rating");
+            var rating = await _api.GetAsync<UserRatingDto>($"/api/reviews/userRating/{username}");
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got rating for user {username}.", username);
             return rating!;
@@ -54,7 +54,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<PagedResult<Review>> GetUserReviewsAsync(string username, int page = 1, int count = 10)
         {
-            var reviews = await _api.GetAsync<List<Review>>($"/api/users/{username}/reviews",
+            var reviews = await _api.GetAsync<List<Review>>($"/api/reviews/user/{username}",
                 new LimitQuery { Limit = page * count });
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got reviews for user {username}.", username);

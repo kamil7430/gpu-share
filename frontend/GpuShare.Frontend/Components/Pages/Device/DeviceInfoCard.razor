@@ -66,8 +66,12 @@
 
                 <div class="agent-command-container">
                     <code class="agent-command">
-                        https://github.com/kamil7430/gpu-share/releases
+                        @_agentCommand
                     </code>
+
+                    <button type="button" class="btn-primary" @onclick="CopyCommandAsync">
+                        <MudIcon Icon="@Icons.Material.Filled.ContentCopy" Style="width: 16px; height: 16px; margin-right: 4px;" />Copy
+                    </button>
                 </div>
 
                 <div class="hint mt-4">
@@ -83,4 +87,13 @@
     [Parameter] public string? Username { get; set; }
     [Parameter] public Device? Device { get; set; } = null;
     [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.View;
+
+    // Single source of truth so the rendered command and the copied text stay in sync.
+    private const string _agentCommand = "agent-command";
+
+    private async Task CopyCommandAsync()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", _agentCommand);
+        SnackbarNotifier.ShowInfo("Command copied to clipboard.");
+    }
 }
