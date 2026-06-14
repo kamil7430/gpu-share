@@ -1,11 +1,14 @@
 type: object
 required:
   - orderId
+  - deviceId
   - status
   - connectionDetails
   - totalReservedCostCents
 properties:
   orderId:
+    type: string
+  deviceId:
     type: string
   status:
     $ref: "./RentalStatus.yaml"

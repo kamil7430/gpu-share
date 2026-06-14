@@ -715,6 +715,7 @@ func (o OptString) Or(d string) string {
 // Ref: #
 type Order struct {
 	OrderId                string            `json:"orderId"`
+	DeviceId               string            `json:"deviceId"`
 	Status                 RentalStatus      `json:"status"`
 	ConnectionDetails      ConnectionDetails `json:"connectionDetails"`
 	TotalReservedCostCents int               `json:"totalReservedCostCents"`
@@ -723,6 +724,11 @@ type Order struct {
 // GetOrderId returns the value of OrderId.
 func (s *Order) GetOrderId() string {
 	return s.OrderId
+}
+
+// GetDeviceId returns the value of DeviceId.
+func (s *Order) GetDeviceId() string {
+	return s.DeviceId
 }
 
 // GetStatus returns the value of Status.
@@ -743,6 +749,11 @@ func (s *Order) GetTotalReservedCostCents() int {
 // SetOrderId sets the value of OrderId.
 func (s *Order) SetOrderId(val string) {
 	s.OrderId = val
+}
+
+// SetDeviceId sets the value of DeviceId.
+func (s *Order) SetDeviceId(val string) {
+	s.DeviceId = val
 }
 
 // SetStatus sets the value of Status.
