@@ -12,7 +12,7 @@ namespace GpuShare.Frontend.Services;
 /// </summary>
 public class MockAuthState : AuthState
 {
-    public MockAuthState(IJwtHelper jwtHelper) : base(jwtHelper)
+    public MockAuthState(IJwtHelper jwtHelper, ILogger<AuthState> logger) : base(jwtHelper, logger)
     {
         if (MockStore.AuthenticatedUser != null)
         {

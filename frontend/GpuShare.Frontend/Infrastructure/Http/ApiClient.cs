@@ -31,7 +31,7 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 
             var content = await response.Content.ReadFromJsonAsync<T>(_options);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got response: {resp}", content);
+                _logger.LogInformation("Got response: {resp}", await response.Content.ReadAsStringAsync());
             return content;
         });
     }
@@ -57,7 +57,7 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 
             var content = await response.Content.ReadFromJsonAsync<T>(_options);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got response: {resp}", content);
+                _logger.LogInformation("Got response: {resp}", await response.Content.ReadAsStringAsync());
             return content;
         });
     }
@@ -75,7 +75,7 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 
             var content = await response.Content.ReadFromJsonAsync<TResponse>(_options);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got response: {resp}", content);
+                _logger.LogInformation("Got response: {resp}", await response.Content.ReadAsStringAsync());
             return content;
         });
     }
@@ -105,7 +105,7 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 
             var content = await response.Content.ReadFromJsonAsync<TResponse>(_options);
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got response: {resp}", content);
+                _logger.LogInformation("Got response: {resp}", await response.Content.ReadAsStringAsync());
             return content;
         });
     }

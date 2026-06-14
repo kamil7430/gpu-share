@@ -161,7 +161,7 @@
         //public string Email { get; set; } = "";
 
         [Required]
-        [MinLength(3, ErrorMessage = "Username must be at least 3 characters")]
+        [MinLength(4, ErrorMessage = "Username must be at least 4 characters")]
         [MaxLength(20, ErrorMessage = "Username too long")]
         public string Username { get; set; } = "";
 

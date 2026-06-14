@@ -4,10 +4,21 @@ using GpuShare.Frontend.Models;
 using GpuShare.Frontend.State;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-public class ApiClientHandler(IAuthState authState) : DelegatingHandler
+public class ApiClientHandler(IAuthState authState, ILogger<ApiClientHandler> logger) : DelegatingHandler
 {
     private readonly IAuthState _authState = authState;
+    private readonly ILogger<ApiClientHandler> _logger = logger;
+
+    private readonly JsonSerializerOptions _options = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
@@ -21,6 +32,9 @@ public class ApiClientHandler(IAuthState authState) : DelegatingHandler
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _authState.AccessToken);
             }
+
+            _logger.LogInformation("Api request content: {content}", JsonSerializer.Serialize(request));
+            _logger.LogInformation("Token: {token}", _authState.AccessToken ?? "");
 
             return await base.SendAsync(request, cancellationToken);
         }
