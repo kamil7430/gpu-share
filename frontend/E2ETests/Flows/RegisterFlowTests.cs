@@ -31,13 +31,14 @@ namespace E2ETests.Flows
         public async Task Register_New_Account_Succeeds()
         {
             await OpenRegisterFormAsync();
-            await FillRegisterFormAsync("eve");
+            // Username must be >= 4 chars (LoginModal validation) and not already seeded
+            await FillRegisterFormAsync("evelyn");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Create Account" }).ClickAsync();
 
             // Success path closes the modal and shows an info snackbar
             await Page.GetByText("Successfully registered").WaitForAsync();
 
-            MockStore.Users.Should().Contain(u => u.Username == "eve");
+            MockStore.Users.Should().Contain(u => u.Username == "evelyn");
         }
 
         [Fact]
@@ -46,14 +47,15 @@ namespace E2ETests.Flows
             var usersBefore = MockStore.Users.Count;
 
             await OpenRegisterFormAsync();
-            await FillRegisterFormAsync("bob");          // bob is seeded in MockStore
+            // "charlie" is seeded in MockStore and satisfies the >= 4 char username rule
+            await FillRegisterFormAsync("charlie");
             await Page.GetByRole(AriaRole.Button, new() { Name = "Create Account" }).ClickAsync();
 
             // MockAuthService throws Conflict; the UI surfaces an error snackbar
             await Page.GetByText("Registration failed").WaitForAsync();
 
             MockStore.Users.Count.Should().Be(usersBefore);
-            MockStore.Users.Count(u => u.Username == "bob").Should().Be(1);
+            MockStore.Users.Count(u => u.Username == "charlie").Should().Be(1);
         }
     }
 }
