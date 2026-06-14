@@ -36,7 +36,7 @@ func ListDevices(args []string) ([]Device, error) {
 		log.Fatal("not logged in")
 	}
 
-	url := "http://" + *addr + "/api/devices"
+	url := "http://" + *addr + "/api/devices?limit=10"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

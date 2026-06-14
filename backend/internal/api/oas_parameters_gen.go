@@ -302,7 +302,7 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 	q := uri.NewQueryDecoder(r.URL.Query())
 	// Set default value for query: limit.
 	{
-		val := int(25)
+		val := int(300)
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -344,7 +344,7 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 							MinSet:        true,
 							Min:           1,
 							MaxSet:        true,
-							Max:           200,
+							Max:           500,
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
@@ -1140,7 +1140,7 @@ func decodeGetOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (p
 	q := uri.NewQueryDecoder(r.URL.Query())
 	// Set default value for query: limit.
 	{
-		val := int(25)
+		val := int(300)
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -1182,7 +1182,7 @@ func decodeGetOrdersParams(args [0]string, argsEscaped bool, r *http.Request) (p
 							MinSet:        true,
 							Min:           1,
 							MaxSet:        true,
-							Max:           200,
+							Max:           500,
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
@@ -1289,7 +1289,7 @@ func decodeGetReviewsByDeviceIdParams(args [1]string, argsEscaped bool, r *http.
 	}
 	// Set default value for query: limit.
 	{
-		val := int(25)
+		val := int(300)
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -1331,7 +1331,7 @@ func decodeGetReviewsByDeviceIdParams(args [1]string, argsEscaped bool, r *http.
 							MinSet:        true,
 							Min:           1,
 							MaxSet:        true,
-							Max:           200,
+							Max:           500,
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
@@ -1438,7 +1438,7 @@ func decodeGetReviewsByUsernameParams(args [1]string, argsEscaped bool, r *http.
 	}
 	// Set default value for query: limit.
 	{
-		val := int(25)
+		val := int(300)
 		params.Limit.SetTo(val)
 	}
 	// Decode query: limit.
@@ -1480,7 +1480,7 @@ func decodeGetReviewsByUsernameParams(args [1]string, argsEscaped bool, r *http.
 							MinSet:        true,
 							Min:           1,
 							MaxSet:        true,
-							Max:           200,
+							Max:           500,
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,

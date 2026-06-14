@@ -29,7 +29,7 @@ type DeviceRepository struct{}
 var ErrUnauthorized = errors.New("unauthorized")
 
 func (dr *DeviceRepository) GetDevices(token string) ([]Device, error) {
-	url := "http://" + backendIp() + ":" + backendPort + "/api/devices"
+	url := "http://" + backendIp() + ":" + backendPort + "/api/devices?limit=100"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

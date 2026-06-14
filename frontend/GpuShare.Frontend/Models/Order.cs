@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 public class Order
 {
     public int OrderId { get; set; }
-    public int DeviceId { get; set; } = 0;
+    public int DeviceId { get; set; }
     public string Username { get; set; } = string.Empty;
     public DateTime? StartDate { get; set; } = null;
     public DateTime? EndDate { get; set; } = null;
