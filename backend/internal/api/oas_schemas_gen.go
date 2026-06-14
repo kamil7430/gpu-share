@@ -170,6 +170,7 @@ func (s *AuthToken) SetToken(val string) {
 }
 
 func (*AuthToken) loginRes()    {}
+func (*AuthToken) refreshRes()  {}
 func (*AuthToken) registerRes() {}
 
 type BearerAuth struct {
@@ -525,6 +526,58 @@ type GetOrdersUnauthorized struct{}
 
 func (*GetOrdersUnauthorized) getOrdersRes() {}
 
+// GetReviewsByDeviceIdNotFound is response for GetReviewsByDeviceId operation.
+type GetReviewsByDeviceIdNotFound struct{}
+
+func (*GetReviewsByDeviceIdNotFound) getReviewsByDeviceIdRes() {}
+
+type GetReviewsByDeviceIdOKApplicationJSON []Review
+
+func (*GetReviewsByDeviceIdOKApplicationJSON) getReviewsByDeviceIdRes() {}
+
+// GetReviewsByUsernameNotFound is response for GetReviewsByUsername operation.
+type GetReviewsByUsernameNotFound struct{}
+
+func (*GetReviewsByUsernameNotFound) getReviewsByUsernameRes() {}
+
+type GetReviewsByUsernameOKApplicationJSON []Review
+
+func (*GetReviewsByUsernameOKApplicationJSON) getReviewsByUsernameRes() {}
+
+// GetUserRatingNotFound is response for GetUserRating operation.
+type GetUserRatingNotFound struct{}
+
+func (*GetUserRatingNotFound) getUserRatingRes() {}
+
+type GetUserRatingOK struct {
+	// The average rating score of the user.
+	AverageRating float32 `json:"averageRating"`
+	// The total number of reviews submitted for this user.
+	RatingCount int `json:"ratingCount"`
+}
+
+// GetAverageRating returns the value of AverageRating.
+func (s *GetUserRatingOK) GetAverageRating() float32 {
+	return s.AverageRating
+}
+
+// GetRatingCount returns the value of RatingCount.
+func (s *GetUserRatingOK) GetRatingCount() int {
+	return s.RatingCount
+}
+
+// SetAverageRating sets the value of AverageRating.
+func (s *GetUserRatingOK) SetAverageRating(val float32) {
+	s.AverageRating = val
+}
+
+// SetRatingCount sets the value of RatingCount.
+func (s *GetUserRatingOK) SetRatingCount(val int) {
+	s.RatingCount = val
+}
+
+func (*GetUserRatingOK) getUserRatingRes() {}
+
 // LoginNotFound is response for Login operation.
 type LoginNotFound struct{}
 
@@ -753,6 +806,11 @@ func (s *OrderDeviceReq) SetDurationHours(val float64) {
 	s.DurationHours = val
 }
 
+// RefreshUnauthorized is response for Refresh operation.
+type RefreshUnauthorized struct{}
+
+func (*RefreshUnauthorized) refreshRes() {}
+
 type RegisterBadRequestApplicationJSON string
 
 func (*RegisterBadRequestApplicationJSON) registerRes() {}
@@ -849,6 +907,165 @@ func (s *RentalStatus) UnmarshalText(data []byte) error {
 		return errors.Errorf("invalid value: %q", data)
 	}
 }
+
+// Ref: #
+type Review struct {
+	// The unique identifier of the review.
+	ReviewId int `json:"reviewId"`
+	// The unique identifier of the associated order.
+	OrderId string `json:"orderId"`
+	// Username of the user who wrote the review.
+	AuthorUsername string `json:"authorUsername"`
+	// The rating score given by the user.
+	Rating int `json:"rating"`
+	// Feedback details.
+	Comment OptString `json:"comment"`
+	// The timestamp when the review was created.
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// GetReviewId returns the value of ReviewId.
+func (s *Review) GetReviewId() int {
+	return s.ReviewId
+}
+
+// GetOrderId returns the value of OrderId.
+func (s *Review) GetOrderId() string {
+	return s.OrderId
+}
+
+// GetAuthorUsername returns the value of AuthorUsername.
+func (s *Review) GetAuthorUsername() string {
+	return s.AuthorUsername
+}
+
+// GetRating returns the value of Rating.
+func (s *Review) GetRating() int {
+	return s.Rating
+}
+
+// GetComment returns the value of Comment.
+func (s *Review) GetComment() OptString {
+	return s.Comment
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Review) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// SetReviewId sets the value of ReviewId.
+func (s *Review) SetReviewId(val int) {
+	s.ReviewId = val
+}
+
+// SetOrderId sets the value of OrderId.
+func (s *Review) SetOrderId(val string) {
+	s.OrderId = val
+}
+
+// SetAuthorUsername sets the value of AuthorUsername.
+func (s *Review) SetAuthorUsername(val string) {
+	s.AuthorUsername = val
+}
+
+// SetRating sets the value of Rating.
+func (s *Review) SetRating(val int) {
+	s.Rating = val
+}
+
+// SetComment sets the value of Comment.
+func (s *Review) SetComment(val OptString) {
+	s.Comment = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Review) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// ReviewOrderByIdBadRequest is response for ReviewOrderById operation.
+type ReviewOrderByIdBadRequest struct{}
+
+func (*ReviewOrderByIdBadRequest) reviewOrderByIdRes() {}
+
+// ReviewOrderByIdConflict is response for ReviewOrderById operation.
+type ReviewOrderByIdConflict struct{}
+
+func (*ReviewOrderByIdConflict) reviewOrderByIdRes() {}
+
+type ReviewOrderByIdCreated struct {
+	// The unique identifier of the newly created review.
+	ReviewId int `json:"reviewId"`
+	// Username of the currently authenticated user who wrote the review.
+	AuthorUsername string `json:"authorUsername"`
+	// The timestamp when the review was created.
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+// GetReviewId returns the value of ReviewId.
+func (s *ReviewOrderByIdCreated) GetReviewId() int {
+	return s.ReviewId
+}
+
+// GetAuthorUsername returns the value of AuthorUsername.
+func (s *ReviewOrderByIdCreated) GetAuthorUsername() string {
+	return s.AuthorUsername
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ReviewOrderByIdCreated) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// SetReviewId sets the value of ReviewId.
+func (s *ReviewOrderByIdCreated) SetReviewId(val int) {
+	s.ReviewId = val
+}
+
+// SetAuthorUsername sets the value of AuthorUsername.
+func (s *ReviewOrderByIdCreated) SetAuthorUsername(val string) {
+	s.AuthorUsername = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ReviewOrderByIdCreated) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+func (*ReviewOrderByIdCreated) reviewOrderByIdRes() {}
+
+type ReviewOrderByIdReq struct {
+	// The rating score given by the user (from 1 to 5).
+	Rating int `json:"rating"`
+	// Detailed feedback from the user.
+	Comment string `json:"comment"`
+}
+
+// GetRating returns the value of Rating.
+func (s *ReviewOrderByIdReq) GetRating() int {
+	return s.Rating
+}
+
+// GetComment returns the value of Comment.
+func (s *ReviewOrderByIdReq) GetComment() string {
+	return s.Comment
+}
+
+// SetRating sets the value of Rating.
+func (s *ReviewOrderByIdReq) SetRating(val int) {
+	s.Rating = val
+}
+
+// SetComment sets the value of Comment.
+func (s *ReviewOrderByIdReq) SetComment(val string) {
+	s.Comment = val
+}
+
+// ReviewOrderByIdUnauthorized is response for ReviewOrderById operation.
+type ReviewOrderByIdUnauthorized struct{}
+
+func (*ReviewOrderByIdUnauthorized) reviewOrderByIdRes() {}
 
 // Ref: #
 type State string

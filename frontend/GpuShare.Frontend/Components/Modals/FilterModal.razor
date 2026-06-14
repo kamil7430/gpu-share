@@ -8,7 +8,6 @@
  - Price range
  - Cores num range
  - min driver version?
- - supported frameworks
  - availability
 
 Decisions:
@@ -35,11 +34,6 @@ Decisions:
         StartAriaLabel="Minimum value" EndAriaLabel="Maximum value" />
         <FieldHelp>Selected range: @_cores.Start - @_cores.End</FieldHelp>
     </Field>
-
-    <label>Supported Frameworks:</label>
-    <CheckBoxList className="checkbox-list" TItem="string" Data="Device.SupportedFrameworks" 
-        TextField="@(new Func<string, string>(c => c))" ValueField="@(new Func<string, string>(c => c))" 
-        SelectedValues="@_tempFilter.SupportedFrameworks" />
 
     <label class="custom-checkbox" style="margin-bottom: 16px;">
         <input type="checkbox" style="width: auto;" @bind="_tempFilter.AvailableOnly" class="" />
@@ -75,8 +69,6 @@ Decisions:
 
     private List<int> _selectedVRAM = [];
 
-    private List<string> _selectedFrameworks = [];
-
     public void Open(SearchFilter existing)
     {
         // clone so user edits don't apply until confirmed
@@ -86,7 +78,6 @@ Decisions:
             VRAM_MB = existing.VRAM_MB,
             PricePerHour = existing.PricePerHour,
             Cores = existing.Cores,
-            SupportedFrameworks = existing.SupportedFrameworks,
             AvailableOnly = existing.AvailableOnly,
             SortBy = existing.SortBy
         };

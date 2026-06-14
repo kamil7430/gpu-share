@@ -48,7 +48,6 @@ namespace GpuShare.Frontend.Tests.Services
                 CudaCores = 16384,
                 DriverVersion = "535.104",
                 PricePerHourUsdCents = 450,
-                Frameworks = ["CUDA"]
             },
             new Device()
             {
@@ -61,7 +60,6 @@ namespace GpuShare.Frontend.Tests.Services
                 CudaCores = 16000,
                 DriverVersion = "535.105",
                 PricePerHourUsdCents = 550,
-                Frameworks = ["PyTorch"]
             },
         ];
 
@@ -77,7 +75,6 @@ namespace GpuShare.Frontend.Tests.Services
                         "driverVersion": "535.104",
                         "state": "AVAILABLE",
                         "ownerUsername": "julie",
-                        "frameworks": ["CUDA"]
                     },
                     {
                         "deviceId" : "124",
@@ -89,7 +86,6 @@ namespace GpuShare.Frontend.Tests.Services
                         "driverVersion": "535.105",
                         "state": "UNAVAILABLE",
                         "ownerUsername": "john",
-                        "frameworks": ["PyTorch"]
                     }
                 ]
                 """;
@@ -105,7 +101,6 @@ namespace GpuShare.Frontend.Tests.Services
                         "driverVersion": "535.104",
                         "state": "AVAILABLE",
                         "ownerUsername": "julie",
-                        "frameworks": ["CUDA"]
                     }
                 """;
 
@@ -122,7 +117,6 @@ namespace GpuShare.Frontend.Tests.Services
             MinDriverVersion = "535.00",
             MaxDriverVersion = "536.00",
             AvailableOnly = true,
-            Frameworks = ["CUDA"],
         };
 
         private static readonly DateTime _lastHeartbeat = DateTime.Now.AddSeconds(-10);
@@ -156,7 +150,6 @@ namespace GpuShare.Frontend.Tests.Services
             CudaCores = 16384,
             DriverVersion = "535.104",
             PricePerHourUsdCents = 450,
-            Frameworks = ["CUDA"]
         };
 
         private readonly string _registerJson = """
@@ -175,7 +168,6 @@ namespace GpuShare.Frontend.Tests.Services
             CudaCores = 16000,
             DriverVersion = "535.105",
             PricePerHourUsdCents = 550,
-            Frameworks = ["PyTorch"]
         };
 
         // =====================================================
@@ -448,7 +440,6 @@ namespace GpuShare.Frontend.Tests.Services
                     body.CudaCores.Should().Be(16000);
                     body.PricePerHourUsdCents.Should().Be(550);
                     body.DriverVersion.Should().Be("535.105");
-                    body.Frameworks.Should().NotBeEmpty();
                 });
         }
 
@@ -465,7 +456,6 @@ namespace GpuShare.Frontend.Tests.Services
             device.CudaCores.Should().Be(16000);
             device.PricePerHourUsdCents.Should().Be(550);
             device.DriverVersion.Should().Be("535.105");
-            device.Frameworks.Should().NotBeEmpty();
         }
 
         [Fact]

@@ -40,7 +40,6 @@ namespace GpuShare.Frontend.Services
                 VramMb = cmd.VramMb,
                 CudaCores = cmd.CudaCores,
                 DriverVersion = cmd.DriverVersion,
-                Frameworks = cmd.Frameworks,
                 PricePerHourUsdCents = cmd.PricePerHourUsdCents,
                 OwnerUsername = response.OwnerUsername,
                 State = response.State,
@@ -97,19 +96,10 @@ namespace GpuShare.Frontend.Services
                 VramMb = cmd.VramMb ?? oldDevice.VramMb,
                 CudaCores = cmd.CudaCores ?? oldDevice.CudaCores,
                 DriverVersion = cmd.DriverVersion ?? oldDevice.DriverVersion,
-                Frameworks = cmd.Frameworks ?? oldDevice.Frameworks,
                 PricePerHourUsdCents = cmd.PricePerHourUsdCents ?? oldDevice.PricePerHourUsdCents,
                 OwnerUsername = oldDevice.OwnerUsername,
                 State = oldDevice.State,
             };
-        }
-
-        public async Task<DeviceAgentInfo> GetAgentInstallInfoAsync(int deviceId)
-        {
-            var agentInfo = await _api.GetAsync<DeviceAgentInfo>($"/api/devices/{deviceId}/agent-info");
-            if (_logger.IsEnabled(LogLevel.Information))
-                _logger.LogInformation("Got agent install info for device with ID {id}.", deviceId);
-            return agentInfo!;
         }
     }
 }

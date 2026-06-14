@@ -23,6 +23,7 @@ func performMigration(db *gorm.DB) error {
 		&model.User{},
 		&model.Device{},
 		&model.Order{},
+		&model.Review{},
 	)
 }
 

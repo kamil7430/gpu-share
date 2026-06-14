@@ -1,0 +1,17 @@
+get:
+  summary: Refresh the Bearer token for logged in user.
+  operationId: refresh
+  security:
+    - bearerAuth:
+        - user
+  responses:
+    "200":
+      description: Token refreshed
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/AuthToken.yaml"
+    "401":
+      description: User not logged in
+    default:
+      $ref: "../../../responses/default.yaml"

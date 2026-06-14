@@ -7,7 +7,7 @@ import (
 )
 
 func truncateTables(db *gorm.DB) {
-	db.Exec("TRUNCATE TABLE devices, users, orders;")
+	db.Exec("TRUNCATE TABLE devices, users, orders, reviews;")
 }
 
 func remove[T comparable](slice []T, element T) ([]T, error) {

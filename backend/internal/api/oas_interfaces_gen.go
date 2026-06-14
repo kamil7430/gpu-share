@@ -25,6 +25,18 @@ type GetOrdersRes interface {
 	getOrdersRes()
 }
 
+type GetReviewsByDeviceIdRes interface {
+	getReviewsByDeviceIdRes()
+}
+
+type GetReviewsByUsernameRes interface {
+	getReviewsByUsernameRes()
+}
+
+type GetUserRatingRes interface {
+	getUserRatingRes()
+}
+
 type LoginRes interface {
 	loginRes()
 }
@@ -33,6 +45,14 @@ type OrderDeviceRes interface {
 	orderDeviceRes()
 }
 
+type RefreshRes interface {
+	refreshRes()
+}
+
 type RegisterRes interface {
 	registerRes()
+}
+
+type ReviewOrderByIdRes interface {
+	reviewOrderByIdRes()
 }

@@ -30,10 +30,6 @@
                 Available Only
             </span>
         }
-        @if (_filter.SupportedFrameworks?.Count > 0)
-        {
-            <span class="filter-badge badge">Frameworks: @string.Join(", ", _filter.SupportedFrameworks)</span>
-        }
         @if (_filter.SortBy != SortOption.None)
         {
             <span class="filter-badge badge">Sort: @_filter.SortBy</span>

@@ -51,6 +51,24 @@ type Handler interface {
 	//
 	// GET /api/orders
 	GetOrders(ctx context.Context, params GetOrdersParams) (GetOrdersRes, error)
+	// GetReviewsByDeviceId implements getReviewsByDeviceId operation.
+	//
+	// Returns a list of all reviews associated with a specific device.
+	//
+	// GET /api/reviews/device/{deviceId}
+	GetReviewsByDeviceId(ctx context.Context, params GetReviewsByDeviceIdParams) (GetReviewsByDeviceIdRes, error)
+	// GetReviewsByUsername implements getReviewsByUsername operation.
+	//
+	// Returns a list of all reviews authored by or associated with a specific user.
+	//
+	// GET /api/reviews/user/{username}
+	GetReviewsByUsername(ctx context.Context, params GetReviewsByUsernameParams) (GetReviewsByUsernameRes, error)
+	// GetUserRating implements getUserRating operation.
+	//
+	// Returns the calculated average rating and the total count of reviews for a specific user.
+	//
+	// GET /api/reviews/userRating/{username}
+	GetUserRating(ctx context.Context, params GetUserRatingParams) (GetUserRatingRes, error)
 	// Login implements login operation.
 	//
 	// Log into an account. Returns a token to use in the Authorization header as a Bearer token for
@@ -64,12 +82,24 @@ type Handler interface {
 	//
 	// POST /api/orders
 	OrderDevice(ctx context.Context, req *OrderDeviceReq) (OrderDeviceRes, error)
+	// Refresh implements refresh operation.
+	//
+	// Refresh the Bearer token for logged in user.
+	//
+	// GET /api/users/refresh
+	Refresh(ctx context.Context) (RefreshRes, error)
 	// Register implements register operation.
 	//
 	// Register a user.
 	//
 	// POST /api/users/register
 	Register(ctx context.Context, req *RegisterReq) (RegisterRes, error)
+	// ReviewOrderById implements reviewOrderById operation.
+	//
+	// Creates a one-time review for a specific order after the session has been completed.
+	//
+	// POST /api/reviews/reviewOrder/{orderId}
+	ReviewOrderById(ctx context.Context, req *ReviewOrderByIdReq, params ReviewOrderByIdParams) (ReviewOrderByIdRes, error)
 	// NewError creates *DefaultStatusCode from error returned by handler.
 	//
 	// Used for common default response.

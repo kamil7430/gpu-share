@@ -17,7 +17,7 @@ type tokenResponse struct {
 	Token string
 }
 
-func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
+func testLoginAndRefresh(t *testing.T, db *gorm.DB, baseUrl string) {
 	userPassword, err := auth.HashPassword("TestUserPassword")
 	require.NoError(t, err)
 	adminPassword, err := auth.HashPassword("TestAdminPassword")
@@ -42,6 +42,7 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 		return resp
 	}
 
+	var normalUserToken tokenResponse
 	t.Run("login -- normal user", func(t *testing.T) {
 		resp := loginTestCase("TestUser", "TestUserPassword")
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -50,11 +51,10 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 		body, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
-		var tokenObj tokenResponse
-		err = json.Unmarshal(body, &tokenObj)
+		err = json.Unmarshal(body, &normalUserToken)
 		require.NoError(t, err)
 
-		token, err := auth.ParseToken(tokenObj.Token)
+		token, err := auth.ParseToken(normalUserToken.Token)
 		require.NoError(t, err)
 		require.Equal(t, "TestUser", token.Username)
 		require.Equal(t, false, token.Admin)
@@ -85,6 +85,41 @@ func testLogin(t *testing.T, db *gorm.DB, baseUrl string) {
 
 	t.Run("login -- invalid password", func(t *testing.T) {
 		resp := loginTestCase("TestUser", "TestInvalidPassword")
+		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	t.Run("refresh -- normal user", func(t *testing.T) {
+		req, err := http.NewRequestWithContext(t.Context(), "GET", baseUrl+"/api/users/refresh", http.NoBody)
+		require.NoError(t, err)
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", normalUserToken.Token))
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+
+		err = json.Unmarshal(body, &normalUserToken)
+		require.NoError(t, err)
+
+		token, err := auth.ParseToken(normalUserToken.Token)
+		require.NoError(t, err)
+		require.Equal(t, "TestUser", token.Username)
+		require.Equal(t, false, token.Admin)
+	})
+
+	t.Run("refresh -- not logged in", func(t *testing.T) {
+		req, err := http.NewRequestWithContext(t.Context(), "GET", baseUrl+"/api/users/refresh", http.NoBody)
+		require.NoError(t, err)
+
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
 		require.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 }

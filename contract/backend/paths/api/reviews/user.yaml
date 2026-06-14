@@ -1,0 +1,26 @@
+get:
+  summary: Get reviews for a specific user
+  description: Returns a list of all reviews authored by or associated with a specific user.
+  operationId: getReviewsByUsername
+  parameters:
+    - name: username
+      in: path
+      required: true
+      description: The unique username to fetch reviews for.
+      schema:
+        type: string
+        example: "user1"
+    - $ref: "../../../parameters/query/limit.yaml"
+  responses:
+    "200":
+      description: A list of user reviews retrieved successfully.
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../../../schemas/Review.yaml"
+    "404":
+      description: Not Found. The specified username does not exist in the system.
+    default:
+      $ref: "../../../responses/default.yaml"

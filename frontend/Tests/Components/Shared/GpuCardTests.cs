@@ -29,7 +29,6 @@ namespace GpuShare.Frontend.Tests.Components.Shared
             VramMb = 24000,
             CudaCores = 16000,
             DriverVersion = "535",
-            Frameworks = [ "CUDA" ],
             State = DeviceState.AVAILABLE
         };
 
@@ -124,18 +123,6 @@ namespace GpuShare.Frontend.Tests.Components.Shared
             var removeBtn = cut.Find(".order-btn");
 
             removeBtn.IsDisabled().Should().BeTrue();
-        }
-
-        [Fact]
-        public void Should_Render_All_Frameworks() 
-        {
-            var gpu = new Models.Device { DeviceId = 1, Name = "RTX", Frameworks = ["CUDA", "TensorFlow", "PyTorch"], };
-
-            var cut = Render<DeviceCard>(p => p.Add(x => x.Device, gpu));
-
-            cut.Markup.Should().Contain("CUDA");
-            cut.Markup.Should().Contain("TensorFlow");
-            cut.Markup.Should().Contain("PyTorch");
         }
 
         [Fact]
