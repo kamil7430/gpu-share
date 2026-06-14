@@ -16,7 +16,8 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task LoginAsync(AuthRequest payload)
     {
-        var token = await _api.PostAsync<AuthRequest, string>("/users/login", payload);
+        var result = await _api.PostAsync<AuthRequest, TokenResponse>("/api/users/login", payload);
+        var token = result?.Token;
         if (token != null)
         {
             var response = new AuthResponse
@@ -43,7 +44,8 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task RefreshTokenAsync()
     {
-        var token = await _api.PostAsync<string>("/users/refresh");
+        var result = await _api.PostAsync<TokenResponse>("/api/users/refresh");
+        var token = result?.Token;
         if (token != null)
         {
             var response = new AuthResponse
@@ -70,7 +72,7 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task RegisterAsync(AuthRequest payload)
     {
-        await _api.PostAsync("/users/register", payload);
+        await _api.PostAsync("/api/users/register", payload);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("User {Username} registered successfully", payload.Username);
@@ -79,7 +81,7 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task ChangePasswordAsync(ChangePasswordRequest payload)
     {
-        await _api.PostAsync("/users/changePassword", payload);
+        await _api.PostAsync("/api/users/changePassword", payload);
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("User {Username} changed password successfully", payload.Username);
@@ -88,7 +90,7 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task LogoutAsync()
     {
-        // await _api.PostAsync("/users/logout", new { });
+        // await _api.PostAsync("/api/users/logout", new { });
         _authState.Logout();
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -98,7 +100,7 @@ public class AuthService(IApiClient api, IAuthState authState, IJwtHelper jwtHel
 
     public async Task<User> GetMeAsync()
     {
-        // return await _api.GetAsync<User>("/users/me") ?? throw new Exception("Invalid response");
+        // return await _api.GetAsync<User>("/api/users/me") ?? throw new Exception("Invalid response");
         return _authState.User ?? throw new InvalidOperationException("User is not authenticated");
     }
 }

@@ -1,6 +1,6 @@
 <div class="search-container">
 
-    <input @bind="_filter.Term" placeholder="Search..." class="form-control" />
+    <input @bind-value="_filter.Term" @bind-value:event="oninput" placeholder="Search..." class="form-control" />
 
     <button class="btn-secondary" @onclick="OpenModal">
         Filters
@@ -29,10 +29,6 @@
             <span class="filter-badge badge">
                 Available Only
             </span>
-        }
-        @if (_filter.SupportedFrameworks?.Count > 0)
-        {
-            <span class="filter-badge badge">Frameworks: @string.Join(", ", _filter.SupportedFrameworks)</span>
         }
         @if (_filter.SortBy != SortOption.None)
         {

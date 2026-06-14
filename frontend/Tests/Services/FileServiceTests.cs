@@ -48,7 +48,7 @@ namespace GpuShare.Frontend.Tests.Services
         {
             await ApiContract<MultipartFormDataContent, FileUploadResult>
                 .Post(_mockHttp, () => _sut.UploadAsync(_file))
-                .To("/files/upload")
+                .To("/api/files/upload")
                 .Returns(_uploadResultJson)
                 .ShouldSendBody(async body =>
                 {
@@ -61,7 +61,7 @@ namespace GpuShare.Frontend.Tests.Services
         [Fact]
         public async Task UploadAsync_Should_Throw_On_Http_Error()
         {
-            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/files/upload")
+            _mockHttp.When(HttpMethod.Post, "https://localhost:5001/api/files/upload")
                 .Respond(HttpStatusCode.BadRequest);
 
             await ApiErrorAssertions.ShouldFailWith(() => _sut.UploadAsync(_file),

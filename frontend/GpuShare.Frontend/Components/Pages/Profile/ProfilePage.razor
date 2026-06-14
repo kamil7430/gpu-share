@@ -72,7 +72,7 @@ Project decisions:
     {
         try
         {
-            _devices = await DeviceService.GetUserDevicesAsync(Username);
+            _devices = (await DeviceService.SearchDevicesAsync(new DeviceSearchFilters())).Items;
             _loading = false;
         }
         catch (ApiException ex)

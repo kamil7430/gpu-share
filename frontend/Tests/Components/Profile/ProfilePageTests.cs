@@ -66,7 +66,6 @@ namespace GpuShare.Frontend.Tests.Components.Profile
                 CudaCores = 16384,
                 DriverVersion = "535.104",
                 PricePerHourUsdCents = 450,
-                Frameworks = ["CUDA"]
             },
             new Models.Device()
             {
@@ -79,7 +78,6 @@ namespace GpuShare.Frontend.Tests.Components.Profile
                 CudaCores = 16000,
                 DriverVersion = "535.105",
                 PricePerHourUsdCents = 550,
-                Frameworks = ["PyTorch"]
             },
         ];
 

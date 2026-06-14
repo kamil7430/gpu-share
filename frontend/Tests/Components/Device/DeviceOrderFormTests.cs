@@ -1,28 +1,23 @@
-﻿using Bunit;
+using Bunit;
 using FluentAssertions;
 using GpuShare.Frontend.Components.Pages.Device;
 using GpuShare.Frontend.Models;
 using GpuShare.Frontend.Models.Dtos;
 using GpuShare.Frontend.Services;
 using GpuShare.Frontend.Services.Interfaces;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MudBlazor;
 using MudBlazor.Services;
 using System.Net;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace GpuShare.Frontend.Tests.Components.Device
 {
     public class DeviceOrderFormTests : BunitContext, Xunit.IAsyncLifetime
     {
         private readonly Mock<IOrderService> _orderServiceMock = new();
-        private readonly Mock<IFileService> _fileServiceMock = new();
         private readonly Mock<IFormatters> _formattersMock = new();
-        private readonly Mock<IBrowserFile> _file = new();
         private readonly Mock<ISnackbar> _snackbarMock = new();
 
         private readonly Models.Device gpu = new()
@@ -34,7 +29,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
             VramMb = 24000,
             CudaCores = 16000,
             DriverVersion = "535",
-            Frameworks = [ "CUDA" ],
             State = Models.DeviceState.AVAILABLE
         };
 
@@ -42,7 +36,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
         {
             Services.AddAuthorizationCore();
             Services.AddSingleton(_orderServiceMock.Object);
-            Services.AddSingleton(_fileServiceMock.Object);
             Services.AddSingleton(_formattersMock.Object);
             Services.AddSingleton(_snackbarMock.Object);
             Services.AddMudServices();
@@ -52,13 +45,6 @@ namespace GpuShare.Frontend.Tests.Components.Device
             JSInterop.SetupVoid(_ => true).SetVoidResult();
             JSInterop.SetupModule(_ => true);
             Render<MudPopoverProvider>();
-
-            _fileServiceMock.Setup(x => x.UploadAsync(It.IsAny<IBrowserFile>())).ReturnsAsync(
-                new Models.Dtos.FileUploadResult() { Url = "url" });
-
-            _file.Setup(f => f.Name).Returns("test.zip");
-            _file.Setup(f => f.Size).Returns(1024);
-            _file.Setup(f => f.ContentType).Returns("application/zip");
         }
 
         private static async Task InvokePrivateAsync(IRenderedComponent<DeviceOrderForm> cut, string methodName, params object[] parameters)
@@ -81,14 +67,18 @@ namespace GpuShare.Frontend.Tests.Components.Device
                     BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(cut.Instance)!;
         }
 
-        private async Task<IRenderedComponent<DeviceOrderForm>> CreateReadyToSubmitComponent()
+        /// <summary>Renders the form with a model that passes all validation guards.</summary>
+        private IRenderedComponent<DeviceOrderForm> CreateReadyToSubmitComponent()
         {
             var cut = Render<DeviceOrderForm>(p => p.Add(x => x.Device, gpu));
 
-            _fileServiceMock.Setup(x => x.UploadAsync(It.IsAny<IBrowserFile>()))
-                .ReturnsAsync(new FileUploadResult { Url = "https://files/test.zip" });
-
-            await InvokePrivateAsync(cut, "OnFileSelected", _file.Object);
+            SetPrivateField(cut, "orderModel", new DeviceOrderForm.OrderModel
+            {
+                StartDate = new DateTime(2026, 1, 1),
+                StartTime = new TimeSpan(12, 30, 0),
+                DurationHours = 5,
+                DockerImage = "gpu-image:latest",
+            });
 
             return cut;
         }
@@ -120,44 +110,12 @@ namespace GpuShare.Frontend.Tests.Components.Device
         }
 
         [Fact]
-        public async Task Selecting_File_Should_Show_File_Name()
+        public void Form_Should_Render_Docker_Image_Input()
         {
-            var cut = Render<DeviceOrderForm>(parameters => parameters
-                .Add(p => p.Device, gpu));
+            var cut = Render<DeviceOrderForm>(p => p.Add(x => x.Device, gpu));
 
-            var file = new Mock<IBrowserFile>();
-            file.Setup(f => f.Name).Returns("test.zip");
-            file.Setup(f => f.Size).Returns(1024);
-            file.Setup(f => f.ContentType).Returns("application/zip");
-
-            var task = (Task)cut.Instance.GetType()
-                .GetMethod("OnFileSelected", BindingFlags.NonPublic | BindingFlags.Instance)!
-                .Invoke(cut.Instance, [ file.Object ])!;
-
-            await task;
-
-            cut.Render();
-
-            cut.Markup.Should().Contain("test.zip");
-        }
-
-        [Fact]
-        public async Task Removing_File_Should_Clear_Selection()
-        {
-            var cut = Render<DeviceOrderForm>();
-
-
-            await cut.InvokeAsync(() => cut.Instance.GetType()
-                    .GetMethod("OnFileSelected", BindingFlags.NonPublic | BindingFlags.Instance)!
-                    .Invoke(cut.Instance, [_file.Object])
-            );
-
-            cut.Instance.GetType().GetField("_selectedFile", BindingFlags.NonPublic | BindingFlags.Instance)!
-                .SetValue(cut.Instance, null);
-
-            cut.Render();
-
-            cut.Markup.Should().NotContain("file.zip");
+            cut.Markup.Should().Contain("Docker Image");
+            cut.Markup.Should().Contain("Name of the Docker image to run on the device");
         }
 
         [Fact]
@@ -172,7 +130,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
                 {
                     StartDate = new DateTime(2026, 1, 1),
                     StartTime = new TimeSpan(14, 30, 0),
-                    DurationHours = 3
+                    DurationHours = 3,
+                    DockerImage = "gpu-image:latest",
                 });
 
             cut.InvokeAsync(() => instance.GetType()
@@ -191,25 +150,11 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             CreateOrderRequest? captured = null;
 
-            _fileServiceMock.Setup(x => x.UploadAsync(It.IsAny<IBrowserFile>()))
-                .ReturnsAsync(new FileUploadResult{ Url = "https://files/test.zip" });
-
             _orderServiceMock.Setup(x => x.CreateOrderAsync(It.IsAny<CreateOrderRequest>()))
                 .Callback<CreateOrderRequest>(r => captured = r)
                 .ReturnsAsync(new Models.Order { OrderId = 999 });
 
-            var cut = Render<DeviceOrderForm>(p => p.Add(x => x.Device, gpu));
-
-            var file = Mock.Of<IBrowserFile>();
-
-            await InvokePrivateAsync(cut, "OnFileSelected", file);
-
-            SetPrivateField(cut, "orderModel", new DeviceOrderForm.OrderModel
-            {
-                StartDate = new DateTime(2026, 1, 1),
-                StartTime = new TimeSpan(12, 30, 0),
-                DurationHours = 5
-            });
+            var cut = CreateReadyToSubmitComponent();
 
             // Act
 
@@ -222,12 +167,14 @@ namespace GpuShare.Frontend.Tests.Components.Device
             captured!.DeviceId.Should().Be(1);
             captured.DurationHours.Should().Be(5);
             captured.StartTime.Should().Be(new DateTime(2026, 1, 1, 12, 30, 0));
-            captured.DockerImage.Should().Be("https://files/test.zip");
+            // The contract (orders.yaml) expects the Docker image name, not a file URL
+            captured.DockerImage.Should().Be("gpu-image:latest");
         }
 
         [Fact]
-        public async Task Submit_Should_Show_Error_When_No_File_Was_Uploaded()
+        public async Task Submit_Should_Show_Error_When_No_Docker_Image()
         {
+            // Default model has no Docker image — the guard must stop the submit
             var cut = Render<DeviceOrderForm>(p => p.Add(x => x.Device, gpu));
 
             await InvokePrivateAsync(cut, "SubmitOrder");
@@ -235,48 +182,14 @@ namespace GpuShare.Frontend.Tests.Components.Device
             _orderServiceMock.Verify(x => x.CreateOrderAsync(It.IsAny<CreateOrderRequest>()),
                 Times.Never);
 
-            _snackbarMock.Verify(x => x.Add("An image file must be uploaded", Severity.Error,
-                    It.IsAny<Action<SnackbarOptions>?>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task OnFileSelected_Should_Upload_File_And_Store_Url()
-        {
-            _fileServiceMock.Setup(x => x.UploadAsync(_file.Object)).ReturnsAsync(new FileUploadResult
-                { Url = "https://files/test.zip" });
-
-            var cut = Render<DeviceOrderForm>(p => p.Add(x => x.Device, gpu));
-
-            await InvokePrivateAsync(cut, "OnFileSelected", _file.Object);
-
-            _fileServiceMock.Verify(x => x.UploadAsync(_file.Object), Times.Once);
-
-            _snackbarMock.Verify(x => x.Add("File uploaded successfully", Severity.Success,
-                    It.IsAny<Action<SnackbarOptions>?>()), Times.Once);
-
-            GetPrivateField<string>(cut, "_uploadedFileUrl").Should().Be("https://files/test.zip");
-        }
-
-        [Fact]
-        public async Task OnFileSelected_Should_Clear_File_When_Upload_Fails()
-        {
-            _fileServiceMock.Setup(x => x.UploadAsync(_file.Object)).ThrowsAsync(new Exception());
-
-            var cut = Render<DeviceOrderForm>(p => p.Add(x => x.Device, gpu));
-
-            await InvokePrivateAsync(cut, "OnFileSelected", _file.Object);
-            GetPrivateField<IBrowserFile?>(cut, "_selectedFile").Should().BeNull();
-
-            GetPrivateField<string?>(cut, "_uploadedFileUrl").Should().BeNull();
-
-            _snackbarMock.Verify(x => x.Add("File upload failed", Severity.Error,
+            _snackbarMock.Verify(x => x.Add("Docker image is required", Severity.Error,
                     It.IsAny<Action<SnackbarOptions>?>()), Times.Once);
         }
 
         [Fact]
         public async Task Submit_Should_Show_InvalidConfiguration_Message_On_400()
         {
-            var cut = await CreateReadyToSubmitComponent();
+            var cut = CreateReadyToSubmitComponent();
 
             _orderServiceMock.Setup(x => x.CreateOrderAsync(It.IsAny<CreateOrderRequest>()))
                 .ThrowsAsync(new ApiException("Bad request", HttpStatusCode.BadRequest));
@@ -290,7 +203,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         [Fact]
         public async Task Submit_Should_Show_InsufficientBalance_Message_On_402()
         {
-            var cut = await CreateReadyToSubmitComponent();
+            var cut = CreateReadyToSubmitComponent();
 
             _orderServiceMock.Setup(x => x.CreateOrderAsync(It.IsAny<CreateOrderRequest>()))
                 .ThrowsAsync(new ApiException("Payment required", HttpStatusCode.PaymentRequired));
@@ -304,7 +217,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         [Fact]
         public async Task Submit_Should_Store_OrderId_When_Order_Is_Created()
         {
-            var cut = await CreateReadyToSubmitComponent();
+            var cut = CreateReadyToSubmitComponent();
 
             _orderServiceMock.Setup(x => x.CreateOrderAsync(It.IsAny<CreateOrderRequest>()))
                 .ReturnsAsync(new Models.Order { OrderId = 777 });
@@ -317,7 +230,7 @@ namespace GpuShare.Frontend.Tests.Components.Device
         [Fact]
         public async Task Submit_Should_Show_ViewOrder_Link_When_Order_Is_Created()
         {
-            var cut = await CreateReadyToSubmitComponent();
+            var cut = CreateReadyToSubmitComponent();
 
             _orderServiceMock.Setup(x => x.CreateOrderAsync(It.IsAny<CreateOrderRequest>()))
                 .ReturnsAsync(new Models.Order { OrderId = 777 });
@@ -326,7 +239,8 @@ namespace GpuShare.Frontend.Tests.Components.Device
 
             cut.Render();
 
-            cut.Markup.Should().Contain("/orders/777");
+            // The order page route is /order/{id}
+            cut.Markup.Should().Contain("/order/777");
             cut.Markup.Should().Contain("View order");
         }
     }

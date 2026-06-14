@@ -13,9 +13,18 @@ public static class MockStore
 
     public static User CurrentUser { get; set; } = new() { Id = 1, Username = "alice", Admin = false };
 
+    /// <summary>
+    /// Set by MockAuthService.LoginAsync, cleared on logout/reset. MockAuthState reads it
+    /// when a new circuit starts so auth survives full page reloads like a persisted token.
+    /// </summary>
+    public static User? AuthenticatedUser { get; set; }
+
     public static List<User> Users { get; } = [];
 
-    private static readonly List<User> _seedUsers =
+    // Seeds are factory methods so Reset() rebuilds fresh instances — tests mutate
+    // these objects (device.State, order.Status), and re-adding shared instances
+    // would leak those mutations across tests.
+    private static List<User> SeedUsers() =>
     [
         new() { Id = 1, Username = "alice", Admin = false },
         new() { Id = 2, Username = "bob",   Admin = false },
@@ -25,48 +34,48 @@ public static class MockStore
 
     public static List<Device> Devices { get; } = [];
 
-    private static readonly List<Device> _seedDevices =
+    private static List<Device> SeedDevices() =>
     [
         new()
         {
             DeviceId = 1, OwnerUsername = "bob", Name = "RTX 4090 Workstation",
             GpuModel = "NVIDIA RTX 4090", VramMb = 24576, CudaCores = 16384,
             DriverVersion = "545.92", PricePerHourUsdCents = 350,
-            Frameworks = ["PyTorch", "TensorFlow"], State = DeviceState.AVAILABLE
+            State = DeviceState.AVAILABLE
         },
         new()
         {
             DeviceId = 2, OwnerUsername = "charlie", Name = "A100 Server Node",
             GpuModel = "NVIDIA A100", VramMb = 81920, CudaCores = 6912,
             DriverVersion = "535.104", PricePerHourUsdCents = 1200,
-            Frameworks = ["PyTorch", "TensorFlow", "MXNet"], State = DeviceState.RENTED
+            State = DeviceState.RENTED
         },
         new()
         {
             DeviceId = 3, OwnerUsername = "bob", Name = "RTX 3080 Rig",
             GpuModel = "NVIDIA RTX 3080", VramMb = 10240, CudaCores = 8704,
             DriverVersion = "535.104", PricePerHourUsdCents = 150,
-            Frameworks = ["PyTorch", "Keras"], State = DeviceState.AVAILABLE
+            State = DeviceState.AVAILABLE
         },
         new()
         {
             DeviceId = 4, OwnerUsername = "diana", Name = "H100 Training Cluster",
             GpuModel = "NVIDIA H100", VramMb = 81920, CudaCores = 14592,
             DriverVersion = "545.92", PricePerHourUsdCents = 2500,
-            Frameworks = ["PyTorch", "TensorFlow", "MXNet", "Caffe"], State = DeviceState.AVAILABLE
+            State = DeviceState.AVAILABLE
         },
         new()
         {
             DeviceId = 5, OwnerUsername = "charlie", Name = "GTX 1080 Ti Budget",
             GpuModel = "NVIDIA GTX 1080 Ti", VramMb = 11264, CudaCores = 3584,
             DriverVersion = "470.182", PricePerHourUsdCents = 80,
-            Frameworks = ["TensorFlow", "Caffe"], State = DeviceState.UNAVAILABLE
+            State = DeviceState.UNAVAILABLE
         },
     ];
 
     public static List<Order> Orders { get; } = [];
 
-    private static readonly List<Order> _seedOrders =
+    private static List<Order> SeedOrders() =>
     [
         new()
         {
@@ -107,7 +116,9 @@ public static class MockStore
         },
     ];
 
-    public static List<Review> Reviews { get; } =
+    public static List<Review> Reviews { get; } = [];
+
+    private static List<Review> SeedReviews() =>
     [
         new()
         {
@@ -123,7 +134,9 @@ public static class MockStore
         },
     ];
 
-    public static List<Transaction> Transactions { get; } =
+    public static List<Transaction> Transactions { get; } = [];
+
+    private static List<Transaction> SeedTransactions() =>
     [
         new()
         {
@@ -151,7 +164,9 @@ public static class MockStore
         },
     ];
 
-    public static List<Dispute> Disputes { get; } =
+    public static List<Dispute> Disputes { get; } = [];
+
+    private static List<Dispute> SeedDisputes() =>
     [
         new()
         {
@@ -182,17 +197,26 @@ public static class MockStore
     {
         _nextId = 100;
         CurrentUser = new() { Id = 1, Username = "alice", Admin = false };
+        AuthenticatedUser = null;
 
         Users.Clear();
-        Users.AddRange(_seedUsers);
+        Users.AddRange(SeedUsers());
 
         Devices.Clear();
-        Devices.AddRange(_seedDevices);
+        Devices.AddRange(SeedDevices());
 
         Orders.Clear();
-        Orders.AddRange(_seedOrders);
+        Orders.AddRange(SeedOrders());
 
-        // ... repeat for Reviews, Transactions, Disputes
+        Reviews.Clear();
+        Reviews.AddRange(SeedReviews());
+
+        Transactions.Clear();
+        Transactions.AddRange(SeedTransactions());
+
+        Disputes.Clear();
+        Disputes.AddRange(SeedDisputes());
+
         Wallet = new() { TotalUsdCents = 14000, LockedUsdCents = 9600 };
         PayoutAccount = null;
     }

@@ -25,6 +25,7 @@ public class TopNavTests : BunitContext
         Services.AddSingleton(_authModalServiceMock.Object);
         Services.AddSingleton(_authStateMock.Object);
         Services.AddSingleton(_authServiceMock.Object);
+        Services.AddSingleton(new Mock<IAppNotifier>().Object);
     }
 
     [Fact]

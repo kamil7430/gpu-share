@@ -1,7 +1,9 @@
 @inject IDeviceService DeviceService
 @inject IOrderService OrderService
+@inject IDisputeService DisputeService
 @inject IFormatters Formatters
 @inject IAppNotifier SnackbarNotifier
+@inject NavigationManager Navigation
 
 @if(_loading == true)
 {
@@ -62,7 +64,7 @@ else if (_order != null && _gpu != null && Dispute != null)
         <!-- Details -->
         <div class="form-card">
             <h4>Problem Details</h4>
-            <MudTextField T="string" @bind-Value="Dispute.Description" Variant="Variant.Outlined" Lines="6" Counter="5000" Immediate="true" Placeholder="Describe the issue in detail..." HelperText="Minimum 50 characters required." Class="details-input" />
+            <MudTextField T="string" @bind-Value="Dispute.Description" Label="Description" Variant="Variant.Outlined" Lines="6" Counter="5000" Immediate="true" Placeholder="Describe the issue in detail..." HelperText="Minimum 50 characters required." Class="details-input" />
         </div>
 
         <!-- Evidence Upload -->
@@ -99,8 +101,8 @@ else if (_order != null && _gpu != null && Dispute != null)
 
         <!-- Submit -->
         <div class="flex-row mt-6">
-            <button class="btn-danger" disabled="@(!CanSubmit)">
-                Submit dispute
+            <button type="submit" class="btn-danger" disabled="@(!CanSubmit)">
+                Submit
             </button>
         </div>
 
@@ -135,7 +137,7 @@ else if (_order != null && _gpu != null && Dispute != null)
         }
         catch (Exception)
         {
-            SnackbarNotifier.ShowError("Error updating device. Please try again.");
+            SnackbarNotifier.ShowError("Error getting order and device data for dispute. Please try again.");
             _order = null;
             _gpu = null;
         }
@@ -157,8 +159,25 @@ else if (_order != null && _gpu != null && Dispute != null)
         UploadedFiles.Remove(file);
     }
 
-    private void SubmitDispute()
+    private async Task SubmitDispute()
     {
-        Console.WriteLine("Dispute submitted");
+        if (Dispute == null) return;
+        try
+        {
+            var result = await DisputeService.OpenDisputeAsync(new OpenDisputeRequest
+            {
+                OrderId = OrderId,
+                Reason = Dispute.Reason,
+                Description = Dispute.Description,
+                Attachments = UploadedFiles
+                    .Select(f => new DisputeAttachmentDto { FileName = f.Name, Url = "" })
+                    .ToList(),
+            });
+            Navigation.NavigateTo($"/dispute/{result.DisputeId}");
+        }
+        catch (Exception ex)
+        {
+            SnackbarNotifier.ShowError($"Failed to submit dispute: {ex.Message}");
+        }
     }
 }

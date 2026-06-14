@@ -1,4 +1,6 @@
 ﻿@page "/"
+@page "/devices"
+@rendermode InteractiveServer
 @using GpuShare.Frontend.Components.Shared
 @using GpuShare.Frontend.Models
 @inject IDeviceService DeviceService
@@ -52,7 +54,6 @@ TODO:
             MinCudaCores = Filter.Cores?.Start,
             MaxCudaCores = Filter.Cores?.End,
             AvailableOnly = Filter.AvailableOnly,
-            Frameworks = Filter.SupportedFrameworks,
             Limit = int.MaxValue
         };
 
@@ -64,7 +65,8 @@ TODO:
     {
         try
         {
-            var devices = await DeviceService.SearchDevicesAsync(filters);
+            // Public catalog — browse without sending the user's auth token, even if logged in.
+            var devices = await DeviceService.SearchDevicesAsync(filters, anonymous: true);
             _devices = devices.Items;
         }
         catch (ApiException ex)

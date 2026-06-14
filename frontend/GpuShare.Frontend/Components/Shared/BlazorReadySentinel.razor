@@ -1,0 +1,24 @@
+@rendermode InteractiveServer
+
+@* Hidden sentinel used by E2E tests. OnAfterRenderAsync never fires during SSR prerender —
+   this element only appears once the SignalR circuit is connected and interactive event
+   handlers are wired up. All @rendermode InteractiveServer components on the page share the
+   same circuit, so this sentinel transitively signals readiness for the whole page. *@
+@if (_ready)
+{
+    <span id="blazor-ready" style="display:none" aria-hidden="true"></span>
+}
+
+@code {
+    private bool _ready;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _ready = true;
+            StateHasChanged();
+        }
+        return Task.CompletedTask;
+    }
+}

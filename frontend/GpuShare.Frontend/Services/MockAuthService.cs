@@ -17,12 +17,16 @@ public class MockAuthService(IAuthState authState) : IAuthService
 
         _authState.SetAuth(new AuthResponse
         {
-            User = new User { Username = payload.Username },
+            // Use the store user, not a fresh one — admins (diana) must keep
+            // their Admin flag in the circuit they logged in on, not only
+            // after a reload restores it via MockAuthState.
+            User = user,
             Token = "JWT",
             ExpiresAt = DateTime.Now.AddHours(1)
         });
 
         MockStore.CurrentUser = user;
+        MockStore.AuthenticatedUser = user;
         return Task.CompletedTask;
     }
 
@@ -34,6 +38,7 @@ public class MockAuthService(IAuthState authState) : IAuthService
         var user = new User { Id = MockStore.NextId(), Username = payload.Username };
         MockStore.Users.Add(user);
         MockStore.CurrentUser = user;
+        MockStore.AuthenticatedUser = user;
         return Task.CompletedTask;
     }
 
@@ -43,6 +48,7 @@ public class MockAuthService(IAuthState authState) : IAuthService
     {
         _authState.Logout();
         MockStore.CurrentUser = new User { Id = 0, Username = "" };
+        MockStore.AuthenticatedUser = null;
         return Task.CompletedTask;
     }
 

@@ -12,7 +12,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<Dispute> GetDisputeAsync(int disputeId)
         {
-            var dispute = await _api.GetAsync<Dispute>($"/disputes/{disputeId}");
+            var dispute = await _api.GetAsync<Dispute>($"/api/disputes/{disputeId}");
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got dispute with id {Id}", disputeId);
 
@@ -21,7 +21,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<PagedResult<Dispute>> ListDisputesAsync(DisputeQueryParams parameters)
         {
-            var disputes = await _api.GetAsync<List<Dispute>>($"/disputes", parameters);
+            var disputes = await _api.GetAsync<List<Dispute>>($"/api/disputes", parameters);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Got {num} disputes.", disputes!.Count);
 
@@ -36,7 +36,7 @@ namespace GpuShare.Frontend.Services
 
         public async Task<Dispute> OpenDisputeAsync(OpenDisputeRequest cmd)
         {
-            var response = await _api.PostAsync<OpenDisputeRequest, OpenDisputeResponse>($"/disputes", cmd);
+            var response = await _api.PostAsync<OpenDisputeRequest, OpenDisputeResponse>($"/api/disputes", cmd);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Created dispute for order {orderId}. Got ID {disputeId} for it.",
                     cmd.OrderId, response!.DisputeId);
@@ -57,14 +57,14 @@ namespace GpuShare.Frontend.Services
 
         public async Task ResolveDisputeAsync(int disputeId, ResolveDisputeRequest decision)
         {
-            await _api.PostAsync($"/disputes/{disputeId}/resolve", decision);
+            await _api.PostAsync($"/api/disputes/{disputeId}/resolve", decision);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Resolved dispute with ID {id}.", disputeId);
         }
 
         public async Task SubmitClarificationAsync(int disputeId, SubmitClarificationRequest payload)
         {
-            await _api.PostAsync($"/disputes/{disputeId}/clarification", payload);
+            await _api.PostAsync($"/api/disputes/{disputeId}/clarification", payload);
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Submitted clarification for dispute with ID {id}.", disputeId);
         }

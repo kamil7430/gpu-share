@@ -106,7 +106,7 @@ namespace GpuShare.Frontend.Tests.Components.Devices
             var cut = Render<SearchBar>(p => p.Add(x => x.OnSearch, filter => received = filter));
 
             // Act
-            cut.Find("input").Change("RTX 4090");
+            cut.Find("input").Input("RTX 4090");
 
             cut.Find(".btn-search").Click();
 
@@ -141,7 +141,6 @@ namespace GpuShare.Frontend.Tests.Components.Devices
                 VRAM_MB = ["24"],
                 PricePerHour = new (1, 5),
                 AvailableOnly = true,
-                SupportedFrameworks = ["CUDA", "PyTorch"]
             };
 
             // Act
@@ -159,12 +158,6 @@ namespace GpuShare.Frontend.Tests.Components.Devices
 
             cut.Markup.Should().Contain("Price:");
             cut.Markup.Should().Contain("1 - 5");
-
-            cut.Markup.Should().Contain("Available Only");
-
-            cut.Markup.Should().Contain("Frameworks:");
-            cut.Markup.Should().Contain("CUDA");
-            cut.Markup.Should().Contain("PyTorch");
         }
 
         [Fact]

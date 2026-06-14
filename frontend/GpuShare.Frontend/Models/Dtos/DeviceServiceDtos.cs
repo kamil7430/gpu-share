@@ -23,8 +23,6 @@
 
         public bool? AvailableOnly { get; set; }
 
-        public List<string> Frameworks { get; set; } = [];
-
         public int Limit { get; set; } = 25;
     }
 
@@ -41,8 +39,6 @@
         public string DriverVersion { get; set; } = string.Empty;
 
         public int PricePerHourUsdCents { get; set; }
-
-        public List<string> Frameworks { get; set; } = [];
     }
 
     public class RegisterDeviceResponse
@@ -62,7 +58,6 @@
         public string? DriverVersion { get; set; } = null;
         public int? PricePerHourUsdCents { get; set; } = null;
         public DeviceState? State { get; set; } = null;
-        public List<string>? Frameworks { get; set; } = null;
     }
 
     public class DeviceAgentInfo

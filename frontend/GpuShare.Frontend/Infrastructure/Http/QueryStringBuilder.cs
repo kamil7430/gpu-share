@@ -4,19 +4,29 @@
     {
         public static string Build(string path, object query)
         {
-            var properties = query.GetType().GetProperties();
+            var pairs = new List<string>();
 
-            var values = properties
-                .Select(p => new
+            foreach (var prop in query.GetType().GetProperties())
+            {
+                var value = prop.GetValue(query);
+                if (value is null) continue;
+
+                // Expand collections into repeated key=value pairs
+                if (value is System.Collections.IEnumerable enumerable and not string)
                 {
-                    p.Name,
-                    Value = p.GetValue(query)
-                })
-                .Where(x => x.Value != null)
-                .Select(x =>
-                    $"{Uri.EscapeDataString(x.Name)}={Uri.EscapeDataString(x.Value!.ToString()!)}");
+                    foreach (var item in enumerable)
+                    {
+                        if (item is not null)
+                            pairs.Add($"{Uri.EscapeDataString(prop.Name)}={Uri.EscapeDataString(item.ToString()!)}");
+                    }
+                }
+                else
+                {
+                    pairs.Add($"{Uri.EscapeDataString(prop.Name)}={Uri.EscapeDataString(value.ToString()!)}");
+                }
+            }
 
-            return $"{path}?{string.Join("&", values)}";
+            return pairs.Count == 0 ? path : $"{path}?{string.Join("&", pairs)}";
         }
     }
 }

@@ -7,18 +7,14 @@ public interface IDeviceService
     /// <summary>
     /// GET /api/devices
     /// Searches devices using filters and pagination.
+    /// Pass <paramref name="anonymous"/> = true to query the public catalog without sending the
+    /// caller's Authorization header (e.g. from DevicesPage); the default sends it when logged in.
     /// </summary>
-    Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters);
+    Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false);
 
     /// <summary>
     /// GET /api/users/{username}/devices
     /// Returns all devices belonging to user with provided username.
-    /// </summary>
-    Task<List<Device>> GetUserDevicesAsync(string username);
-
-    /// <summary>
-    /// GET /api/devices/{id}
-    /// Returns device details.
     /// </summary>
     Task<Device> GetDeviceAsync(int deviceId);
 
@@ -45,15 +41,4 @@ public interface IDeviceService
     /// Removes device from catalog.
     /// </summary>
     Task DeleteDeviceAsync(int deviceId);
-
-    /// <summary>
-    /// GET /api/devices/{id}/agent-info
-    /// Fetches information needed for installing and configuring the device agent on the owner's machine. 
-    /// This includes installation instructions, configuration parameters, and any necessary credentials 
-    /// or tokens. The frontend can use this information to guide the user through the agent setup process, 
-    /// ensuring that the device is properly connected to the GpuShare platform for monitoring and management.
-    /// </summary>
-    /// <param name="deviceId"></param>
-    /// <returns></returns>
-    Task<DeviceAgentInfo> GetAgentInstallInfoAsync(int deviceId);
 }

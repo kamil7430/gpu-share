@@ -1,12 +1,13 @@
 namespace GpuShare.Frontend.Infrastructure.Http;
 using GpuShare.Frontend.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Logging;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 {
@@ -14,6 +15,7 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
     private readonly ILogger<ApiClient> _logger = logger;
     private readonly JsonSerializerOptions _options = new()
     {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
         Converters = { new JsonStringEnumConverter() }
@@ -27,38 +29,64 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<T>(_options);
+            var content = await response.Content.ReadFromJsonAsync<T>(_options);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got response: {resp}", content);
+            return content;
         });
     }
 
-    public async Task<T?> GetAsync<T>(string url, object query)
+    public Task<T?> GetAsync<T>(string url, object query) => GetAsync<T>(url, query, anonymous: false);
+
+    public async Task<T?> GetAsync<T>(string url, object query, bool anonymous)
     {
         return await ExecuteRequest(async () =>
         {
-            var response = await _http.GetAsync(QueryStringBuilder.Build(url, query));
+            var requestUri = QueryStringBuilder.Build(url, query);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sending request: to url {url} with query: {query}...", url, requestUri);
+
+            // Build the request explicitly so we can tag it for the handler pipeline.
+            using var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            if (anonymous)
+                request.Options.Set(ApiRequestOptions.Anonymous, true);
+
+            var response = await _http.SendAsync(request);
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<T>(_options);
+            var content = await response.Content.ReadFromJsonAsync<T>(_options);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got response: {resp}", content);
+            return content;
         });
     }
 
     public async Task<TResponse?> PostAsync<TRequest, TResponse>(string url, TRequest data)
     {
         return await ExecuteRequest(async () =>
-        {   
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sending request: {req} to url {url}...", 
+                    JsonSerializer.Serialize(data, _options), url);
             var response = await _http.PostAsJsonAsync(url, data, _options);
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>(_options);
+            var content = await response.Content.ReadFromJsonAsync<TResponse>(_options);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got response: {resp}", content);
+            return content;
         });
     }
 
     public async Task PostAsync<TRequest>(string url, TRequest data)
     {
         await ExecuteRequest(async () =>
-        {   
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sending request: {req} to url {url}...",
+                    JsonSerializer.Serialize(data, _options), url);
             var response = await _http.PostAsJsonAsync(url, data, _options);
 
             await EnsureSuccess(response);
@@ -68,19 +96,27 @@ public class ApiClient(HttpClient http, ILogger<ApiClient> logger) : IApiClient
     public async Task<TResponse?> PostAsync<TResponse>(string url)
     {
         return await ExecuteRequest(async () =>
-        {   
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sending request to url {url}...", url);
             var response = await _http.PostAsync(url, null);
 
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>(_options);
+            var content = await response.Content.ReadFromJsonAsync<TResponse>(_options);
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Got response: {resp}", content);
+            return content;
         });
     }
 
     public async Task PatchAsync<TRequest>(string url, TRequest data)
     {
         await ExecuteRequest(async () =>
-        {   
+        {
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Sending request: {req} to url {url}...",
+                    JsonSerializer.Serialize(data), url);
             var response = await _http.PatchAsJsonAsync(url, data, _options);
 
             await EnsureSuccess(response);

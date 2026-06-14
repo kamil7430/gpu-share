@@ -1,4 +1,5 @@
 @page "/device/{ModeString}/{DeviceId:int}"
+@rendermode InteractiveServer
 @using Microsoft.AspNetCore.Components.Authorization
 @using GpuShare.Frontend.Models
 @using GpuShare.Frontend.State
@@ -48,6 +49,12 @@
 
                     <!-- Reservation Calendar -->
                     <ReservationCalendar DeviceId="@_device.DeviceId"></ReservationCalendar>
+
+                    <!-- Order form — only for non-owners -->
+                    @if (_device?.OwnerUsername != AuthState.User?.Username)
+                    {
+                        <DeviceOrderForm Device="@_device"></DeviceOrderForm>
+                    }
                 </Authorized>
                 <NotAuthorized>
                     <!-- Opinions -->
@@ -120,7 +127,6 @@
             CudaCores = savedGpu.CudaCores != _device.CudaCores ? savedGpu.CudaCores : null,
             DriverVersion = savedGpu.DriverVersion != _device.DriverVersion ? savedGpu.DriverVersion : null,
             PricePerHourUsdCents = savedGpu.PricePerHourUsdCents != _device.PricePerHourUsdCents ? savedGpu.PricePerHourUsdCents : null,
-            Frameworks = savedGpu.Frameworks != _device.Frameworks ? savedGpu.Frameworks : null
         };
 
         try

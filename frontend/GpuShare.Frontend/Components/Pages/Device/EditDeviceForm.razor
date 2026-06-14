@@ -42,14 +42,6 @@
                     <InputText @bind-Value="Device.DriverVersion" />
                 </div>
 
-                <div class="form-group">
-                    <label>Supported Frameworks</label>
-                    <CheckBoxList className="checkbox-list" TItem="string" Data="Device.SupportedFrameworks" 
-                        TextField="@(new Func<string, string>(c => c))" 
-                        ValueField="@(new Func<string, string>(c => c))" 
-                        SelectedValues="@_selectedFrameworks" />
-                </div>
-
                 <div class="form-group" style="flex-direction: row; align-items: center; height: fit-content;">
                     <label>Price per hour</label>
                     <InputNumber Min="0" style="width: 100px" @bind-Value="PricePerHourUsd" />
@@ -102,7 +94,6 @@
     [Parameter] public DevicePageMode Mode { get; set; } = DevicePageMode.Edit;
     [Parameter] public EventCallback<Device> OnSave { get; set; }
 
-    private List<string> _selectedFrameworks = [];
     private List<string> _validationErrors = new() { "Error1", "Error2 a bit longerrrrrrr rrrrrrrrr rrrrrrrrrrrrrrr rrrrrrrrrr rrrrrrrrrr rrrrrrrr rrrrrrrrrrr rrrrrrrrrrrrrrr" };
 
     private decimal PricePerHourUsd
