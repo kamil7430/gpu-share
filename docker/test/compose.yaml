@@ -2,7 +2,7 @@ services:
   testing-subject:
     build:
       context: ../..
-      dockerfile: docker/test/Dockerfile
+      dockerfile: docker/test/testing-subject.Dockerfile
     env_file: ../../.env
     ports:
       - "2137:2137"
