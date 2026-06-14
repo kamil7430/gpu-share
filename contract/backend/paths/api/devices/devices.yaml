@@ -7,6 +7,12 @@ get:
     - {}
   parameters:
     - $ref: "../../../parameters/query/limit.yaml"
+    - name: nlQuery
+      in: query
+      required: false
+      description: Query in natural language
+      schema:
+        type: string
     - name: name
       in: query
       required: false

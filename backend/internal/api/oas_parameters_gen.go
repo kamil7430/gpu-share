@@ -85,6 +85,8 @@ func decodeGetDeviceStatusParams(args [1]string, argsEscaped bool, r *http.Reque
 type GetDevicesParams struct {
 	// Maximum number of elements to retrieve.
 	Limit OptInt `json:",omitempty,omitzero"`
+	// Query in natural language.
+	NlQuery OptString `json:",omitempty,omitzero"`
 	// Name of devices to retrieve.
 	Name OptString `json:",omitempty,omitzero"`
 	// Model of device to retrieve.
@@ -117,6 +119,15 @@ func unpackGetDevicesParams(packed middleware.Parameters) (params GetDevicesPara
 		}
 		if v, ok := packed[key]; ok {
 			params.Limit = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "nlQuery",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.NlQuery = v.(OptString)
 		}
 	}
 	{
@@ -290,6 +301,47 @@ func decodeGetDevicesParams(args [0]string, argsEscaped bool, r *http.Request) (
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "limit",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: nlQuery.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "nlQuery",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotNlQueryVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotNlQueryVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.NlQuery.SetTo(paramsDotNlQueryVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "nlQuery",
 			In:   "query",
 			Err:  err,
 		}

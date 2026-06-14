@@ -69,6 +69,7 @@ public partial class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IDeviceService, DeviceService>();
         builder.Services.AddScoped<IOrderService, OrderService>();
+        builder.Services.AddHttpClient<IGpuRankingService, GpuRankingService>();
 
         // Services that currently only have mock implementations
         builder.Services.AddScoped<IFileService, MockFileService>();

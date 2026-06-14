@@ -10,7 +10,7 @@ public interface IDeviceService
     /// Pass <paramref name="anonymous"/> = true to query the public catalog without sending the
     /// caller's Authorization header (e.g. from DevicesPage); the default sends it when logged in.
     /// </summary>
-    Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false);
+    public Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false, List<int>? rankedIds = null);
 
     /// <summary>
     /// GET /api/users/{username}/devices

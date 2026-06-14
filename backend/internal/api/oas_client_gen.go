@@ -548,6 +548,23 @@ func (c *Client) sendGetDevices(ctx context.Context, params GetDevicesParams) (r
 		}
 	}
 	{
+		// Encode "nlQuery" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "nlQuery",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.NlQuery.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
 		// Encode "name" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "name",

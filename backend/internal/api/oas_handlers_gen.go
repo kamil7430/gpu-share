@@ -739,6 +739,10 @@ func (s *Server) handleGetDevicesRequest(args [0]string, argsEscaped bool, w htt
 					In:   "query",
 				}: params.Limit,
 				{
+					Name: "nlQuery",
+					In:   "query",
+				}: params.NlQuery,
+				{
 					Name: "name",
 					In:   "query",
 				}: params.Name,

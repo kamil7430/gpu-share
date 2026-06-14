@@ -40,10 +40,9 @@ func TestApi(t *testing.T) {
 	db, err := utils.InitializeDatabaseConnection(false)
 	require.NoError(t, err)
 
-	tx := db.Begin()
-	defer tx.Rollback()
+	defer truncateTables(db)
 
-	store := repository.NewStore(tx)
+	store := repository.NewStore(db)
 
 	srv := server.NewServer(store)
 	defer func() {
@@ -74,6 +73,6 @@ func TestApi(t *testing.T) {
 	log.Println("Server is up! Running the tests...")
 
 	for _, test := range testsToRun {
-		test(t, tx, baseUrl)
+		test(t, db, baseUrl)
 	}
 }
