@@ -2,7 +2,11 @@
 @coordinator = http://localhost:2138
 
 # copy the token from /api/users/register or /api/users/login response
+<<<<<<< Updated upstream
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJhZG1pbiI6ZmFsc2UsImV4cCI6MTc4MDM0NTk3OCwiaWF0IjoxNzgwMzQ1Mzc4fQ.E6UHvjbklKmQbdJPxnMjLmLtqx9dWCQrqu7JmOHMFtc
+=======
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiYWRtaW4iOmZhbHNlLCJleHAiOjE3ODE0NzMxNDEsImlhdCI6MTc4MTQ3MjU0MX0.1_AxuxC15KYGnJqyo7aacHzp3uGbdagqylkwbUaK5uQ
+>>>>>>> Stashed changes
 # token for backend -> coordinator REST API communication
 @coordinatorToken = test
 @agentId = 1
@@ -67,3 +71,24 @@ Authorization: {{coordinatorToken}}
 ### Agent status
 GET {{coordinator}}/api/agents/{{agentId}}/status
 Authorization: {{coordinatorToken}}
+
+### Create order
+POST {{backend}}/api/orders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "deviceId": "{{agentId}}",
+  "dockerImage": "docker",
+  "durationHours": 1
+}
+
+### Create review
+POST {{backend}}/api/reviews/reviewOrder/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "rating": 3,
+  "comment": "Super karta"
+}
