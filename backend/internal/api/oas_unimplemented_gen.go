@@ -31,6 +31,15 @@ func (UnimplementedHandler) ChangePassword(ctx context.Context, req *ChangePassw
 	return r, ht.ErrNotImplemented
 }
 
+// GetDevice implements getDevice operation.
+//
+// Get device by ID.
+//
+// GET /api/devices/{deviceId}
+func (UnimplementedHandler) GetDevice(ctx context.Context, params GetDeviceParams) (r GetDeviceRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetDeviceStatus implements getDeviceStatus operation.
 //
 // Get device status by ID.

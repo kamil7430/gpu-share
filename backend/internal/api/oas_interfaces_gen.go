@@ -9,6 +9,10 @@ type ChangePasswordRes interface {
 	changePasswordRes()
 }
 
+type GetDeviceRes interface {
+	getDeviceRes()
+}
+
 type GetDeviceStatusRes interface {
 	getDeviceStatusRes()
 }

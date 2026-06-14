@@ -40,6 +40,12 @@ type Invoker interface {
 	//
 	// POST /api/users/changePassword
 	ChangePassword(ctx context.Context, request *ChangePasswordReq) (ChangePasswordRes, error)
+	// GetDevice invokes getDevice operation.
+	//
+	// Get device by ID.
+	//
+	// GET /api/devices/{deviceId}
+	GetDevice(ctx context.Context, params GetDeviceParams) (GetDeviceRes, error)
 	// GetDeviceStatus invokes getDeviceStatus operation.
 	//
 	// Get device status by ID.
@@ -376,6 +382,98 @@ func (c *Client) sendChangePassword(ctx context.Context, request *ChangePassword
 
 	stage = "DecodeResponse"
 	result, err := decodeChangePasswordResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetDevice invokes getDevice operation.
+//
+// Get device by ID.
+//
+// GET /api/devices/{deviceId}
+func (c *Client) GetDevice(ctx context.Context, params GetDeviceParams) (GetDeviceRes, error) {
+	res, err := c.sendGetDevice(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetDevice(ctx context.Context, params GetDeviceParams) (res GetDeviceRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getDevice"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/devices/{deviceId}"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetDeviceOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/api/devices/"
+	{
+		// Encode "deviceId" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "deviceId",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.DeviceId))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetDeviceResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
