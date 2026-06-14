@@ -82,7 +82,7 @@ entity_ruler.add_patterns([
     {
         "label": "BRAND",
         "pattern": [
-            {"LOWER": {"IN": ["nvidia", "nvidii", "nvidię", "cuda", "cudę", "cudą", "amd", "intel", "intela"]}},
+            {"LOWER": {"IN": ["nvidia", "nvidii", "nvidię", "cuda", "cudę", "cudą", "amd", "intel", "intela", "radeon", "radeona", "fire", "firepro", "firestream", "firestreama"]}},
         ],
     },
 
@@ -167,6 +167,12 @@ def extract_gpu_criteria(user_prompt: str) -> dict:
             val = ent.text.lower()
             if val in ["nvidia", "cuda"]:
                 extracted["brand"] = "nvidia"
+            if val in ["radeon", "radeona"]:
+                extracted["brand"] = "radeon"
+            if val == "firepro":
+                extracted["brand"] = "firepro"
+            if val == "firestream":
+                extracted["brand"] = "firestream"
             elif val == "amd":
                 extracted["brand"] = "amd"
             elif val == "intel":

@@ -5,6 +5,7 @@
 @using GpuShare.Frontend.Models
 @inject IDeviceService DeviceService
 @inject IAppNotifier SnackbarNotifier
+@inject IGpuRankingService RankingService
 
 @*
 TODO:
@@ -67,7 +68,12 @@ TODO:
         try
         {
             // Public catalog — browse without sending the user's auth token, even if logged in.
-            var devices = await DeviceService.SearchDevicesAsync(filters, anonymous: true);
+            List<int>? rankedIds = null;
+            if (!string.IsNullOrWhiteSpace(Filter.Term))
+            {
+                rankedIds = await RankingService.RankAsync(Filter.Term);
+            }
+            var devices = await DeviceService.SearchDevicesAsync(filters, anonymous: true, rankedIds);
             _devices = devices.Items;
         }
         catch (ApiException ex)

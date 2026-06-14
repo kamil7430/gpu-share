@@ -12,7 +12,7 @@ def rank(query: str):
         scored.append((score, gpu))
 
     scored.sort(key=lambda x: x[0], reverse=True)
-    print("finished: {scored}")
+    print(f"finished: {scored}")
 
     return [gpu for score, gpu in scored]
 
@@ -22,8 +22,8 @@ def calc_score(gpu, crit) -> float:
 
     if crit["brand"]:
         brand_want = crit["brand"].lower()
-        brand_got = gpu["brand"].lower()
-        if brand_want == brand_got:
+        brand_got = gpu["gpu_model"].lower()
+        if brand_want in brand_got:
             score += 1.0
 
     if crit["min_vram_gb"]:

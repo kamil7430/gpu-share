@@ -11,8 +11,11 @@ class HealthHandler(tornado.web.RequestHandler):
 class QueryHandler(tornado.web.RequestHandler):
     def post(self):
         try:
+            print("begin parsing query")
             payload = tornado.escape.json_decode(self.request.body)
+            print(payload)
             query = payload["query"]
+            print(query)
             devices = rank(query)
 
             if len(devices) == 0:

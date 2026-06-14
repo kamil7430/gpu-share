@@ -58,7 +58,7 @@ public class MockDeviceService : IDeviceService
         return Task.CompletedTask;
     }
 
-    public Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false)
+    public Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false, List<int>? rankedIds = null)
     {
         var query = MockStore.Devices.AsEnumerable();
 

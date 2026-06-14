@@ -54,7 +54,7 @@ namespace GpuShare.Frontend.Services
                 _logger.LogInformation("Deleted device with ID {id}.", deviceId);
         }
 
-        public async Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false)
+        public async Task<PagedResult<Device>> SearchDevicesAsync(DeviceSearchFilters filters, bool anonymous = false, List<int>? rankedIds = null)
         {
             var devices = await _api.GetAsync<List<Device>>($"/api/devices", filters, anonymous);
             if (_logger.IsEnabled(LogLevel.Information))
@@ -63,6 +63,17 @@ namespace GpuShare.Frontend.Services
                     $"and {filters.MinPricePerHourUsdCents ?? 0}, " +
                     $"cores between {filters.MinCudaCores ?? 0} and {filters.MaxCudaCores ?? 0}, " +
                     $"available only: {filters.AvailableOnly}, limit: {filters.Limit}");
+
+            if (rankedIds != null)
+            {
+                var order = rankedIds
+                    .Select((id, index) => new { id, index })
+                    .ToDictionary(x => x.id, x => x.index);
+
+                devices = devices
+                    .OrderBy(d => order.GetValueOrDefault(d.DeviceId, int.MaxValue))
+                    .ToList();
+            }
             
             return new PagedResult<Device>
             {

@@ -14,8 +14,7 @@ public class SearchFilter
 }
 
 public enum SortOption
-    {
-        
+{
     None,
     Name,
     Model,
