@@ -1,0 +1,33 @@
+get:
+  summary: Get user's wallet balance
+  operationId: getWallet
+  security:
+    - bearerAuth:
+        - user
+  responses:
+    "200":
+      description: Wallet balance retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - totalUsdCents
+              - lockedUsdCents
+            properties:
+              totalUsdCents:
+                description: Total balance in USD cents
+                type: integer
+              lockedUsdCents:
+                description: Amount of funds locked for active rentals/orders in USD cents
+                type: integer
+          examples:
+            defaultExample:
+              summary: Example wallet balance
+              value:
+                totalUsdCents: 12550
+                lockedUsdCents: 3500
+    "401":
+      description: User not logged in (token invalid or not provided)
+    default:
+      $ref: "../../../responses/default.yaml"

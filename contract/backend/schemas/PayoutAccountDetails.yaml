@@ -1,0 +1,23 @@
+type: object
+required:
+  - bankName
+  - accountNumber
+  - payPalEmail
+properties:
+  bankName:
+    description: Name of the bank
+    type: string
+  accountNumber:
+    description: Bank account number
+    type: string
+  payPalEmail:
+    description: Email address associated with PayPal account
+    type: string
+    format: email
+examples:
+  defaultExample:
+    summary: Example payout account details
+    value:
+      bankName: "PKO"
+      accountNumber: "123456"
+      payPalEmail: "user@email.com"

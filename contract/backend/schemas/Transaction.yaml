@@ -1,0 +1,30 @@
+type: object
+required:
+  - transactionId
+  - status
+properties:
+  transactionId:
+    description: Unique identifier of the transaction
+    type: string
+  status:
+    description: Current status of the transfer
+    type: string
+    enum:
+      - PENDING
+      - COMPLETED
+      - FAILED
+  paymentProvider:
+    description: Name of the payment gateway processing the transfer
+    type: string
+  paymentUrl:
+    description: URL to redirect the user to complete the payment
+    type: string
+    format: uri
+examples:
+  pendingTransfer:
+    summary: Example response for a pending transfer
+    value:
+      transactionId: "123"
+      status: "PENDING"
+      paymentProvider: "Stripe"
+      paymentUrl: "https://pay.provider/abc"

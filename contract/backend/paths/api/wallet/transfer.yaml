@@ -1,0 +1,47 @@
+post:
+  summary: Initiate a wallet fund transfer
+  operationId: transferFunds
+  security:
+    - bearerAuth:
+        - user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - amountUsdCents
+            - method
+            - type
+          properties:
+            amountUsdCents:
+              description: Amount to transfer in USD cents
+              type: integer
+              minimum: 1
+            method:
+              $ref: "../../../schemas/PaymentMethod.yaml"
+            type:
+              $ref: "../../../schemas/TransferOperationType.yaml"
+        examples:
+          topupExample:
+            summary: Example of a credit card top-up
+            value:
+              amountUsdCents: 10000
+              method: "CARD"
+              type: "TOPUP"
+  responses:
+    "201":
+      description: Transfer initiated successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/Transaction.yaml"
+    "400":
+      description: Invalid request parameters or invalid amount
+    "401":
+      description: User not logged in (token invalid or not provided)
+    "402":
+      description: Insufficient funds (e.g., when attempting a WITHDRAW greater than available balance)
+    default:
+      $ref: "../../../responses/default.yaml"

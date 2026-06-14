@@ -1,0 +1,5 @@
+description: Payment method used for the transfer
+type: string
+enum:
+  - CARD
+  - BANK_TRANSFER

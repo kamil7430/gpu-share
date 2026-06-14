@@ -1,0 +1,43 @@
+get:
+  summary: Get user's payout account details
+  operationId: getPayoutAccount
+  security:
+    - bearerAuth:
+        - user
+  responses:
+    "200":
+      description: Payout account details retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/PayoutAccountDetails.yaml"
+    "401":
+      description: User not logged in (token invalid or not provided)
+    default:
+      $ref: "../../../responses/default.yaml"
+
+post:
+  summary: Update or set user's payout account details
+  operationId: updatePayoutAccount
+  security:
+    - bearerAuth:
+        - user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../../../schemas/PayoutAccountDetails.yaml"
+  responses:
+    "200":
+      description: Payout account details updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: "../../../schemas/PayoutAccountDetails.yaml"
+    "400":
+      description: Invalid data provided
+    "401":
+      description: User not logged in (token invalid or not provided)
+    default:
+      $ref: "../../../responses/default.yaml"

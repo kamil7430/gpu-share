@@ -32,6 +32,12 @@ paths:
     $ref: "./paths/api/users/refresh.yaml"
   /api/users/register:
     $ref: "./paths/api/users/register.yaml"
+  /api/wallet:
+    $ref: "./paths/api/wallet/wallet.yaml"
+  /api/wallet/payoutAccount:
+    $ref: "./paths/api/wallet/payoutAccount.yaml"
+  /api/wallet/transfer:
+    $ref: "./paths/api/wallet/transfer.yaml"
 
 components:
   securitySchemes:

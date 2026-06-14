@@ -1,0 +1,5 @@
+description: Type of the transfer operation
+type: string
+enum:
+  - TOPUP
+  - WITHDRAW
